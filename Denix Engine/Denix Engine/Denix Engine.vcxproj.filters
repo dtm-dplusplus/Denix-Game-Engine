@@ -11,15 +11,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="src\Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="DxPch.cpp">
+    <ClCompile Include="src\DxPch.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DxPch.h">
+    <ClInclude Include="src\DxPch.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
