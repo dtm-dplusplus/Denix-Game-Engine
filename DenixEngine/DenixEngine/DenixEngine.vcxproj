@@ -113,8 +113,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm\include;$(ProjectDir)contrib\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm\include;$(ProjectDir)contrib\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DxPch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -139,8 +139,8 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm\include;$(ProjectDir)contrib\glew\include;</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm\include;$(ProjectDir)contrib\glew\include;</AdditionalIncludeDirectories>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DxPch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -159,6 +159,13 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="contrib\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp" />
+    <ClCompile Include="contrib\imgui\imgui.cpp" />
+    <ClCompile Include="contrib\imgui\imgui_demo.cpp" />
+    <ClCompile Include="contrib\imgui\imgui_draw.cpp" />
+    <ClCompile Include="contrib\imgui\imgui_tables.cpp" />
+    <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\File.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -178,6 +185,14 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="contrib\imgui\backends\imgui_impl_sdl2.h" />
+    <ClInclude Include="contrib\imgui\imgui.h" />
+    <ClInclude Include="contrib\imgui\imgui_internal.h" />
+    <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
+    <ClInclude Include="contrib\imgui\imstb_textedit.h" />
+    <ClInclude Include="contrib\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Log.h" />

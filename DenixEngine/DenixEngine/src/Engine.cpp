@@ -7,10 +7,14 @@
 #include "File.h"
 #include "Shader.h"
 
+#include "imgui.h"
+#include "backends/imgui_impl_sdl2.h"
+#include "backends/imgui_impl_opengl3.h"
+
 Engine::Engine(): m_IsRunning{false}, m_Window{nullptr}
 {
-	m_WinX = 640;
-	m_WinY = 480;
+	m_WinX = 800;
+	m_WinY = 600;
 }
 
 Engine::~Engine() = default;
@@ -28,7 +32,7 @@ bool Engine::Start()
 
 		//Create window
 		m_Window = SDL_CreateWindow("Denix Engine",
-			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			m_WinX, m_WinY,
 			SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
@@ -142,6 +146,18 @@ void Engine::Run()
 	shaderProgram.LinkProgram();
 	glBindAttribLocation(shaderProgram.GetProgram(), 0, "in_Position");
 
+
+	// Setup ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplSDL2_InitForOpenGL(m_Window, SDL_GL_GetCurrentContext());
+	ImGui_ImplOpenGL3_Init("#version 460");
+
+	bool showDemo = true;
+
+	// Main loop
 	while(m_IsRunning)
 	{
 		SDL_Event e;
@@ -153,16 +169,32 @@ void Engine::Run()
 		glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram.GetProgram());
-		glBindVertexArray(vaoId);
-		//Draw3vertices(atriangle)
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		//Resetthestate
-		glBindVertexArray(0);
-		glUseProgram(0);
+		ImGui_ImplSDL2_NewFrame(m_Window);
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui::NewFrame();
+
+		// Triangle
+		{
+			glUseProgram(shaderProgram.GetProgram());
+			glBindVertexArray(vaoId);
+			//Draw3vertices(atriangle)
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+			//Resetthestate
+			glBindVertexArray(0);
+			glUseProgram(0);
+		}
+
+		ImGui::ShowDemoWindow(&showDemo);
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		SDL_GL_SwapWindow(m_Window);
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
 
 	Stop();
 }
