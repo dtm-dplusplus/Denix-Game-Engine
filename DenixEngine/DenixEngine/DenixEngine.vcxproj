@@ -159,6 +159,7 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\File.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -177,14 +178,15 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\DxPch.h" />
     <ClInclude Include="src\Engine.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\Fragment.glsl" />
-    <None Include="res\shaders\Vertex.glsl" />
+    <None Include="res\shaders\Frag.glsl" />
+    <None Include="res\shaders\Vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

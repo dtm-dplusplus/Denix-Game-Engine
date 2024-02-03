@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 
 #include "File.h"
-
+#include "Shader.h"
 
 Engine::Engine(): m_IsRunning{false}, m_Window{nullptr}
 {
@@ -38,7 +38,7 @@ bool Engine::Start()
 		}
 		else
 		{
-			DX_LOG(DX_Log, DX_CRITICAL, "SDL_CreateWindow failed! SDL_Error: %s\n", SDL_GetError());
+			DX_LOG(DX_Log, DX_CRITICAL, "SDL_CreateWindow failed! SDL_Error: %s\n", SDL_GetError())
 			return false;
 		}
 		
@@ -49,7 +49,7 @@ bool Engine::Start()
 		}
 		else
 		{
-			DX_LOG(DX_Log, DX_CRITICAL, "SDL_GL_CreateContext failed! SDL_Error: %s\n", SDL_GetError());
+			DX_LOG(DX_Log, DX_CRITICAL, "SDL_GL_CreateContext failed! SDL_Error: %s\n", SDL_GetError())
 			return false;
 		}
 
@@ -59,13 +59,13 @@ bool Engine::Start()
 		}
 		else
 		{
-			DX_LOG(DX_Log, DX_CRITICAL, "glewInit failed! SDL_Error: %s\n", SDL_GetError());
+			DX_LOG(DX_Log, DX_CRITICAL, "glewInit failed! SDL_Error: %s\n", SDL_GetError())
 			return false;
 		}
 	}
 	else
 	{
-		DX_LOG(DX_Log, DX_CRITICAL, "SDL_Init failed! SDL_Error: %s\n", SDL_GetError());
+		DX_LOG(DX_Log, DX_CRITICAL, "SDL_Init failed! SDL_Error: %s\n", SDL_GetError())
 		return false;
 	}
 
@@ -134,59 +134,13 @@ void Engine::Run()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	// Create Vertex Shader
-	const std::string vertexShaderStr = File::ReadFile("res/shaders/Vertex.glsl");
-	const GLchar* vertexShaderSrc = vertexShaderStr.c_str();
-
-	GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-
-	glShaderSource(vertexShaderId, 1, &vertexShaderSrc, NULL);
-
-	glCompileShader(vertexShaderId);
-
-	GLint success = 0;
-
-	glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &success);
-
-	if (!success)
-		throw std::exception();
-
-	// Create Fragment Shader
-	const std::string fragmentShaderStr = File::ReadFile("res/shaders/Fragment.glsl");
-	const GLchar* fragmentShaderSrc = fragmentShaderStr.c_str();
-
-	GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-
-	glShaderSource(fragmentShaderId, 1, &fragmentShaderSrc, NULL);
-
-	glCompileShader(fragmentShaderId);
-
-	glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &success);
-
-	if (!success)
-		throw std::exception();
-
-	//Create newshader program and attach shader objects
-	GLuint programId = glCreateProgram();
-
-	glAttachShader(programId, vertexShaderId);
-	glAttachShader(programId, fragmentShaderId);
-
-	glBindAttribLocation(programId, 0, "in_Position");
-
-	//Performthelinkandcheck forfailure
-	glLinkProgram(programId);
-
-	glGetProgramiv(programId, GL_LINK_STATUS, &success);
-
-	if (!success)
-		throw std::exception();
-
-	//Detach and destory shader objects
-	glDetachShader(programId, vertexShaderId);
-	glDeleteShader(vertexShaderId);
-	glDetachShader(programId, fragmentShaderId);
-	glDeleteShader(fragmentShaderId);
+	// Create ShaderProgram
+	ShaderProgram shaderProgram;
+	shaderProgram.CreateProgram();
+	shaderProgram.AttachShader(Shader(GL_VERTEX_SHADER, File::Read("res/shaders/Vert.glsl")));
+	shaderProgram.AttachShader(Shader(GL_FRAGMENT_SHADER, File::Read("res/shaders/Frag.glsl")));
+	shaderProgram.LinkProgram();
+	glBindAttribLocation(shaderProgram.GetProgram(), 0, "in_Position");
 
 	while(m_IsRunning)
 	{
@@ -199,7 +153,7 @@ void Engine::Run()
 		glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(programId);
+		glUseProgram(shaderProgram.GetProgram());
 		glBindVertexArray(vaoId);
 		//Draw3vertices(atriangle)
 		glDrawArrays(GL_TRIANGLES, 0, 3);

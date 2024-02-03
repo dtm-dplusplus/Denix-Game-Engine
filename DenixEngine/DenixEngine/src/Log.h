@@ -11,7 +11,7 @@
 #define DX_CRITICAL spdlog::level::critical
 
 #define DX_LOG_CREATE(name) Log::CreateLogger(#name);
-#define DX_LOG(logger, level, message) Log::GetLogger(#logger)->log(level, message);
+#define DX_LOG(logger, level, message, ...) Log::GetLogger(#logger)->log(level, message, ##__VA_ARGS__);
 
 
 class Log

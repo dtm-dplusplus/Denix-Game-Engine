@@ -7,7 +7,7 @@
 
 // std::string File::m_ResDir{};
 
-std::string File::ReadFile(const std::string_view _path)
+std::string File::Read(const std::string_view _path)
 {
 	std::ifstream fileStream(_path.data());
 	std::stringstream fileString;

@@ -8,7 +8,7 @@ class File
 {
 
 public:
-	static std::string ReadFile(std::string_view _path);
+	static std::string Read(std::string_view _path);
 
 	static bool WriteFile(std::string_view _path, std::string_view _data);
 
