@@ -4,6 +4,8 @@
 #include <SDL.h>
 #include <GL/glew.h>
 
+#include "File.h"
+
 
 Engine::Engine(): m_IsRunning{false}, m_Window{nullptr}
 {
@@ -99,12 +101,13 @@ void Engine::Run()
 	glGenBuffers(1, &positionsVboId);
 
 	if (!positionsVboId)
-	{
 		throw std::exception();
-	}
+
 	glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
+
 	// Upload a copy of the data from memory into the new VBO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+
 	// Reset the state
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -132,13 +135,8 @@ void Engine::Run()
 	glBindVertexArray(0);
 
 	// Create Vertex Shader
-	const GLchar* vertexShaderSrc =
-		"attribute vec3 in_Position; "\
-		" "\
-		"void main() "\
-		"{ "\
-		" gl_Position=vec4(in_Position,1.0);"\
-		"} ";
+	const std::string vertexShaderStr = File::ReadFile("res/shaders/Vertex.glsl");
+	const GLchar* vertexShaderSrc = vertexShaderStr.c_str();
 
 	GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 
@@ -154,11 +152,8 @@ void Engine::Run()
 		throw std::exception();
 
 	// Create Fragment Shader
-	const GLchar* fragmentShaderSrc =
-		"void main() "\
-		"{ "\
-		" gl_FragColor=vec4(0,0,1,1);"\
-		"} ";
+	const std::string fragmentShaderStr = File::ReadFile("res/shaders/Fragment.glsl");
+	const GLchar* fragmentShaderSrc = fragmentShaderStr.c_str();
 
 	GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 

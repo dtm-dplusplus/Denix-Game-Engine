@@ -15,7 +15,7 @@ public:
 private:
 	bool m_IsRunning;
 
-	class SDL_Window* m_Window;
+	struct SDL_Window* m_Window;
 
 	int m_WinX;
 	int m_WinY;

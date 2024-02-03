@@ -125,6 +125,8 @@
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(OutDir)glew32.dll" xcopy /y "$(ProjectDir)glew32.dll" "$(OutDir)"
+
+xcopy /y "$(ProjectDir)res" "$(OutDir)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -151,10 +153,16 @@
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(OutDir)glew32.dll" xcopy /y "$(ProjectDir)glew32.dll" "$(OutDir)"
+
+xcopy /y "$(ProjectDir)res" "$(OutDir)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\File.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Log.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -169,12 +177,14 @@
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\DxPch.h" />
     <ClInclude Include="src\Engine.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cpp.hint" />
+    <None Include="res\shaders\Fragment.glsl" />
+    <None Include="res\shaders\Vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
