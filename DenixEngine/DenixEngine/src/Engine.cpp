@@ -117,11 +117,12 @@ void Engine::Run()
 {
 	if(!Start()) throw std::exception();
 
+	DX_LOG_CREATE(GL_Log)
 	const GLfloat positions[] = {
 		 0.0f, 0.5f, 0.0f,-0.5f,-0.5f, 0.0f,
 		 0.5f,-0.5f, 0.0f
 	};
-
+	DX_LOG(GL_Log, DX_TRACE, "Created triangle Postitions")
 
 	// VBO
 	GLuint positionsVboId = 0;
@@ -129,15 +130,19 @@ void Engine::Run()
 	glGenBuffers(1, &positionsVboId);
 
 	if (!positionsVboId)
-		throw std::exception();
+		DX_LOG(GL_Log, DX_ERROR, "Failed to create VBO")
+	DX_LOG(GL_Log, DX_TRACE, "Created VBO")
 
 	glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
+	DX_LOG(GL_Log, DX_TRACE, "Bound VBO")
 
 	// Upload a copy of the data from memory into the new VBO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+	DX_LOG(GL_Log, DX_TRACE, "Uploaded data to VBO")
 
 	// Reset the state
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	DX_LOG(GL_Log, DX_TRACE, "Reset VBO state")
 
 	GLuint vaoId = 0;
 
@@ -145,22 +150,27 @@ void Engine::Run()
 	glGenVertexArrays(1, &vaoId);
 	if (!vaoId)
 	{
-		throw std::exception();
+		DX_LOG(GL_Log, DX_ERROR, "Failed to create VAO")
 	}
 	glBindVertexArray(vaoId);
+	DX_LOG(GL_Log, DX_TRACE, "Created and bound VAO")
 
 	// Bind the position VBO, assign it to position 0 on the bound VAO
 	// and flag it to be used
 	glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
+	DX_LOG(GL_Log, DX_TRACE, "Bound VBO")
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 		3 * sizeof(GLfloat), (void*)0);
+	DX_LOG(GL_Log, DX_TRACE, "Assigned VBO to VAO")
 
 	glEnableVertexAttribArray(0);
+	DX_LOG(GL_Log, DX_TRACE, "Enabled VAO")
 
 	// Reset the state
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	DX_LOG(GL_Log, DX_TRACE, "Reset VAO state")
 
 	// Create ShaderProgram
 	ShaderProgram shaderProgram;

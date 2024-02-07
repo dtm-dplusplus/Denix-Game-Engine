@@ -110,7 +110,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm\include;$(ProjectDir)contrib\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -136,7 +136,7 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm\include;$(ProjectDir)contrib\glew\include;</AdditionalIncludeDirectories>
