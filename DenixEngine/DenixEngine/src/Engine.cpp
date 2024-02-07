@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <GL/glew.h>
+// #include <SDL_opengl.h>
 
 #include "File.h"
 #include "Shader.h"
@@ -11,13 +12,10 @@
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
 
-Engine::Engine(): m_IsRunning{false}, m_Window{nullptr}
+Engine::Engine(): m_IsRunning{false}, m_Window{nullptr}, m_WinX{800}, m_WinY{600}
 {
-	m_WinX = 800;
-	m_WinY = 600;
 }
 
-Engine::~Engine() = default;
 
 
 bool Engine::Start()
@@ -26,52 +24,74 @@ bool Engine::Start()
 	DX_LOG(DX_Log, DX_TRACE, "Engine Starting")
 
 	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) >= 0)
-	{
-		DX_LOG(DX_Log, DX_TRACE, "SDL_Init success")
-
-		//Create window
-		m_Window = SDL_CreateWindow("Denix Engine",
-			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			m_WinX, m_WinY,
-			SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-
-		if (m_Window)
-		{
-			DX_LOG(DX_Log, DX_TRACE, "SDL_CreateWindow success")
-		}
-		else
-		{
-			DX_LOG(DX_Log, DX_CRITICAL, "SDL_CreateWindow failed! SDL_Error: %s\n", SDL_GetError())
-			return false;
-		}
-		
-
-		if (SDL_GL_CreateContext(m_Window))
-		{
-			DX_LOG(DX_Log, DX_TRACE, "SDL_GL_CreateContext success")
-		}
-		else
-		{
-			DX_LOG(DX_Log, DX_CRITICAL, "SDL_GL_CreateContext failed! SDL_Error: %s\n", SDL_GetError())
-			return false;
-		}
-
-		if (glewInit() == GLEW_OK)
-		{
-			DX_LOG(DX_Log, DX_TRACE, "glewInit success")
-		}
-		else
-		{
-			DX_LOG(DX_Log, DX_CRITICAL, "glewInit failed! SDL_Error: %s\n", SDL_GetError())
-			return false;
-		}
-	}
-	else
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) < 0)
 	{
 		DX_LOG(DX_Log, DX_CRITICAL, "SDL_Init failed! SDL_Error: %s\n", SDL_GetError())
 		return false;
 	}
+	DX_LOG(DX_Log, DX_TRACE, "SDL_Init success")
+
+	// Set SDL OpenGL Version
+	const char* glsl_version = "#version 130";
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+
+	// Useful for virtual keyboards, complex chararacter sets
+	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+
+	// Set GL Attributes
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+	//Create window
+	SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+
+	m_Window = SDL_CreateWindow("Denix Engine",
+		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		m_WinX, m_WinY, windowFlags);
+
+	if (!m_Window)
+	{
+		DX_LOG(DX_Log, DX_CRITICAL, "SDL_CreateWindow failed! SDL_Error: %s\n", SDL_GetError())
+			return false;
+	}
+	DX_LOG(DX_Log, DX_TRACE, "SDL_CreateWindow success")
+
+	// Create Context
+	if (!SDL_GL_CreateContext(m_Window))
+	{
+		DX_LOG(DX_Log, DX_CRITICAL, "SDL_GL_CreateContext failed! SDL_Error: %s\n", SDL_GetError())
+			return false;
+	}
+	DX_LOG(DX_Log, DX_TRACE, "SDL_GL_CreateContext success")
+
+	SDL_GL_MakeCurrent(m_Window, SDL_GL_GetCurrentContext());
+	SDL_GL_SetSwapInterval(1); // Enable vsync
+	
+	// Init Glew
+	if (glewInit() != GLEW_OK)
+	{
+		DX_LOG(DX_Log, DX_CRITICAL, "glewInit failed! SDL_Error: %s\n", SDL_GetError())
+			return false;
+	}
+	DX_LOG(DX_Log, DX_TRACE, "glewInit success")
+
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplSDL2_InitForOpenGL(m_Window, SDL_GL_GetCurrentContext());
+	ImGui_ImplOpenGL3_Init(glsl_version);
 
 	m_IsRunning = true;
 
@@ -80,13 +100,17 @@ bool Engine::Start()
 
 void Engine::Stop()
 {
-	DX_LOG(Test, DX_TRACE, "Engine Stopping")
+	// DX_LOG(Test, DX_TRACE, "Engine Stopping") - Memory Error on force close
 
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+	
+	SDL_GL_DeleteContext(SDL_GL_GetCurrentContext());
 	SDL_DestroyWindow(m_Window);
 	SDL_Quit();
 
-
-	Log::Stop();
+	//Log::Stop();
 }
 
 void Engine::Run()
@@ -147,31 +171,29 @@ void Engine::Run()
 	glBindAttribLocation(shaderProgram.GetProgram(), 0, "in_Position");
 
 
-	// Setup ImGui
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui::StyleColorsDark();
-	ImGui_ImplSDL2_InitForOpenGL(m_Window, SDL_GL_GetCurrentContext());
-	ImGui_ImplOpenGL3_Init("#version 460");
-
-	bool showDemo = true;
-
 	// Main loop
 	while(m_IsRunning)
 	{
 		SDL_Event e;
 		while (SDL_PollEvent(&e))
 		{
-			if (e.type == SDL_QUIT) m_IsRunning = false;
+			ImGui_ImplSDL2_ProcessEvent(&e);
+			if (e.type == SDL_QUIT)
+				m_IsRunning = false;
+			if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_CLOSE
+				&& e.window.windowID == SDL_GetWindowID(m_Window))
+				m_IsRunning = false;
 		}
 
 		glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		ImGui_ImplSDL2_NewFrame(m_Window);
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui::NewFrame();
+		// New ImGui frame
+		{
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplSDL2_NewFrame();
+			ImGui::NewFrame();
+		}
 
 		// Triangle
 		{
@@ -184,17 +206,21 @@ void Engine::Run()
 			glUseProgram(0);
 		}
 
-		ImGui::ShowDemoWindow(&showDemo);
+		// Demo window
+		static bool showDemo = true;
+		if (showDemo)
+			ImGui::ShowDemoWindow(&showDemo);
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		//glViewport(0, 0, m_WinX, m_WinY); Neccessary?
 
+		// ImGui Render
+		{
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		}
+		
 		SDL_GL_SwapWindow(m_Window);
 	}
-
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
 
 	Stop();
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <string_view>
 
 // Header Contents
 class File
@@ -13,7 +12,5 @@ public:
 	static bool WriteFile(std::string_view _path, std::string_view _data);
 
 	static bool FileExists(std::string_view _path);
-private:
-	//static std::string m_ResDir;
 
 };

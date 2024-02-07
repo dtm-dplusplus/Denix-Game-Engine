@@ -50,7 +50,7 @@ public:
 	{
 		DX_LOG(DX_Log,DX_TRACE, "Logger stopping")
 
-		spdlog::shutdown();
+		//spdlog::shutdown();
 	}
 };
 
