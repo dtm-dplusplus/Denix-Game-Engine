@@ -12,10 +12,12 @@
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+
 Engine::Engine(): m_IsRunning{false}, m_Window{nullptr}, m_WinX{800}, m_WinY{600}
 {
 }
-
 
 
 bool Engine::Start()
@@ -79,6 +81,9 @@ bool Engine::Start()
 	}
 	DX_LOG(DX_Log, DX_TRACE, "glewInit success")
 
+	// Enable Blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -118,68 +123,119 @@ void Engine::Run()
 	if(!Start()) throw std::exception();
 
 	DX_LOG_CREATE(GL_Log)
+
 	const GLfloat positions[] = {
-		 0.0f, 0.5f, 0.0f,-0.5f,-0.5f, 0.0f,
-		 0.5f,-0.5f, 0.0f
+		0.0f, 0.5f, 0.0f,
+		-0.5f,-0.5f, 0.0f,
+		0.5f,-0.5f, 0.0f
+	};
+
+	const GLfloat colors[] = {
+	  1.0f, 0.0f, 0.0f, 1.0f,
+	  0.0f, 1.0f, 0.0f, 1.0f,
+	  0.0f, 0.0f, 1.0f, 1.0f,
 	};
 	DX_LOG(GL_Log, DX_TRACE, "Created triangle Postitions")
 
-	// VBO
+	// Postion VBO
 	GLuint positionsVboId = 0;
+	{
+		glGenBuffers(1, &positionsVboId);
 
-	glGenBuffers(1, &positionsVboId);
+		if (!positionsVboId)
+			DX_LOG(GL_Log, DX_ERROR, "Failed to create positions VBO")
 
-	if (!positionsVboId)
-		DX_LOG(GL_Log, DX_ERROR, "Failed to create VBO")
-	DX_LOG(GL_Log, DX_TRACE, "Created VBO")
+		DX_LOG(GL_Log, DX_TRACE, "Created positions VBO")
 
-	glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
-	DX_LOG(GL_Log, DX_TRACE, "Bound VBO")
+		glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
+		DX_LOG(GL_Log, DX_TRACE, "Bound positions VBO")
 
-	// Upload a copy of the data from memory into the new VBO
-	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
-	DX_LOG(GL_Log, DX_TRACE, "Uploaded data to VBO")
+		// Upload a copy of the data from memory into the new VBO
+		glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+		DX_LOG(GL_Log, DX_TRACE, "Uploaded data to positions VBO")
 
-	// Reset the state
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	DX_LOG(GL_Log, DX_TRACE, "Reset VBO state")
+		// Reset the state
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		DX_LOG(GL_Log, DX_TRACE, "Reset VBO state")
+	}
+	
+	// Colors VBO
+	GLuint colorsVboId = 0;
+	{
+		glGenBuffers(1, &colorsVboId);
 
-	GLuint vaoId = 0;
+		if (!colorsVboId)
+			DX_LOG(GL_Log, DX_ERROR, "Failed to create colors VBO")
+
+		DX_LOG(GL_Log, DX_TRACE, "Created colors VBO")
+
+		glBindBuffer(GL_ARRAY_BUFFER, colorsVboId);
+		DX_LOG(GL_Log, DX_TRACE, "Bound colors VBO")
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+		DX_LOG(GL_Log, DX_TRACE, "Uploaded data to colors VBO")
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		DX_LOG(GL_Log, DX_TRACE, "Reset VBO state")
+	}
+	
 
 	// Create a new VAO on the GPU and bind it
-	glGenVertexArrays(1, &vaoId);
-	if (!vaoId)
+	GLuint vaoId = 0;
 	{
-		DX_LOG(GL_Log, DX_ERROR, "Failed to create VAO")
+		glGenVertexArrays(1, &vaoId);
+		glBindVertexArray(vaoId);
+		if (!vaoId) DX_LOG(GL_Log, DX_ERROR, "Failed to create VAO")
+
+		// Bind the position VBO, assign it to position 0 on the bound VAO
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
+			DX_LOG(GL_Log, DX_TRACE, "Bound positions VBO")
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+				3 * sizeof(GLfloat), (void*)0);
+			DX_LOG(GL_Log, DX_TRACE, "Assigned positions VBO to VAO")
+
+			glEnableVertexAttribArray(0);
+			DX_LOG(GL_Log, DX_TRACE, "Enabled Position VBO Index in VAO")
+		}
+
+		// Bind the color VBO, assign it to position 1 on the bound VAO
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, colorsVboId);
+			DX_LOG(GL_Log, DX_TRACE, "Bound colors VBO")
+
+			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,
+				4 * sizeof(GLfloat), (void*)0);
+
+			glEnableVertexAttribArray(1);
+			DX_LOG(GL_Log, DX_TRACE, "Enabled Color VBO Index in VAO")
+		}
+		
+
+		// Reset the state
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+		DX_LOG(GL_Log, DX_TRACE, "Reset VAO state")
 	}
-	glBindVertexArray(vaoId);
-	DX_LOG(GL_Log, DX_TRACE, "Created and bound VAO")
-
-	// Bind the position VBO, assign it to position 0 on the bound VAO
-	// and flag it to be used
-	glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
-	DX_LOG(GL_Log, DX_TRACE, "Bound VBO")
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-		3 * sizeof(GLfloat), (void*)0);
-	DX_LOG(GL_Log, DX_TRACE, "Assigned VBO to VAO")
-
-	glEnableVertexAttribArray(0);
-	DX_LOG(GL_Log, DX_TRACE, "Enabled VAO")
-
-	// Reset the state
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	DX_LOG(GL_Log, DX_TRACE, "Reset VAO state")
 
 	// Create ShaderProgram
 	ShaderProgram shaderProgram;
-	shaderProgram.CreateProgram();
-	shaderProgram.AttachShader(Shader(GL_VERTEX_SHADER, File::Read("res/shaders/Vert.glsl")));
-	shaderProgram.AttachShader(Shader(GL_FRAGMENT_SHADER, File::Read("res/shaders/Frag.glsl")));
-	shaderProgram.LinkProgram();
-	glBindAttribLocation(shaderProgram.GetProgram(), 0, "in_Position");
+	{
+		shaderProgram.CreateProgram();
+		shaderProgram.AttachShader(Shader(GL_VERTEX_SHADER, File::Read("res/shaders/Vert.glsl")));
+		shaderProgram.AttachShader(Shader(GL_FRAGMENT_SHADER, File::Read("res/shaders/Frag.glsl")));
 
+		glBindAttribLocation(shaderProgram.GetProgramID(), 0, "a_Position");
+		glBindAttribLocation(shaderProgram.GetProgramID(), 1, "a_Color");
+
+		shaderProgram.LinkProgram();
+	}
+	
+	/*GLint colorUniformId = glGetUniformLocation(shaderProgram.GetProgramID(), "u_Color");
+	glm::vec4 color = { 0.0f, 1.0f, 0.0f, 1.0f };
+	if (colorUniformId == -1)
+		DX_LOG(GL_Log, DX_ERROR, "Enabled VAO")*/
 
 	// Main loop
 	while(m_IsRunning)
@@ -207,9 +263,13 @@ void Engine::Run()
 
 		// Triangle
 		{
-			glUseProgram(shaderProgram.GetProgram());
+			glUseProgram(shaderProgram.GetProgramID());
 			glBindVertexArray(vaoId);
 			//Draw3vertices(atriangle)
+			// ImGui::Begin("Triangle Color");
+			// ImGui::ColorEdit4("RGBA", &color[0]);
+			// ImGui::End();
+			// glUniform4f(colorUniformId, color[0], color[1], color[2], color[3]);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			//Resetthestate
 			glBindVertexArray(0);
@@ -217,7 +277,7 @@ void Engine::Run()
 		}
 
 		// Demo window
-		static bool showDemo = true;
+		static bool showDemo = false;
 		if (showDemo)
 			ImGui::ShowDemoWindow(&showDemo);
 

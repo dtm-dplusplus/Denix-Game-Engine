@@ -113,7 +113,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm\include;$(ProjectDir)contrib\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DxPch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -139,7 +139,7 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm\include;$(ProjectDir)contrib\glew\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DxPch.h</PrecompiledHeaderFile>
     </ClCompile>

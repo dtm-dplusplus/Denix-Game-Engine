@@ -17,12 +17,13 @@
 #define DX_LOG_CREATE(name) Log::CreateLogger(#name);
 #define DX_LOG(logger, level, message, ...) Log::GetLogger(#logger)->log(level, message, ##__VA_ARGS__);
 
-
 class Log
 {
 public:
 	static std::vector<std::shared_ptr<spdlog::logger>> m_Loggers;
 	static std::shared_ptr<spdlog::sinks::basic_file_sink_mt> m_FileSink;
+	static std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> m_OutputSink;
+
 
 	static std::shared_ptr<spdlog::logger> GetLogger(const std::string_view _name)
 	{
@@ -36,7 +37,8 @@ public:
 
 	static void CreateLogger(const std::string_view _name)
 	{
-		if(const std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(_name.data(), m_FileSink))
+		std::vector<spdlog::sink_ptr> sinks = { m_FileSink, m_OutputSink };
+		if (const std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(_name.data(), sinks.begin(), sinks.end()))
 		{
 			logger->set_level(spdlog::level::trace);
 			logger->set_pattern("%^[%T] [%n]: %v%$");
@@ -58,10 +60,11 @@ public:
 
 		// Create a file sink
 		m_FileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path, true);
-
+		m_OutputSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 
 		DX_LOG_CREATE(DX_Log)
 		DX_LOG(DX_Log,DX_TRACE, "Logger starting")
+		DX_LOG(DX_Log, DX_INFO, "Success!")
 	}
 
 	static void Stop()

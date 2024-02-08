@@ -25,7 +25,7 @@ public:
 	void AttachShader(const Shader& _shader);
 
 	bool LinkProgram() const;
-	GLuint GetProgram() const { return m_ShaderProgramID; }
+	GLuint GetProgramID() const { return m_ShaderProgramID; }
 private:
 	GLuint m_ShaderProgramID;
 	std::vector<Shader> m_Shaders;
