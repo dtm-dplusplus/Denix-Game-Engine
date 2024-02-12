@@ -7,17 +7,17 @@
 #include <ctime>
 #include <sstream>
 
-#define DX_TRACE spdlog::level::trace
-#define DX_DEBUG spdlog::level::debug
-#define DX_INFO spdlog::level::info
-#define DX_WARN spdlog::level::warn
-#define DX_ERROR spdlog::level::err
-#define DX_CRITICAL spdlog::level::critical
+#define Trace spdlog::level::trace
+#define Debug spdlog::level::debug
+#define Info spdlog::level::info
+#define Warn spdlog::level::warn
+#define Error spdlog::level::err
+#define Critical spdlog::level::critical
 
-#define DX_LOG_CREATE(name) Log::CreateLogger(#name);
-#define DX_LOG(logger, level, message, ...) Log::GetLogger(#logger)->log(level, message, ##__VA_ARGS__);
+#define DE_LOG_CREATE(name) DeLog::CreateLogger(#name);
+#define DE_LOG(logger, level, message, ...) DeLog::GetLogger(#logger)->log(level, message, ##__VA_ARGS__);
 
-class Log
+class DeLog final
 {
 public:
 	static std::vector<std::shared_ptr<spdlog::logger>> m_Loggers;
@@ -44,32 +44,42 @@ public:
 			logger->set_pattern("%^[%T] [%n]: %v%$");
 			logger->flush_on(spdlog::level::trace);
 			m_Loggers.push_back(logger);
+
+			// Atomic error
+			// DE_LOG(_name.data(), Trace, "Created logger: %s", _name.data())
+		}
+		else
+		{
+			DE_LOG(log, Error, "Failed to create logger: %s", _name.data())
 		}
 	}
 
 	static void Start()
 	{
-		// Get Date time
-		auto t = std::time(nullptr);
-		auto tm = *std::localtime(&t);
+		// Get Date time - Need to abstract this in the future
+		const auto t = std::time(nullptr);
+		const auto tm = *std::localtime(&t);
 
 		std::ostringstream ossDateTime;
 		ossDateTime << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
 
+		// Should be stored in a config file/ class variable
 		std::string path = "Saved\\Logs\\" + ossDateTime.str() + "\\logfile.txt";
 
-		// Create a file sink
+		// Create file sink & output sink
 		m_FileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path, true);
 		m_OutputSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 
-		DX_LOG_CREATE(DX_Log)
-		DX_LOG(DX_Log,DX_TRACE, "Logger starting")
-		DX_LOG(DX_Log, DX_INFO, "Success!")
+		// Default log catergories Should be stored in a config file
+		DE_LOG_CREATE(Log)
+		DE_LOG_CREATE(LogGL)
+		DE_LOG_CREATE(LogShader)
+		DE_LOG(Log, Trace, " Denix Engine Logger starting")
 	}
 
 	static void Stop()
 	{
-		DX_LOG(DX_Log,DX_TRACE, "Logger stopping")
+		// DE_LOG(DX_Log,Trace, "Logger stopping")
 
 		//spdlog::shutdown();
 	}

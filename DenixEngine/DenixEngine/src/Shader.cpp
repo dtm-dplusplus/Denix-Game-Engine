@@ -1,8 +1,8 @@
-#include "DxPch.h"
+#include "DePch.h"
 #include "Shader.h"
 #include "File.h"
 
-Shader::Shader(): m_ShaderID(0)
+Shader::Shader() : m_ShaderID{0}
 {
 }
 
@@ -33,14 +33,14 @@ GLuint Shader::CompileShader(const GLenum _type, const std::string_view _src)
         {
             GLchar infoLog[512];
             glGetShaderInfoLog(shader, 512, NULL, infoLog);
-            DX_LOG(DX_Log, DX_ERROR, "Shader Compilation Fail: %s", infoLog)
+            DE_LOG(LogShader, Error, "Shader Compilation Fail: %s", infoLog)
             return 0;
         }
         
         return m_ShaderID;
     }
 
-    DX_LOG(DX_Log, DX_ERROR, "Failed to create shader\n")
+    DE_LOG(Log, Error, "Failed to create shader\n")
     return 0;
 }
 
@@ -55,7 +55,7 @@ GLuint ShaderProgram::CreateProgram()
 
     if (!m_ShaderProgramID)
     {
-        DX_LOG(DX_Log, DX_ERROR, "Failed to create shader program")
+        DE_LOG(Log, Error, "Failed to create shader program")
         return 0;
     }
 
@@ -78,7 +78,7 @@ bool ShaderProgram::LinkProgram() const
     {
         GLchar infoLog[512];
         glGetProgramInfoLog(m_ShaderProgramID, 512, NULL, infoLog);
-        DX_LOG(DX_Log, DX_ERROR, "Shader Program Link Fail: %s", infoLog)
+        DE_LOG(Log, Error, "Shader Program Link Fail: %s", infoLog)
         return false;
     }
 

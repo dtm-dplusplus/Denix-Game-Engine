@@ -115,7 +115,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>DxPch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,7 +141,7 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>DxPch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -166,6 +166,7 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClCompile Include="contrib\imgui\imgui_draw.cpp" />
     <ClCompile Include="contrib\imgui\imgui_tables.cpp" />
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\GLObject.cpp" />
     <ClCompile Include="src\Shader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -174,21 +175,22 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Log.cpp">
+    <ClCompile Include="src\DeLog.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\DxPch.cpp">
+    <ClCompile Include="src\DePch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DxPch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DePch.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DxPch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DePch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="src\Engine.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
@@ -199,11 +201,13 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\GLObject.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\File.h" />
-    <ClInclude Include="src\Log.h" />
-    <ClInclude Include="src\DxPch.h" />
+    <ClInclude Include="src\DeLog.h" />
+    <ClInclude Include="src\DePch.h" />
     <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Frag.glsl" />

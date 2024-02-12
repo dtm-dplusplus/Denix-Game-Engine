@@ -1,4 +1,4 @@
-#include "DxPch.h"
+#include "DePch.h"
 #include "File.h"
 
 #include <filesystem>
@@ -24,7 +24,7 @@ std::string File::Read(const std::string_view _path)
 	 std::ofstream stream(_path.data());
 	 if (!stream.is_open())
 	 {
-		 DX_LOG(DX_Log, DX_ERROR, "Failed to open file: {0}", _path);
+		 DE_LOG(Log, Error, "Failed to open file: {0}", _path);
 		 return false;
 	 }
 

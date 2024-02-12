@@ -23,10 +23,10 @@
     <ClCompile Include="src\Engine.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\DxPch.cpp">
+    <ClCompile Include="src\DePch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Log.cpp">
+    <ClCompile Include="src\DeLog.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\File.cpp">
@@ -56,12 +56,18 @@
     <ClCompile Include="contrib\imgui\imgui_tables.cpp">
       <Filter>contrib\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="src\VertexBuffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Shader.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\DxPch.h">
+    <ClInclude Include="src\DePch.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine.h">
@@ -70,7 +76,7 @@
     <ClInclude Include="src\File.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Log.h">
+    <ClInclude Include="src\DeLog.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="contrib\imgui\imgui.h">
@@ -96,6 +102,12 @@
     </ClInclude>
     <ClInclude Include="contrib\imgui\imstb_truetype.h">
       <Filter>contrib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GLObject.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexBuffer.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
