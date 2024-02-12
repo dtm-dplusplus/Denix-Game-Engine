@@ -15,6 +15,12 @@
     <Filter Include="contrib\imgui">
       <UniqueIdentifier>{d72a7525-9890-493b-852c-bdd3f027d11a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Video">
+      <UniqueIdentifier>{19b1b901-d4b8-43e2-88c2-151a8f1982cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Video\GL">
+      <UniqueIdentifier>{ebf94400-6011-430a-a689-83db897bf1d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -30,9 +36,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\File.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Shader.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp">
@@ -56,17 +59,20 @@
     <ClCompile Include="contrib\imgui\imgui_tables.cpp">
       <Filter>contrib\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\VertexBuffer.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="src\Video\GL\GLObject.cpp">
+      <Filter>src\Video\GL</Filter>
     </ClCompile>
-    <ClCompile Include="src\GLObject.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="src\Video\GL\Shader.cpp">
+      <Filter>src\Video\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Video\GL\VertexBuffer.cpp">
+      <Filter>src\Video\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Video\GL\VertexArray.cpp">
+      <Filter>src\Video\GL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Shader.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\DePch.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -103,11 +109,17 @@
     <ClInclude Include="contrib\imgui\imstb_truetype.h">
       <Filter>contrib\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\GLObject.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\Video\GL\GLObject.h">
+      <Filter>src\Video\GL</Filter>
     </ClInclude>
-    <ClInclude Include="src\VertexBuffer.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\Video\GL\Shader.h">
+      <Filter>src\Video\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Video\GL\VertexBuffer.h">
+      <Filter>src\Video\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Video\GL\VertexArray.h">
+      <Filter>src\Video\GL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

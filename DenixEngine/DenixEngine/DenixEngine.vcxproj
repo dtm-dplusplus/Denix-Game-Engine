@@ -113,7 +113,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -139,7 +139,7 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -166,8 +166,8 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClCompile Include="contrib\imgui\imgui_draw.cpp" />
     <ClCompile Include="contrib\imgui\imgui_tables.cpp" />
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\GLObject.cpp" />
-    <ClCompile Include="src\Shader.cpp">
+    <ClCompile Include="src\Video\GL\GLObject.cpp" />
+    <ClCompile Include="src\Video\GL\Shader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
@@ -190,7 +190,8 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\VertexBuffer.cpp" />
+    <ClCompile Include="src\Video\GL\VertexArray.cpp" />
+    <ClCompile Include="src\Video\GL\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
@@ -201,13 +202,14 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\GLObject.h" />
-    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\Video\GL\GLObject.h" />
+    <ClInclude Include="src\Video\GL\Shader.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\DeLog.h" />
     <ClInclude Include="src\DePch.h" />
     <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\VertexBuffer.h" />
+    <ClInclude Include="src\Video\GL\VertexArray.h" />
+    <ClInclude Include="src\Video\GL\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Frag.glsl" />

@@ -15,7 +15,7 @@
 #define Critical spdlog::level::critical
 
 #define DE_LOG_CREATE(name) DeLog::CreateLogger(#name);
-#define DE_LOG(logger, level, message, ...) DeLog::GetLogger(#logger)->log(level, message, ##__VA_ARGS__);
+#define DE_LOG(logger, level, ...) DeLog::GetLogger(#logger)->log(level, ##__VA_ARGS__);
 
 class DeLog final
 {
@@ -50,7 +50,7 @@ public:
 		}
 		else
 		{
-			DE_LOG(log, Error, "Failed to create logger: %s", _name.data())
+			DE_LOG(log, Error, "Failed to create logger: {}", _name.data())
 		}
 	}
 

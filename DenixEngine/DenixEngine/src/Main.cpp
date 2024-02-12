@@ -1,12 +1,10 @@
 #include "Engine.h"
+#include <memory>
 
 int main(int argc, char* args[])
 {
-	Engine* engine = new Engine();
-
+	const std::unique_ptr<Engine> engine = std::make_unique<Engine>();
 	engine->Run();
-
-	delete engine;
 
 	return 0;
 }
