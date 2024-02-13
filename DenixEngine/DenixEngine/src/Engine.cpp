@@ -121,50 +121,6 @@ void Engine::Run()
 {
 	if(!Start()) throw std::exception();
 
-	const GLfloat positions[] = {
-		0.0f, 0.5f, 0.0f,
-		-0.5f,-0.5f, 0.0f,
-		0.5f,-0.5f, 0.0f
-	};
-
-	const GLfloat colors[] = {
-	  1.0f, 0.0f, 0.0f, 1.0f,
-	  0.0f, 1.0f, 0.0f, 1.0f,
-	  0.0f, 0.0f, 1.0f, 1.0f,
-	};
-
-	// VBO creation
-	const VertexBuffer positionsVB(positions, sizeof(positions));
-	const VertexBuffer colorVB(colors, sizeof(colors));
-
-	// Create a new VAO on the GPU and bind it
-	const std::unique_ptr<VertexArray> vao = std::make_unique<VertexArray>();
-	vao->GenVertexArray();
-	vao->Bind();
-
-	// Bind the vbos & attrivbs
-	positionsVB.Bind();
-	vao->AttribPtr(0, 3, GL_FLOAT);
-
-	colorVB.Bind();
-	vao->AttribPtr(1, 4, GL_FLOAT);
-
-	// Reset the state
-	VertexBuffer::Unbind();
-	VertexArray::Unbind();
-
-	// Create ShaderProgram
-	const std::unique_ptr<ShaderProgram> shaderProgram = std::make_unique<ShaderProgram>();
-	shaderProgram->CreateProgram();
-	shaderProgram->CompileShader(GL_VERTEX_SHADER, File::Read("res/shaders/Vert.glsl"));
-	shaderProgram->CompileShader(GL_FRAGMENT_SHADER, File::Read("res/shaders/Frag.glsl"));
-	shaderProgram->AttachShaders();
-
-	shaderProgram->BindAttrib(0, "a_Position");
-	shaderProgram->BindAttrib(1, "a_Color");
-
-	if(!shaderProgram->LinkProgram()) DE_LOG(LogGL, Error, "Link program failed")
-
 	// Main loop
 	while(m_IsRunning)
 	{
@@ -189,12 +145,9 @@ void Engine::Run()
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		// Triangle - Move to scene class
-		shaderProgram->Bind();
-		vao->Bind();
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		VertexArray::Unbind();
-		ShaderProgram::Unbind();
+		// Update Project Scene here
+
+		// Render Project Scene here
 
 		// Render - Move to Render Class/UI Class
 		ImGui::Render();
