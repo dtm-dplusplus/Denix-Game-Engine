@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 class Engine
 {
 public:
@@ -12,10 +14,6 @@ public:
 	void Run();
 
 private:
-	bool m_IsRunning;
 
-	struct SDL_Window* m_Window;
-
-	int m_WinX;
-	int m_WinY;
+	std::shared_ptr<class Window> m_Window;
 };

@@ -192,6 +192,10 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Video\GL\VertexArray.cpp" />
     <ClCompile Include="src\Video\GL\VertexBuffer.cpp" />
+    <ClCompile Include="src\Video\Window.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
@@ -210,6 +214,7 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Video\GL\VertexArray.h" />
     <ClInclude Include="src\Video\GL\VertexBuffer.h" />
+    <ClInclude Include="src\Video\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Frag.glsl" />

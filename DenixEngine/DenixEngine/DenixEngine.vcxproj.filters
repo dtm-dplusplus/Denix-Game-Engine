@@ -71,6 +71,9 @@
     <ClCompile Include="src\Video\GL\VertexArray.cpp">
       <Filter>src\Video\GL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Video\Window.cpp">
+      <Filter>src\Video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DePch.h">
@@ -120,6 +123,9 @@
     </ClInclude>
     <ClInclude Include="src\Video\GL\VertexArray.h">
       <Filter>src\Video\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Video\Window.h">
+      <Filter>src\Video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

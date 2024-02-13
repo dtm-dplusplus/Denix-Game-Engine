@@ -73,14 +73,15 @@ public:
 		// Default log catergories Should be stored in a config file
 		DE_LOG_CREATE(Log)
 		DE_LOG_CREATE(LogGL)
+		DE_LOG_CREATE(LogWindow)
 		DE_LOG_CREATE(LogShader)
-		DE_LOG(Log, Trace, " Denix Engine Logger starting")
+		DE_LOG(Log, Trace, "Logger starting")
 	}
 
 	static void Stop()
 	{
-		// DE_LOG(DX_Log,Trace, "Logger stopping")
-
-		//spdlog::shutdown();
+		DE_LOG(Log,Trace, "Logger stopping")
+		m_Loggers.clear();
+		spdlog::shutdown();
 	}
 };
