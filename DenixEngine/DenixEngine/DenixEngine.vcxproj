@@ -166,6 +166,10 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClCompile Include="contrib\imgui\imgui_draw.cpp" />
     <ClCompile Include="contrib\imgui\imgui_tables.cpp" />
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Scene\Scene.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Video\GL\GLObject.cpp" />
     <ClCompile Include="src\Video\GL\Shader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -206,6 +210,7 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
     <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Video\GL\GLObject.h" />
     <ClInclude Include="src\Video\GL\Shader.h" />
     <ClInclude Include="src\File.h" />
@@ -219,6 +224,8 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
   <ItemGroup>
     <None Include="res\shaders\Frag.glsl" />
     <None Include="res\shaders\Vert.glsl" />
+    <None Include="res\shaders\UniFrag.glsl" />
+    <None Include="res\shaders\UniVert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

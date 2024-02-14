@@ -4,15 +4,14 @@
 #include <SDL.h>
 #include <GL/glew.h>
 
-#include "File.h"
-#include "Video/GL/VertexBuffer.h"
-#include "Video/GL/Shader.h"
+#include "Video/Window.h"
+#include "Scene/Scene.h"
 
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
-#include "Video/Window.h"
-#include "Video/GL/VertexArray.h"
+
+
 
 Engine::Engine(): m_Window{nullptr}
 {
@@ -104,6 +103,9 @@ void Engine::Run()
 {
 	if(!Start()) throw std::exception();
 
+	// Load Example Scene
+	std::unique_ptr<Scene> scene = std::make_unique<TriangleScene>();
+
 	while(m_Window->m_IsOpen)
 	{
 		m_Window->PollEvents();
@@ -111,8 +113,8 @@ void Engine::Run()
 		m_Window->ClearBuffer();
 
 		// Update Project Scene here
-
-		// Draw Project Scene here
+		scene->Update();
+		scene->Draw();
 
 		m_Window->SwapBuffers();
 	}

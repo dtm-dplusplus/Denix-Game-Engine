@@ -7,11 +7,11 @@ class VertexBuffer final : public GLObject
 {
 public:
 	VertexBuffer() = default;
-	VertexBuffer(const void* _data, const GLuint _size)
+	VertexBuffer(const void* _data, const GLuint _size, const GLuint _count, const GLenum _type)
 	{
 		GenVertexBuffer();
 		Bind();
-		BufferData(_data, _size);
+		BufferData(_data, _size, _count, _type);
 		Unbind();
 	}
 
@@ -34,8 +34,10 @@ public:
 	void Bind() const { glBindBuffer(GL_ARRAY_BUFFER, m_glID); }
 	static void Unbind() { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
-	void BufferData(const void* _data, const GLuint _size) 
-	{ 
+	void BufferData(const void* _data, const GLuint _size, const GLuint _count, const GLenum _type)
+	{
+		m_Type = _type;
+		m_AttribPerVert = _count;
 		glBufferData(GL_ARRAY_BUFFER, _size, _data, GL_STATIC_DRAW); 
 
 		if(BufferSize()) DE_LOG(LogGL, Trace, "Uploaded data to VBO ID: {}", m_glID)
@@ -50,4 +52,15 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		return size;
 	}
+
+	GLuint GetAttribPerVert() const { return m_AttribPerVert; }
+
+	GLenum GetType() const { return m_Type; }
+private:
+
+	// Type of data stored in buffer, e.g. GL_FLOAT
+	GLenum m_Type;
+
+	// Number of attributes per vertex
+	GLuint m_AttribPerVert;
 };

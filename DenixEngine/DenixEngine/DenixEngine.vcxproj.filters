@@ -21,6 +21,9 @@
     <Filter Include="src\Video\GL">
       <UniqueIdentifier>{ebf94400-6011-430a-a689-83db897bf1d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Scene">
+      <UniqueIdentifier>{1810f3ad-af90-443e-8773-9d0ef86652bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -73,6 +76,9 @@
     </ClCompile>
     <ClCompile Include="src\Video\Window.cpp">
       <Filter>src\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Scene.cpp">
+      <Filter>src\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -127,12 +133,21 @@
     <ClInclude Include="src\Video\Window.h">
       <Filter>src\Video</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scene\Scene.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Vert.glsl">
       <Filter>res</Filter>
     </None>
     <None Include="res\shaders\Frag.glsl">
+      <Filter>res</Filter>
+    </None>
+    <None Include="res\shaders\UniVert.glsl">
+      <Filter>res</Filter>
+    </None>
+    <None Include="res\shaders\UniFrag.glsl">
       <Filter>res</Filter>
     </None>
   </ItemGroup>

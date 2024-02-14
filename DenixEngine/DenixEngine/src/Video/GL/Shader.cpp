@@ -25,6 +25,7 @@ std::unique_ptr<Shader> ShaderProgram::CompileShader(const GLenum _type, const s
             return nullptr;
         }
 
+        DE_LOG(LogShader, Trace, "Shader Compilation Success: {}", shader->m_glID)
         m_Shaders.push_back(std::move(shader));
         return shader;
     }
@@ -32,6 +33,8 @@ std::unique_ptr<Shader> ShaderProgram::CompileShader(const GLenum _type, const s
     DE_LOG(Log, Error, "Failed to create shader\n")
     return nullptr;
 }
+
+
 
 GLuint ShaderProgram::CreateProgram()
 {
