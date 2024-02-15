@@ -1,8 +1,10 @@
 #include "DePch.h"
 #include "Scene.h"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "File.h"
+#include "imgui_internal.h"
 #include "Video/GL/VertexBuffer.h"
 #include "Video/GL/VertexArray.h"
 #include "Video/GL/Shader.h"
@@ -175,7 +177,6 @@ void Lab3::Update()
 
 	// Increase the float angle so next frame the triangle rotates further
 	Angle += RotSpeed;
-
 }
 
 void Lab3::Draw()

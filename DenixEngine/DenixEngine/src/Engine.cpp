@@ -13,7 +13,7 @@
 
 
 
-Engine::Engine(): m_Window{nullptr}
+Engine::Engine()
 {
 }
 

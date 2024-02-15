@@ -124,9 +124,8 @@
       <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "$(OutDir)glew32.dll" xcopy /y "$(ProjectDir)glew32.dll" "$(OutDir)"
-
-xcopy /y "$(ProjectDir)res" "$(OutDir)"
+      <Command>XCOPY "$(ProjectDir)res" "$(TargetDir)res\" /S /Y
+if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -152,9 +151,8 @@ xcopy /y "$(ProjectDir)res" "$(OutDir)"
       <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "$(OutDir)glew32.dll" xcopy /y "$(ProjectDir)glew32.dll" "$(OutDir)"
-
-xcopy /y "$(ProjectDir)res" "$(OutDir)"
+      <Command>XCOPY "$(ProjectDir)res" "$(TargetDir)res\" /S /Y
+if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
