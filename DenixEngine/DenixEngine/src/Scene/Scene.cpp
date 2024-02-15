@@ -8,7 +8,6 @@
 #include "Video/GL/Shader.h"
 
 TriangleScene::TriangleScene(): Scene("Triangle Uniform")
-	
 {
 	const GLfloat positions[] = {
 		0.0f, 0.5f, 0.0f,
@@ -26,7 +25,7 @@ TriangleScene::TriangleScene(): Scene("Triangle Uniform")
 
 	// Bind the vbos & attrivbs
 	Vbo->Bind();
-	Vao->AttribPtr(0,Vbo->GetAttribPerVert(), GL_FLOAT);
+	Vao->AttribPtr(Vbo->GetAttribPerVert(), GL_FLOAT);
 
 	// Reset the state
 	VertexBuffer::Unbind();

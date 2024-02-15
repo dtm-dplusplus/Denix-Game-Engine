@@ -27,12 +27,16 @@ public:
 	void Bind() const { glBindVertexArray(m_glID); }
 	static void Unbind() { glBindVertexArray(0); }
 
-	void AttribPtr(const GLuint _index, const GLint _size, const GLenum _type,
+	void AttribPtr(const GLint _size, const GLenum _type,
 	               const GLboolean _normalized = false,
 	               const void* _ptr = (void*)0)
 	{
-		const GLsizei stride = _size * sizeof(_type);
-		glVertexAttribPointer(_index, _size, _type, _normalized, stride, _ptr);
-		glEnableVertexAttribArray(_index);
+		m_Stride += _size * sizeof(_type);
+		glVertexAttribPointer(m_Index, _size, _type, _normalized, m_Stride, _ptr);
+		glEnableVertexAttribArray(m_Index++); // Increment index for next attrib
 	}
+
+private:
+	GLsizei m_Stride = 0;
+	GLuint m_Index = 0;
 };
