@@ -10,10 +10,7 @@ public:
 
 	~VertexArray() override
 	{
-		glDeleteVertexArrays(1, &m_glID);
-
-		if (!m_glID) DE_LOG(LogGL, Trace, "Deleted VAO ID: {}", m_glID)
-		else DE_LOG(LogGL, Error, "Failed to delete")
+		if(m_glID) glDeleteVertexArrays(1, &m_glID);
 	}
 
 	void GenVertexArray() 

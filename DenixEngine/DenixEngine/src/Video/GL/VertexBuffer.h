@@ -17,10 +17,7 @@ public:
 
 	~VertexBuffer() override
 	{
-		glDeleteBuffers(1, &m_glID);
-
-		if (!m_glID) DE_LOG(LogGL, Trace, "Deleted VBO ID: {}", m_glID)
-		else DE_LOG(LogGL, Error, "Failed to delete VBO")
+		if(m_glID) glDeleteBuffers(1, &m_glID);
 	}
 
 	void GenVertexBuffer() 
