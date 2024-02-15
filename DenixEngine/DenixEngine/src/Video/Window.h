@@ -26,8 +26,8 @@ protected:
 	std::string m_Title;
 
 	// Will be floats when moving to SDL3
-	float m_WinX;
-	float m_WinY;
+	int m_WinX;
+	int m_WinY;
 
 	friend class Engine;
 };

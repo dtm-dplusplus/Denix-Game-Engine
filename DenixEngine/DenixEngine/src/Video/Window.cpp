@@ -38,15 +38,19 @@ bool Window::Start(const SDL_WindowFlags _flags)
 		return false;
 	}
 
+	// Enable Vsync
 	if(SDL_GL_SetSwapInterval(1) < 0)
 	{
 		DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
 		return false;
 	}
 
+	// Set Viewport
+	glViewport(0, 0, m_WinX, m_WinY);
+
 	m_IsOpen = true;
 
-	DE_LOG(LogWindow, Info, "Create Window: {} success!", m_Title)
+	DE_LOG(LogWindow, Info, "Create Window: {} success! Res: {}x{}", m_Title, m_WinX, m_WinY)
 
 	return true;
 }
@@ -85,8 +89,41 @@ void Window::PollEvents()
 	{
 		ImGui_ImplSDL2_ProcessEvent(&e);
 
-		if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_CLOSE
-			&& e.window.windowID == SDL_GetWindowID(m_SDL_Window))
-			m_IsOpen = false;
+		if (e.type == SDL_WINDOWEVENT)
+		{
+			switch (e.window.event)
+			{
+				case SDL_WINDOWEVENT_CLOSE: // Additioanl CHeck e.window.windowID == SDL_GetWindowID(m_SDL_Window)
+				{
+					m_IsOpen = false;
+					DE_LOG(LogWindow, Trace, "Window Close Event")
+				}
+				break;
+
+				case SDL_WINDOW_MINIMIZED:
+				{
+					DE_LOG(LogWindow, Trace, "Window Minimized Event")
+				}
+				break;
+
+				case SDL_WINDOW_MAXIMIZED:
+				{
+					DE_LOG(LogWindow, Trace, "Window Maximized Event")
+				}
+				break;
+
+				case SDL_WINDOWEVENT_RESIZED:
+				{
+					m_WinX = e.window.data1;
+					m_WinY = e.window.data2;
+					glViewport(0, 0, m_WinX, m_WinY);
+
+					DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", m_WinX, m_WinY)
+				}
+				break;
+
+				default : break;
+			}
+		}
 	}
 }
