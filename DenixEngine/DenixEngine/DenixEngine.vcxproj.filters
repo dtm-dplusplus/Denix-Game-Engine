@@ -137,18 +137,4 @@
       <Filter>src\Scene</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="res\shaders\UniVert.glsl">
-      <Filter>res</Filter>
-    </None>
-    <None Include="res\shaders\UniFrag.glsl">
-      <Filter>res</Filter>
-    </None>
-    <None Include="res\shaders\TexVert.glsl">
-      <Filter>res</Filter>
-    </None>
-    <None Include="res\shaders\TexFrag.glsl">
-      <Filter>res</Filter>
-    </None>
-  </ItemGroup>
 </Project>

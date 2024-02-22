@@ -48,6 +48,7 @@ bool ShaderProgram::LinkProgram() const
     }
 
     DetachShaders();
+    DE_LOG(LogShader, Trace, "Shader Program Link Success")
 
-    return true;
+	return true;
 }
