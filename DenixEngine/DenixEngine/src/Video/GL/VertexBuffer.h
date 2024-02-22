@@ -7,12 +7,12 @@ class VertexBuffer final : public GLObject
 {
 public:
 	VertexBuffer() = default;
-	VertexBuffer(const void* _data, const GLuint _size, const GLuint _count, const GLenum _type)
+	VertexBuffer(const void* _data, const GLsizei _size, const GLuint _count, const GLenum _type, const GLenum _target)
 	{
 		GenVertexBuffer();
-		Bind();
-		BufferData(_data, _size, _count, _type);
-		Unbind();
+		Bind(_target);
+		BufferData(_data, _size, _count, _type, _target);
+		Unbind(_target);
 	}
 
 	~VertexBuffer() override
@@ -28,36 +28,49 @@ public:
 		else DE_LOG(LogGL, Error, "Failed to create VBO")
 	}
 
-	void Bind() const { glBindBuffer(GL_ARRAY_BUFFER, m_glID); }
-	static void Unbind() { glBindBuffer(GL_ARRAY_BUFFER, 0); }
+	void Bind(GLenum _target) const { glBindBuffer(_target, m_glID); }
+	static void Unbind(GLenum _target) { glBindBuffer(_target, 0); }
 
-	void BufferData(const void* _data, const GLuint _size, const GLuint _count, const GLenum _type)
+	void BufferData(const void* _data, const GLsizei _size, const GLuint _count, const GLenum _type, const GLenum _target)
 	{
 		m_Type = _type;
-		m_AttribPerVert = _count;
-		glBufferData(GL_ARRAY_BUFFER, _size, _data, GL_STATIC_DRAW); 
+		m_Target = _target;
+		m_Size = _size;
+		m_Count = _count;
+		glBufferData(_target, _size, _data, GL_STATIC_DRAW);
 
-		if(BufferSize()) DE_LOG(LogGL, Trace, "Uploaded data to VBO ID: {}", m_glID)
+		if(BufferSize(_target)) DE_LOG(LogGL, Trace, "Uploaded data to VBO ID: {}", m_glID)
 		else DE_LOG(LogGL, Error, "Failed to upload data to VBO ID: {}", m_glID)
 	}
 
-	GLuint BufferSize() const
+	GLsizei BufferSize(GLenum _target) const
 	{
-		GLint size = 0;
-		glBindBuffer(GL_ARRAY_BUFFER, m_glID);
-		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		GLsizei size = 0;
+		glBindBuffer(_target, m_glID);
+		glGetBufferParameteriv(_target, GL_BUFFER_SIZE, &size);
+		glBindBuffer(_target, 0);
 		return size;
 	}
 
-	GLuint GetAttribPerVert() const { return m_AttribPerVert; }
+	GLuint GetAttribPerVert() const { return m_Count; }
 
 	GLenum GetType() const { return m_Type; }
+
+	GLsizei GetSize() const { return m_Size; }
+
+	GLuint GetCount() const { return m_Count; }
+
 private:
 
 	// Type of data stored in buffer, e.g. GL_FLOAT
 	GLenum m_Type;
 
+	// Target of buffer, e.g. GL_ARRAY_BUFFER
+	GLenum m_Target;
+
+	// Size of data stored in buffer
+	GLsizei m_Size;
+
 	// Number of attributes per vertex
-	GLuint m_AttribPerVert;
+	GLuint m_Count;
 };

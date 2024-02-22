@@ -113,7 +113,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\stb;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -138,7 +138,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\stb;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -220,8 +220,6 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="src\Video\Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\Frag.glsl" />
-    <None Include="res\shaders\Vert.glsl" />
     <None Include="res\shaders\UniFrag.glsl" />
     <None Include="res\shaders\UniVert.glsl" />
   </ItemGroup>

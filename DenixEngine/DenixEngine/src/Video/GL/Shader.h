@@ -56,9 +56,9 @@ public:
 			glCompileShader(shader->m_glID);
 
 			// Check for errors
-			if(!ErrorCheck())
+			if(!ErrorCheck(shader->m_glID))
 			{
-				DE_LOG(LogShader, Trace, "Shader Compilation Error: {}", m_glID)
+				DE_LOG(LogShader, Trace, "Shader Compilation Error: {}", shader->m_glID)
 				return nullptr;
 			}
 
@@ -113,14 +113,14 @@ private:
 
 	std::vector<std::shared_ptr<Shader>> m_Shaders;
 
-	bool ErrorCheck() const
+	bool ErrorCheck(GLuint _ID) const
 	{
 		GLint result;
-		glGetShaderiv(m_glID, GL_COMPILE_STATUS, &result);
+		glGetShaderiv(_ID, GL_COMPILE_STATUS, &result);
 		if (!result)
 		{
 			GLchar infoLog[512];
-			glGetShaderInfoLog(m_glID, 512, NULL, infoLog);
+			glGetShaderInfoLog(_ID, 512, NULL, infoLog);
 			DE_LOG(LogShader, Error, "Shader Error: {}", infoLog)
 			return false;
 		}

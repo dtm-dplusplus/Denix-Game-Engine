@@ -24,7 +24,7 @@ public:
 	void Bind() const { glBindVertexArray(m_glID); }
 	static void Unbind() { glBindVertexArray(0); }
 
-	void AttribPtr(const GLint _size, const GLenum _type,
+	void AttribPtr(const GLsizei _size, const GLenum _type,
 	               const GLboolean _normalized = false,
 	               const void* _ptr = (void*)0)
 	{
