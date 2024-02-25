@@ -12,7 +12,7 @@
 #include <stb_image.h>
 
 
-////////////// Lab2 Triangle ////////////////////////
+////////////// Lab2 ////////////////////////
 Lab2::Lab2(): Scene("Triangle Uniform")
 {
 	const GLfloat data[] = {
@@ -79,7 +79,74 @@ void Lab2::Draw()
 	ShaderProgram::Unbind();
 }
 
+Lab2Sq::Lab2Sq() : Scene("Square")
+{
+	const GLfloat data[] = {
+		-0.5f, 0.5f, 0.0f, // top left point
+	0.5f, 0.5f, 0.0f, // top right point
+	0.5f, -0.5f, 0.0f, // bottom right point
+	0.5f, -0.5f, 0.0f, // bottom right point
+	-0.5f, -0.5f, 0.0f, // bottom left point
+	- 0.5f, 0.5f, 0.0f // top left point
+	};
 
+	// VBO creation
+	Vbo = std::make_shared<VertexBuffer>
+		(GL_ARRAY_BUFFER, sizeof(data), data, 3, GL_FLOAT);
+
+	// Create a new VAO on the GPU and bind it
+	Vao = std::make_shared<VertexArray>();
+	Vao->GenVertexArray();
+	Vao->Bind();
+
+	// Bind the vbos & attrivbs
+	Vbo->Bind(GL_ARRAY_BUFFER);
+	Vao->AttribPtr(Vbo->GetCount(), GL_FLOAT);
+
+	// Reset the state
+	VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+	VertexArray::Unbind();
+
+	// Create ShaderProgram
+	Program = std::make_shared<ShaderProgram>();
+	Program->CreateProgram();
+	Program->CompileShader(GL_VERTEX_SHADER, File::Read("res/shaders/Vert.glsl"));
+	Program->CompileShader(GL_FRAGMENT_SHADER, File::Read("res/shaders/UniFrag.glsl"));
+	Program->AttachShaders();
+
+	Program->BindAttrib(0, "a_Position");
+	Program->LinkProgram();
+
+	// Check if the uniform exists
+	ColorUniformId = Program->GetUniform("u_Color");
+	Color = { 1.0f, 0.0f, 0.0f, 1.0f };
+}
+
+Lab2Sq::~Lab2Sq()
+{
+
+}
+
+void Lab2Sq::Update()
+{
+	// Update UI
+	ImGui::Begin("Triangle Color");
+	ImGui::ColorEdit4("RGBA", &Color[0]);
+	ImGui::End();
+}
+
+void Lab2Sq::Draw()
+{
+	// Move this to renderer in the future
+	Program->Bind();
+	Vao->Bind();
+
+	glUniform4fv(ColorUniformId, 1, &Color[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	VertexArray::Unbind();
+	ShaderProgram::Unbind();
+}
 
 ////////////// Lab3 Matrices ////////////////////////
 Lab3::Lab3()
@@ -206,17 +273,13 @@ void Lab3::Draw()
 ////////////// Lab4 Textures ////////////////////////
 Lab4::Lab4()
 {
-	
-
-    float positions[] = {
-		// Triangle 1		
-		0.0f, -0.5f, 0.0f,
-		1.0f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f,
-		//Triangle 2
-		0.0f, 0.5f, 0.0f,
-		1.0f, -0.5f, 0.0f,
-		1.0f, 0.5f, 0.0f
+	const GLfloat positions[] = {
+		-0.5f, 0.5f, 0.0f, // top left point
+		0.5f, 0.5f, 0.0f, // top right point
+		0.5f, -0.5f, 0.0f, // bottom right point
+		0.5f, -0.5f, 0.0f, // bottom right point
+		-0.5f, -0.5f, 0.0f, // bottom left point
+		-0.5f, 0.5f, 0.0f // top left point
 	};
 
     float coords[] = {
@@ -359,7 +422,7 @@ void Lab4::Draw()
 
 	// U[load the texture uniform
 	glUniform1d(TextureUniformId, 1);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 

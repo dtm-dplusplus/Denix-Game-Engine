@@ -49,6 +49,27 @@ private:
 	glm::vec4 Color;
 };
 
+class Lab2Sq final : public Scene
+{
+public:
+
+	// We forward declare our GL classes so the ctor/dtor must be defined in the cpp file+
+	Lab2Sq();
+	~Lab2Sq() override;
+
+	void Update() override;
+
+	void Draw() override;
+
+private:
+	std::shared_ptr<VertexArray> Vao;
+	std::shared_ptr<VertexBuffer> Vbo;
+	std::shared_ptr<ShaderProgram> Program;
+
+	GLint ColorUniformId;
+	glm::vec4 Color;
+};
+
 class Lab3 final : public Scene
 {
 public:

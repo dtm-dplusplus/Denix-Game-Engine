@@ -104,7 +104,7 @@ void Engine::Run()
 	if(!Start()) throw std::exception();
 
 	// Load Example Scene
-	std::unique_ptr<Scene> scene = std::make_unique<Lab3>();
+	std::unique_ptr<Scene> scene = std::make_unique<Lab4>();
 
 	while(m_Window->m_IsOpen)
 	{
