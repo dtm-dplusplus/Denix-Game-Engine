@@ -11,8 +11,6 @@ void UISubSystem::Initialize()
 {
 	const Engine& engine = Engine::Get();
 
-	if(!engine.GetEngineWindow()) throw std::exception();
-
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -26,6 +24,8 @@ void UISubSystem::Initialize()
 	// Setup Platform/Renderer backends
 	ImGui_ImplSDL2_InitForOpenGL(engine.GetEngineWindow()->GetSDLWindow(), SDL_GL_GetCurrentContext());
 	ImGui_ImplOpenGL3_Init(engine.GetWindowSubSystem()->GetGLSLVersion().c_str());
+
+	m_Initialized = true;
 }
 
 void UISubSystem::Deinitialize()
