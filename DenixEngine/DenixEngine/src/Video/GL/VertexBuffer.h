@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GLObject.h"
-#include "DeLog.h"
+#include "Core.h"
 
 class VertexBuffer final : public GLObject
 {
@@ -53,6 +53,8 @@ public:
 	}
 
 	GLenum GetType() const { return m_Type; }
+
+	GLuint GetTarget() const { return m_Target; }
 
 	GLsizei GetSize() const { return m_Size; }
 
