@@ -168,7 +168,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Scene\Object\GameObject.cpp" />
     <ClCompile Include="src\Scene\Object\Object.cpp" />
-    <ClCompile Include="src\Scene\ExampleScenes.cpp" />
+    <ClCompile Include="src\Scene\DefaultScene.cpp" />
     <ClCompile Include="src\Core.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -221,7 +221,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Scene\Object\GameObject.h" />
     <ClInclude Include="src\Scene\Object\Object.h" />
-    <ClInclude Include="src\Scene\ExampleScenes.h" />
+    <ClInclude Include="src\Scene\DefaultScene.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Video\GL\GLObject.h" />

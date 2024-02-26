@@ -13,7 +13,6 @@ public:
 	GameObject(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : Object(_object_init) 
 	{
 		m_TransformComponent = std::make_shared<TransformComponent>(m_ID);
-		m_RenderComponenet = std::make_shared<RenderComponent>(m_ID);
 	}
 
 	// Destructors
@@ -21,7 +20,8 @@ public:
 
 	void Update() override {}
 
+	// Will be moved to a renderer class
+	virtual void Draw() {}
 protected:
 	std::shared_ptr<TransformComponent> m_TransformComponent;
-	std::shared_ptr<RenderComponent> m_RenderComponenet;
 };

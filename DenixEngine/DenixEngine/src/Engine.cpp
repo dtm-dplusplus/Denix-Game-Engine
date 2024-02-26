@@ -1,17 +1,9 @@
 #include "DePch.h"
 #include "Engine.h"
 
-#include <SDL.h>
-#include <GL/glew.h>
+#include "System/UISubSystem.h"
 
-#include "imgui.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_sdl2.h"
-#include "Video/Window.h"
-#include "System/SceneSubsystem.h"
-#include "System/WindowSubsystem.h"
-
-
+Engine* Engine::s_Engine{nullptr};
 
 Engine::Engine() : m_Running{false}
 {
@@ -25,48 +17,42 @@ Engine::~Engine()
 void Engine::Initialize()
 {
 	DeLog::Start();
-	DE_LOG(Log, Trace, "Engine Starting")
+	DE_LOG(Log, Trace, "Engine Starting up")
 
+	//  Set Global Engine Pointer
+	s_Engine = this;
+
+	// Window Subsystem
 	m_WindowSubSystem = std::make_shared<WindowSubSystem>();
 	m_WindowSubSystem->Initialize();
+	m_EngineWindow = m_WindowSubSystem->m_Window;
 	if (!m_WindowSubSystem->m_Initialized) throw std::exception();
 	
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForOpenGL(m_WindowSubSystem->m_Window->m_SDL_Window, SDL_GL_GetCurrentContext());
-	ImGui_ImplOpenGL3_Init(m_WindowSubSystem->m_GLSLVersion.c_str());
+	// UI Subsystem
+	m_UISubSytem = std::make_shared<UISubSystem>();
+	m_UISubSytem->Initialize();
+	if (!m_UISubSytem->m_Initialized) throw std::exception();
 
 	// Scene Subsystem
 	m_SceneSubSystem = std::make_shared<SceneSubSystem>();
 	m_SceneSubSystem->Initialize();
+	m_EngineScene = m_SceneSubSystem->m_ActiveScene;
 	if(!m_SceneSubSystem->m_Initialized) throw std::exception();
 
 	m_Running = true;
 
-	DE_LOG(Log, Info, "Engine Started")
+	DE_LOG(LogEngine, Info, "Engine Initialized")
 }
 
 void Engine::Deinitialize()
 {
-	DE_LOG(Log, Trace, "Engine Stopping")
-
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
+	DE_LOG(LogEngine, Trace, "Engine shutting down")
 	
 	m_SceneSubSystem->Deinitialize();
+	m_UISubSytem->Deinitialize();
 	m_WindowSubSystem->Deinitialize();
 
-	DE_LOG(Log, Trace, "Engine Stopped")
+	DE_LOG(LogEngine, Info, "Engine Deinitialized")
 
 	DeLog::Stop();
 }
@@ -75,21 +61,17 @@ void Engine::Run()
 {
 	Initialize();
 
-	if(!m_Running) throw std::exception();
-
-	
-
-	while(m_WindowSubSystem->GetWindow()->m_IsOpen)
+	while(m_EngineWindow->m_IsOpen)
 	{
-		m_WindowSubSystem->GetWindow()->PollEvents();
+		m_EngineWindow->PollEvents();
 
-		m_WindowSubSystem->GetWindow()->ClearBuffer();
+		m_EngineWindow->ClearBuffer();
 
-		m_SceneSubSystem->m_ActiveScene->Update();
+		m_EngineScene->Update();
 
-		m_SceneSubSystem->m_ActiveScene->Draw();
+		m_EngineScene->Draw();
 
-		m_WindowSubSystem->GetWindow()->SwapBuffers();
+		m_EngineWindow->SwapBuffers();
 	}
 
 	m_Running = false;

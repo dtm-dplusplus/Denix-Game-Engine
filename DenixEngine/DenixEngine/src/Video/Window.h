@@ -18,6 +18,7 @@ public:
 
 	virtual void PollEvents();
 
+	SDL_Window* GetSDLWindow() const { return m_SDL_Window; }
 protected:
 	SDL_Window* m_SDL_Window;
 

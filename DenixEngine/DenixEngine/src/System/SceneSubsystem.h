@@ -2,7 +2,7 @@
 
 #include "Core.h"
 #include "Scene/Scene.h"
-#include "Scene/ExampleScenes.h"
+#include "Scene/DefaultScene.h"
 #include "SubSystem.h"
 
 /* Subsystem that manages the scenes
@@ -21,7 +21,7 @@ public:
 
 	void Initialize() override
 	{
-		LoadActiveScene(std::make_shared<ObjectScene>());
+		LoadActiveScene(std::make_shared<DefaultScene>());
 
 		DE_LOG(LogScene, Info, "Scene Subsystem Initialized")
 

@@ -76,6 +76,10 @@ public:
     }   
 
 	std::shared_ptr<Window> GetWindow() const { return m_Window; }
+
+	std::string GetGLSLVersion() const { return m_GLSLVersion; }
+	GLint GetGLMajorVersion() const { return m_GLMajorVersion; }
+	GLint GetGLMinorVersion() const { return m_GLMinorVersion; }
 private:
     std::shared_ptr<Window> m_Window;
 
