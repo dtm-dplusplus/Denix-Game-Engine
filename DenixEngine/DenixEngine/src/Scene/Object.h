@@ -36,6 +36,7 @@ public:
 
 		// else
 		//DE_LOG(LogObject, Error, "Object {} failed to create", m_Name.c_str())
+		// m_ID = -1;
 	}
 
 	// Create Object
@@ -49,7 +50,7 @@ public:
 	virtual void Update() {}
 
 
-	GLuint GetID() const { return m_ID; }
+	GLint GetID() const { return m_ID; }
 
 	void SetName(const std::string& _name) { m_Name = _name; }
 	std::string GetName() { return m_Name; }
@@ -58,7 +59,7 @@ protected:
 
 	/* Name and ID should be hashed in some way in the future */
 	/* Unique Identifier */
-	GLuint m_ID;
+	GLint m_ID;
 
 	/* Name of the object */
 	std::string m_Name;
@@ -66,13 +67,9 @@ protected:
 private:
 
 	/* Used to assign object IDs. Represents the tota number of objects created */
-	static GLuint m_CountID;
-	static GLuint CreateNewID() { return m_CountID++; }
+	static GLint m_CountID;
+	static GLint CreateNewID() { return m_CountID++; }
 };
 
 
-/* Base class for all game objects
- * Game Objects always have Scene components
- *  They only exist during the lifetime of the scene
-*/
 

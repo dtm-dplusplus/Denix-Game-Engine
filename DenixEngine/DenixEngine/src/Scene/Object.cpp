@@ -1,3 +1,3 @@
 #include "Object.h"
 
-GLuint Object::m_CountID{ 0 };
+GLint Object::m_CountID{ 0 };
