@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 
 #include "Video/Window.h"
-#include "Scene/SceneExample.h"
+#include "Scene/Scene.h"
 
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
@@ -104,7 +104,7 @@ void Engine::Run()
 	if(!Start()) throw std::exception();
 
 	// Load Example Scene
-	std::unique_ptr<Scene> scene = std::make_unique<ObjectScene>();
+	std::unique_ptr<Scene> scene = std::make_unique<Lab4>();
 
 	while(m_Window->m_IsOpen)
 	{

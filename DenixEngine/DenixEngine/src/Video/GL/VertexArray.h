@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GLObject.h"
-#include "Core/DeLog.h"
+#include "DeLog.h"
 
 class VertexArray final : public GLObject
 {

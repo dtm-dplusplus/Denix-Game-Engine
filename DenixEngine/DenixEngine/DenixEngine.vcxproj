@@ -164,13 +164,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClCompile Include="contrib\imgui\imgui_draw.cpp" />
     <ClCompile Include="contrib\imgui\imgui_tables.cpp" />
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\Core.cpp" />
-    <ClCompile Include="src\Scene\Object.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Scene\SceneExample.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
@@ -179,11 +173,11 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Core\File.cpp">
+    <ClCompile Include="src\File.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Core\DeLog.cpp">
+    <ClCompile Include="src\DeLog.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -214,14 +208,11 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Core.h" />
-    <ClInclude Include="src\Scene\Object.h" />
     <ClInclude Include="src\Scene\Scene.h" />
-    <ClInclude Include="src\Scene\SceneExample.h" />
     <ClInclude Include="src\Video\GL\GLObject.h" />
     <ClInclude Include="src\Video\GL\Shader.h" />
-    <ClInclude Include="src\Core\File.h" />
-    <ClInclude Include="src\Core\DeLog.h" />
+    <ClInclude Include="src\File.h" />
+    <ClInclude Include="src\DeLog.h" />
     <ClInclude Include="src\DePch.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Video\GL\VertexArray.h" />

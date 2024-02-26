@@ -11,4 +11,5 @@ public:
 	GLuint GetID() const { return m_glID; }
 protected:
 	GLuint m_glID;
+	// std::string m_DebugName;
 };

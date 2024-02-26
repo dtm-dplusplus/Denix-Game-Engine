@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GLObject.h"
-#include "Core/DeLog.h"
+#include "DeLog.h"
 
 class VertexBuffer final : public GLObject
 {
