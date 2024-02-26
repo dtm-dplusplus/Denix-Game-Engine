@@ -12,58 +12,53 @@
 #include <stb_image.h>
 
 
-////////////// Triangle Scene ////////////////////////
-TriangleScene::TriangleScene(): Scene("Triangle Uniform")
+////////////// Lab2 ////////////////////////
+Lab2::Lab2(): Scene("Triangle Uniform")
 {
-	const GLfloat positions[] = {
+	const GLfloat data[] = {
 		0.0f, 0.5f, 0.0f,
 		-0.5f,-0.5f, 0.0f,
 		0.5f,-0.5f, 0.0f
 	};
 
 	// VBO creation
-	Vbo = std::make_unique<VertexBuffer>(positions, sizeof(positions), 3, GL_FLOAT, GL_ARRAY_BUFFER);
+	Vbo = std::make_shared<VertexBuffer>
+		(GL_ARRAY_BUFFER, sizeof(data), data, 3, GL_FLOAT);
 
 	// Create a new VAO on the GPU and bind it
-	Vao = std::make_unique<VertexArray>();
+	Vao = std::make_shared<VertexArray>();
 	Vao->GenVertexArray();
 	Vao->Bind();
 
 	// Bind the vbos & attrivbs
 	Vbo->Bind(GL_ARRAY_BUFFER);
-	Vao->AttribPtr(Vbo->GetAttribPerVert(), GL_FLOAT);
+	Vao->AttribPtr(Vbo->GetCount(), GL_FLOAT);
 
 	// Reset the state
 	VertexBuffer::Unbind(GL_ARRAY_BUFFER);
 	VertexArray::Unbind();
 
 	// Create ShaderProgram
-	Program = std::make_unique<ShaderProgram>();
+	Program = std::make_shared<ShaderProgram>();
 	Program->CreateProgram();
 	Program->CompileShader(GL_VERTEX_SHADER, File::Read("res/shaders/Vert.glsl"));
 	Program->CompileShader(GL_FRAGMENT_SHADER, File::Read("res/shaders/UniFrag.glsl"));
 	Program->AttachShaders();
 
 	Program->BindAttrib(0, "a_Position");
-
-	if (!Program->LinkProgram()) DE_LOG(LogGL, Error, "Link program failed")
-	else DE_LOG(LogGL, Info, "Link program success")
+	Program->LinkProgram();
 
 	// Check if the uniform exists
-	ColorUniformId = glGetUniformLocation(Program->GetID(), "u_Color");
-
-	if (ColorUniformId == -1) DE_LOG(LogGL, Error, "Uniform not found")
-	else DE_LOG(LogGL, Info, "Uniform found")
-
+	ColorUniformId = Program->GetUniform("u_Color");
 	Color = { 1.0f, 0.0f, 0.0f, 1.0f };
 }
 
-TriangleScene::~TriangleScene()
+Lab2::~Lab2()
 {
 	
 }
 
-void TriangleScene::Update()
+void Lab2::Update()
 {
 	// Update UI
 	ImGui::Begin("Triangle Color");
@@ -71,7 +66,7 @@ void TriangleScene::Update()
 	ImGui::End();
 }
 
-void TriangleScene::Draw()
+void Lab2::Draw()
 {
 	// Move this to renderer in the future
 	Program->Bind();
@@ -84,56 +79,116 @@ void TriangleScene::Draw()
 	ShaderProgram::Unbind();
 }
 
-
-
-////////////// Lab3 Matrices ////////////////////////
-Lab3::Lab3()
+Lab2Sq::Lab2Sq() : Scene("Square")
 {
-	const GLfloat positions[] = {
-		0.0f, 0.5f, 0.0f,
-		-0.5f,-0.5f, 0.0f,
-		0.5f,-0.5f, 0.0f
+	const GLfloat data[] = {
+		-0.5f, 0.5f, 0.0f, // top left point
+	0.5f, 0.5f, 0.0f, // top right point
+	0.5f, -0.5f, 0.0f, // bottom right point
+	0.5f, -0.5f, 0.0f, // bottom right point
+	-0.5f, -0.5f, 0.0f, // bottom left point
+	- 0.5f, 0.5f, 0.0f // top left point
 	};
 
 	// VBO creation
-	Vbo = std::make_unique<VertexBuffer>(positions, sizeof(positions), 3, GL_FLOAT, GL_ARRAY_BUFFER);
+	Vbo = std::make_shared<VertexBuffer>
+		(GL_ARRAY_BUFFER, sizeof(data), data, 3, GL_FLOAT);
 
 	// Create a new VAO on the GPU and bind it
-	Vao = std::make_unique<VertexArray>();
+	Vao = std::make_shared<VertexArray>();
 	Vao->GenVertexArray();
 	Vao->Bind();
 
 	// Bind the vbos & attrivbs
 	Vbo->Bind(GL_ARRAY_BUFFER);
-	Vao->AttribPtr(Vbo->GetAttribPerVert(), GL_FLOAT);
+	Vao->AttribPtr(Vbo->GetCount(), GL_FLOAT);
 
 	// Reset the state
 	VertexBuffer::Unbind(GL_ARRAY_BUFFER);
 	VertexArray::Unbind();
 
 	// Create ShaderProgram
-	Program = std::make_unique<ShaderProgram>();
+	Program = std::make_shared<ShaderProgram>();
+	Program->CreateProgram();
+	Program->CompileShader(GL_VERTEX_SHADER, File::Read("res/shaders/Vert.glsl"));
+	Program->CompileShader(GL_FRAGMENT_SHADER, File::Read("res/shaders/UniFrag.glsl"));
+	Program->AttachShaders();
+
+	Program->BindAttrib(0, "a_Position");
+	Program->LinkProgram();
+
+	// Check if the uniform exists
+	ColorUniformId = Program->GetUniform("u_Color");
+	Color = { 1.0f, 0.0f, 0.0f, 1.0f };
+}
+
+Lab2Sq::~Lab2Sq()
+{
+
+}
+
+void Lab2Sq::Update()
+{
+	// Update UI
+	ImGui::Begin("Triangle Color");
+	ImGui::ColorEdit4("RGBA", &Color[0]);
+	ImGui::End();
+}
+
+void Lab2Sq::Draw()
+{
+	// Move this to renderer in the future
+	Program->Bind();
+	Vao->Bind();
+
+	glUniform4fv(ColorUniformId, 1, &Color[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	VertexArray::Unbind();
+	ShaderProgram::Unbind();
+}
+
+////////////// Lab3 Matrices ////////////////////////
+Lab3::Lab3()
+{
+	const GLfloat data[] = {
+		0.0f, 0.5f, 0.0f,
+		-0.5f,-0.5f, 0.0f,
+		0.5f,-0.5f, 0.0f
+	};
+
+	// VBO creation
+	Vbo = std::make_shared<VertexBuffer>
+		(GL_ARRAY_BUFFER, sizeof(data), data, 3, GL_FLOAT);
+
+
+	// Create a new VAO on the GPU and bind it
+	Vao = std::make_shared<VertexArray>();
+	Vao->GenVertexArray();
+	Vao->Bind();
+
+	// Bind the vbos & attribs
+	Vbo->Bind(GL_ARRAY_BUFFER);
+	Vao->AttribPtr(Vbo->GetCount(), GL_FLOAT);
+
+	// Reset the state
+	VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+	VertexArray::Unbind();
+
+	// Create ShaderProgram
+	Program = std::make_shared<ShaderProgram>();
 	Program->CreateProgram();
 	Program->CompileShader(GL_VERTEX_SHADER, File::Read("res/shaders/UniVert.glsl"));
 	Program->CompileShader(GL_FRAGMENT_SHADER, File::Read("res/shaders/UniFrag.glsl"));
 	Program->AttachShaders();
 
 	Program->BindAttrib(0, "a_Position");
+	Program->LinkProgram();
 
-	if (!Program->LinkProgram()) DE_LOG(LogGL, Error, "Link program failed")
-	else DE_LOG(LogGL, Info, "Link program success")
-
-	// Check Color Uniform
-	ColorUniformId = glGetUniformLocation(Program->GetID(), "u_Color");
-
-	if (ColorUniformId == -1) DE_LOG(LogGL, Error, "Uniform not found")
-	else DE_LOG(LogGL, Info, "Uniform found")
-
-	// Check Model Uniform
-	ModelUniformId = glGetUniformLocation(Program->GetID(), "u_Model");
-
-	if (ModelUniformId == -1) DE_LOG(LogGL, Error, "Uniform not found")
-	else DE_LOG(LogGL, Info, "Uniform found")
+	// Check Uniforms
+	ModelUniformId = Program->GetUniform("u_Model");
+	ProjectionUniformId = Program->GetUniform("u_Projection");
+	ColorUniformId = Program->GetUniform("u_Color");
 }
 
 Lab3::~Lab3()
@@ -143,7 +198,7 @@ Lab3::~Lab3()
 void Lab3::Update()
 {
 	// Update UI
-	ImGui::Begin("Lab2 Settings");
+	ImGui::Begin("Lab3 Settings");
 	ImGui::SeparatorText("Color");
 	ImGui::ColorEdit4("Color", &Color[0]);
 
@@ -198,7 +253,7 @@ void Lab3::Draw()
 		
 
 	glUniform4fv(ColorUniformId, 1, &Color[0]);
-	glDrawArrays(GL_TRIANGLES, 0, Vbo->GetSize());
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	// Draw another tri with a different model matrix
 	Model = glm::mat4(1.0f);
@@ -206,7 +261,7 @@ void Lab3::Draw()
 	Model = glm::translate(Model, glm::vec3(-0.5f, 0.0f, 0.f));
 	Model = glm::rotate(Model, glm::radians(Angle), glm::vec3(0, 1, 0));
 	Model = glm::scale(Model, glm::vec3(0.25f, 0.25f, 0.25f));
-
+	
 	glUniformMatrix4fv(ModelUniformId, 1, GL_FALSE, glm::value_ptr(Model));
 	glDrawArrays(GL_TRIANGLES, 0, Vbo->GetSize());
 
@@ -215,16 +270,63 @@ void Lab3::Draw()
 }
 
 
-////////////// Textures ////////////////////////
+////////////// Lab4 Textures ////////////////////////
 Lab4::Lab4()
 {
 	const GLfloat positions[] = {
-		0.0f, 0.5f, 0.0f,
-		-0.5f,-0.5f, 0.0f,
-		0.5f,-0.5f, 0.0f
+		-0.5f, 0.5f, 0.0f, // top left point
+		0.5f, 0.5f, 0.0f, // top right point
+		0.5f, -0.5f, 0.0f, // bottom right point
+		0.5f, -0.5f, 0.0f, // bottom right point
+		-0.5f, -0.5f, 0.0f, // bottom left point
+		-0.5f, 0.5f, 0.0f // top left point
 	};
 
-	VboPosColor = std::make_unique<VertexBuffer>(positions, sizeof(positions), 3, GL_FLOAT, GL_ARRAY_BUFFER);
+    float coords[] = {
+        0.0f, 1.0f, // Top-left
+        1.0f, 1.0f, // Top-right
+        1.0f, 0.0f, // Bottom-right
+        0.0f, 0.0f  // Bottom-left
+    };
+
+	// Create VBOs
+	VboPos = std::make_shared<VertexBuffer>
+		(GL_ARRAY_BUFFER, sizeof(positions), positions, 3, GL_FLOAT);
+
+	VboTexCoord = std::make_shared<VertexBuffer>
+		(GL_ARRAY_BUFFER, sizeof(coords), coords, 2, GL_FLOAT);
+
+	// Create a new VAO on the GPU and bind it
+	Vao = std::make_shared<VertexArray>();
+	Vao->GenVertexArray();
+	Vao->Bind();
+
+	// Bind the vbos & attribs
+	VboPos->Bind(GL_ARRAY_BUFFER);
+	Vao->AttribPtr(VboPos->GetCount(), GL_FLOAT);
+
+	VboTexCoord->Bind(GL_ARRAY_BUFFER);
+	Vao->AttribPtr(VboTexCoord->GetCount(), GL_FLOAT);
+
+	// Reset the state
+	VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+	VertexArray::Unbind();
+
+	// Create ShaderProgram
+	Program = std::make_shared<ShaderProgram>();
+	Program->CreateProgram();
+	Program->CompileShader(GL_VERTEX_SHADER, File::Read("res/shaders/TexVert.glsl"));
+	Program->CompileShader(GL_FRAGMENT_SHADER, File::Read("res/shaders/TexFrag.glsl"));
+	Program->AttachShaders();
+
+	Program->BindAttrib(0, "in_Position");
+	Program->BindAttrib(1, "in_TexCoord");
+	Program->LinkProgram();
+
+	// Check Uniforms
+	ProjectionUniformId = Program->GetUniform("in_Projection");
+	ModelUniformId = Program->GetUniform("in_Model");
+	TextureUniformId = Program->GetUniform("in_Texture");
 
 	// Create and bind a texture.
 	{
@@ -233,77 +335,23 @@ Lab4::Lab4()
 
 		unsigned char* data = stbi_load("res/textures/Image.jpg", &w, &h, NULL, 4);
 
-		if (data) DE_LOG(LogGL, Info, "Loaded image")
-		else DE_LOG(LogGL, Error, "Failed to load image")
+		glGenTextures(1, &TextureID);
 
-		// VBO creation
-		glGenTextures(1, &VboTex);
-		glBindTexture(GL_TEXTURE_2D, VboTex);
+		if (!TextureID)
+		{
+			throw std::exception();
+		}
 
-		// Upload the image data to the bound texture unit in the GPU
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
-			GL_UNSIGNED_BYTE, data);
+		glBindTexture(GL_TEXTURE_2D, TextureID);
 
-		// Free the loaded data because we now have a copy on the GPU
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		free(data);
-
-		// Generate Mipmap so the texture can be mapped correctly
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		// Unbind the texture because we are done operating on it
 		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-	
 
-	// Create a new VAO on the GPU and bind it
-	Vao = std::make_unique<VertexArray>();
-	Vao->GenVertexArray();
-	Vao->Bind();
-
-	// Bind the vbos & attribs
-	VboPosColor->Bind(GL_ARRAY_BUFFER);
-	Vao->AttribPtr(3, GL_FLOAT);
-
-	glBindBuffer(GL_TEXTURE_2D, VboTex);
-	Vao->AttribPtr(2, GL_FLOAT);
-
-	// Reset the state
-	VertexBuffer::Unbind(GL_ARRAY_BUFFER);
-	VertexArray::Unbind();
-
-	// Create ShaderProgram
-	Program = std::make_unique<ShaderProgram>();
-	Program->CreateProgram();
-	Program->CompileShader(GL_VERTEX_SHADER, File::Read("res/shaders/TexVert.glsl"));
-	Program->CompileShader(GL_FRAGMENT_SHADER, File::Read("res/shaders/TexFrag.glsl"));
-	Program->AttachShaders();
-
-	Program->BindAttrib(0, "a_Position");
-	Program->BindAttrib(1, "a_TexCoord");
-
-
-	if (!Program->LinkProgram()) DE_LOG(LogGL, Error, "Link program failed")
-	else DE_LOG(LogGL, Info, "Link program success")
-
-	// Check Uniforms
-	{
-		// Check Projection Uniform
-		ProjectionUniformId = glGetUniformLocation(Program->GetID(), "u_Projection");
-
-		if (ProjectionUniformId == -1) DE_LOG(LogGL, Error, "Uniform not found")
-		else DE_LOG(LogGL, Info, "Uniform found")
-
-		// Check Model Uniform
-		ModelUniformId = glGetUniformLocation(Program->GetID(), "u_Model");
-
-		if (ModelUniformId == -1) DE_LOG(LogGL, Error, "Uniform not found")
-		else DE_LOG(LogGL, Info, "Uniform found")
-
-		// Check Texture Uniform
-		TextureUniformId = glGetUniformLocation(Program->GetID(), "u_Texture");
-
-		if (TextureUniformId == -1) DE_LOG(LogGL, Error, "Uniform not found")
-		else DE_LOG(LogGL, Info, "Uniform found")
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, TextureID);
 	}
 }
 
@@ -315,10 +363,14 @@ void Lab4::Update()
 {
 	// Update UI
 	ImGui::Begin("Lab2 Settings");
+	ImGui::SeparatorText("Rendering");
+	//if (ImGui::Checkbox("Cull Face", &IsCulled)) Angle = 0.f;
+
+
 	ImGui::SeparatorText("Camera");
 	ImGui::DragFloat3("CamPos", &CamPos[0]);
 	ImGui::Checkbox("Perspec Proj", &IsPerspective);
-	ImGui::DragFloat("FOV", &FOV);
+	ImGui::DragFloat("FOV", &Fov);
 	ImGui::DragFloat("Near Plane", &NearPlane);
 	ImGui::DragFloat("Far Plane", &FarPlane);
 
@@ -334,7 +386,7 @@ void Lab4::Update()
 	}
 	else
 	{
-		Projection = glm::perspective(glm::radians(FOV), 800.f / 600.f, NearPlane, FarPlane);
+		Projection = glm::perspective(glm::radians(Fov), 800.f / 600.f, NearPlane, FarPlane);
 	}
 
 	// Prepare the model matrix
@@ -365,11 +417,12 @@ void Lab4::Draw()
 	glUniformMatrix4fv(ProjectionUniformId, 1, GL_FALSE, glm::value_ptr(Projection));
 
 	// Bind the texture
-
-	glBindTexture(GL_TEXTURE_2D, VboTex);
 	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureID);
 
-	glUniform1d(TextureUniformId, 0);
+	// U[load the texture uniform
+	glUniform1d(TextureUniformId, 1);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 

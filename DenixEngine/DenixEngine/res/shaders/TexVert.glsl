@@ -1,13 +1,13 @@
-attribute vec3 a_Position;
-attribute vec2 a_TexCoord;
+uniform mat4 in_Projection;
+uniform mat4 in_Model;
 
-uniform mat4 u_Projection;
-uniform mat4 u_Model;
+attribute vec3 in_Position;
+attribute vec2 in_TexCoord;
 
-varying vec2 v_TexCoord;
+varying vec2 ex_TexCoord;
 
 void main()
 {
-	gl_Position = u_Projection * u_Model * vec4(a_Position, 1.0);
-	v_TexCoord = a_TexCoord;
+  gl_Position = in_Projection * in_Model * vec4(in_Position, 1.0);
+  ex_TexCoord = in_TexCoord;
 }

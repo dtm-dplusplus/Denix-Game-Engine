@@ -7,11 +7,11 @@ class VertexBuffer final : public GLObject
 {
 public:
 	VertexBuffer() = default;
-	VertexBuffer(const void* _data, const GLsizei _size, const GLuint _count, const GLenum _type, const GLenum _target)
+	VertexBuffer(const GLenum _target, const GLsizei _size, const void* _data, const GLuint _count, const GLenum _type)
 	{
 		GenVertexBuffer();
 		Bind(_target);
-		BufferData(_data, _size, _count, _type, _target);
+		BufferData(_target, _size, _data, _count, _type);
 		Unbind(_target);
 	}
 
@@ -31,7 +31,7 @@ public:
 	void Bind(GLenum _target) const { glBindBuffer(_target, m_glID); }
 	static void Unbind(GLenum _target) { glBindBuffer(_target, 0); }
 
-	void BufferData(const void* _data, const GLsizei _size, const GLuint _count, const GLenum _type, const GLenum _target)
+	void BufferData(const GLenum _target, const GLsizei _size, const void* _data, const GLuint _count, const GLenum _type)
 	{
 		m_Type = _type;
 		m_Target = _target;
@@ -51,8 +51,6 @@ public:
 		glBindBuffer(_target, 0);
 		return size;
 	}
-
-	GLuint GetAttribPerVert() const { return m_Count; }
 
 	GLenum GetType() const { return m_Type; }
 
