@@ -5,20 +5,24 @@
 #include <GL/glew.h>
 
 #include "Video/Window.h"
+#include "System/SceneSubsystem.h"
 #include "Scene/ExampleScenes.h"
-
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
 
 
 
-Engine::Engine()
+Engine::Engine() : m_Running{false}
+{
+}
+
+Engine::~Engine()
 {
 }
 
 
-bool Engine::Start()
+void Engine::Initialize()
 {
 	DeLog::Start();
 	DE_LOG(Log, Trace, "Engine Starting")
@@ -27,7 +31,7 @@ bool Engine::Start()
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) < 0)
 	{
 		DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", SDL_GetError())
-		return false;
+			return;
 	}
 	DE_LOG(Log, Trace, "SDL Init success")
 
@@ -50,13 +54,13 @@ bool Engine::Start()
 	SDL_WindowFlags flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 	m_Window = std::make_shared<Window>();
 	if(!m_Window->Start(flags))
-		return false;
+		return;
 
 	// Init Glew
 	if (glewInit() != GLEW_OK)
 	{
 		DE_LOG(Log, Critical, "glewInit failed!")
-			return false;
+			return;
 	}
 	DE_LOG(Log, Trace, "glewInit success")
 
@@ -79,10 +83,14 @@ bool Engine::Start()
 
 	DE_LOG(Log, Info, "Engine Started")
 
-	return true;
+	// Scene Subsystem
+	m_SceneSubSystem = std::make_shared<SceneSubSystem>();
+	m_SceneSubSystem->Initialize();
+
+	m_Running = true;
 }
 
-void Engine::Stop()
+void Engine::Deinitialize()
 {
 	DE_LOG(Log, Trace, "Engine Stopping")
 
@@ -101,10 +109,11 @@ void Engine::Stop()
 
 void Engine::Run()
 {
-	if(!Start()) throw std::exception();
+	Initialize();
 
-	// Load Example Scene
-	std::unique_ptr<Scene> scene = std::make_unique<ObjectScene>();
+	if(!m_Running) throw std::exception();
+
+	
 
 	while(m_Window->m_IsOpen)
 	{
@@ -112,12 +121,13 @@ void Engine::Run()
 
 		m_Window->ClearBuffer();
 
-		// Update Project Scene here
-		scene->Update();
-		scene->Draw();
+		m_SceneSubSystem->m_ActiveScene->Update();
+
+		m_SceneSubSystem->m_ActiveScene->Draw();
 
 		m_Window->SwapBuffers();
 	}
 
-	Stop();
+	m_Running = false;
+	Deinitialize();
 }

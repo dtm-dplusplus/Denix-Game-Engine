@@ -32,7 +32,10 @@ public:
 			if (logger->name() == _name)
 				return logger;
 		}
-		return nullptr;
+
+		DE_LOG(log, Error, "Logger not found: {}", _name.data())
+
+			return GetLogger("Log");
 	}
 
 	static void CreateLogger(const std::string_view _name)
@@ -76,6 +79,7 @@ public:
 		DE_LOG_CREATE(LogGL)
 		DE_LOG_CREATE(LogWindow)
 		DE_LOG_CREATE(LogShader)
+		DE_LOG_CREATE(LogScene)
 		DE_LOG(Log, Trace, "Logger starting")
 	}
 

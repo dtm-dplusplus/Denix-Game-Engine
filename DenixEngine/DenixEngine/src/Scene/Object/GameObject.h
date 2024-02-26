@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Scene/Object.h"
-#include "Scene/Component.h"
+#include "Object.h"
+#include "Component.h"
 
 /*	Base class for all game objects
 *	

@@ -4,7 +4,7 @@
 
 #include "Core.h"
 
-#include "Scene/Object.h"
+#include "Object.h"
 
 /*	Base class for all object components */
 class Component: public Object

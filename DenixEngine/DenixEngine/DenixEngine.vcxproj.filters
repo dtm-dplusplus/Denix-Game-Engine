@@ -24,6 +24,15 @@
     <Filter Include="src\Scene">
       <UniqueIdentifier>{1810f3ad-af90-443e-8773-9d0ef86652bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Scene\Object">
+      <UniqueIdentifier>{b01a8394-0226-4c4a-a497-64e7a0f41657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\System">
+      <UniqueIdentifier>{1ed0b2df-d2e1-49bb-901e-c412285c2823}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core">
+      <UniqueIdentifier>{8172742a-0ed0-43ae-a7b2-bc344f695488}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -33,12 +42,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\DePch.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DeLog.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\File.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp">
@@ -80,18 +83,39 @@
     <ClCompile Include="src\Scene\Scene.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\ExampleScenes.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Object\Object.cpp">
+      <Filter>src\Scene\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Object\GameObject.cpp">
+      <Filter>src\Scene\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Object\Component.cpp">
+      <Filter>src\Scene\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\SubSystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\File.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\DeLog.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\SceneSubsystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DePch.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\File.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DeLog.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="contrib\imgui\imgui.h">
@@ -135,6 +159,33 @@
     </ClInclude>
     <ClInclude Include="src\Scene\Scene.h">
       <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\ExampleScenes.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Object\Object.h">
+      <Filter>src\Scene\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Object\GameObject.h">
+      <Filter>src\Scene\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Object\Component.h">
+      <Filter>src\Scene\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\SubSystem.h">
+      <Filter>src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\File.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\DeLog.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\SceneSubsystem.h">
+      <Filter>src\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

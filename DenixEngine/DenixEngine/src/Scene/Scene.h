@@ -1,21 +1,29 @@
 #pragma once
 
-#include <string>
+#include "Object/Object.h"
+#include "Object/GameObject.h"
 
-// Super Basic Scene class so I can start creating and testing features
-// Will be intergrated into ECS later on
-class Scene
+// Basic Scene class so I can start creating and testing features
+class Scene: public Object
 {
 public:
-	Scene() =  default;
-	Scene(std::string _name) : SceneName(std::move(_name)) {}
-	virtual ~Scene() = default;
+	Scene(const ObjectInitializer& _object_init) : Object(_object_init) {}
+	~Scene() override {}
 
-	virtual void Update() {}
+	virtual bool Load() { return true; }
+	virtual void Unload() 
+	{
+		m_SceneObjects.clear();
+	}
+
+	void Update() override {}
 	virtual void Draw() {}
 
 protected:
-	std::string SceneName;
+	
+	std::vector<std::shared_ptr<GameObject>> m_SceneObjects;
+
+	friend class SceneSubSystem;
 };
 
 

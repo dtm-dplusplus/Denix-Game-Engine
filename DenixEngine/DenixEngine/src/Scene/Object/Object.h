@@ -12,6 +12,8 @@
 */
 struct ObjectInitializer
 {
+	// Constructors
+	ObjectInitializer() = default;
 	ObjectInitializer(std::string _name) : Name{ std::move(_name) } {}
 
 	static ObjectInitializer Get() { return { "Object" }; }
@@ -23,7 +25,6 @@ struct ObjectInitializer
 class Object
 {
 public:
-	// Constructors
 	Object(const ObjectInitializer& _object_init = ObjectInitializer::Get()): m_ID{ 0 }, m_Name{ _object_init.Name }
 	{
 		// Try to innit object of class (future)
@@ -32,7 +33,7 @@ public:
 
 		// Register object with object manager (future)
 
-		DE_LOG(LogObject, Info, "Object {} created", m_Name.c_str())
+		DE_LOG(LogObject, Info, "Object #{} {} created", m_ID, m_Name.c_str())
 
 		// else
 		//DE_LOG(LogObject, Error, "Object {} failed to create", m_Name.c_str())
@@ -52,7 +53,6 @@ public:
 
 	GLint GetID() const { return m_ID; }
 
-	void SetName(const std::string& _name) { m_Name = _name; }
 	std::string GetName() { return m_Name; }
 
 protected:
@@ -70,6 +70,5 @@ private:
 	static GLint m_CountID;
 	static GLint CreateNewID() { return m_CountID++; }
 };
-
 
 
