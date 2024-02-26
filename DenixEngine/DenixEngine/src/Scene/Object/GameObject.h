@@ -23,5 +23,5 @@ public:
 	// Will be moved to a renderer class
 	virtual void Draw() {}
 protected:
-	std::shared_ptr<TransformComponent> m_TransformComponent;
+	Ref<TransformComponent> m_TransformComponent;
 };

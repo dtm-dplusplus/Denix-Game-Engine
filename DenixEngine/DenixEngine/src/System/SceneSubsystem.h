@@ -28,7 +28,7 @@ public:
 		m_Initialized = true;
 	}
 
-	bool LoadScene(std::shared_ptr<Scene> _scene)
+	bool LoadScene(Ref<Scene> _scene)
 	{
 		if (!_scene)
 		{
@@ -51,7 +51,7 @@ public:
 			return true;
 	}
 
-	bool LoadActiveScene(std::shared_ptr<Scene> _scene)
+	bool LoadActiveScene(Ref<Scene> _scene)
 	{
 		LoadScene(_scene);
 		m_ActiveScene = m_LoadedScenes.back();
@@ -59,8 +59,8 @@ public:
 	}
 private:
 
-	std::vector<std::shared_ptr<Scene>> m_LoadedScenes;
-	std::shared_ptr<Scene> m_ActiveScene;
+	std::vector<Ref<Scene>> m_LoadedScenes;
+	Ref<Scene> m_ActiveScene;
 
 	friend class Engine;
 };

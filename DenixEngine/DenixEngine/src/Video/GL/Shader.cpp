@@ -22,7 +22,7 @@ void ShaderProgram::AttachShaders() const
 
 void ShaderProgram::DetachShaders() const
 {
-    for (const std::shared_ptr<Shader>& shader : m_Shaders)
+    for (const Ref<Shader>& shader : m_Shaders)
     {
         DetachShader(shader->m_glID);
         shader->Delete();

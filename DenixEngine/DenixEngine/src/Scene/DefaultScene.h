@@ -20,9 +20,9 @@ public:
 	void Update() override;
 	void Setup();
 private:
-	std::shared_ptr<VertexArray> Vao;
-	std::shared_ptr<VertexBuffer> Vbo;
-	std::shared_ptr<ShaderProgram> Program;
+	Ref<VertexArray> Vao;
+	Ref<VertexBuffer> Vbo;
+	Ref<ShaderProgram> Program;
 
 	// Color
 	GLint ColorUniformId;
@@ -62,11 +62,11 @@ public:
 	void Draw() override;
 
 private:
-	std::shared_ptr<VertexArray> Vao;
-	std::shared_ptr<VertexBuffer> Vbo;
-	std::shared_ptr<ShaderProgram> Program;
+	Ref<VertexArray> Vao;
+	Ref<VertexBuffer> Vbo;
+	Ref<ShaderProgram> Program;
 
-	std::shared_ptr<TestObject> Obj;
+	Ref<TestObject> Obj;
 
 	// Color
 	GLint ColorUniformId;

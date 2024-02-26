@@ -41,7 +41,7 @@ public:
 	static void CreateLogger(const std::string_view _name)
 	{
 		std::vector<spdlog::sink_ptr> sinks = { m_FileSink, m_OutputSink };
-		if (const std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(_name.data(), sinks.begin(), sinks.end()))
+		if (const auto logger = std::make_shared<spdlog::logger>(_name.data(), sinks.begin(), sinks.end()))
 		{
 			logger->set_level(spdlog::level::trace);
 			logger->set_pattern("%^[%T] [%n]: %v%$");

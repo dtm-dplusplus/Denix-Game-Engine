@@ -21,7 +21,7 @@ public:
 
 protected:
 	
-	std::vector<std::shared_ptr<GameObject>> m_SceneObjects;
+	std::vector<Ref<GameObject>> m_SceneObjects;
 
 	friend class SceneSubSystem;
 };

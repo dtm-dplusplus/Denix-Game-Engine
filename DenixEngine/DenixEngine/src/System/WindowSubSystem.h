@@ -75,13 +75,13 @@ public:
         m_Initialized = false;
     }   
 
-	std::shared_ptr<Window> GetWindow() const { return m_Window; }
+	Ref<Window> GetWindow() const { return m_Window; }
 
 	std::string GetGLSLVersion() const { return m_GLSLVersion; }
 	GLint GetGLMajorVersion() const { return m_GLMajorVersion; }
 	GLint GetGLMinorVersion() const { return m_GLMinorVersion; }
 private:
-    std::shared_ptr<Window> m_Window;
+    Ref<Window> m_Window;
 
 	// GL Attributes
 	std::string m_GLSLVersion = "#version 130";

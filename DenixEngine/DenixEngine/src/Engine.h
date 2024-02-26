@@ -21,24 +21,24 @@ public:
 
 	static Engine& Get() { return *s_Engine; }
 
-	std::shared_ptr<WindowSubSystem> GetWindowSubSystem() const { return m_WindowSubSystem; }
-	std::shared_ptr<Window> GetEngineWindow() const { return m_EngineWindow; }
+	Ref<WindowSubSystem> GetWindowSubSystem() const { return m_WindowSubSystem; }
+	Ref<Window> GetEngineWindow() const { return m_EngineWindow; }
 
-	std::shared_ptr<SceneSubSystem> GetSceneSubSystem() const { return m_SceneSubSystem; }
-	std::shared_ptr<Scene> GetEngineScene() const { return m_SceneSubSystem->m_ActiveScene; }
+	Ref<SceneSubSystem> GetSceneSubSystem() const { return m_SceneSubSystem; }
+	Ref<Scene> GetEngineScene() const { return m_SceneSubSystem->m_ActiveScene; }
 
-	std::shared_ptr<UISubSystem> GetUISubSystem() const { return m_UISubSytem; }
+	Ref<UISubSystem> GetUISubSystem() const { return m_UISubSytem; }
 
 private:
 	static Engine* s_Engine;
 
 	bool m_Running;
 
-	std::shared_ptr<WindowSubSystem> m_WindowSubSystem;
-	std::shared_ptr<Window> m_EngineWindow;
+	Ref<WindowSubSystem> m_WindowSubSystem;
+	Ref<Window> m_EngineWindow;
 
-	std::shared_ptr<UISubSystem> m_UISubSytem;
+	Ref<UISubSystem> m_UISubSytem;
 
-	std::shared_ptr<SceneSubSystem> m_SceneSubSystem;
-	std::shared_ptr<Scene> m_EngineScene;
+	Ref<SceneSubSystem> m_SceneSubSystem;
+	Ref<Scene> m_EngineScene;
 };
