@@ -164,6 +164,8 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClCompile Include="contrib\imgui\imgui_draw.cpp" />
     <ClCompile Include="contrib\imgui\imgui_tables.cpp" />
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Scene\GameObject.cpp" />
+    <ClCompile Include="src\Scene\Object.cpp" />
     <ClCompile Include="src\Scene\ExampleScenes.cpp" />
     <ClCompile Include="src\Core.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp">
@@ -210,6 +212,8 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\Scene\GameObject.h" />
+    <ClInclude Include="src\Scene\Object.h" />
     <ClInclude Include="src\Scene\ExampleScenes.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\Scene\Scene.h" />

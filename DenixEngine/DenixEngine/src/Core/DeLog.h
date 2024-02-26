@@ -72,6 +72,7 @@ public:
 
 		// Default log catergories Should be stored in a config file
 		DE_LOG_CREATE(Log)
+		DE_LOG_CREATE(LogObject)
 		DE_LOG_CREATE(LogGL)
 		DE_LOG_CREATE(LogWindow)
 		DE_LOG_CREATE(LogShader)

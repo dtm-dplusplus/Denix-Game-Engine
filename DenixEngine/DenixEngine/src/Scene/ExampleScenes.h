@@ -9,7 +9,8 @@
 class VertexArray;
 class VertexBuffer;
 class ShaderProgram;
-
+class Object;
+class GameObject;
 
 class ObjectScene final : public Scene
 {
@@ -26,6 +27,8 @@ private:
 	std::shared_ptr<VertexArray> Vao;
 	std::shared_ptr<VertexBuffer> Vbo;
 	std::shared_ptr<ShaderProgram> Program;
+
+	std::shared_ptr<Object> TestObject;
 
 	// Color
 	GLint ColorUniformId;

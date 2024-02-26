@@ -8,6 +8,8 @@
 #include "Video/GL/Shader.h"
 #define STB_IMAGE_IMPLEMENTATION 
 #include <stb_image.h>
+#include "Object.h"
+#include "GameObject.h"
 
 ////////////// ObjectScene ////////////////////////
 ObjectScene::ObjectScene()
@@ -53,6 +55,8 @@ ObjectScene::ObjectScene()
 	ModelUniformId = Program->GetUniform("u_Model");
 	ProjectionUniformId = Program->GetUniform("u_Projection");
 	ColorUniformId = Program->GetUniform("u_Color");
+
+	TestObject = std::make_shared<GameObject>(ObjectInitializer{ "Square" });
 }
 
 ObjectScene::~ObjectScene() = default;
