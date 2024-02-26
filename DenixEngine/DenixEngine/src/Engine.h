@@ -19,9 +19,11 @@ private:
 
 	bool m_Running;
 
-	std::shared_ptr<class Window> m_Window;
-
-	std::vector<std::weak_ptr<class SubSystem>> m_SubSystems;
+	// std::vector<std::weak_ptr<class SubSystem>> m_SubSystems;
 	
+	std::shared_ptr<class WindowSubSystem> m_WindowSubSystem;
+
 	std::shared_ptr<class SceneSubSystem> m_SceneSubSystem;
+
+
 };

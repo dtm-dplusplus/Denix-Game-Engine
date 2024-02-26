@@ -110,6 +110,12 @@
     <ClCompile Include="src\System\SceneSubsystem.cpp">
       <Filter>src\System</Filter>
     </ClCompile>
+    <ClCompile Include="src\System\WindowSubSystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\UISubSystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DePch.h">
@@ -185,6 +191,12 @@
       <Filter>src\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\System\SceneSubsystem.h">
+      <Filter>src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\WindowSubSystem.h">
+      <Filter>src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\UISubSystem.h">
       <Filter>src\System</Filter>
     </ClInclude>
   </ItemGroup>

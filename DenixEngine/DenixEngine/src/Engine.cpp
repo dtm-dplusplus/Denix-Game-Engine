@@ -4,12 +4,12 @@
 #include <SDL.h>
 #include <GL/glew.h>
 
+#include "imgui.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_sdl2.h"
 #include "Video/Window.h"
 #include "System/SceneSubsystem.h"
-#include "Scene/ExampleScenes.h"
-#include "imgui.h"
-#include "backends/imgui_impl_sdl2.h"
-#include "backends/imgui_impl_opengl3.h"
+#include "System/WindowSubsystem.h"
 
 
 
@@ -27,46 +27,10 @@ void Engine::Initialize()
 	DeLog::Start();
 	DE_LOG(Log, Trace, "Engine Starting")
 
-	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) < 0)
-	{
-		DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", SDL_GetError())
-			return;
-	}
-	DE_LOG(Log, Trace, "SDL Init success")
-
-	// Set SDL OpenGL Version
-	const char* glsl_version = "#version 130";
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-
-	// Useful for virtual keyboards, complex chararacter sets
-	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
-
-	// Set GL Attributes
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-
-	//Create window
-	SDL_WindowFlags flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-	m_Window = std::make_shared<Window>();
-	if(!m_Window->Start(flags))
-		return;
-
-	// Init Glew
-	if (glewInit() != GLEW_OK)
-	{
-		DE_LOG(Log, Critical, "glewInit failed!")
-			return;
-	}
-	DE_LOG(Log, Trace, "glewInit success")
-
-	// Enable Blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	m_WindowSubSystem = std::make_shared<WindowSubSystem>();
+	m_WindowSubSystem->Initialize();
+	if (!m_WindowSubSystem->m_Initialized) throw std::exception();
+	
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -78,16 +42,17 @@ void Engine::Initialize()
 	ImGui::StyleColorsDark();
 
 	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForOpenGL(m_Window->m_SDL_Window, SDL_GL_GetCurrentContext());
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	DE_LOG(Log, Info, "Engine Started")
+	ImGui_ImplSDL2_InitForOpenGL(m_WindowSubSystem->m_Window->m_SDL_Window, SDL_GL_GetCurrentContext());
+	ImGui_ImplOpenGL3_Init(m_WindowSubSystem->m_GLSLVersion.c_str());
 
 	// Scene Subsystem
 	m_SceneSubSystem = std::make_shared<SceneSubSystem>();
 	m_SceneSubSystem->Initialize();
+	if(!m_SceneSubSystem->m_Initialized) throw std::exception();
 
 	m_Running = true;
+
+	DE_LOG(Log, Info, "Engine Started")
 }
 
 void Engine::Deinitialize()
@@ -98,9 +63,8 @@ void Engine::Deinitialize()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 	
-	m_Window->Stop();
-
-	SDL_Quit();
+	m_SceneSubSystem->Deinitialize();
+	m_WindowSubSystem->Deinitialize();
 
 	DE_LOG(Log, Trace, "Engine Stopped")
 
@@ -115,17 +79,17 @@ void Engine::Run()
 
 	
 
-	while(m_Window->m_IsOpen)
+	while(m_WindowSubSystem->GetWindow()->m_IsOpen)
 	{
-		m_Window->PollEvents();
+		m_WindowSubSystem->GetWindow()->PollEvents();
 
-		m_Window->ClearBuffer();
+		m_WindowSubSystem->GetWindow()->ClearBuffer();
 
 		m_SceneSubSystem->m_ActiveScene->Update();
 
 		m_SceneSubSystem->m_ActiveScene->Draw();
 
-		m_Window->SwapBuffers();
+		m_WindowSubSystem->GetWindow()->SwapBuffers();
 	}
 
 	m_Running = false;
