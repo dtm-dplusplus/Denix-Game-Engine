@@ -1,12 +1,8 @@
 #pragma once
 
-#include <glm/vec3.hpp>
-#include <glm/ext/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
-#include "Component.h"
-#include "Component.h"
-#include "Component.h"
-#include "Component.h"
 #include "Core.h"
 
 #include "Object.h"
@@ -58,20 +54,16 @@ public:
 
 	void Update() override
 	{
-		Model = glm::translate(glm::mat4(1.0f), glm::vec3(0,0, -2.5)); // Should translate from camera position
+		Model = glm::translate(glm::mat4(1.0f), m_Position); // Should translate from camera position
 		Model = glm::rotate(Model, glm::degrees(m_Rotation.x), glm::vec3(1, 0, 0));
 		Model = glm::rotate(Model, glm::degrees(m_Rotation.y), glm::vec3(0, 1, 0));
 		Model = glm::rotate(Model, glm::degrees(m_Rotation.z), glm::vec3(0, 0, 1));
 		Model = glm::scale(Model, m_Scale);
-
-		/*Model = glm::translate(glm::mat4(1.0f), CamPos);
-		Model = glm::rotate(Model, glm::radians(Angle), glm::vec3(0, 1, 0));
-		Model = glm::scale(Model, m_TransformComponent->GetScale());*/
-
 	}
 
 	// Getters
 	glm::mat4 GetModel() const { return Model; }
+	glm::mat4& GetModel() { return Model; }
 
 	glm::vec3 GetPosition() const { return m_Position; }
 	glm::vec3& GetPosition() { return m_Position; }
@@ -87,7 +79,6 @@ public:
 	void SetRotation(const glm::vec3& _rotation) { m_Rotation = _rotation; }
 	void SetScale(const glm::vec3& _scale) { m_Scale = _scale; }
 	
-
 protected:
 	glm::vec3 m_Position = glm::vec3(0.f);
 	glm::vec3 m_Rotation = glm::vec3(0.f);

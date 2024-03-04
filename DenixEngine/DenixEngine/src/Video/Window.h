@@ -3,6 +3,7 @@
 #include <string>
 
 #include "SDL_video.h"
+#include "glm/glm.hpp"
 
 class Window
 {
@@ -19,6 +20,9 @@ public:
 	virtual void PollEvents();
 
 	SDL_Window* GetSDLWindow() const { return m_SDL_Window; }
+
+	glm::vec2 GetWindowSize() const { return {m_WinX, m_WinY}; }
+
 protected:
 	SDL_Window* m_SDL_Window;
 

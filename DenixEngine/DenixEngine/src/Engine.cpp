@@ -72,6 +72,8 @@ void Engine::Run()
 		m_SceneSubSystem->Update();
 
 		m_EngineWindow->SwapBuffers();
+
+		SDL_Delay(30);
 	}
 
 	m_Running = false;

@@ -2,19 +2,20 @@
 #include "DefaultScene.h"
 
 #include "imgui.h"
+#include "../Engine.h"
 #include "Video/GL/VertexBuffer.h"
 #include "Video/GL/VertexArray.h"
 #include "Video/GL/Shader.h"
 
-#include "Object/Object.h"
-#include "Object/GameObject.h"
+#include "Object.h"
+#include "GameObject.h"
 
 
 // TestObject/////////////////////
 
 TestObject::TestObject() : GameObject(ObjectInitializer("Test Object"))
 {
-	const GLfloat data[] = {
+	constexpr GLfloat data[] = {
 		-0.5f, 0.5f, 0.0f, // top left point
 		0.5f, 0.5f, 0.0f, // top right point
 		0.5f, -0.5f, 0.0f, // bottom right point
@@ -62,19 +63,8 @@ TestObject::~TestObject() = default;
 void TestObject::Update()
 {
 
-	// Prepare the projection matrix
-	if (!IsPerspective)
-	{
-		Projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, NearPlane, FarPlane);
-	}
-	else
-	{
-		Projection = glm::perspective(glm::radians(Fov), 800.f / 600.f, NearPlane, FarPlane);
-	}
+	glm::mat4 camProjection = Engine::Get().GetEngineScene()->GetCamera()->GetProjectionMatrix();
 
-	// Prepare the model matrix
-	m_TransformComponent->Update();
-	
 	// Increase the float angle so next frame the triangle rotates further
 	Angle += RotSpeed;
 
@@ -86,7 +76,7 @@ void TestObject::Update()
 	glUniformMatrix4fv(ModelUniformId, 1, GL_FALSE, glm::value_ptr(m_TransformComponent->GetModel()));
 
 	// Upload the projection matrix
-	glUniformMatrix4fv(ProjectionUniformId, 1, GL_FALSE, glm::value_ptr(Projection));
+	glUniformMatrix4fv(ProjectionUniformId, 1, GL_FALSE, glm::value_ptr(camProjection));
 
 
 	glUniform4fv(ColorUniformId, 1, &Color[0]);
@@ -106,6 +96,9 @@ DefaultScene::~DefaultScene() = default;
 
 bool DefaultScene::Load()
 {
+	m_Camera = std::make_shared<Camera>();
+	m_SceneObjects.push_back(m_Camera);
+
 	Obj = std::make_shared<TestObject>();
 	m_SceneObjects.push_back(Obj);
 	return true;
@@ -118,19 +111,12 @@ void DefaultScene::Unload()
 
 void DefaultScene::Update()
 {
-	//m_SceneObjects[0]->Update();
-
 	// Update Camera
-	ImGui::Begin("Scene");
-	ImGui::SeparatorText("Camera");
-	//ImGui::DragFloat3("Position", &m_Camera.Position[0]);
-	//ImGui::Checkbox("Perspective Projection", &m_Camera.IsPerspective);
-	//ImGui::DragFloat("Fov", &m_Camera.Fov);
-	//ImGui::DragFloat("Near Plane", &m_Camera.NearPlane);
-	//ImGui::DragFloat("Far Plane", &m_Camera.FarPlane);
-
+	ImGui::Begin(m_Name.c_str());
+	
 	for (const auto& obj : m_SceneObjects)
 	{
+		ImGui::PushID(obj->GetID());
 		if (ImGui::CollapsingHeader(obj->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			ImGui::SeparatorText("Transform");
@@ -138,15 +124,26 @@ void DefaultScene::Update()
 			ImGui::DragFloat3("Rotation", &obj->GetTransformComponent()->GetRotation()[0]);
 			ImGui::DragFloat3("Scale", &obj->GetTransformComponent()->GetScale()[0]);
 
-			// Show TestObject UI
-			if (typeid(*obj) == typeid(TestObject))
+			if(typeid(Camera) == typeid(*obj))
 			{
-				TestObject* testObj = dynamic_cast<TestObject*>(obj.get());
-				ImGui::ColorEdit4("Color", &testObj->Color[0]);
-				if (ImGui::Checkbox("Is Rotating", &testObj->IsRotating)) testObj->Angle = 0.f;
-				ImGui::DragFloat("Rotation Speed", &testObj->RotSpeed);
+				ImGui::SeparatorText("Camera Properties");
+				ImGui::Checkbox("Perspective Projection", &m_Camera->IsPerspective);
+				ImGui::DragFloat("Fov", &m_Camera->Fov);
+				ImGui::DragFloat("Near Plane", &m_Camera->NearPlane);
+				ImGui::DragFloat("Far Plane", &m_Camera->FarPlane);
+			}
+			else if (typeid(TestObject) == typeid(*obj))
+			{
+				if(auto* testObj = dynamic_cast<TestObject*>(obj.get()))
+				{
+					ImGui::SeparatorText("Test Object Properties");
+					ImGui::ColorEdit4("Color", &testObj->Color[0]);
+					if (ImGui::Checkbox("Is Rotating", &testObj->IsRotating)) testObj->Angle = 0.f;
+					ImGui::DragFloat("Rotation Speed", &testObj->RotSpeed);
+				}
 			}
 		}
+		ImGui::PopID();
 	}
 
 	ImGui::End();

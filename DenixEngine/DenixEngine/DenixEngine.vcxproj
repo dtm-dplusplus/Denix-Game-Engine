@@ -157,8 +157,9 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Scene\Camera.cpp" />
     <ClCompile Include="src\System\SceneSubsystem.cpp" />
-    <ClCompile Include="src\Scene\Object\Component.cpp" />
+    <ClCompile Include="src\Scene\Component.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp" />
     <ClCompile Include="contrib\imgui\imgui.cpp" />
@@ -166,8 +167,8 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClCompile Include="contrib\imgui\imgui_draw.cpp" />
     <ClCompile Include="contrib\imgui\imgui_tables.cpp" />
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\Scene\Object\GameObject.cpp" />
-    <ClCompile Include="src\Scene\Object\Object.cpp" />
+    <ClCompile Include="src\Scene\GameObject.cpp" />
+    <ClCompile Include="src\Scene\Object.cpp" />
     <ClCompile Include="src\Scene\DefaultScene.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -212,8 +213,9 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClCompile Include="src\System\UISubSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Scene\Camera.h" />
     <ClInclude Include="src\System\SceneSubsystem.h" />
-    <ClInclude Include="src\Scene\Object\Component.h" />
+    <ClInclude Include="src\Scene\Component.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_sdl2.h" />
@@ -222,8 +224,8 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Scene\Object\GameObject.h" />
-    <ClInclude Include="src\Scene\Object\Object.h" />
+    <ClInclude Include="src\Scene\GameObject.h" />
+    <ClInclude Include="src\Scene\Object.h" />
     <ClInclude Include="src\Scene\DefaultScene.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\Scene\Scene.h" />

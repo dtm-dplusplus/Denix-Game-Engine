@@ -24,9 +24,6 @@
     <Filter Include="src\Scene">
       <UniqueIdentifier>{1810f3ad-af90-443e-8773-9d0ef86652bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Scene\Object">
-      <UniqueIdentifier>{b01a8394-0226-4c4a-a497-64e7a0f41657}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\System">
       <UniqueIdentifier>{1ed0b2df-d2e1-49bb-901e-c412285c2823}</UniqueIdentifier>
     </Filter>
@@ -89,15 +86,6 @@
     <ClCompile Include="src\Scene\DefaultScene.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\Object\Object.cpp">
-      <Filter>src\Scene\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\Object\GameObject.cpp">
-      <Filter>src\Scene\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\Object\Component.cpp">
-      <Filter>src\Scene\Object</Filter>
-    </ClCompile>
     <ClCompile Include="src\System\SubSystem.cpp">
       <Filter>src\System</Filter>
     </ClCompile>
@@ -115,6 +103,18 @@
     </ClCompile>
     <ClCompile Include="src\System\UISubSystem.cpp">
       <Filter>src\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Camera.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Component.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\GameObject.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Object.cpp">
+      <Filter>src\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,15 +172,6 @@
     <ClInclude Include="src\Scene\DefaultScene.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Object\Object.h">
-      <Filter>src\Scene\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Object\GameObject.h">
-      <Filter>src\Scene\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Object\Component.h">
-      <Filter>src\Scene\Object</Filter>
-    </ClInclude>
     <ClInclude Include="src\System\SubSystem.h">
       <Filter>src\System</Filter>
     </ClInclude>
@@ -198,6 +189,18 @@
     </ClInclude>
     <ClInclude Include="src\System\UISubSystem.h">
       <Filter>src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Camera.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Component.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\GameObject.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Object.h">
+      <Filter>src\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
