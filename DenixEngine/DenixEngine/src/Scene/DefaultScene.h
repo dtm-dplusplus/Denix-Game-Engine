@@ -47,6 +47,8 @@ private:
 	float FarPlane = 100.f;
 
 	glm::vec3 CamPos = { 0.f, 0.f, -2.5f };
+
+	friend class DefaultScene;
 };
 class DefaultScene final : public Scene
 {

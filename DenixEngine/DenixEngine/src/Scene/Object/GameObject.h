@@ -22,6 +22,8 @@ public:
 
 	// Will be moved to a renderer class
 	virtual void Draw() {}
+
+	Ref<TransformComponent> GetTransformComponent() const { return m_TransformComponent; }
 protected:
 	Ref<TransformComponent> m_TransformComponent;
 };
