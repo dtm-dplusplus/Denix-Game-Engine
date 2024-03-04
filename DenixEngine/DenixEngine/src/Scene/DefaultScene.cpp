@@ -59,26 +59,6 @@ TestObject::TestObject() : GameObject(ObjectInitializer("Test Object"))
 
 TestObject::~TestObject() = default;
 
-void TestObject::Draw()
-{
-	// Move this to renderer in the future
-	Program->Bind();
-	Vao->Bind();
-
-	// Upload the model matrix
-	glUniformMatrix4fv(ModelUniformId, 1, GL_FALSE, glm::value_ptr(m_TransformComponent->GetModel()));
-
-	// Upload the projection matrix
-	glUniformMatrix4fv(ProjectionUniformId, 1, GL_FALSE, glm::value_ptr(Projection));
-
-
-	glUniform4fv(ColorUniformId, 1, &Color[0]);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	VertexArray::Unbind();
-	ShaderProgram::Unbind();
-}
-
 void TestObject::Update()
 {
 
@@ -97,12 +77,25 @@ void TestObject::Update()
 	
 	// Increase the float angle so next frame the triangle rotates further
 	Angle += RotSpeed;
+
+	// Move this to renderer in the future
+	Program->Bind();
+	Vao->Bind();
+
+	// Upload the model matrix
+	glUniformMatrix4fv(ModelUniformId, 1, GL_FALSE, glm::value_ptr(m_TransformComponent->GetModel()));
+
+	// Upload the projection matrix
+	glUniformMatrix4fv(ProjectionUniformId, 1, GL_FALSE, glm::value_ptr(Projection));
+
+
+	glUniform4fv(ColorUniformId, 1, &Color[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	VertexArray::Unbind();
+	ShaderProgram::Unbind();
 }
 
-void TestObject::Setup()
-{
-	
-}
 
 ////////////// DefaultScene ////////////////////////
 DefaultScene::DefaultScene() : Scene(ObjectInitializer("Object Scene"))
@@ -114,7 +107,6 @@ DefaultScene::~DefaultScene() = default;
 bool DefaultScene::Load()
 {
 	Obj = std::make_shared<TestObject>();
-	Obj->Setup();
 	m_SceneObjects.push_back(Obj);
 	return true;
 }
@@ -126,7 +118,7 @@ void DefaultScene::Unload()
 
 void DefaultScene::Update()
 {
-	m_SceneObjects[0]->Update();
+	//m_SceneObjects[0]->Update();
 
 	// Update Camera
 	ImGui::Begin("Scene");
@@ -158,10 +150,4 @@ void DefaultScene::Update()
 	}
 
 	ImGui::End();
-}
-
-void DefaultScene::Draw()
-{
-	Obj->Draw();
-
 }

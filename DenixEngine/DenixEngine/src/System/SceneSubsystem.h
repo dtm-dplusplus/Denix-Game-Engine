@@ -21,42 +21,71 @@ public:
 
 	void Initialize() override
 	{
-		LoadActiveScene(std::make_shared<DefaultScene>());
+		LoadScene(std::make_shared<DefaultScene>());
 
 		DE_LOG(LogScene, Info, "Scene Subsystem Initialized")
 
 		m_Initialized = true;
 	}
 
-	bool LoadScene(Ref<Scene> _scene)
+	void Deinitialize() override
 	{
+		m_LoadedScenes.clear();
+		m_ActiveScene = nullptr;
+
+		DE_LOG(LogScene, Info, "Scene Subsystem Deinitialized")
+
+		m_Initialized = false;
+	}
+
+	void Update() override
+	{
+		if (m_ActiveScene)
+		{
+			// Update the Camera
+
+			// Update the scene
+			m_ActiveScene->Update();
+
+			// Update the scene GameObjects
+			for(const auto& GameObject : m_ActiveScene->m_SceneObjects)
+			{
+				GameObject->Update();
+			}
+		}
+	}
+	bool LoadScene(Ref<Scene> _scene, const bool _isActiveScene = true)
+	{
+		// Check if the pointer is valid
 		if (!_scene)
 		{
 			DE_LOG(LogScene, Critical, "Failed to load scene")
-				return false;
+			return false;
 		}
 
-
+		// Load the scene
 		if (!_scene->Load())
 		{
 			DE_LOG(LogScene, Critical, "Failed to load scene")
-				return false;
+			return false;
 		}
 
 		DE_LOG(LogScene, Info, "Scene loaded: ", _scene->GetName())
 
+		// Set the scene as active scene
+		if(_isActiveScene)
+		{
+			m_ActiveScene = _scene;
+
+			DE_LOG(LogScene, Info, "Scene set as active: ", _scene->GetName())
+		}
+
 		// Transfer ownership of the scene to the scene subsystem
 		m_LoadedScenes.push_back(std::move(_scene));
 
-			return true;
-	}
-
-	bool LoadActiveScene(Ref<Scene> _scene)
-	{
-		LoadScene(_scene);
-		m_ActiveScene = m_LoadedScenes.back();
 		return true;
 	}
+
 private:
 
 	std::vector<Ref<Scene>> m_LoadedScenes;
@@ -64,4 +93,3 @@ private:
 
 	friend class Engine;
 };
-

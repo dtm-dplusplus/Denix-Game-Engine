@@ -9,6 +9,7 @@ public:
 	virtual void Initialize() {}
 	virtual void Deinitialize() {}
 
+	virtual void Update(){}
 	bool IsInitialized() const { return m_Initialized; }
 
 protected:

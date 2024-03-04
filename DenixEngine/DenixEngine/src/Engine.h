@@ -29,10 +29,13 @@ public:
 
 	Ref<UISubSystem> GetUISubSystem() const { return m_UISubSytem; }
 
+	
 private:
 	static Engine* s_Engine;
 
 	bool m_Running;
+
+	std::vector<Ref<SubSystem>>  m_SubSystems;
 
 	Ref<WindowSubSystem> m_WindowSubSystem;
 	Ref<Window> m_EngineWindow;

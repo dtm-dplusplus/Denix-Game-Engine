@@ -25,23 +25,25 @@ void Engine::Initialize()
 	// Window Subsystem
 	m_WindowSubSystem = std::make_shared<WindowSubSystem>();
 	m_WindowSubSystem->Initialize();
-	m_EngineWindow = m_WindowSubSystem->m_Window;
+	m_EngineWindow = m_WindowSubSystem->m_Window; // Move to window subsystem
 	if (!m_WindowSubSystem->m_Initialized) throw std::exception();
-	
+	m_SubSystems.push_back(m_WindowSubSystem);
+
 	// UI Subsystem
 	m_UISubSytem = std::make_shared<UISubSystem>();
 	m_UISubSytem->Initialize();
 	if (!m_UISubSytem->m_Initialized) throw std::exception();
+	m_SubSystems.push_back(m_UISubSytem);
 
 	// Scene Subsystem
 	m_SceneSubSystem = std::make_shared<SceneSubSystem>();
 	m_SceneSubSystem->Initialize();
-	m_EngineScene = m_SceneSubSystem->m_ActiveScene;
+	m_EngineScene = m_SceneSubSystem->m_ActiveScene; // Move to scene subsystem
 	if(!m_SceneSubSystem->m_Initialized) throw std::exception();
-
-	m_Running = true;
+	m_SubSystems.push_back(m_SceneSubSystem);
 
 	DE_LOG(LogEngine, Info, "Engine Initialized")
+	m_Running = true;
 }
 
 void Engine::Deinitialize()
@@ -67,9 +69,7 @@ void Engine::Run()
 
 		m_EngineWindow->ClearBuffer();
 
-		m_EngineScene->Update();
-
-		m_EngineScene->Draw();
+		m_SceneSubSystem->Update();
 
 		m_EngineWindow->SwapBuffers();
 	}
