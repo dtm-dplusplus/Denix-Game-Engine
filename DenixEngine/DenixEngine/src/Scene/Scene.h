@@ -1,21 +1,36 @@
 #pragma once
 
-#include <string>
+#include "../../contrib/glm/glm/ext/matrix_clip_space.hpp"
+#include "Object.h"
+#include "GameObject.h"
+#include "Component.h"
+#include "Camera.h"
 
-// Super Basic Scene class so I can start creating and testing features
-// Will be intergrated into ECS later on
-class Scene
+
+// Basic Scene class so I can start creating and testing features
+class Scene: public Object
 {
 public:
-	Scene() =  default;
-	Scene(std::string _name) : SceneName(std::move(_name)) {}
-	virtual ~Scene() = default;
+	Scene(const ObjectInitializer& _object_init) : Object(_object_init) {}
+	~Scene() override {}
 
-	virtual void Update() {}
-	virtual void Draw() {}
+	virtual bool Load() = 0;
 
+	virtual void Unload() 
+	{
+		m_SceneObjects.clear();
+	}
+
+	void Update() override {}
+
+	Ref<Camera> GetCamera() { return m_Camera; }
 protected:
-	std::string SceneName;
+	
+	std::vector<Ref<GameObject>> m_SceneObjects;
+
+	Ref<Camera> m_Camera;
+
+	friend class SceneSubSystem;
 };
 
 

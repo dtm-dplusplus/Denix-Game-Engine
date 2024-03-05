@@ -24,6 +24,12 @@
     <Filter Include="src\Scene">
       <UniqueIdentifier>{1810f3ad-af90-443e-8773-9d0ef86652bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\System">
+      <UniqueIdentifier>{1ed0b2df-d2e1-49bb-901e-c412285c2823}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core">
+      <UniqueIdentifier>{8172742a-0ed0-43ae-a7b2-bc344f695488}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -33,12 +39,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\DePch.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DeLog.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\File.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp">
@@ -80,18 +80,48 @@
     <ClCompile Include="src\Scene\Scene.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\DefaultScene.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\SubSystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\File.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\DeLog.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\SceneSubsystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\WindowSubSystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\UISubSystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Camera.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Component.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\GameObject.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Object.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DePch.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\File.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DeLog.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="contrib\imgui\imgui.h">
@@ -134,6 +164,42 @@
       <Filter>src\Video</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Scene.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\DefaultScene.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\SubSystem.h">
+      <Filter>src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\File.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\DeLog.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\SceneSubsystem.h">
+      <Filter>src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\WindowSubSystem.h">
+      <Filter>src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\UISubSystem.h">
+      <Filter>src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Camera.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Component.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\GameObject.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Object.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
   </ItemGroup>

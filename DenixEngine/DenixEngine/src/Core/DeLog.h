@@ -32,13 +32,16 @@ public:
 			if (logger->name() == _name)
 				return logger;
 		}
-		return nullptr;
+
+		DE_LOG(log, Error, "Logger not found: {}", _name.data())
+
+			return GetLogger("Log");
 	}
 
 	static void CreateLogger(const std::string_view _name)
 	{
 		std::vector<spdlog::sink_ptr> sinks = { m_FileSink, m_OutputSink };
-		if (const std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>(_name.data(), sinks.begin(), sinks.end()))
+		if (const auto logger = std::make_shared<spdlog::logger>(_name.data(), sinks.begin(), sinks.end()))
 		{
 			logger->set_level(spdlog::level::trace);
 			logger->set_pattern("%^[%T] [%n]: %v%$");
@@ -72,9 +75,12 @@ public:
 
 		// Default log catergories Should be stored in a config file
 		DE_LOG_CREATE(Log)
+		DE_LOG_CREATE(LogEngine)
+		DE_LOG_CREATE(LogObject)
 		DE_LOG_CREATE(LogGL)
 		DE_LOG_CREATE(LogWindow)
 		DE_LOG_CREATE(LogShader)
+		DE_LOG_CREATE(LogScene)
 		DE_LOG(Log, Trace, "Logger starting")
 	}
 

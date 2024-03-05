@@ -157,6 +157,12 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Scene\Camera.cpp" />
+    <ClCompile Include="src\System\SceneSubsystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Component.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp" />
     <ClCompile Include="contrib\imgui\imgui.cpp" />
@@ -164,7 +170,12 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClCompile Include="contrib\imgui\imgui_draw.cpp" />
     <ClCompile Include="contrib\imgui\imgui_tables.cpp" />
     <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\Scene\ExampleScenes.cpp" />
+    <ClCompile Include="src\Scene\GameObject.cpp" />
+    <ClCompile Include="src\Scene\Object.cpp" />
+    <ClCompile Include="src\Scene\DefaultScene.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Core.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -200,8 +211,14 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\System\SubSystem.cpp" />
+    <ClCompile Include="src\System\WindowSubSystem.cpp" />
+    <ClCompile Include="src\System\UISubSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Scene\Camera.h" />
+    <ClInclude Include="src\System\SceneSubsystem.h" />
+    <ClInclude Include="src\Scene\Component.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_sdl2.h" />
@@ -210,7 +227,9 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Scene\ExampleScenes.h" />
+    <ClInclude Include="src\Scene\GameObject.h" />
+    <ClInclude Include="src\Scene\Object.h" />
+    <ClInclude Include="src\Scene\DefaultScene.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Video\GL\GLObject.h" />
@@ -222,6 +241,9 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="src\Video\GL\VertexArray.h" />
     <ClInclude Include="src\Video\GL\VertexBuffer.h" />
     <ClInclude Include="src\Video\Window.h" />
+    <ClInclude Include="src\System\SubSystem.h" />
+    <ClInclude Include="src\System\WindowSubSystem.h" />
+    <ClInclude Include="src\System\UISubSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

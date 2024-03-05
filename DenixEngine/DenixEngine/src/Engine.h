@@ -1,19 +1,47 @@
 #pragma once
 
-#include <memory>
+#include "Core.h"
+
+#include "System/SceneSubsystem.h"
+#include "System/WindowSubsystem.h"
+
+class UISubSystem;
 
 class Engine
 {
 public:
 
 	Engine();
+	~Engine();
 
-	bool Start();
-	void Stop();
+	void Initialize();
+	void Deinitialize();
 
 	void Run();
 
-private:
+	static Engine& Get() { return *s_Engine; }
 
-	std::shared_ptr<class Window> m_Window;
+	Ref<WindowSubSystem> GetWindowSubSystem() const { return m_WindowSubSystem; }
+	Ref<Window> GetEngineWindow() const { return m_EngineWindow; }
+
+	Ref<SceneSubSystem> GetSceneSubSystem() const { return m_SceneSubSystem; }
+	Ref<Scene> GetEngineScene() const { return m_SceneSubSystem->m_ActiveScene; }
+
+	Ref<UISubSystem> GetUISubSystem() const { return m_UISubSytem; }
+
+	
+private:
+	static Engine* s_Engine;
+
+	bool m_Running;
+
+	std::vector<Ref<SubSystem>>  m_SubSystems;
+
+	Ref<WindowSubSystem> m_WindowSubSystem;
+	Ref<Window> m_EngineWindow;
+
+	Ref<UISubSystem> m_UISubSytem;
+
+	Ref<SceneSubSystem> m_SceneSubSystem;
+	Ref<Scene> m_EngineScene;
 };

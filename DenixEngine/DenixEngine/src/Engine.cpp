@@ -1,123 +1,81 @@
 #include "DePch.h"
 #include "Engine.h"
 
-#include <SDL.h>
-#include <GL/glew.h>
+#include "System/UISubSystem.h"
 
-#include "Video/Window.h"
-#include "Scene/ExampleScenes.h"
+Engine* Engine::s_Engine{nullptr};
 
-#include "imgui.h"
-#include "backends/imgui_impl_sdl2.h"
-#include "backends/imgui_impl_opengl3.h"
+Engine::Engine() : m_Running{false}
+{
+}
 
-
-
-Engine::Engine()
+Engine::~Engine()
 {
 }
 
 
-bool Engine::Start()
+void Engine::Initialize()
 {
 	DeLog::Start();
-	DE_LOG(Log, Trace, "Engine Starting")
+	DE_LOG(Log, Trace, "Engine Starting up")
 
-	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) < 0)
-	{
-		DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", SDL_GetError())
-		return false;
-	}
-	DE_LOG(Log, Trace, "SDL Init success")
+	//  Set Global Engine Pointer
+	s_Engine = this;
 
-	// Set SDL OpenGL Version
-	const char* glsl_version = "#version 130";
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	// Window Subsystem
+	m_WindowSubSystem = std::make_shared<WindowSubSystem>();
+	m_WindowSubSystem->Initialize();
+	m_EngineWindow = m_WindowSubSystem->m_Window; // Move to window subsystem
+	if (!m_WindowSubSystem->m_Initialized) throw std::exception();
+	m_SubSystems.push_back(m_WindowSubSystem);
 
-	// Useful for virtual keyboards, complex chararacter sets
-	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+	// UI Subsystem
+	m_UISubSytem = std::make_shared<UISubSystem>();
+	m_UISubSytem->Initialize();
+	if (!m_UISubSytem->m_Initialized) throw std::exception();
+	m_SubSystems.push_back(m_UISubSytem);
 
-	// Set GL Attributes
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	// Scene Subsystem
+	m_SceneSubSystem = std::make_shared<SceneSubSystem>();
+	m_SceneSubSystem->Initialize();
+	m_EngineScene = m_SceneSubSystem->m_ActiveScene; // Move to scene subsystem
+	if(!m_SceneSubSystem->m_Initialized) throw std::exception();
+	m_SubSystems.push_back(m_SceneSubSystem);
 
-	//Create window
-	SDL_WindowFlags flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-	m_Window = std::make_shared<Window>();
-	if(!m_Window->Start(flags))
-		return false;
-
-	// Init Glew
-	if (glewInit() != GLEW_OK)
-	{
-		DE_LOG(Log, Critical, "glewInit failed!")
-			return false;
-	}
-	DE_LOG(Log, Trace, "glewInit success")
-
-	// Enable Blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForOpenGL(m_Window->m_SDL_Window, SDL_GL_GetCurrentContext());
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	DE_LOG(Log, Info, "Engine Started")
-
-	return true;
+	DE_LOG(LogEngine, Info, "Engine Initialized")
+	m_Running = true;
 }
 
-void Engine::Stop()
+void Engine::Deinitialize()
 {
-	DE_LOG(Log, Trace, "Engine Stopping")
-
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
+	DE_LOG(LogEngine, Trace, "Engine shutting down")
 	
-	m_Window->Stop();
+	m_SceneSubSystem->Deinitialize();
+	m_UISubSytem->Deinitialize();
+	m_WindowSubSystem->Deinitialize();
 
-	SDL_Quit();
-
-	DE_LOG(Log, Trace, "Engine Stopped")
+	DE_LOG(LogEngine, Info, "Engine Deinitialized")
 
 	DeLog::Stop();
 }
 
 void Engine::Run()
 {
-	if(!Start()) throw std::exception();
+	Initialize();
 
-	// Load Example Scene
-	std::unique_ptr<Scene> scene = std::make_unique<ObjectScene>();
-
-	while(m_Window->m_IsOpen)
+	while(m_EngineWindow->m_IsOpen)
 	{
-		m_Window->PollEvents();
+		m_EngineWindow->PollEvents();
 
-		m_Window->ClearBuffer();
+		m_EngineWindow->ClearBuffer();
 
-		// Update Project Scene here
-		scene->Update();
-		scene->Draw();
+		m_SceneSubSystem->Update();
 
-		m_Window->SwapBuffers();
+		m_EngineWindow->SwapBuffers();
+
+		SDL_Delay(30);
 	}
 
-	Stop();
+	m_Running = false;
+	Deinitialize();
 }

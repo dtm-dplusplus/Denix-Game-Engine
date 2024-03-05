@@ -44,9 +44,9 @@ public:
 
 	GLuint CreateProgram();
 
-	std::shared_ptr<Shader> CompileShader(GLenum _type, const std::string& _src)
+	Ref<Shader> CompileShader(GLenum _type, const std::string& _src)
 	{
-		if (std::shared_ptr<Shader> shader = std::make_shared<Shader>(_type, _src); shader->GetID())
+		if (Ref<Shader> shader = std::make_shared<Shader>(_type, _src); shader->GetID())
 		{
 			// Create Source
 			const char* src = shader->m_Source.c_str();
@@ -111,7 +111,7 @@ private:
 	// Debug Variables
 	std::vector<std::pair<GLint, std::string>> m_Uniforms;
 
-	std::vector<std::shared_ptr<Shader>> m_Shaders;
+	std::vector<Ref<Shader>> m_Shaders;
 
 	bool ErrorCheck(GLuint _ID) const
 	{
