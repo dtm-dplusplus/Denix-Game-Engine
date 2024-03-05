@@ -18,7 +18,7 @@ public:
 	// Destructors
 	~GameObject() override = default;
 
-	void Update() override {}
+	void Update(float _deltaTime) override {}
 
 	Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 

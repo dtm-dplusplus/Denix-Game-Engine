@@ -62,7 +62,7 @@ TestObject::TestObject() : GameObject(ObjectInitializer("Test Object"))
 
 TestObject::~TestObject() = default;
 
-void TestObject::Update()
+void TestObject::Update(float _deltaTime)
 {
 	Ref<Camera> camera = Engine::Get().GetEngineScene()->GetCamera();
 	
@@ -116,37 +116,44 @@ void DefaultScene::Unload()
 	Scene::Unload();
 }
 
-void DefaultScene::Update()
+void DefaultScene::Update(float _deltaTime)
 {
 	// Update Camera
 	ImGui::Begin(m_Name.c_str());
-	
+	ImGui::SeparatorText("Scene Properties");
+	static float dragSpeed = 1.0f;
+	ImGui::DragFloat("UI Drag Speed", &dragSpeed, 0.1f, 0.1f, 10.0f);
+	const float dragSpeedDelta = dragSpeed * _deltaTime;
+
+	// Show Scen Object Properties
 	for (const auto& obj : m_SceneObjects)
 	{
 		ImGui::PushID(obj->GetID());
 		if (ImGui::CollapsingHeader(obj->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			ImGui::SeparatorText("Transform");
-			ImGui::DragFloat3("Position", &obj->GetTransformComponent()->GetPosition()[0]);
-			ImGui::DragFloat3("Rotation", &obj->GetTransformComponent()->GetRotation()[0]);
-			ImGui::DragFloat3("Scale", &obj->GetTransformComponent()->GetScale()[0]);
+			ImGui::DragFloat3("Position", &obj->GetTransformComponent()->GetPosition()[0], dragSpeedDelta);
+			ImGui::DragFloat3("Rotation", &obj->GetTransformComponent()->GetRotation()[0], dragSpeedDelta);
+			ImGui::DragFloat3("Scale", &obj->GetTransformComponent()->GetScale()[0], dragSpeedDelta);
 
 			if(typeid(Camera) == typeid(*obj))
 			{
 				ImGui::SeparatorText("Camera Properties");
+				ImGui::DragFloat("MoveSpeed", &m_Camera->MoveSpeed, dragSpeedDelta);
+
 				ImGui::Checkbox("Perspective Projection", &m_Camera->IsPerspective);
-				ImGui::DragFloat("Fov", &m_Camera->Fov);
-				ImGui::DragFloat("Near Plane", &m_Camera->NearPlane);
-				ImGui::DragFloat("Far Plane", &m_Camera->FarPlane);
+				ImGui::DragFloat("Fov", &m_Camera->Fov, dragSpeedDelta);
+				ImGui::DragFloat("Near Plane", &m_Camera->NearPlane, dragSpeedDelta);
+				ImGui::DragFloat("Far Plane", &m_Camera->FarPlane, dragSpeedDelta);
 			}
 			else if (typeid(TestObject) == typeid(*obj))
 			{
 				if(auto* testObj = dynamic_cast<TestObject*>(obj.get()))
 				{
 					ImGui::SeparatorText("Test Object Properties");
-					ImGui::ColorEdit4("Color", &testObj->Color[0]);
+					ImGui::ColorEdit4("Color", &testObj->Color[0], dragSpeedDelta);
 					if (ImGui::Checkbox("Is Rotating", &testObj->IsRotating)) testObj->GetTransformComponent()->SetRotation(glm::vec3(0.f));
-					ImGui::DragFloat("Rotation Speed", &testObj->RotSpeed);
+					ImGui::DragFloat("Rotation Speed", &testObj->RotSpeed, dragSpeedDelta);
 				}
 			}
 		}
@@ -155,38 +162,39 @@ void DefaultScene::Update()
 
 	ImGui::End();
 
+	// Move Camera
 	if (const Uint8* keyboard = SDL_GetKeyboardState(NULL))
 	{
 		if(keyboard[SDL_SCANCODE_W])
 		{
 			DE_LOG(LogScene, Info, "W Pressed")
-			m_Camera->GetTransformComponent()->GetPosition().z -= m_Camera->MoveSpeed;
+			m_Camera->GetTransformComponent()->GetPosition().z += m_Camera->MoveSpeed * _deltaTime;
 		}
 		if (keyboard[SDL_SCANCODE_S])
 		{
 			DE_LOG(LogScene, Info, "S Pressed")
-			m_Camera->GetTransformComponent()->GetPosition().z += m_Camera->MoveSpeed;
+			m_Camera->GetTransformComponent()->GetPosition().z -= m_Camera->MoveSpeed * _deltaTime;
 		}
 		if (keyboard[SDL_SCANCODE_A])
 		{
 			DE_LOG(LogScene, Info, "A Pressed")
-			m_Camera->GetTransformComponent()->GetPosition().x += m_Camera->MoveSpeed;
+			m_Camera->GetTransformComponent()->GetPosition().x += m_Camera->MoveSpeed * _deltaTime;
 
 		}
 		if (keyboard[SDL_SCANCODE_D])
 		{
 			DE_LOG(LogScene, Info, "D Pressed")
-			m_Camera->GetTransformComponent()->GetPosition().x -= m_Camera->MoveSpeed;
+			m_Camera->GetTransformComponent()->GetPosition().x -= m_Camera->MoveSpeed * _deltaTime;
 		}
 		if (keyboard[SDL_SCANCODE_E])
 		{
 			DE_LOG(LogScene, Info, "E Pressed")
-			m_Camera->GetTransformComponent()->GetPosition().y -= m_Camera->MoveSpeed;
+			m_Camera->GetTransformComponent()->GetPosition().y -= m_Camera->MoveSpeed * _deltaTime;
 		}
 		if (keyboard[SDL_SCANCODE_Q])
 		{
 			DE_LOG(LogScene, Info, "Q Pressed")
-			m_Camera->GetTransformComponent()->GetPosition().y += m_Camera->MoveSpeed;
+			m_Camera->GetTransformComponent()->GetPosition().y += m_Camera->MoveSpeed * _deltaTime;
 		}
 	}
 }

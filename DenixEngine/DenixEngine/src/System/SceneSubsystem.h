@@ -38,7 +38,7 @@ public:
 		m_Initialized = false;
 	}
 
-	void Update() override;
+	void Update(float _deltaTime) override;
 
 	bool LoadScene(Ref<Scene> _scene, const bool _isActiveScene = true)
 	{

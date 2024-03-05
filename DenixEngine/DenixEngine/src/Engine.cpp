@@ -69,11 +69,11 @@ void Engine::Run()
 
 		m_EngineWindow->ClearBuffer();
 
-		m_SceneSubSystem->Update();
+		m_SceneSubSystem->Update(0.3f);
 
 		m_EngineWindow->SwapBuffers();
 
-		SDL_Delay(30);
+		SDL_Delay(30); // Delay for physics
 	}
 
 	m_Running = false;

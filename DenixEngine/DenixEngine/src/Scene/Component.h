@@ -27,7 +27,7 @@ public:
 
 	virtual void Initialize() {}
 	virtual void Deinitialize() {}
-	void Update() override {}
+	void Update(float _deltaTime) override {}
 
 	/* Get the parent object id */
 	GLint GetParentObjectID() const { return m_ParentObjectID; }
@@ -52,7 +52,7 @@ public:
 		//Engine::Get().GetEngineScene()->RegisterTransformComponent(m_ParentObjectID, this);
 	}
 
-	void Update() override
+	void Update(float _deltaTime) override
 	{
 		Model = glm::translate(glm::mat4(1.0f), m_Position); // Should translate from camera position
 		Model = glm::rotate(Model, glm::degrees(m_Rotation.x), glm::vec3(1, 0, 0));

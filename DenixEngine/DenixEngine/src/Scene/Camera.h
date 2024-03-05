@@ -14,7 +14,7 @@ public:
 	}
 	~Camera() override = default;
 
-	void Update() override
+	void Update(float _deltaTime) override
 	{
 		// Projection matrix
 		if (IsPerspective)

@@ -16,7 +16,7 @@ public:
 	TestObject();
 	~TestObject() override;
 
-	void Update() override;
+	void Update(float _deltaTime) override;
 private:
 	Ref<VertexArray> Vao;
 	Ref<VertexBuffer> Vbo;
@@ -48,7 +48,7 @@ public:
 	bool Load() override;
 	void Unload() override;
 
-	void Update() override;
+	void Update(float _deltaTime) override;
 
 private:
 	Ref<VertexArray> Vao;

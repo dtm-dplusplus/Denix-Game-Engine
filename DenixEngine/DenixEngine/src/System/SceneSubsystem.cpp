@@ -2,7 +2,7 @@
 #include "SceneSubsystem.h"
 #include "../Engine.h"
 
-void SceneSubSystem::Update()
+void SceneSubSystem::Update(float _deltaTime)
 {
 	const Engine &engine = Engine::Get();
 	const glm::vec2 winSize = engine.GetEngineWindow()->GetWindowSize();
@@ -12,21 +12,21 @@ void SceneSubSystem::Update()
 		// Update the Camera
 		m_ActiveScene->m_Camera->Aspect.x = winSize.x;
 		m_ActiveScene->m_Camera->Aspect.y = winSize.y;
-		m_ActiveScene->m_Camera->Update();
+		m_ActiveScene->m_Camera->Update(_deltaTime);
 
 		// Update the scene
-		m_ActiveScene->Update();
+		m_ActiveScene->Update(_deltaTime);
 
 		// Update the scene GameObjects
 		for(const auto& gameObject : m_ActiveScene->m_SceneObjects)
 		{
 			// Transform Component
-			gameObject->GetTransformComponent()->Update();
+			gameObject->GetTransformComponent()->Update(_deltaTime);
 
 			// Physics Component
 
 			// Custom Update Functions
-			gameObject->Update();
+			gameObject->Update(_deltaTime);
 		}
 	}
 }

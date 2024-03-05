@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../contrib/glm/glm/ext/matrix_clip_space.hpp"
 #include "Object.h"
 #include "GameObject.h"
 #include "Component.h"
@@ -21,7 +20,7 @@ public:
 		m_SceneObjects.clear();
 	}
 
-	void Update() override {}
+	void Update(float _deltaTime) override {}
 
 	Ref<Camera> GetCamera() { return m_Camera; }
 protected:

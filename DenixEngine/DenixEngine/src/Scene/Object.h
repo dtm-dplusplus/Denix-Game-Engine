@@ -48,7 +48,7 @@ public:
 	// Destructors
 	virtual ~Object() = default;
 
-	virtual void Update() {}
+	virtual void Update(float _deltaTime) {}
 
 
 	GLint GetID() const { return m_ID; }
