@@ -158,7 +158,10 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Scene\Camera.cpp" />
-    <ClCompile Include="src\System\SceneSubsystem.cpp" />
+    <ClCompile Include="src\System\SceneSubsystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Scene\Component.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp" />

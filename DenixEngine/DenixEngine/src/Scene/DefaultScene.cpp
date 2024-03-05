@@ -160,18 +160,33 @@ void DefaultScene::Update()
 		if(keyboard[SDL_SCANCODE_W])
 		{
 			DE_LOG(LogScene, Info, "W Pressed")
+			m_Camera->GetTransformComponent()->GetPosition().z -= m_Camera->MoveSpeed;
 		}
 		if (keyboard[SDL_SCANCODE_S])
 		{
 			DE_LOG(LogScene, Info, "S Pressed")
+			m_Camera->GetTransformComponent()->GetPosition().z += m_Camera->MoveSpeed;
 		}
 		if (keyboard[SDL_SCANCODE_A])
 		{
 			DE_LOG(LogScene, Info, "A Pressed")
+			m_Camera->GetTransformComponent()->GetPosition().x += m_Camera->MoveSpeed;
+
 		}
 		if (keyboard[SDL_SCANCODE_D])
 		{
 			DE_LOG(LogScene, Info, "D Pressed")
+			m_Camera->GetTransformComponent()->GetPosition().x -= m_Camera->MoveSpeed;
+		}
+		if (keyboard[SDL_SCANCODE_E])
+		{
+			DE_LOG(LogScene, Info, "E Pressed")
+			m_Camera->GetTransformComponent()->GetPosition().y -= m_Camera->MoveSpeed;
+		}
+		if (keyboard[SDL_SCANCODE_Q])
+		{
+			DE_LOG(LogScene, Info, "Q Pressed")
+			m_Camera->GetTransformComponent()->GetPosition().y += m_Camera->MoveSpeed;
 		}
 	}
 }

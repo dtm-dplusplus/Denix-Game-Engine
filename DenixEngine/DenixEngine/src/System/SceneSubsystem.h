@@ -4,7 +4,6 @@
 #include "Scene/Scene.h"
 #include "Scene/DefaultScene.h"
 #include "SubSystem.h"
-//#include "Engine.h"
 
 /* Subsystem that manages the scenes
 * A scene must always be loaded in order to render anything
@@ -39,34 +38,8 @@ public:
 		m_Initialized = false;
 	}
 
-	void Update() override
-	{
-		//const Engine &engine = Engine::Get();
-		//const glm::vec2 winSize = engine.GetEngineWindow()->GetWindowSize();
+	void Update() override;
 
-		if (m_ActiveScene)
-		{
-			// Update the Camera
-			m_ActiveScene->m_Camera->Aspect.x = 800;
-			m_ActiveScene->m_Camera->Aspect.y = 600;
-			m_ActiveScene->m_Camera->Update();
-
-			// Update the scene
-			m_ActiveScene->Update();
-
-			// Update the scene GameObjects
-			for(const auto& gameObject : m_ActiveScene->m_SceneObjects)
-			{
-				// Transform Component
-				gameObject->GetTransformComponent()->Update();
-
-				// Physics Component
-
-				// Custom Update Functions
-				gameObject->Update();
-			}
-		}
-	}
 	bool LoadScene(Ref<Scene> _scene, const bool _isActiveScene = true)
 	{
 		// Check if the pointer is valid
