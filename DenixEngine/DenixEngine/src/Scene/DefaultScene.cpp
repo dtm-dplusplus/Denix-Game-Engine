@@ -118,48 +118,150 @@ void DefaultScene::Unload()
 
 void DefaultScene::Update(float _deltaTime)
 {
-	// Update Camera
-	ImGui::Begin(m_Name.c_str());
-	ImGui::SeparatorText("Scene Properties");
 	static float dragSpeed = 1.0f;
-	ImGui::DragFloat("UI Drag Speed", &dragSpeed, 0.1f, 0.1f, 10.0f);
+	static bool showDemoWindow = false;
+
 	const float dragSpeedDelta = dragSpeed * _deltaTime;
 
-	// Show Scen Object Properties
-	for (const auto& obj : m_SceneObjects)
-	{
-		ImGui::PushID(obj->GetID());
-		if (ImGui::CollapsingHeader(obj->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			ImGui::SeparatorText("Transform");
-			ImGui::DragFloat3("Position", &obj->GetTransformComponent()->GetPosition()[0], dragSpeedDelta);
-			ImGui::DragFloat3("Rotation", &obj->GetTransformComponent()->GetRotation()[0], dragSpeedDelta);
-			ImGui::DragFloat3("Scale", &obj->GetTransformComponent()->GetScale()[0], dragSpeedDelta);
+	//// Update Camera
+	//ImGui::Begin(m_Name.c_str());
+	//ImGui::SeparatorText("Scene Properties");
+	//ImGui::Checkbox("Show Demo Window", &showDemoWindow);
+	//if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
+	//ImGui::DragFloat("UI Drag Speed", &dragSpeed, 0.1f, 0.1f, 10.0f);
+	//
 
-			if(typeid(Camera) == typeid(*obj))
+	//// Show Scen Object Properties
+	//for (const auto& obj : m_SceneObjects)
+	//{
+	//	ImGui::PushID(obj->GetID());
+	//	if (ImGui::CollapsingHeader(obj->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	//	{
+	//		ImGui::SeparatorText("Transform");
+	//		ImGui::DragFloat3("Position", &obj->GetTransformComponent()->GetPosition()[0], dragSpeedDelta); ImGui::SameLine();
+	//		if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left)) obj->GetTransformComponent()->SetPosition(glm::vec3(0.f));
+	//		ImGui::SetItemTooltip("Reset");
+
+	//		ImGui::DragFloat3("Rotation", &obj->GetTransformComponent()->GetRotation()[0], dragSpeedDelta); ImGui::SameLine();
+	//		if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) obj->GetTransformComponent()->SetRotation(glm::vec3(0.f));
+	//		ImGui::SetItemTooltip("Reset");
+
+	//		ImGui::DragFloat3("Scale", &obj->GetTransformComponent()->GetScale()[0], dragSpeedDelta); ImGui::SameLine();
+	//		if (ImGui::ArrowButton("##ResetScale", ImGuiDir_Left)) obj->GetTransformComponent()->SetScale(glm::vec3(1.f));
+	//		ImGui::SetItemTooltip("Reset");
+
+	//		if(typeid(Camera) == typeid(*obj))
+	//		{
+	//			ImGui::SeparatorText("Camera Properties");
+	//			ImGui::DragFloat("MoveSpeed", &m_Camera->MoveSpeed, dragSpeedDelta);
+	//			
+
+	//			
+	//			ImGui::Checkbox("Perspective Projection", &m_Camera->IsPerspective);
+	//			ImGui::DragFloat("Fov", &m_Camera->Fov, dragSpeedDelta);
+	//			ImGui::DragFloat("Near Plane", &m_Camera->NearPlane, dragSpeedDelta);
+	//			ImGui::DragFloat("Far Plane", &m_Camera->FarPlane, dragSpeedDelta);
+	//		}
+	//		else if (typeid(TestObject) == typeid(*obj))
+	//		{
+	//			if(auto* testObj = dynamic_cast<TestObject*>(obj.get()))
+	//			{
+	//				ImGui::SeparatorText("Test Object Properties");
+	//				ImGui::ColorEdit4("Color", &testObj->Color[0], dragSpeedDelta);
+	//				if (ImGui::Checkbox("Is Rotating", &testObj->IsRotating)) testObj->GetTransformComponent()->SetRotation(glm::vec3(0.f));
+	//				ImGui::DragFloat("Rotation Speed", &testObj->RotSpeed, dragSpeedDelta);
+	//			}
+	//		}
+	//	}
+	//	ImGui::PopID();
+	//}
+
+	//ImGui::End();
+
+	static bool p_open = true;
+	const glm::vec2 winSize = Engine::Get().GetEngineWindow()->GetWindowSize();
+
+	ImGui::SetNextWindowSize(ImVec2(winSize.x/4, winSize.y), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
+
+	ImGui::Begin("Scene Panel", &p_open, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse);
+	{
+		// Left
+		static int selected = 0;
+		{
+			ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX );
+			for (int i = 0; i < m_SceneObjects.size(); i++)
 			{
+				// FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
+				if (ImGui::Selectable(m_SceneObjects[i]->GetName().c_str(), selected == i))
+					selected = i;
+			}
+			ImGui::EndChild();
+		}
+		ImGui::SameLine();
+
+		// Right
+		{
+			ImGui::BeginGroup();
+			ImGui::BeginChild("Object Properties", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+			ImGui::Text("Properties");
+			ImGui::Separator();
+
+			ImGui::SeparatorText("Transform");
+			ImGui::DragFloat3("Position", &m_SceneObjects[selected]->GetTransformComponent()->GetPosition()[0], dragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left)) m_SceneObjects[selected]->GetTransformComponent()->SetPosition(glm::vec3(0.f));
+			ImGui::SetItemTooltip("Reset");
+
+			ImGui::DragFloat3("Rotation", &m_SceneObjects[selected]->GetTransformComponent()->GetRotation()[0], dragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) m_SceneObjects[selected]->GetTransformComponent()->SetRotation(glm::vec3(0.f));
+			ImGui::SetItemTooltip("Reset");
+
+			ImGui::DragFloat3("Scale", &m_SceneObjects[selected]->GetTransformComponent()->GetScale()[0], dragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetScale", ImGuiDir_Left)) m_SceneObjects[selected]->GetTransformComponent()->SetScale(glm::vec3(1.f));
+			ImGui::SetItemTooltip("Reset");
+
+			if (typeid(Camera) == typeid(*m_SceneObjects[selected]))
+			{
+				if (Camera* camera = dynamic_cast<Camera*>(m_SceneObjects[selected].get()))
+
 				ImGui::SeparatorText("Camera Properties");
 				ImGui::DragFloat("MoveSpeed", &m_Camera->MoveSpeed, dragSpeedDelta);
+				if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_Camera->MoveSpeed = 0.1f;
+				ImGui::SetItemTooltip("Reset");
+
 
 				ImGui::Checkbox("Perspective Projection", &m_Camera->IsPerspective);
-				ImGui::DragFloat("Fov", &m_Camera->Fov, dragSpeedDelta);
-				ImGui::DragFloat("Near Plane", &m_Camera->NearPlane, dragSpeedDelta);
-				ImGui::DragFloat("Far Plane", &m_Camera->FarPlane, dragSpeedDelta);
+
+				ImGui::DragFloat("Fov", &m_Camera->Fov, dragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) m_Camera->Fov = 45.f;
+				ImGui::SetItemTooltip("Reset");
+
+				ImGui::DragFloat("Near Plane", &m_Camera->NearPlane, dragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) m_Camera->NearPlane = 0.1f;
+				ImGui::SetItemTooltip("Reset");
+
+				ImGui::DragFloat("Far Plane", &m_Camera->FarPlane, dragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) m_Camera->FarPlane = 100.f;
+				ImGui::SetItemTooltip("Reset");
 			}
-			else if (typeid(TestObject) == typeid(*obj))
+			else if (typeid(TestObject) == typeid(*m_SceneObjects[selected]))
 			{
-				if(auto* testObj = dynamic_cast<TestObject*>(obj.get()))
+				if (TestObject* testObj = dynamic_cast<TestObject*>(m_SceneObjects[selected].get()))
 				{
 					ImGui::SeparatorText("Test Object Properties");
-					ImGui::ColorEdit4("Color", &testObj->Color[0], dragSpeedDelta);
+					ImGui::ColorEdit4("Color", &testObj->Color[0]);
 					if (ImGui::Checkbox("Is Rotating", &testObj->IsRotating)) testObj->GetTransformComponent()->SetRotation(glm::vec3(0.f));
-					ImGui::DragFloat("Rotation Speed", &testObj->RotSpeed, dragSpeedDelta);
+
+					ImGui::DragFloat("Rotation Speed", &testObj->RotSpeed, dragSpeedDelta); ImGui::SameLine();
+					if (ImGui::ArrowButton("##Rotation Speed", ImGuiDir_Left)) testObj->RotSpeed = .1f;
+					ImGui::SetItemTooltip("Reset");
 				}
 			}
-		}
-		ImGui::PopID();
-	}
 
+			ImGui::EndChild();
+			ImGui::EndGroup();
+		}
+	}
 	ImGui::End();
 
 	// Move Camera

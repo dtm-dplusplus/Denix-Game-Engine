@@ -5,13 +5,14 @@
 #include "SDL_video.h"
 #include "GL/glew.h"
 #include "imgui.h"
+#include "../../contrib/sdl/include/SDL_syswm.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 
 
 bool Window::Start(const SDL_WindowFlags _flags)
 {
-	SDL_WindowFlags flags = (SDL_WindowFlags)(_flags | SDL_WINDOW_OPENGL);
+	SDL_WindowFlags flags = (SDL_WindowFlags)(_flags | SDL_WINDOW_OPENGL | SDL_WINDOW_MAXIMIZED);
 
 	m_SDL_Window = SDL_CreateWindow("Denix Engine",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

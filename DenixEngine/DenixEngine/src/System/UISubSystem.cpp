@@ -1,5 +1,11 @@
 #include "UISubSystem.h"
 
+#include <SDL_video.h>
+
+#include "Engine.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_sdl2.h"
+
 UISubSystem::UISubSystem()
 {}
 
@@ -17,6 +23,8 @@ void UISubSystem::Initialize()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+	io.IniFilename = NULL;
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
