@@ -56,17 +56,19 @@ TestObject::TestObject() : GameObject(ObjectInitializer("Test Object"))
 	ModelUniformId = Program->GetUniform("u_Model");
 	ProjectionUniformId = Program->GetUniform("u_Projection");
 	ColorUniformId = Program->GetUniform("u_Color");
+	ViewUniformId = Program->GetUniform("u_View");
+
 }
 
 TestObject::~TestObject() = default;
 
 void TestObject::Update()
 {
+	Ref<Camera> camera = Engine::Get().GetEngineScene()->GetCamera();
+	
 
-	glm::mat4 camProjection = Engine::Get().GetEngineScene()->GetCamera()->GetProjectionMatrix();
-
-	// Increase the float angle so next frame the triangle rotates further
-	Angle += RotSpeed;
+	// Rotate the object
+	if (IsRotating) m_TransformComponent->GetRotation() += glm::vec3(0.f, RotSpeed, 0.f);
 
 	// Move this to renderer in the future
 	Program->Bind();
@@ -76,10 +78,15 @@ void TestObject::Update()
 	glUniformMatrix4fv(ModelUniformId, 1, GL_FALSE, glm::value_ptr(m_TransformComponent->GetModel()));
 
 	// Upload the projection matrix
-	glUniformMatrix4fv(ProjectionUniformId, 1, GL_FALSE, glm::value_ptr(camProjection));
+	glUniformMatrix4fv(ProjectionUniformId, 1, GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
 
+	// Upload the view matrix
+	glUniformMatrix4fv(ViewUniformId, 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
 
+	// Upload the color
 	glUniform4fv(ColorUniformId, 1, &Color[0]);
+
+	// Draw the triangle
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	VertexArray::Unbind();
@@ -138,7 +145,7 @@ void DefaultScene::Update()
 				{
 					ImGui::SeparatorText("Test Object Properties");
 					ImGui::ColorEdit4("Color", &testObj->Color[0]);
-					if (ImGui::Checkbox("Is Rotating", &testObj->IsRotating)) testObj->Angle = 0.f;
+					if (ImGui::Checkbox("Is Rotating", &testObj->IsRotating)) testObj->GetTransformComponent()->SetRotation(glm::vec3(0.f));
 					ImGui::DragFloat("Rotation Speed", &testObj->RotSpeed);
 				}
 			}
@@ -147,4 +154,24 @@ void DefaultScene::Update()
 	}
 
 	ImGui::End();
+
+	if (const Uint8* keyboard = SDL_GetKeyboardState(NULL))
+	{
+		if(keyboard[SDL_SCANCODE_W])
+		{
+			DE_LOG(LogScene, Info, "W Pressed")
+		}
+		if (keyboard[SDL_SCANCODE_S])
+		{
+			DE_LOG(LogScene, Info, "S Pressed")
+		}
+		if (keyboard[SDL_SCANCODE_A])
+		{
+			DE_LOG(LogScene, Info, "A Pressed")
+		}
+		if (keyboard[SDL_SCANCODE_D])
+		{
+			DE_LOG(LogScene, Info, "D Pressed")
+		}
+	}
 }

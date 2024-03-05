@@ -27,6 +27,7 @@ public:
 		}
 
 		// View Matrix
+		View = glm::translate(glm::mat4(1.0f), m_TransformComponent->GetPosition());
 	}
 
 	glm::mat4 GetProjectionMatrix() const

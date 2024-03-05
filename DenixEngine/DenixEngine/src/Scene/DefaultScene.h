@@ -28,20 +28,12 @@ private:
 
 	// Matrix
 	GLint ModelUniformId;
-
+	GLint ViewUniformId;
 	GLint ProjectionUniformId;
-	glm::mat4 Projection;
 
 	// Rotation
 	bool IsRotating = true;
-	float Angle = 0.f;
-	float RotSpeed = 5.f;
-
-	// Camera
-	bool IsPerspective = true;
-	float Fov = 45.f;
-	float NearPlane = 0.1f;
-	float FarPlane = 100.f;
+	float RotSpeed = 0.01f;
 
 	friend class DefaultScene;
 };
