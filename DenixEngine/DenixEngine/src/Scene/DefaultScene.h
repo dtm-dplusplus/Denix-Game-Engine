@@ -16,6 +16,9 @@ public:
 	TestObject();
 	~TestObject() override;
 
+	void BeginScene() override;
+	void EndScene() override;
+
 	void Update(float _deltaTime) override;
 private:
 	Ref<VertexArray> Vao;
@@ -24,20 +27,14 @@ private:
 
 	// Color
 	GLint ColorUniformId;
-	glm::vec4 Color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 	// Matrix
 	GLint ModelUniformId;
 	GLint ViewUniformId;
 	GLint ProjectionUniformId;
 
-	// Rotation
-	bool IsRotating = true;
-	float RotSpeed = 0.01f;
-
 	friend class DefaultScene;
 };
-
 
 class DefaultScene final : public Scene
 {
@@ -48,6 +45,8 @@ public:
 	bool Load() override;
 	void Unload() override;
 
+	void BeginScene() override;
+	void EndScene() override;
 	void Update(float _deltaTime) override;
 
 private:
@@ -55,5 +54,7 @@ private:
 	Ref<VertexBuffer> Vbo;
 	Ref<ShaderProgram> Program;
 
-	Ref<TestObject> Obj;
+	//// Rotation
+	//bool IsRotating = false;
+	//float RotSpeed = 0.01f;
 };

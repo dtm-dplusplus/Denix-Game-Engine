@@ -1,22 +1,29 @@
 #include "UISubSystem.h"
 
+#include "SceneSubsystem.h"
+
 #include <SDL_video.h>
 
-#include "Engine.h"
+#include "WindowSubSystem.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 
+UISubSystem* UISubSystem::s_UISubSystem{ nullptr };
+
+
 UISubSystem::UISubSystem()
-{}
+{
+	s_UISubSystem = this;
+}
 
 UISubSystem::~UISubSystem()
-{}
+{
+	s_UISubSystem = nullptr;
+}
 
 
 void UISubSystem::Initialize()
 {
-	const Engine& engine = Engine::Get();
-
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -30,8 +37,17 @@ void UISubSystem::Initialize()
 	ImGui::StyleColorsDark();
 		
 	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForOpenGL(engine.GetEngineWindow()->GetSDLWindow(), SDL_GL_GetCurrentContext());
-	ImGui_ImplOpenGL3_Init(engine.GetWindowSubSystem()->GetGLSLVersion().c_str());
+	if(const WindowSubSystem* windowSystem = WindowSubSystem::Get())
+	{
+		// Setup Platform/Renderer bindings
+		ImGui_ImplSDL2_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(), SDL_GL_GetCurrentContext());
+		ImGui_ImplOpenGL3_Init(windowSystem->GetGLSLVersion().c_str());
+	}
+	else
+	{
+		DE_LOG(LogUISubSystem, Critical, "Failed to initialize UI Subsystem")
+		return;
+	}
 
 	m_Initialized = true;
 }
@@ -41,4 +57,6 @@ void UISubSystem::Deinitialize()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
+
+	m_Initialized = false;
 }

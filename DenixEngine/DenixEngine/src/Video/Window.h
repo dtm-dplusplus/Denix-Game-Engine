@@ -23,6 +23,8 @@ public:
 
 	glm::vec2 GetWindowSize() const { return {m_WinX, m_WinY}; }
 
+	std::string GetTitle() const { return m_Title; }
+
 protected:
 	SDL_Window* m_SDL_Window;
 

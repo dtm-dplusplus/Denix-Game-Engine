@@ -11,11 +11,15 @@ class WindowSubSystem: public SubSystem
 public:
     WindowSubSystem()
     {
+		s_WindowSubSystem = this;
     }
 
     ~WindowSubSystem() override
     {
+		s_WindowSubSystem = nullptr;
     }
+
+	static WindowSubSystem* Get() { return s_WindowSubSystem; }
 
     void Initialize() override
     {
@@ -80,6 +84,8 @@ public:
 	std::string GetGLSLVersion() const { return m_GLSLVersion; }
 	GLint GetGLMajorVersion() const { return m_GLMajorVersion; }
 	GLint GetGLMinorVersion() const { return m_GLMinorVersion; }
+
+
 private:
     Ref<Window> m_Window;
 
@@ -93,5 +99,7 @@ private:
 	GLint m_GLDoubleBuffer = 1;
 
     friend class Engine;
+
+	static WindowSubSystem* s_WindowSubSystem;
 };
 

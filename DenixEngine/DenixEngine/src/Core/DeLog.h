@@ -80,6 +80,7 @@ public:
 		DE_LOG_CREATE(LogGL)
 		DE_LOG_CREATE(LogWindow)
 		DE_LOG_CREATE(LogShader)
+		DE_LOG_CREATE(LogPhysics)
 		DE_LOG_CREATE(LogScene)
 		DE_LOG(Log, Trace, "Logger starting")
 	}
