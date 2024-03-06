@@ -25,13 +25,7 @@ private:
 	Ref<VertexBuffer> Vbo;
 	Ref<ShaderProgram> Program;
 
-	// Color
-	GLint ColorUniformId;
-
-	// Matrix
-	GLint ModelUniformId;
-	GLint ViewUniformId;
-	GLint ProjectionUniformId;
+	
 
 	friend class DefaultScene;
 };

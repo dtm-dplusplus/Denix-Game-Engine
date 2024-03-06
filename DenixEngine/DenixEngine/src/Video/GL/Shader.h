@@ -2,6 +2,7 @@
 #include <GL/glew.h>
 
 #include "GLObject.h"
+#include "Core.h"
 
 // Shader class for debugging
 class Shader: public GLObject
@@ -91,27 +92,35 @@ public:
 
 	GLint GetUniform(const std::string& _uniform)
 	{
-		if (GLint uniform = glGetUniformLocation(m_glID, _uniform.c_str()); uniform != -1)
+		if (const GLint uniform = glGetUniformLocation(m_glID, _uniform.c_str()); uniform != -1)
 		{
-			m_Uniforms.emplace_back(uniform, _uniform);
-			DE_LOG(LogShader, Trace, "Uniform {} found", _uniform)
+			m_ShaderUniforms[_uniform] = uniform;
+			//DE_LOG(LogShader, Trace, "Uniform {} found", _uniform)
 			return uniform;
 		}
 		else
 		{
-			DE_LOG(LogShader, Error, "Uniform {} not found", _uniform)
+			//DE_LOG(LogShader, Error, "Uniform {} not found", _uniform)
 			return uniform;
 		}
 	}
 
 	bool LinkProgram() const;
 
+	/** TEMP */
+	// Color
+	GLint ColorUniformId;
+
+	//// Matrix
+	//GLint ModelUniformId;
+	//GLint ViewUniformId;
+	//GLint ProjectionUniformId;
+
 private:
 
-	// Debug Variables
-	std::vector<std::pair<GLint, std::string>> m_Uniforms;
-
 	std::vector<Ref<Shader>> m_Shaders;
+
+	std::unordered_map<std::string, GLint> m_ShaderUniforms;
 
 	bool ErrorCheck(GLuint _ID) const
 	{

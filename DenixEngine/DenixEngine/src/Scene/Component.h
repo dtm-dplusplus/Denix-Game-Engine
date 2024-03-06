@@ -15,12 +15,12 @@ public:
 	// Constructors
 	Component(const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectID{0}
 	{
-		DE_LOG(LogObject, Info, "Created Component: {} without Parent Object", m_Name)
+		DE_LOG(LogObject, Trace, "Created Component: {} without Parent Object", m_Name)
 	}
 
 	Component(const GLint _parentID, const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectID{ _parentID }
 	{
-		DE_LOG(LogObject, Info, "Created Component: {} with Parent Object ID: {}", m_Name, m_ParentObjectID)
+		DE_LOG(LogObject, Trace, "Created Component: {} with Parent Object ID: {}", m_Name, m_ParentObjectID)
 	}
 
 	// Destructors
@@ -208,11 +208,11 @@ public:
 
 		if(m_IsSimulated)
 		{
-			DE_LOG(LogPhysics, Info, "Physics simulation enabled")
+			DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
 		}
 		else
 		{
-			DE_LOG(LogPhysics, Info, "Physics simulation disabled")
+			DE_LOG(LogPhysics, Trace, "Physics simulation disabled")
 		}
 	}
 

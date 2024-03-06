@@ -33,7 +33,7 @@ public:
 
 		// Register object with object manager (future)
 
-		DE_LOG(LogObject, Info, "Object #{} {} created", m_ID, m_Name.c_str())
+		DE_LOG(LogObject, Trace, "Object #{} {} created", m_ID, m_Name.c_str())
 
 		// else
 		//DE_LOG(LogObject, Error, "Object {} failed to create", m_Name.c_str())
