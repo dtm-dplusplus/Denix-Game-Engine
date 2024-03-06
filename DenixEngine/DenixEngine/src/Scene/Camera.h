@@ -46,7 +46,7 @@ protected:
 	bool IsPerspective = true;
 	float Fov = 45.f;
 	float NearPlane = 0.1f;
-	float FarPlane = 100.f;
+	float FarPlane = 10000.f;
 
 
 	glm::mat4 Projection = glm::mat4(1.0f);

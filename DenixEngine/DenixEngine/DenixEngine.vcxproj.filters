@@ -116,6 +116,9 @@
     <ClCompile Include="src\Scene\Object.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\System\ShaderSubSystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DePch.h">
@@ -201,6 +204,9 @@
     </ClInclude>
     <ClInclude Include="src\Scene\Object.h">
       <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\ShaderSubSystem.h">
+      <Filter>src\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

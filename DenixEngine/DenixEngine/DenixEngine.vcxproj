@@ -214,6 +214,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClCompile Include="src\System\SubSystem.cpp" />
     <ClCompile Include="src\System\WindowSubSystem.cpp" />
     <ClCompile Include="src\System\UISubSystem.cpp" />
+    <ClCompile Include="src\System\ShaderSubSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Scene\Camera.h" />
@@ -244,6 +245,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="src\System\SubSystem.h" />
     <ClInclude Include="src\System\WindowSubSystem.h" />
     <ClInclude Include="src\System\UISubSystem.h" />
+    <ClInclude Include="src\System\ShaderSubSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -63,7 +63,7 @@ public:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        DE_LOG(LogWindow, Info, "Window Subsystem Initialized")
+        DE_LOG(LogWindow, Trace, "Window Subsystem Initialized")
 
         m_Initialized = true;
     }
@@ -98,8 +98,9 @@ private:
 	GLint m_GLStencilSize = 8;
 	GLint m_GLDoubleBuffer = 1;
 
-    friend class Engine;
 
 	static WindowSubSystem* s_WindowSubSystem;
+
+	friend class Engine;
 };
 

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "SubSystem.h"
+#include "Core.h"
 
+;
 class UISubSystem: public SubSystem
 {
 public:

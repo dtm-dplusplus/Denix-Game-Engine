@@ -33,9 +33,9 @@ public:
 				return logger;
 		}
 
-		DE_LOG(log, Error, "Logger not found: {}", _name.data())
+		DE_LOG(Log, Error, "Logger not found: {}", _name.data())
 
-			return GetLogger("Log");
+		return m_Loggers[0];
 	}
 
 	static void CreateLogger(const std::string_view _name)
@@ -53,7 +53,7 @@ public:
 		}
 		else
 		{
-			DE_LOG(log, Error, "Failed to create logger: {}", _name.data())
+			DE_LOG(Log, Error, "Failed to create logger: {}", _name.data())
 		}
 	}
 
@@ -76,12 +76,12 @@ public:
 		// Default log catergories Should be stored in a config file
 		DE_LOG_CREATE(Log)
 		DE_LOG_CREATE(LogEngine)
-		DE_LOG_CREATE(LogObject)
+
+		
 		DE_LOG_CREATE(LogGL)
 		DE_LOG_CREATE(LogWindow)
 		DE_LOG_CREATE(LogShader)
-		DE_LOG_CREATE(LogPhysics)
-		DE_LOG_CREATE(LogScene)
+		
 		DE_LOG(Log, Trace, "Logger starting")
 	}
 

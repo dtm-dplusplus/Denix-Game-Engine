@@ -8,12 +8,15 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 
+
 UISubSystem* UISubSystem::s_UISubSystem{ nullptr };
 
 
 UISubSystem::UISubSystem()
 {
 	s_UISubSystem = this;
+
+	DE_LOG_CREATE(LogUISubSystem)
 }
 
 UISubSystem::~UISubSystem()
@@ -49,6 +52,7 @@ void UISubSystem::Initialize()
 		return;
 	}
 
+	DE_LOG(LogUISubSystem, Trace, "UI SubSystem Initialized")
 	m_Initialized = true;
 }
 

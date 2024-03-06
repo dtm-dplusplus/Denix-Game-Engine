@@ -1,5 +1,4 @@
 #pragma once
-#include "../Core.h"
 
 class SubSystem
 {
@@ -20,4 +19,3 @@ protected:
 
 	friend class Engine;
 };
-
