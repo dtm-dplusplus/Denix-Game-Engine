@@ -7,11 +7,11 @@ SceneSubSystem* SceneSubSystem::s_SceneSubSystem{ nullptr };
 
 void SceneSubSystem::Update(float _deltaTime)
 {
-	const WindowSubSystem* windowSystem = WindowSubSystem::Get();
-
 	// Update the Scene Panel
+	const WindowSubSystem* windowSystem = WindowSubSystem::Get();
 	{
 		if (!m_ActiveScene) return;
+
 
 		static float dragSpeed = 1.0f;
 		static bool showDemoWindow = false;
@@ -21,7 +21,7 @@ void SceneSubSystem::Update(float _deltaTime)
 		static bool p_open = true;
 		glm::vec2 winSize;
 
-		if (const WindowSubSystem* windowSystem = WindowSubSystem::Get())
+		if (windowSystem)
 		{
 			winSize = windowSystem->GetWindow()->GetWindowSize();
 		}
@@ -171,6 +171,28 @@ void SceneSubSystem::Update(float _deltaTime)
 
 						// Physics Simulation
 						if (ImGui::Checkbox("Simulate Physics", &isSimulated)) physics->ToggleSimulation();
+
+						// Step Simulation 
+						const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };
+						static int item_current_idx = 0; // Here we store our selection data as an index.
+						const char* combo_preview_value = stepMethods[item_current_idx];  // Pass in the preview value visible before opening the combo (it could be anything)
+						if (ImGui::BeginCombo("Step Method", combo_preview_value))
+						{
+							for (int n = 0; n < IM_ARRAYSIZE(stepMethods); n++)
+							{
+								const bool is_selected = (item_current_idx == n);
+								if (ImGui::Selectable(stepMethods[n], is_selected))
+								{
+									item_current_idx = n;
+									physics->SetStepMethod(static_cast<PhysicsComponent::StepMethod>(n));
+								}
+
+								// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+								if (is_selected)
+									ImGui::SetItemDefaultFocus();
+							}
+							ImGui::EndCombo();
+						}
 
 						// Gravity
 						if (!isCustomGravity) ImGui::BeginDisabled();

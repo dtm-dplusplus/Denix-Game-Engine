@@ -128,25 +128,17 @@ public:
 	PhysicsComponent() : Component(ObjectInitializer("Physics Component")) {}
 	PhysicsComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Physics Component")) {}
 
-	PhysicsComponent& operator=(const PhysicsComponent& _other)
-	{
-		m_IsSimulated = _other.m_IsSimulated;
-		m_IsCustomGravity = _other.m_IsCustomGravity;
-
-		m_Mass = _other.m_Mass;
-		m_Gravity = _other.m_Gravity;
-		m_Drag = _other.m_Drag;
-
-		m_Velocity = _other.m_Velocity;
-		m_AngularVelocity = _other.m_AngularVelocity;
-		m_Acceleration = _other.m_Acceleration;
-		m_Force = _other.m_Force;
-
-		return *this;
-	}
 
 	// Destructors
 	~PhysicsComponent() override = default;
+
+	enum class StepMethod
+	{
+		Euler,
+		RK2,
+		RK4,
+		Verlet
+	};
 
 	void Initialize() override
 	{
@@ -178,7 +170,24 @@ public:
 		// Compute collision response
 
 		// Step integration
-		StepEuler(_deltaTime);
+		switch(m_StepMethod)
+		{
+			case StepMethod::Euler:
+				StepEuler(_deltaTime);
+				break;
+
+			case StepMethod::RK2:
+				StepRK2(_deltaTime);
+				break;
+
+			case StepMethod::RK4:
+				StepRK4(_deltaTime);
+				break;
+
+			case StepMethod::Verlet:
+				StepVerlet(_deltaTime);
+				break;
+		}
 	}
 
 public:
@@ -198,9 +207,35 @@ public:
 		m_TempPosition = disp;
 	}
 
-	void StepRK2(float deltaTs){}
-	void StepRK4(float deltaTs){}
-	void StepVerlet(float deltaTs){}
+	void StepRK2(float _deltaTime)
+	{
+		glm::vec3 netF;
+		glm::vec3 accel;
+
+		// Calculate k1
+		netF = m_Force - m_Drag * m_Velocity;
+		accel = netF / m_Mass;
+		const glm::vec3 k1 = accel * _deltaTime;
+
+		// Calculate k2
+		netF = m_Force - m_Drag * (m_Velocity + k1);
+		accel = netF / m_Mass;
+		const glm::vec3 k2 = accel * _deltaTime;
+
+		// Calculate new velocity at time t + dt
+		m_Velocity += (k1 + k2) / 2.f;
+
+		// Calculate new displacement at time t + dt
+		m_TempPosition += m_Velocity * _deltaTime;
+	}
+
+	void StepRK4(float _deltaTime)
+	{
+	}
+
+	void StepVerlet(float _deltaTime)
+	{
+	}
 
 	void ToggleSimulation()
 	{
@@ -237,6 +272,19 @@ public:
 	bool IsSimulated() const { return m_IsSimulated; }
 	bool& IsSimulated() { return m_IsSimulated; }
 
+	void SetStepMethod(StepMethod _method) 
+	{
+		m_StepMethod = _method; 
+		
+		
+		DE_LOG(LogPhysics, Trace, "Physics step method set to: {}", GetStepMethod(_method))
+	}
+	StepMethod GetStepMethod() const { return m_StepMethod; }
+	std::string GetStepMethod(StepMethod _method) const
+	{
+		const static std::string s[]{ "Euler", "k2", "k4", "Verlet" };
+		return s[static_cast<int>(m_StepMethod)];
+	}
 	bool IsCustomGravity() const { return m_IsCustomGravity; }
 	bool& IsCustomGravity() { return m_IsCustomGravity; }
 
@@ -270,6 +318,8 @@ private:
 	 */
 	bool m_IsCustomGravity = false;
 
+	/** Method used to step the physics simulation */
+	StepMethod m_StepMethod = StepMethod::Euler;
 private:
 	/** Mass of the object */
 	float m_Mass = 1.0f;
@@ -305,12 +355,10 @@ class RenderComponent : public Component
 public:
 	RenderComponent() : Component(ObjectInitializer("Render Component"))
 	{
-		m_DebugColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.f);
 	}
 
 	RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
 	{
-		m_DebugColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.f);
 	}
 
 	~RenderComponent() override = default;
@@ -332,5 +380,5 @@ public:
 	glm::vec4 SetDebugColor(const glm::vec4& _color) { return m_DebugColor = _color; }
 
 private:
-	glm::vec4 m_DebugColor = glm::vec4(0.2f,0.2f,0.2f, 1.f);
+	glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 };

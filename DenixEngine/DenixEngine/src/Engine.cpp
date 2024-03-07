@@ -68,7 +68,7 @@ void Engine::Run()
 
 		m_WindowSubSystem->m_Window->SwapBuffers();
 
-		SDL_Delay(30); // Delay for physics
+		SDL_Delay(5); // Delay for physics
 	}
 
 	Deinitialize();

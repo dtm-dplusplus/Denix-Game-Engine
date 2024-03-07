@@ -6,7 +6,7 @@
 
 #include "Video/GL/VertexBuffer.h"
 #include "Video/GL/VertexArray.h"
-#include "Video/GL/Shader.h"
+#include "Video/GL/GLShader.h"
 
 #include "Object.h"
 #include "GameObject.h"
@@ -60,7 +60,7 @@ void TestObject::Update(float _deltaTime)
 {
 	ShaderSubSystem* shaderSubSystem = ShaderSubSystem::Get();
 
-	const Ref<ShaderProgram> shader = shaderSubSystem->GetShader("Shader");
+	const Ref<GLShader> shader = shaderSubSystem->GetShader("DebugShader");
 
 	// Move this to renderer in the future
 	shader->Bind();
@@ -86,7 +86,7 @@ void TestObject::Update(float _deltaTime)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	VertexArray::Unbind();
-	ShaderProgram::Unbind();
+	GLShader::Unbind();
 }
 
 ////////////// DefaultScene ////////////////////////

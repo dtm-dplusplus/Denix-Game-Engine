@@ -8,7 +8,7 @@
 
 class VertexArray;
 class VertexBuffer;
-class ShaderProgram;
+class GLShader;
 
 class TestObject : public GameObject
 {
@@ -23,7 +23,7 @@ public:
 private:
 	Ref<VertexArray> Vao;
 	Ref<VertexBuffer> Vbo;
-	Ref<ShaderProgram> Program;
+	Ref<GLShader> Program;
 
 	
 
@@ -46,7 +46,7 @@ public:
 private:
 	Ref<VertexArray> Vao;
 	Ref<VertexBuffer> Vbo;
-	Ref<ShaderProgram> Program;
+	Ref<GLShader> Program;
 
 	//// Rotation
 	//bool IsRotating = false;

@@ -65,7 +65,7 @@
     <ClCompile Include="src\Video\GL\GLObject.cpp">
       <Filter>src\Video\GL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Video\GL\Shader.cpp">
+    <ClCompile Include="src\Video\GL\GLShader.cpp">
       <Filter>src\Video\GL</Filter>
     </ClCompile>
     <ClCompile Include="src\Video\GL\VertexBuffer.cpp">
@@ -154,7 +154,7 @@
     <ClInclude Include="src\Video\GL\GLObject.h">
       <Filter>src\Video\GL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Video\GL\Shader.h">
+    <ClInclude Include="src\Video\GL\GLShader.h">
       <Filter>src\Video\GL</Filter>
     </ClInclude>
     <ClInclude Include="src\Video\GL\VertexBuffer.h">

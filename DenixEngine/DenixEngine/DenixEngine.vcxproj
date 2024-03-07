@@ -182,7 +182,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Video\GL\GLObject.cpp" />
-    <ClCompile Include="src\Video\GL\Shader.cpp">
+    <ClCompile Include="src\Video\GL\GLShader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
@@ -234,7 +234,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Video\GL\GLObject.h" />
-    <ClInclude Include="src\Video\GL\Shader.h" />
+    <ClInclude Include="src\Video\GL\GLShader.h" />
     <ClInclude Include="src\Core\File.h" />
     <ClInclude Include="src\Core\DeLog.h" />
     <ClInclude Include="src\DePch.h" />
