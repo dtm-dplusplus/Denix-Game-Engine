@@ -18,13 +18,12 @@ namespace Denix
 
 			m_PhysicsComponent = std::make_shared<PhysicsComponent>(m_ID);
 
+			m_MeshComponent = std::make_shared<MeshComponent>(m_ID);
+
 			m_RenderComponent = std::make_shared<RenderComponent>(m_ID);
-		}
-
-		GameObject(const GameObject& _other)
-		{
 
 		}
+
 		// Destructors
 		~GameObject() override = default;
 
@@ -32,7 +31,9 @@ namespace Denix
 		{
 			m_TransformComponent->BeginScene();
 			m_PhysicsComponent->BeginScene();
+			m_MeshComponent->BeginScene();
 			m_RenderComponent->BeginScene();
+
 		}
 		void EndScene() override
 		{
@@ -44,12 +45,16 @@ namespace Denix
 
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
 
+		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
+
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 	protected:
 		Ref<TransformComponent> m_TransformComponent;
 
 		Ref<PhysicsComponent> m_PhysicsComponent;
+
+		Ref<MeshComponent> m_MeshComponent;
 
 		Ref<RenderComponent> m_RenderComponent;
 	};

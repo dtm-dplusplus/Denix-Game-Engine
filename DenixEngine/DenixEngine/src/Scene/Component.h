@@ -6,6 +6,10 @@
 #include "Core.h"
 
 #include "Object.h"
+#include "Video/GL/VertexArray.h"
+#include "Video/GL/VertexBuffer.h"
+#include "Video/GL/GLShader.h"
+#include "System/ShaderSubSystem.h"
 
 namespace Denix
 {
@@ -46,6 +50,75 @@ namespace Denix
 		/* Object this component is attacthed to */
 		GLint m_ParentObjectID;
 	};
+
+
+	constexpr float SqureData[] = {
+			-0.5f, 0.5f, 0.0f, // top left point
+			0.5f, 0.5f, 0.0f, // top right point
+			0.5f, -0.5f, 0.0f, // bottom right point
+			0.5f, -0.5f, 0.0f, // bottom right point
+			-0.5f, -0.5f, 0.0f, // bottom left point
+			-0.5f, 0.5f, 0.0f // top left point
+	};
+
+	class MeshComponent : public Component
+	{
+	public:
+		MeshComponent() : Component(ObjectInitializer("Mesh Component")) {}
+
+		MeshComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Mesh Component")) {}
+
+		MeshComponent(const GLint _parentID, 
+			const GLenum _target, const GLsizei _size, const void* _data, const GLuint _count, const GLenum _type) :
+				Component(_parentID, ObjectInitializer("Mesh Component"))
+		{
+			Vbo = std::make_shared<VertexBuffer>(_target, sizeof(SqureData), SqureData, _count, _type);
+
+			Vao = std::make_shared<VertexArray>();
+			Vao->GenVertexArray();
+			Vao->Bind();
+
+			// Bind the vbos & attribs
+			Vbo->Bind(Vbo->GetTarget());
+			Vao->AttribPtr(Vbo->GetCount(), Vbo->GetType());
+
+			// Reset the state
+			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+			VertexArray::Unbind();
+		}
+
+		~MeshComponent() override =  default;
+
+		void Initialize() override
+		{
+
+		}
+
+		void Deinitialize() override
+		{
+		}
+
+		void BeginScene() override
+		{
+
+		}
+
+		void EndScene() override
+		{
+			
+		}
+
+		void Update(float _deltaTime) override
+		{
+			
+		}
+
+	private:
+		Ref<VertexArray> Vao;
+		Ref<VertexBuffer> Vbo;
+	};
+
+
 
 	class TransformComponent : public Component
 	{
@@ -377,9 +450,23 @@ namespace Denix
 		{
 		}
 
-		void BeginScene() override{}
+		void BeginScene() override
+		{
+			if (!m_Shader)
+			{
+				if (const Ref<GLShader> shader = ShaderSubSystem::Get()->GetShader("DebugShader"))
+				{
+					m_Shader = shader;
+				}
+			}
+		}
+
 		void EndScene() override{}
 
+		void Update(float _deltaTime) override
+		{
+
+		}
 	public:
 		glm::vec4 GetDebugColor() const { return m_DebugColor; }
 		glm::vec4& GetDebugColor() { return m_DebugColor; }
@@ -387,5 +474,6 @@ namespace Denix
 
 	private:
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
+		Ref<GLShader> m_Shader;
 	};
 }
