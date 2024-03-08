@@ -8,8 +8,9 @@
 class Window
 {
 public:
-
 	Window(): m_SDL_Window{nullptr}, m_IsOpen{false}, m_Title{"Window"}, m_WinX{800}, m_WinY{600} {}
+
+	virtual ~Window() = default;
 
 	virtual bool Start(SDL_WindowFlags _flags);
 	virtual void Stop();

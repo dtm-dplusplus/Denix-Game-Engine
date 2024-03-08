@@ -74,7 +74,7 @@ public:
 
 		SDL_Quit();
 
-        DE_LOG(LogWindow, Info, "Window Subsystem Deinitialized")
+        DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
 
         m_Initialized = false;
     }   

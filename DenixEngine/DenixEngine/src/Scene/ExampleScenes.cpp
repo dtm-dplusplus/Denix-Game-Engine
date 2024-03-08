@@ -1,5 +1,5 @@
 #include "DePch.h"
-#include "DefaultScene.h"
+#include "ExampleScenes.h"
 
 #include "imgui.h"
 
@@ -90,14 +90,18 @@ void TestObject::Update(float _deltaTime)
 }
 
 ////////////// DefaultScene ////////////////////////
-DefaultScene::DefaultScene() : Scene(ObjectInitializer("Object Scene"))
+DefaultScene::DefaultScene() : Scene(ObjectInitializer("DefaultScene"))
 {
 }
 
-DefaultScene::~DefaultScene() = default;
+DefaultScene::~DefaultScene()
+{
+}
 
 bool DefaultScene::Load()
 {
+	Scene::Load();
+
 	m_SceneObjects.push_back(std::make_shared<TestObject>());
 	return true;
 }
@@ -111,7 +115,6 @@ void DefaultScene::BeginScene()
 {
 	Scene::BeginScene();
 
-
 }
 
 void DefaultScene::EndScene()
@@ -121,5 +124,5 @@ void DefaultScene::EndScene()
 
 void DefaultScene::Update(float _deltaTime)
 {
-	
+	Scene::Update(_deltaTime);
 }

@@ -161,11 +161,9 @@ public:
 		// Clear forces
 		m_Force = glm::vec3(0.f);
 
-		// Add acceleration due to gravity
-		m_Acceleration += m_Gravity;
 
 		// Compute forces
-		m_Force = m_Mass * m_Acceleration;
+		m_Force = m_Mass * m_Gravity;
 
 		// Compute collision response
 
@@ -187,6 +185,13 @@ public:
 			case StepMethod::Verlet:
 				StepVerlet(_deltaTime);
 				break;
+		}
+
+		// Temp Collision Response
+		if (m_TempPosition.y <= 0.f)
+		{
+			m_TempPosition.y = 0.f;
+			m_Velocity = glm::vec3(0.f);
 		}
 	}
 

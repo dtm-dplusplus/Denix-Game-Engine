@@ -19,6 +19,10 @@ public:
 		m_RenderComponent = std::make_shared<RenderComponent>(m_ID);
 	}
 
+	GameObject(const GameObject& _other)
+	{
+
+	}
 	// Destructors
 	~GameObject() override = default;
 
@@ -34,7 +38,6 @@ public:
 
 	void Update(float _deltaTime) override {}
 
-public:
 	Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 
 	Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }

@@ -49,7 +49,7 @@ void Engine::Deinitialize()
 	m_ShaderSubSystem->Deinitialize();
 	m_WindowSubSystem->Deinitialize();
 
-	DE_LOG(LogEngine, Info, "Engine Deinitialized")
+	DE_LOG(LogEngine, Trace, "Engine Deinitialized")
 
 	DeLog::Stop();
 }

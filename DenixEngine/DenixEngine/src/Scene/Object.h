@@ -48,8 +48,11 @@ public:
 	// Destructors
 	virtual ~Object() = default;
 
+	// Called when the scene is set as active
 	virtual void BeginScene() {}
 	virtual void EndScene() {}
+
+
 
 	virtual void Update(float _deltaTime) {}
 

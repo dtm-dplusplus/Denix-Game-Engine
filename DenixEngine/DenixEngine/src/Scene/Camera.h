@@ -10,9 +10,16 @@ class Camera: public GameObject
 public:
 	Camera(): GameObject(ObjectInitializer("Camera"))
 	{
-		m_TransformComponent->SetPosition(glm::vec3(0.0f, 0.0f, -10.f));
+		m_TransformComponent->SetPosition(glm::vec3(0.0f, 0.0f, -25.f));
 	}
+
 	~Camera() override = default;
+
+	/*enum class Projection
+	{
+		Perspective,
+		Orthographic
+	};*/
 
 	void Update(float _deltaTime) override
 	{
@@ -42,6 +49,8 @@ public:
 
 protected:
 	// Camera
+	//Projection m_ProjectionType = Projection::Perspective;
+
 	float MoveSpeed = 0.1f;
 	bool IsPerspective = true;
 	float Fov = 45.f;
@@ -54,6 +63,5 @@ protected:
 	glm::vec2 Aspect = glm::vec2(800.f, 600.f);
 
 	friend class SceneSubSystem;
-	friend class DefaultScene;
 };
 

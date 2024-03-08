@@ -2,19 +2,17 @@
 #include "Window.h"
 
 #include "SDL.h"
-#include "SDL_video.h"
 #include "GL/glew.h"
 #include "imgui.h"
-#include "../../contrib/sdl/include/SDL_syswm.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 
 
 bool Window::Start(const SDL_WindowFlags _flags)
 {
-	SDL_WindowFlags flags = (SDL_WindowFlags)(_flags | SDL_WINDOW_OPENGL | SDL_WINDOW_MAXIMIZED);
+	const SDL_WindowFlags flags = static_cast<SDL_WindowFlags>(_flags | SDL_WINDOW_OPENGL | SDL_WINDOW_MAXIMIZED);
 
-	m_SDL_Window = SDL_CreateWindow("Denix Engine",
+	m_SDL_Window = SDL_CreateWindow(m_Title.c_str(),
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		m_WinX, m_WinY, flags);
 
@@ -51,7 +49,7 @@ bool Window::Start(const SDL_WindowFlags _flags)
 
 	m_IsOpen = true;
 
-	DE_LOG(LogWindow, Info, "Create Window: {} success! Res: {}x{}", m_Title, m_WinX, m_WinY)
+	DE_LOG(LogWindow, Trace, "Created Window: Title: {} success! Res: {}x{}", m_Title, m_WinX, m_WinY)
 
 	return true;
 }

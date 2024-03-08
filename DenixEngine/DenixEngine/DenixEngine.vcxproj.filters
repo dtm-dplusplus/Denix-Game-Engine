@@ -83,7 +83,7 @@
     <ClCompile Include="src\Core.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\DefaultScene.cpp">
+    <ClCompile Include="src\Scene\ExampleScenes.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\System\SubSystem.cpp">
@@ -172,7 +172,7 @@
     <ClInclude Include="src\Core.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\DefaultScene.h">
+    <ClInclude Include="src\Scene\ExampleScenes.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\System\SubSystem.h">

@@ -10,19 +10,65 @@
 class Scene: public Object
 {
 public:
-	Scene(const ObjectInitializer& _object_init) : Object(_object_init) {}
+
+	Scene() = default;
+
+	Scene(const ObjectInitializer& _object_init) : Object(_object_init), m_Camera{ std::make_shared<Camera>() }
+	{
+	}
+
+	Scene(const Scene& _other) : Object(_other), m_IsLive(_other.m_IsLive), m_SceneGravity(_other.m_SceneGravity)
+	{
+		// Deep copy the m_SceneObjects vector
+		for (const auto& gameObject : _other.m_SceneObjects)
+		{
+			m_SceneObjects.push_back(std::make_shared<GameObject>(*gameObject));
+		}
+
+		// Deep copy the m_Camera object
+		if (_other.m_Camera)
+		{
+			m_Camera = std::make_shared<Camera>(*_other.m_Camera);
+		}
+	}
+
 	~Scene() override = default;
 
-	virtual bool Load() = 0;
+	virtual bool Load()
+	{
+		m_Camera = std::make_shared<Camera>();
+
+		if (!m_Camera)
+		{
+			return false;
+		}
+
+		return true;
+	}
 
 	virtual void Unload() 
 	{
-		m_SceneObjects.clear();
-		m_Camera.reset();
 	}
 
-	void BeginScene() override {}
-	void EndScene() override {}
+	void BeginScene() override 
+	{
+		m_IsLive = true;
+
+		for (const auto& obj : m_SceneObjects)
+		{
+			obj->BeginScene();
+		}
+	}
+
+	void EndScene() override 
+	{
+		m_IsLive = false;
+
+		for (const auto& obj : m_SceneObjects)
+		{
+			obj->EndScene();
+		}
+	}
 
 	void Update(float _deltaTime) override{}
 

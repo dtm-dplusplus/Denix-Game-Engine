@@ -12,13 +12,12 @@ void SceneSubSystem::Update(float _deltaTime)
 	{
 		if (!m_ActiveScene) return;
 
-
-		static float dragSpeed = 1.0f;
+		static bool scenePanelOpen = true;
 		static bool showDemoWindow = false;
 
+		static float dragSpeed = 1.0f;
 		const float dragSpeedDelta = dragSpeed * _deltaTime;
 
-		static bool p_open = true;
 		glm::vec2 winSize;
 
 		if (windowSystem)
@@ -26,11 +25,11 @@ void SceneSubSystem::Update(float _deltaTime)
 			winSize = windowSystem->GetWindow()->GetWindowSize();
 		}
 
-		ImGui::SetNextWindowSize(ImVec2(winSize.x / 4, winSize.y), ImGuiCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(winSize.x / 3, winSize.y), ImGuiCond_Once);
 		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
 
 		// Scene Panel 
-		ImGui::Begin("Scene Panel", &p_open, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Scene Panel", &scenePanelOpen, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse);
 		{
 			// Play/Pause/Stop/Reload Widgets
 			{
@@ -41,14 +40,14 @@ void SceneSubSystem::Update(float _deltaTime)
 					if (ImGui::Button("Play"))
 					{
 						DE_LOG(LogSceneSubSystem, Trace, "Play Button Pressed")
-							if (sceneSystem)
-							{
-								sceneSystem->PlayScene();
+						if (sceneSystem)
+						{
+							sceneSystem->PlayScene();
 
-								// Skip this frame
-								ImGui::End();
-								return;
-							}
+							// Skip this frame
+							ImGui::End();
+							return;
+						}
 					}
 				}
 				else
@@ -57,14 +56,14 @@ void SceneSubSystem::Update(float _deltaTime)
 					if (ImGui::Button("Pause"))
 					{
 						DE_LOG(LogSceneSubSystem, Trace, "Pause Button Pressed")
-							if (sceneSystem)
-							{
-								sceneSystem->PauseScene();
+						if (sceneSystem)
+						{
+							sceneSystem->PauseScene();
 
-								// Skip this frame
-								ImGui::End();
-								return;
-							}
+							// Skip this frame
+							ImGui::End();
+							return;
+						}
 					}
 
 					// Stop Button
@@ -72,14 +71,14 @@ void SceneSubSystem::Update(float _deltaTime)
 					if (ImGui::Button("Stop"))
 					{
 						DE_LOG(LogSceneSubSystem, Trace, "Stop Button Pressed")
-							if (sceneSystem)
-							{
-								sceneSystem->StopScene();
+						if (sceneSystem)
+						{
+							sceneSystem->StopScene();
 
-								// Skip this frame
-								ImGui::End();
-								return;
-							}
+							// Skip this frame
+							ImGui::End();
+							return;
+						}
 					}
 				}
 			}
@@ -101,7 +100,7 @@ void SceneSubSystem::Update(float _deltaTime)
 
 				ImGui::Checkbox("Perspective Projection", &m_ActiveScene->m_Camera->IsPerspective);
 
-				ImGui::DragFloat("Fov", &m_ActiveScene->m_Camera->Fov, dragSpeedDelta); ImGui::SameLine();
+				ImGui::DragFloat("Fov", &m_ActiveScene->m_Camera->Fov, dragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
 				if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) m_ActiveScene->m_Camera->Fov = 45.f;
 				ImGui::SetItemTooltip("Reset");
 
@@ -164,7 +163,7 @@ void SceneSubSystem::Update(float _deltaTime)
 						const glm::vec3& vel = physics->GetVelocity();
 						const glm::vec3& avel = physics->GetAngularVelocity();
 						const glm::vec3& acc = physics->GetAcceleration();
-						const glm::vec3& force = physics->GetForce();
+						const glm::vec3 force = physics->GetForce();
 						float& mass = physics->GetMass();
 						glm::vec3& drag = physics->GetDrag();
 						glm::vec3& gravity = physics->GetGravity();
@@ -174,16 +173,16 @@ void SceneSubSystem::Update(float _deltaTime)
 
 						// Step Simulation 
 						const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };
-						static int item_current_idx = 0; // Here we store our selection data as an index.
-						const char* combo_preview_value = stepMethods[item_current_idx];  // Pass in the preview value visible before opening the combo (it could be anything)
-						if (ImGui::BeginCombo("Step Method", combo_preview_value))
+						static int itemCurrent = 0; // Here we store our selection data as an index.
+						const char* comboPreview = stepMethods[itemCurrent];  // Pass in the preview value visible before opening the combo (it could be anything)
+						if (ImGui::BeginCombo("Step Method", comboPreview))
 						{
 							for (int n = 0; n < IM_ARRAYSIZE(stepMethods); n++)
 							{
-								const bool is_selected = (item_current_idx == n);
+								const bool is_selected = (itemCurrent == n);
 								if (ImGui::Selectable(stepMethods[n], is_selected))
 								{
-									item_current_idx = n;
+									itemCurrent = n;
 									physics->SetStepMethod(static_cast<PhysicsComponent::StepMethod>(n));
 								}
 
@@ -208,10 +207,10 @@ void SceneSubSystem::Update(float _deltaTime)
 						ImGui::DragFloat3("Drag", &drag[0], dragSpeedDelta);
 
 						// Viewable Properties
-						ImGui::Text("Velocity x: %d y: %d z: %d", vel.x, vel.y, vel.z);
-						ImGui::Text("Acceleration x: %d y: %d z: %d", acc.x, acc.y, acc.z);
-						ImGui::Text("Force x: %d y: %d z: %d", force.x, force.y, force.z);
-						ImGui::Text("Angular Velocity x: %d y: %d z: %d", avel.x, avel.y, avel.z);
+						ImGui::Text("Velocity			x: %.3f y: %.3f z: %.3f", vel.x, vel.y, vel.z);
+						ImGui::Text("Acceleration		x: %.3f y: %.3f z: %.3f", acc.x, acc.y, acc.z);
+						ImGui::Text("Force				x: %.3f y: %.3f z: %.3f", force.x, force.y, force.z);
+						ImGui::Text("Angular Velocity	x: %.3f y: %.3f z: %.3f", avel.x, avel.y, avel.z);
 					}
 
 					// Render Component
