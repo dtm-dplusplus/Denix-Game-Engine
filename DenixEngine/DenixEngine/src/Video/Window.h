@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "Core.h"
 
 #include "SDL_video.h"
 #include "glm/glm.hpp"

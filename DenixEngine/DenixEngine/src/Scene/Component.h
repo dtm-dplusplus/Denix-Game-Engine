@@ -72,9 +72,9 @@ namespace Denix
 			const GLenum _target, const GLsizei _size, const void* _data, const GLuint _count, const GLenum _type) :
 				Component(_parentID, ObjectInitializer("Mesh Component"))
 		{
-			Vbo = std::make_shared<VertexBuffer>(_target, sizeof(SqureData), SqureData, _count, _type);
+			Vbo = MakeRef<VertexBuffer>(_target, sizeof(SqureData), SqureData, _count, _type);
 
-			Vao = std::make_shared<VertexArray>();
+			Vao = MakeRef<VertexArray>();
 			Vao->GenVertexArray();
 			Vao->Bind();
 

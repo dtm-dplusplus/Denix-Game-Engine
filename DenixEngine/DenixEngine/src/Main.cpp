@@ -2,9 +2,11 @@
 
 int main(int argc, char* args[])
 {
-	const std::unique_ptr<Denix::Engine> engine = std::make_unique<Denix::Engine>();
+	const auto engine = new Denix::Engine();
 
 	engine->Run();
+
+	delete engine;
 
 	return 0;
 }

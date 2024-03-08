@@ -26,7 +26,7 @@ namespace Denix
 		void Initialize() override
 		{
 			//Create window
-			if(const Ref<SDL_GLWindow> window = std::make_shared<SDL_GLWindow>())
+			if(const Ref<SDL_GLWindow> window = MakeRef<SDL_GLWindow>())
 			{
 				if(!window->Initialize()) return;
 				m_Window = window;

@@ -14,7 +14,7 @@ namespace Denix
 
 		Scene() = default;
 
-		Scene(const ObjectInitializer& _object_init) : Object(_object_init), m_Camera{ std::make_shared<Camera>() }
+		Scene(const ObjectInitializer& _object_init) : Object(_object_init), m_Camera{ MakeRef<Camera>() }
 		{
 		}
 
@@ -23,13 +23,13 @@ namespace Denix
 			// Deep copy the m_SceneObjects vector
 			for (const auto& gameObject : _other.m_SceneObjects)
 			{
-				m_SceneObjects.push_back(std::make_shared<GameObject>(*gameObject));
+				m_SceneObjects.push_back(MakeRef<GameObject>(*gameObject));
 			}
 
 			// Deep copy the m_Camera object
 			if (_other.m_Camera)
 			{
-				m_Camera = std::make_shared<Camera>(*_other.m_Camera);
+				m_Camera = MakeRef<Camera>(*_other.m_Camera);
 			}
 		}
 
@@ -37,7 +37,7 @@ namespace Denix
 
 		virtual bool Load()
 		{
-			m_Camera = std::make_shared<Camera>();
+			m_Camera = MakeRef<Camera>();
 
 			if (!m_Camera)
 			{

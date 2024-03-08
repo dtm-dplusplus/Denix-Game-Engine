@@ -33,7 +33,7 @@ namespace Denix
 
 		void Initialize() override
 		{
-			LoadScene(std::make_shared<DefaultScene>());
+			LoadScene(MakeRef<DefaultScene>());
 			OpenScene("DefaultScene");
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Initialized")
 
@@ -145,7 +145,7 @@ namespace Denix
 				// TEMP : this may cause memory leaks. Will move to a better solution later
 				DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
 
-				LoadScene(std::make_shared<DefaultScene>());
+				LoadScene(MakeRef<DefaultScene>());
 				OpenScene("DefaultScene");
 			}
 		}
