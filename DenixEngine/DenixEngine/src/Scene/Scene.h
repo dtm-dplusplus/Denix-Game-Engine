@@ -5,93 +5,92 @@
 #include "Component.h"
 #include "Camera.h"
 
-
-// Basic Scene class so I can start creating and testing features
-class Scene: public Object
+namespace Denix
 {
-public:
-
-	Scene() = default;
-
-	Scene(const ObjectInitializer& _object_init) : Object(_object_init), m_Camera{ std::make_shared<Camera>() }
+	// Basic Scene class so I can start creating and testing features
+	class Scene: public Object
 	{
-	}
+	public:
 
-	Scene(const Scene& _other) : Object(_other), m_IsLive(_other.m_IsLive), m_SceneGravity(_other.m_SceneGravity)
-	{
-		// Deep copy the m_SceneObjects vector
-		for (const auto& gameObject : _other.m_SceneObjects)
+		Scene() = default;
+
+		Scene(const ObjectInitializer& _object_init) : Object(_object_init), m_Camera{ std::make_shared<Camera>() }
 		{
-			m_SceneObjects.push_back(std::make_shared<GameObject>(*gameObject));
 		}
 
-		// Deep copy the m_Camera object
-		if (_other.m_Camera)
+		Scene(const Scene& _other) : Object(_other), m_IsLive(_other.m_IsLive), m_SceneGravity(_other.m_SceneGravity)
 		{
-			m_Camera = std::make_shared<Camera>(*_other.m_Camera);
-		}
-	}
+			// Deep copy the m_SceneObjects vector
+			for (const auto& gameObject : _other.m_SceneObjects)
+			{
+				m_SceneObjects.push_back(std::make_shared<GameObject>(*gameObject));
+			}
 
-	~Scene() override = default;
-
-	virtual bool Load()
-	{
-		m_Camera = std::make_shared<Camera>();
-
-		if (!m_Camera)
-		{
-			return false;
+			// Deep copy the m_Camera object
+			if (_other.m_Camera)
+			{
+				m_Camera = std::make_shared<Camera>(*_other.m_Camera);
+			}
 		}
 
-		return true;
-	}
+		~Scene() override = default;
 
-	virtual void Unload() 
-	{
-	}
-
-	void BeginScene() override 
-	{
-		m_IsLive = true;
-
-		for (const auto& obj : m_SceneObjects)
+		virtual bool Load()
 		{
-			obj->BeginScene();
+			m_Camera = std::make_shared<Camera>();
+
+			if (!m_Camera)
+			{
+				return false;
+			}
+
+			return true;
 		}
-	}
 
-	void EndScene() override 
-	{
-		m_IsLive = false;
-
-		for (const auto& obj : m_SceneObjects)
+		virtual void Unload() 
 		{
-			obj->EndScene();
 		}
-	}
 
-	void Update(float _deltaTime) override{}
+		void BeginScene() override 
+		{
+			m_IsLive = true;
 
-	bool IsLive() const { return m_IsLive; }
+			for (const auto& obj : m_SceneObjects)
+			{
+				obj->BeginScene();
+			}
+		}
 
-	glm::vec3 GetGravity() const { return m_SceneGravity; }
+		void EndScene() override 
+		{
+			m_IsLive = false;
 
-	Ref<Camera> GetCamera() { return m_Camera; }
-protected:
-	/** determine if the engine is in editor or tool side mode.
-	 * True if the scene is being played. False if in editor mode.
-	 */
-	bool m_IsLive = false;
+			for (const auto& obj : m_SceneObjects)
+			{
+				obj->EndScene();
+			}
+		}
 
-	glm::vec3 m_SceneGravity = glm::vec3(0.0f, -9.8f, 0.0f);
+		void Update(float _deltaTime) override{}
 
-	/** List of Objects in the scene */
-	std::vector<Ref<GameObject>> m_SceneObjects;
+		bool IsLive() const { return m_IsLive; }
 
-	Ref<Camera> m_Camera;
+		glm::vec3 GetGravity() const { return m_SceneGravity; }
 
-	friend class SceneSubSystem;
-};
+		Ref<Camera> GetCamera() { return m_Camera; }
+	protected:
+		/** determine if the engine is in editor or tool side mode.
+		 * True if the scene is being played. False if in editor mode.
+		 */
+		bool m_IsLive = false;
 
+		glm::vec3 m_SceneGravity = glm::vec3(0.0f, -9.8f, 0.0f);
 
+		/** List of Objects in the scene */
+		std::vector<Ref<GameObject>> m_SceneObjects;
 
+		Ref<Camera> m_Camera;
+
+		friend class SceneSubSystem;
+	};
+}

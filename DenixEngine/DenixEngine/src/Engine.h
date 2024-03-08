@@ -2,34 +2,34 @@
 
 #include "Core.h"
 
-class WindowSubSystem;
-class ShaderSubSystem;
-class SceneSubSystem;
-class UISubSystem;
 
-class Engine
+
+namespace Denix
 {
-public:
+	class Engine
+	{
+	public:
 
-	Engine();
-	~Engine();
+		Engine();
+		~Engine();
 
-	void Initialize();
-	void Deinitialize();
+		void Initialize();
+		void Deinitialize();
 
-	void Run();
+		void Run();
 
-	static Engine& Get() { return *s_Engine; }
+		static Engine& Get() { return *s_Engine; }
 
-private:
-	static Engine* s_Engine;
+	private:
+		static Engine* s_Engine;
 
-	//std::vector<Ref<SubSystem>>  m_SubSystems;
+		//std::vector<Ref<SubSystem>>  m_SubSystems;
 
-	Ref<WindowSubSystem> m_WindowSubSystem;
+		Ref<class WindowSubSystem> m_WindowSubSystem;
 
-	Ref<SceneSubSystem> m_SceneSubSystem;
+		Ref<class SceneSubSystem> m_SceneSubSystem;
 
-	Ref<ShaderSubSystem> m_ShaderSubSystem;
-	Ref<UISubSystem> m_UISubSytem;
-};
+		Ref<class ShaderSubSystem> m_ShaderSubSystem;
+		Ref<class UISubSystem> m_UISubSytem;
+	};
+}

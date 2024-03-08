@@ -6,62 +6,64 @@
 #include <SDL.h>
 #include <GL/glew.h>
 
-class WindowSubSystem: public SubSystem
+namespace Denix
 {
-public:
-    WindowSubSystem()
-    {
-		s_WindowSubSystem = this;
-    }
-
-    ~WindowSubSystem() override
-    {
-		s_WindowSubSystem = nullptr;
-    }
-
-	static WindowSubSystem* Get() { return s_WindowSubSystem; }
-
-    void Initialize() override
-    {
-		//Create window
-		if(const Ref<SDL_GLWindow> window = std::make_shared<SDL_GLWindow>())
+	class WindowSubSystem: public SubSystem
+	{
+	public:
+		WindowSubSystem()
 		{
-			if(!window->Initialize()) return;
-			m_Window = window;
+			s_WindowSubSystem = this;
 		}
+
+		~WindowSubSystem() override
+		{
+			s_WindowSubSystem = nullptr;
+		}
+
+		static WindowSubSystem* Get() { return s_WindowSubSystem; }
+
+		void Initialize() override
+		{
+			//Create window
+			if(const Ref<SDL_GLWindow> window = std::make_shared<SDL_GLWindow>())
+			{
+				if(!window->Initialize()) return;
+				m_Window = window;
+			}
 		
-		// Init Glew
-		if (glewInit() != GLEW_OK)
-		{
-			DE_LOG(Log, Critical, "glewInit(): failed")
-			return;
+			// Init Glew
+			if (glewInit() != GLEW_OK)
+			{
+				DE_LOG(Log, Critical, "glewInit(): failed")
+				return;
+			}
+			DE_LOG(Log, Trace, "glewInit(): success")
+
+			DE_LOG(LogWindow, Trace, "Window Subsystem Initialized")
+
+			m_Initialized = true;
 		}
-		DE_LOG(Log, Trace, "glewInit(): success")
 
-        DE_LOG(LogWindow, Trace, "Window Subsystem Initialized")
+		void Deinitialize() override
+		{
+			m_Window->Deinitialize();
 
-        m_Initialized = true;
-    }
+			SDL_Quit();
 
-    void Deinitialize() override
-    {
-		m_Window->Deinitialize();
+			DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
 
-		SDL_Quit();
+			m_Initialized = false;
+		}   
 
-        DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
+		Ref<SDL_GLWindow> GetWindow() const { return m_Window; }
 
-        m_Initialized = false;
-    }   
+	private:
+		Ref<SDL_GLWindow> m_Window;
 
-	Ref<SDL_GLWindow> GetWindow() const { return m_Window; }
-
-private:
-    Ref<SDL_GLWindow> m_Window;
-
-	static WindowSubSystem* s_WindowSubSystem;
+		static WindowSubSystem* s_WindowSubSystem;
 
 
-	friend class Engine;
-};
-
+		friend class Engine;
+	};
+}

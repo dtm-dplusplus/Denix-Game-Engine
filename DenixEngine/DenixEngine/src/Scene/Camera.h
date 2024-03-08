@@ -5,63 +5,65 @@
 
 #include "GameObject.h"
 
-class Camera: public GameObject
+namespace Denix
 {
-public:
-	Camera(): GameObject(ObjectInitializer("Camera"))
+	class Camera: public GameObject
 	{
-		m_TransformComponent->SetPosition(glm::vec3(0.0f, 0.0f, -25.f));
-	}
-
-	~Camera() override = default;
-
-	/*enum class Projection
-	{
-		Perspective,
-		Orthographic
-	};*/
-
-	void Update(float _deltaTime) override
-	{
-		// Projection matrix
-		if (IsPerspective)
+	public:
+		Camera(): GameObject(ObjectInitializer("Camera"))
 		{
-			Projection = glm::perspective(glm::radians(Fov), Aspect.x / Aspect.y, NearPlane, FarPlane);
-		}
-		else
-		{
-			Projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, NearPlane, FarPlane);
+			m_TransformComponent->SetPosition(glm::vec3(0.0f, 0.0f, -25.f));
 		}
 
-		// View Matrix
-		View = glm::translate(glm::mat4(1.0f), m_TransformComponent->GetPosition());
-	}
+		~Camera() override = default;
 
-	glm::mat4 GetProjectionMatrix() const
-	{
-		return Projection;
-	}
+		/*enum class Projection
+		{
+			Perspective,
+			Orthographic
+		};*/
 
-	glm::mat4 GetViewMatrix() const
-	{
-		return View;
-	}
+		void Update(float _deltaTime) override
+		{
+			// Projection matrix
+			if (IsPerspective)
+			{
+				Projection = glm::perspective(glm::radians(Fov), Aspect.x / Aspect.y, NearPlane, FarPlane);
+			}
+			else
+			{
+				Projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, NearPlane, FarPlane);
+			}
 
-protected:
-	// Camera
-	//Projection m_ProjectionType = Projection::Perspective;
+			// View Matrix
+			View = glm::translate(glm::mat4(1.0f), m_TransformComponent->GetPosition());
+		}
 
-	float MoveSpeed = 0.1f;
-	bool IsPerspective = true;
-	float Fov = 45.f;
-	float NearPlane = 0.1f;
-	float FarPlane = 10000.f;
+		glm::mat4 GetProjectionMatrix() const
+		{
+			return Projection;
+		}
+
+		glm::mat4 GetViewMatrix() const
+		{
+			return View;
+		}
+
+	protected:
+		// Camera
+		//Projection m_ProjectionType = Projection::Perspective;
+
+		float MoveSpeed = 0.1f;
+		bool IsPerspective = true;
+		float Fov = 45.f;
+		float NearPlane = 0.1f;
+		float FarPlane = 10000.f;
 
 
-	glm::mat4 Projection = glm::mat4(1.0f);
-	glm::mat4 View = glm::mat4(1.0f);
-	glm::vec2 Aspect = glm::vec2(800.f, 600.f);
+		glm::mat4 Projection = glm::mat4(1.0f);
+		glm::mat4 View = glm::mat4(1.0f);
+		glm::vec2 Aspect = glm::vec2(800.f, 600.f);
 
-	friend class SceneSubSystem;
-};
-
+		friend class SceneSubSystem;
+	};
+}

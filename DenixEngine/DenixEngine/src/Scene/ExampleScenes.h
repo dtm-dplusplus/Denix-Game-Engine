@@ -6,49 +6,52 @@
 #include "glm/glm.hpp"
 #include <memory>
 
-class VertexArray;
-class VertexBuffer;
-class GLShader;
-
-class TestObject : public GameObject
+namespace Denix
 {
-public:
-	TestObject();
-	~TestObject() override;
+	class VertexArray;
+	class VertexBuffer;
+	class GLShader;
 
-	void BeginScene() override;
-	void EndScene() override;
+	class TestObject : public GameObject
+	{
+	public:
+		TestObject();
+		~TestObject() override;
 
-	void Update(float _deltaTime) override;
-private:
-	Ref<VertexArray> Vao;
-	Ref<VertexBuffer> Vbo;
-	Ref<GLShader> Program;
+		void BeginScene() override;
+		void EndScene() override;
+
+		void Update(float _deltaTime) override;
+	private:
+		Ref<VertexArray> Vao;
+		Ref<VertexBuffer> Vbo;
+		Ref<GLShader> Program;
 
 	
 
-	friend class DefaultScene;
-};
+		friend class DefaultScene;
+	};
 
-class DefaultScene final : public Scene
-{
-public:
-	DefaultScene();
-	~DefaultScene() override;
+	class DefaultScene final : public Scene
+	{
+	public:
+		DefaultScene();
+		~DefaultScene() override;
 
-	bool Load() override;
-	void Unload() override;
+		bool Load() override;
+		void Unload() override;
 
-	void BeginScene() override;
-	void EndScene() override;
-	void Update(float _deltaTime) override;
+		void BeginScene() override;
+		void EndScene() override;
+		void Update(float _deltaTime) override;
 
-private:
-	Ref<VertexArray> Vao;
-	Ref<VertexBuffer> Vbo;
-	Ref<GLShader> Program;
+	private:
+		Ref<VertexArray> Vao;
+		Ref<VertexBuffer> Vbo;
+		Ref<GLShader> Program;
 
-	//// Rotation
-	//bool IsRotating = false;
-	//float RotSpeed = 0.01f;
-};
+		//// Rotation
+		//bool IsRotating = false;
+		//float RotSpeed = 0.01f;
+	};
+}

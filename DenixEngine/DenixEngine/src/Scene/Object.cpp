@@ -1,3 +1,3 @@
 #include "Object.h"
 
-GLint Object::m_CountID{ 0 };
+GLint Denix::Object::m_CountID{ 0 };

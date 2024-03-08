@@ -13,116 +13,119 @@
 #include "../System/SceneSubsystem.h"
 #include "../System/ShaderSubSystem.h"
 
-// TestObject/////////////////////
-TestObject::TestObject() : GameObject(ObjectInitializer("Test Object"))
+namespace Denix
 {
-	constexpr GLfloat data[] = {
-		-0.5f, 0.5f, 0.0f, // top left point
-		0.5f, 0.5f, 0.0f, // top right point
-		0.5f, -0.5f, 0.0f, // bottom right point
-		0.5f, -0.5f, 0.0f, // bottom right point
-		-0.5f, -0.5f, 0.0f, // bottom left point
-		-0.5f, 0.5f, 0.0f // top left point
-	};
-
-	// VBO creation
-	Vbo = std::make_shared<VertexBuffer>
-		(GL_ARRAY_BUFFER, sizeof(data), data, 3, GL_FLOAT);
-
-
-	// Create a new VAO on the GPU and bind it
-	Vao = std::make_shared<VertexArray>();
-	Vao->GenVertexArray();
-	Vao->Bind();
-
-	// Bind the vbos & attribs
-	Vbo->Bind(GL_ARRAY_BUFFER);
-	Vao->AttribPtr(Vbo->GetCount(), GL_FLOAT);
-
-	// Reset the state
-	VertexBuffer::Unbind(GL_ARRAY_BUFFER);
-	VertexArray::Unbind();
-}
-
-TestObject::~TestObject() = default;
-
-void TestObject::BeginScene()
-{
-	GameObject::BeginScene();
-}
-
-void TestObject::EndScene()
-{
-	GameObject::EndScene();
-}
-
-void TestObject::Update(float _deltaTime)
-{
-	ShaderSubSystem* shaderSubSystem = ShaderSubSystem::Get();
-
-	const Ref<GLShader> shader = shaderSubSystem->GetShader("DebugShader");
-
-	// Move this to renderer in the future
-	shader->Bind();
-	Vao->Bind();
-
-	// Upload the model matrix
-	glUniformMatrix4fv(shader->GetUniform("u_Model"), 1, GL_FALSE, glm::value_ptr(m_TransformComponent->GetModel()));
-
-	if(const Ref<Camera> camera = SceneSubSystem::Get()->GetActiveCamera())
+	// TestObject/////////////////////
+	TestObject::TestObject() : GameObject(ObjectInitializer("Test Object"))
 	{
-		// Upload the projection matrix
-		glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1, GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+		constexpr GLfloat data[] = {
+			-0.5f, 0.5f, 0.0f, // top left point
+			0.5f, 0.5f, 0.0f, // top right point
+			0.5f, -0.5f, 0.0f, // bottom right point
+			0.5f, -0.5f, 0.0f, // bottom right point
+			-0.5f, -0.5f, 0.0f, // bottom left point
+			-0.5f, 0.5f, 0.0f // top left point
+		};
 
-		// Upload the view matrix
-		glUniformMatrix4fv(shader->GetUniform("u_View"), 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+		// VBO creation
+		Vbo = std::make_shared<VertexBuffer>
+			(GL_ARRAY_BUFFER, sizeof(data), data, 3, GL_FLOAT);
+
+
+		// Create a new VAO on the GPU and bind it
+		Vao = std::make_shared<VertexArray>();
+		Vao->GenVertexArray();
+		Vao->Bind();
+
+		// Bind the vbos & attribs
+		Vbo->Bind(GL_ARRAY_BUFFER);
+		Vao->AttribPtr(Vbo->GetCount(), GL_FLOAT);
+
+		// Reset the state
+		VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+		VertexArray::Unbind();
 	}
+
+	TestObject::~TestObject() = default;
+
+	void TestObject::BeginScene()
+	{
+		GameObject::BeginScene();
+	}
+
+	void TestObject::EndScene()
+	{
+		GameObject::EndScene();
+	}
+
+	void TestObject::Update(float _deltaTime)
+	{
+		ShaderSubSystem* shaderSubSystem = ShaderSubSystem::Get();
+
+		const Ref<GLShader> shader = shaderSubSystem->GetShader("DebugShader");
+
+		// Move this to renderer in the future
+		shader->Bind();
+		Vao->Bind();
+
+		// Upload the model matrix
+		glUniformMatrix4fv(shader->GetUniform("u_Model"), 1, GL_FALSE, glm::value_ptr(m_TransformComponent->GetModel()));
+
+		if(const Ref<Camera> camera = SceneSubSystem::Get()->GetActiveCamera())
+		{
+			// Upload the projection matrix
+			glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1, GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+
+			// Upload the view matrix
+			glUniformMatrix4fv(shader->GetUniform("u_View"), 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+		}
 	
 
-	// Upload the color
-	glUniform4fv(shader->GetUniform("u_Color"), 1, &m_RenderComponent->GetDebugColor()[0]);
+		// Upload the color
+		glUniform4fv(shader->GetUniform("u_Color"), 1, &m_RenderComponent->GetDebugColor()[0]);
 
-	// Draw the triangle
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+		// Draw the triangle
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	VertexArray::Unbind();
-	GLShader::Unbind();
-}
+		VertexArray::Unbind();
+		GLShader::Unbind();
+	}
 
-////////////// DefaultScene ////////////////////////
-DefaultScene::DefaultScene() : Scene(ObjectInitializer("DefaultScene"))
-{
-}
+	////////////// DefaultScene ////////////////////////
+	DefaultScene::DefaultScene() : Scene(ObjectInitializer("DefaultScene"))
+	{
+	}
 
-DefaultScene::~DefaultScene()
-{
-}
+	DefaultScene::~DefaultScene()
+	{
+	}
 
-bool DefaultScene::Load()
-{
-	Scene::Load();
+	bool DefaultScene::Load()
+	{
+		Scene::Load();
 
-	m_SceneObjects.push_back(std::make_shared<TestObject>());
-	return true;
-}
+		m_SceneObjects.push_back(std::make_shared<TestObject>());
+		return true;
+	}
 
-void DefaultScene::Unload()
-{
-	Scene::Unload();
-}
+	void DefaultScene::Unload()
+	{
+		Scene::Unload();
+	}
 
-void DefaultScene::BeginScene()
-{
-	Scene::BeginScene();
+	void DefaultScene::BeginScene()
+	{
+		Scene::BeginScene();
 
-}
+	}
 
-void DefaultScene::EndScene()
-{
-	Scene::EndScene();
-}
+	void DefaultScene::EndScene()
+	{
+		Scene::EndScene();
+	}
 
-void DefaultScene::Update(float _deltaTime)
-{
-	Scene::Update(_deltaTime);
+	void DefaultScene::Update(float _deltaTime)
+	{
+		Scene::Update(_deltaTime);
+	}
 }

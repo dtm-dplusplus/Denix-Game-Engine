@@ -3,51 +3,54 @@
 #include "Object.h"
 #include "Component.h"
 
-/*	Base class for all game objects
-*	
-*/
-class GameObject : public Object
+namespace Denix
 {
-public:
-	// Constructors
-	GameObject(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : Object(_object_init) 
+	/*	Base class for all game objects
+	*	
+	*/
+	class GameObject : public Object
 	{
-		m_TransformComponent = std::make_shared<TransformComponent>(m_ID);
+	public:
+		// Constructors
+		GameObject(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : Object(_object_init) 
+		{
+			m_TransformComponent = std::make_shared<TransformComponent>(m_ID);
 
-		m_PhysicsComponent = std::make_shared<PhysicsComponent>(m_ID);
+			m_PhysicsComponent = std::make_shared<PhysicsComponent>(m_ID);
 
-		m_RenderComponent = std::make_shared<RenderComponent>(m_ID);
-	}
+			m_RenderComponent = std::make_shared<RenderComponent>(m_ID);
+		}
 
-	GameObject(const GameObject& _other)
-	{
+		GameObject(const GameObject& _other)
+		{
 
-	}
-	// Destructors
-	~GameObject() override = default;
+		}
+		// Destructors
+		~GameObject() override = default;
 
-	void BeginScene() override
-	{
-		m_TransformComponent->BeginScene();
-		m_PhysicsComponent->BeginScene();
-		m_RenderComponent->BeginScene();
-	}
-	void EndScene() override
-	{
-	}
+		void BeginScene() override
+		{
+			m_TransformComponent->BeginScene();
+			m_PhysicsComponent->BeginScene();
+			m_RenderComponent->BeginScene();
+		}
+		void EndScene() override
+		{
+		}
 
-	void Update(float _deltaTime) override {}
+		void Update(float _deltaTime) override {}
 
-	Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
+		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 
-	Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
+		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
 
-	Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
+		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
-protected:
-	Ref<TransformComponent> m_TransformComponent;
+	protected:
+		Ref<TransformComponent> m_TransformComponent;
 
-	Ref<PhysicsComponent> m_PhysicsComponent;
+		Ref<PhysicsComponent> m_PhysicsComponent;
 
-	Ref<RenderComponent> m_RenderComponent;
-};
+		Ref<RenderComponent> m_RenderComponent;
+	};
+}

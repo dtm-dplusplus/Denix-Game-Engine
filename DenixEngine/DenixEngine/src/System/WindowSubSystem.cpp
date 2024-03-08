@@ -1,3 +1,6 @@
 #include "WindowSubSystem.h"
 
-WindowSubSystem* WindowSubSystem::s_WindowSubSystem{nullptr};
+namespace Denix
+{
+	WindowSubSystem* WindowSubSystem::s_WindowSubSystem{nullptr};
+}

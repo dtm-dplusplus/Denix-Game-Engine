@@ -1,3 +1,6 @@
 #include "ShaderSubSystem.h"
 
-ShaderSubSystem* ShaderSubSystem::s_ShaderSubSystem{nullptr};
+namespace Denix
+{
+	ShaderSubSystem* ShaderSubSystem::s_ShaderSubSystem{nullptr};
+}

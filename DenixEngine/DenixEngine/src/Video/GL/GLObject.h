@@ -2,14 +2,17 @@
 
 #include <GL/glew.h>
 
-class GLObject
+namespace Denix
 {
-public:
-	GLObject() : m_glID{ 0 } {}
-	virtual ~GLObject() = default;
+	class GLObject
+	{
+	public:
+		GLObject() : m_glID{ 0 } {}
+		virtual ~GLObject() = default;
 
-	GLuint GetID() const { return m_glID; }
-protected:
-	GLuint m_glID;
-	// std::string m_DebugName;
-};
+		GLuint GetID() const { return m_glID; }
+	protected:
+		GLuint m_glID;
+		// std::string m_DebugName;
+	};
+}

@@ -1,20 +1,23 @@
 #pragma once
 
-class SubSystem
+namespace Denix
 {
-public:
-	SubSystem() = default;
-	virtual ~SubSystem() = default;
+	class SubSystem
+	{
+	public:
+		SubSystem() = default;
+		virtual ~SubSystem() = default;
 	
 
-	virtual void Initialize() {}
-	virtual void Deinitialize() {}
+		virtual void Initialize() {}
+		virtual void Deinitialize() {}
 
-	virtual void Update(float _deltaTime){}
-	bool IsInitialized() const { return m_Initialized; }
+		virtual void Update(float _deltaTime){}
+		bool IsInitialized() const { return m_Initialized; }
 
-protected:
-	bool m_Initialized = false;
+	protected:
+		bool m_Initialized = false;
 
-	friend class Engine;
-};
+		friend class Engine;
+	};
+}
