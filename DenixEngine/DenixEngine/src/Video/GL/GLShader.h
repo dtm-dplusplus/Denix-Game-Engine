@@ -15,7 +15,7 @@ namespace Denix
 
 		/*static Ref<GLShader> Create()
 		{
-			return std::make_shared<GLShader>();
+			return MakeRef<GLShader>();
 		}*/
 
 		void Bind() const { glUseProgram(m_glID); }

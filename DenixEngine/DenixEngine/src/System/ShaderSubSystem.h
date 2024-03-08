@@ -2,6 +2,7 @@
 #include "SubSystem.h"
 #include "Video/GL/GLShader.h"
 #include "../Core.h"
+#include "Core/File.h"
 
 namespace Denix
 {
@@ -55,7 +56,7 @@ namespace Denix
 
 		bool LoadShader(const std::vector<std::pair<GLenum, std::string>>& _sources, const std::string& _name)
 		{
-			if(const Ref<GLShader> program = std::make_shared<GLShader>())
+			if(const Ref<GLShader> program = MakeRef<GLShader>())
 			{
 				program->CreateProgram();
 

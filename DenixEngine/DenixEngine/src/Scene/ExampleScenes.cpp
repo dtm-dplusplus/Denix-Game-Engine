@@ -28,12 +28,12 @@ namespace Denix
 		};
 
 		// VBO creation
-		Vbo = std::make_shared<VertexBuffer>
+		Vbo = MakeRef<VertexBuffer>
 			(GL_ARRAY_BUFFER, sizeof(data), data, 3, GL_FLOAT);
 
 
 		// Create a new VAO on the GPU and bind it
-		Vao = std::make_shared<VertexArray>();
+		Vao = MakeRef<VertexArray>();
 		Vao->GenVertexArray();
 		Vao->Bind();
 
@@ -104,7 +104,7 @@ namespace Denix
 	{
 		Scene::Load();
 
-		m_SceneObjects.push_back(std::make_shared<TestObject>());
+		m_SceneObjects.push_back(MakeRef<TestObject>());
 		return true;
 	}
 

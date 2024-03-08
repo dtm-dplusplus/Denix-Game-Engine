@@ -26,16 +26,16 @@ namespace Denix
 		DeLog::Start();
 		DE_LOG(Log, Trace, "Engine Starting up")
 
-		m_WindowSubSystem = std::make_shared<WindowSubSystem>();
+		m_WindowSubSystem = MakeRef<WindowSubSystem>();
 		m_WindowSubSystem->Initialize();
 
-		m_ShaderSubSystem = std::make_shared<ShaderSubSystem>();
+		m_ShaderSubSystem = MakeRef<ShaderSubSystem>();
 		m_ShaderSubSystem->Initialize();
 
-		m_UISubSytem = std::make_shared<UISubSystem>();
+		m_UISubSytem = MakeRef<UISubSystem>();
 		m_UISubSytem->Initialize();
 
-		m_SceneSubSystem = std::make_shared<SceneSubSystem>();
+		m_SceneSubSystem = MakeRef<SceneSubSystem>();
 		m_SceneSubSystem->Initialize();
 
 		DE_LOG(LogEngine, Info, "Engine Initialized")

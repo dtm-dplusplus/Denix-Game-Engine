@@ -14,13 +14,13 @@ namespace Denix
 		// Constructors
 		GameObject(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : Object(_object_init) 
 		{
-			m_TransformComponent = std::make_shared<TransformComponent>(m_ID);
+			m_TransformComponent = MakeRef<TransformComponent>(m_ID);
 
-			m_PhysicsComponent = std::make_shared<PhysicsComponent>(m_ID);
+			m_PhysicsComponent = MakeRef<PhysicsComponent>(m_ID);
 
-			m_MeshComponent = std::make_shared<MeshComponent>(m_ID);
+			m_MeshComponent = MakeRef<MeshComponent>(m_ID);
 
-			m_RenderComponent = std::make_shared<RenderComponent>(m_ID);
+			m_RenderComponent = MakeRef<RenderComponent>(m_ID);
 
 		}
 

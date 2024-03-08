@@ -3,8 +3,9 @@
 
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <sstream>
+
+#include "DeLog.h"
 
 // std::string File::m_ResDir{};
 
