@@ -30,8 +30,8 @@ public:
 
 		// Create Debug Shader
 		std::vector<std::pair<GLenum, std::string>> shaders;
-		shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res/shaders/UniVert.glsl"));
-		shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res/shaders/UniFrag.glsl"));
+		shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res/shaders/Vertex.glsl"));
+		shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res/shaders/Fragment.glsl"));
 		LoadShader(shaders, "DebugShader");
 
 		const Ref<GLShader> program = GetShader("DebugShader");

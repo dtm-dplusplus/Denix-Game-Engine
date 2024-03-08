@@ -58,7 +58,7 @@ void Engine::Run()
 {
 	Initialize();
 
-	while(m_WindowSubSystem->m_Window->m_IsOpen)
+	while(m_WindowSubSystem->m_Window->IsOpen())
 	{
 		m_WindowSubSystem->m_Window->PollEvents();
 

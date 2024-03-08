@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 // std::string File::m_ResDir{};
@@ -17,7 +18,10 @@ std::string File::Read(const std::string_view _path)
 
 		std::string line;
 		while (std::getline(fileStream, line))
+		{
 			fileString << line << "\n";
+		}
+
 
 		return fileString.str();
 	}

@@ -34,7 +34,7 @@ void UISubSystem::Initialize()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
-	io.IniFilename = NULL;
+	io.IniFilename = nullptr;
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
@@ -44,7 +44,7 @@ void UISubSystem::Initialize()
 	{
 		// Setup Platform/Renderer bindings
 		ImGui_ImplSDL2_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(), SDL_GL_GetCurrentContext());
-		ImGui_ImplOpenGL3_Init(windowSystem->GetGLSLVersion().c_str());
+		ImGui_ImplOpenGL3_Init(windowSystem->GetWindow()->GetGLSLVersion().c_str());
 	}
 	else
 	{

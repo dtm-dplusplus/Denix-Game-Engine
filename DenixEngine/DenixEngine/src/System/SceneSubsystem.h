@@ -132,11 +132,6 @@ public:
 		}
 	}
 
-	void PauseScene()
-	{
-		DE_LOG(LogSceneSubSystem, Trace, "Scene Paused")
-	}
-
 	void StopScene()
 	{
 		if (m_ActiveScene)
@@ -153,7 +148,11 @@ public:
 		}
 	}
 
-	
+	void PauseScene()
+	{
+		DE_LOG(LogSceneSubSystem, Trace, "Scene Paused")
+	}
+
 
 private:
 	static SceneSubSystem* s_SceneSubSystem;
@@ -164,3 +163,4 @@ private:
 
 	friend class Engine;
 };
+

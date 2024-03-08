@@ -1,8 +1,10 @@
+#version 330 core
+
+layout(location = 0) in vec3 in_Position;
+layout(location = 1) in vec2 in_TexCoord;
+
 uniform mat4 in_Projection;
 uniform mat4 in_Model;
-
-attribute vec3 in_Position;
-attribute vec2 in_TexCoord;
 
 varying vec2 ex_TexCoord;
 
