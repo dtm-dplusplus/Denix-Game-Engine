@@ -6,30 +6,34 @@
 
 namespace Denix
 {
-	class Engine
+	class DE_API Engine
 	{
 	public:
 
 		Engine();
-		~Engine();
+		virtual  ~Engine();
 
-		void Initialize();
-		void Deinitialize();
+	/*	void Initialize();
+		void Deinitialize();*/
 
 		void Run();
 
 		static Engine& Get() { return *s_Engine; }
 
+		static void Print();
 	private:
 		static Engine* s_Engine;
 
 		//std::vector<Ref<SubSystem>>  m_SubSystems;
 
-		Ref<class WindowSubSystem> m_WindowSubSystem;
+		/*Ref<class WindowSubSystem> m_WindowSubSystem;
 
 		Ref<class SceneSubSystem> m_SceneSubSystem;
 
 		Ref<class ShaderSubSystem> m_ShaderSubSystem;
-		Ref<class UISubSystem> m_UISubSytem;
+		Ref<class UISubSystem> m_UISubSytem;*/
 	};
+
+	// Defined in client
+	//Engine* CreateEngine();
 }

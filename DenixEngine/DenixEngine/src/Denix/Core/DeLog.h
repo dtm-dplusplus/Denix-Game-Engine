@@ -25,7 +25,7 @@ public:
 	static std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> m_OutputSink;
 
 
-	static std::shared_ptr<spdlog::logger> GetLogger(const std::string_view _name)
+	static std::shared_ptr<spdlog::logger> GetLogger(const std::string& _name)
 	{
 		for(auto& logger : m_Loggers)
 		{
@@ -33,27 +33,26 @@ public:
 				return logger;
 		}
 
-		DE_LOG(Log, Error, "Logger not found: {}", _name.data())
+		DE_LOG(Log, Error, "Logger not found: {}", _name)
 
 		return m_Loggers[0];
 	}
 
-	static void CreateLogger(const std::string_view _name)
+	static void CreateLogger(const std::string& _name)
 	{
 		std::vector<spdlog::sink_ptr> sinks = { m_FileSink, m_OutputSink };
-		if (const auto logger = std::make_shared<spdlog::logger>(_name.data(), sinks.begin(), sinks.end()))
+		if (const auto logger = std::make_shared<spdlog::logger>(_name, sinks.begin(), sinks.end()))
 		{
 			logger->set_level(spdlog::level::trace);
 			logger->set_pattern("%^[%T] [%n]: %v%$");
 			logger->flush_on(spdlog::level::trace);
 			m_Loggers.push_back(logger);
 
-			// Atomic error
-			// DE_LOG(_name.data(), Trace, "Created logger: %s", _name.data())
+			DE_LOG(Log, Trace, "Created logger: {}", _name)
 		}
 		else
 		{
-			DE_LOG(Log, Error, "Failed to create logger: {}", _name.data())
+			DE_LOG(Log, Error, "Failed to create logger: {}", _name)
 		}
 	}
 
@@ -78,9 +77,9 @@ public:
 		DE_LOG_CREATE(LogEngine)
 
 		
-		DE_LOG_CREATE(LogGL)
+		/*DE_LOG_CREATE(LogGL)
 		DE_LOG_CREATE(LogWindow)
-		DE_LOG_CREATE(LogShader)
+		DE_LOG_CREATE(LogShader)*/
 		
 		DE_LOG(Log, Trace, "Logger starting")
 	}
