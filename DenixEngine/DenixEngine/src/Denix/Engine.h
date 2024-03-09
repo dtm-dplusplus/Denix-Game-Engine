@@ -2,7 +2,7 @@
 
 #include "Core.h"
 
-
+int main(int argc, char** argv);
 
 namespace Denix
 {
@@ -32,8 +32,10 @@ namespace Denix
 
 		Ref<class ShaderSubSystem> m_ShaderSubSystem;
 		Ref<class UISubSystem> m_UISubSytem;*/
+
+		friend int ::main(int argc, char** argv);
 	};
 
 	// Defined in client
-	//Engine* CreateEngine();
+	Engine* CreateEngine();
 }

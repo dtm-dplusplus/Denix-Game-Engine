@@ -125,7 +125,8 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY /y "$(SolutionDir)bin\$(Configuration)\DenixEngine.dll" "$(OutDir)"
+      <Command>
+if exist "$(SolutionDir)bin\$(Configuration)\DenixEngine.dll" XCOPY /y "$(SolutionDir)bin\$(Configuration)\DenixEngine.dll" "$(OutDir)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -152,7 +153,8 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY /y "$(SolutionDir)bin\$(Configuration)\DenixEngine.dll" "$(OutDir)"
+      <Command>
+if exist "$(SolutionDir)bin\$(Configuration)\DenixEngine.dll" XCOPY /y "$(SolutionDir)bin\$(Configuration)\DenixEngine.dll" "$(OutDir)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

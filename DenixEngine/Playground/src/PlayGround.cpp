@@ -1,4 +1,5 @@
-#include "Denix.h"
+#include <Denix.h>
+#include <Denix/EntryPoint.h>
 
 
 class Playground: public Denix::Engine
@@ -16,21 +17,10 @@ public:
 	}
 
 
-	/*Engine* Denix::CreeateEngine()
-	{
-		return new Playground();
-	}*/
+	
 };
 
-int main(int argc, char* args[])
+Denix::Engine* Denix::CreateEngine()
 {
-	//const auto engine = Denix::CreateEngine();
-	//
-	//engine->Run();
-	//
-	//delete engine;
-
-	Denix::Engine::Print();
-
-	return 0;
+	return new Playground();
 }

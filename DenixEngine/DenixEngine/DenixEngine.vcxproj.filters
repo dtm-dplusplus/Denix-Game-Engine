@@ -35,14 +35,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Denix\EntryPoint.h">
-      <Filter>src\Denix</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\Engine.cpp">
       <Filter>src\Denix</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\Core.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Denix</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +47,11 @@
     <ClInclude Include="src\Denix\Engine.h">
       <Filter>src\Denix</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\Core.h" />
+    <ClInclude Include="src\Denix\Core.h">
+      <Filter>src\Denix</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\EntryPoint.h">
+      <Filter>src\Denix</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
