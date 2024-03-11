@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Core/DeLog.h"
+#include "Core/Logger.h"
 
 namespace Denix
 {

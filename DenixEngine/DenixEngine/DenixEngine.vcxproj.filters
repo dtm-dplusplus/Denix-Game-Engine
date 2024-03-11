@@ -92,7 +92,7 @@
     <ClCompile Include="src\Core\File.cpp">
       <Filter>src\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\DeLog.cpp">
+    <ClCompile Include="src\Core\Logger.cpp">
       <Filter>src\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\System\SceneSubsystem.cpp">
@@ -121,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="Project.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\PhysicsSubSystem.cpp">
+      <Filter>src\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,7 +187,7 @@
     <ClInclude Include="src\Core\File.h">
       <Filter>src\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\DeLog.h">
+    <ClInclude Include="src\Core\Logger.h">
       <Filter>src\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\System\SceneSubsystem.h">
@@ -213,6 +216,9 @@
     </ClInclude>
     <ClInclude Include="Project.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\PhysicsSubSystem.h">
+      <Filter>src\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

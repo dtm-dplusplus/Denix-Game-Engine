@@ -14,10 +14,10 @@
 #define Error spdlog::level::err
 #define Critical spdlog::level::critical
 
-#define DE_LOG_CREATE(name) DeLog::CreateLogger(#name);
-#define DE_LOG(logger, level, ...) DeLog::GetLogger(#logger)->log(level, ##__VA_ARGS__);
+#define DE_LOG_CREATE(name) Logger::CreateLogger(#name);
+#define DE_LOG(logger, level, ...) Logger::GetLogger(#logger)->log(level, ##__VA_ARGS__);
 
-class DeLog final
+class Logger
 {
 public:
 	static std::vector<std::shared_ptr<spdlog::logger>> m_Loggers;
@@ -57,7 +57,7 @@ public:
 		}
 	}
 
-	static void Start()
+	static void Initialize()
 	{
 		// Get Date time - Need to abstract this in the future
 		const auto t = std::time(nullptr);
@@ -85,7 +85,7 @@ public:
 		DE_LOG(Log, Trace, "Logger starting")
 	}
 
-	static void Stop()
+	static void Deinitialize()
 	{
 		DE_LOG(Log,Trace, "Logger stopping")
 		m_Loggers.clear();

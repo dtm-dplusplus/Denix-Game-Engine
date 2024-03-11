@@ -20,12 +20,12 @@ namespace Denix
 		// Constructors
 		Component(const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectID{0}
 		{
-			DE_LOG(LogObject, Trace, "Created Component: {} without Parent Object", m_Name)
+			//DE_LOG(LogObject, Trace, "Created Component: {} without Parent Object", m_Name)
 		}
 
 		Component(const GLint _parentID, const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectID{ _parentID }
 		{
-			DE_LOG(LogObject, Trace, "Created Component: {} with Parent Object ID: {}", m_Name, m_ParentObjectID)
+			//DE_LOG(LogObject, Trace, "Created Component: {} with Parent Object ID: {}", m_Name, m_ParentObjectID)
 		}
 
 		// Destructors
@@ -89,30 +89,6 @@ namespace Denix
 
 		~MeshComponent() override =  default;
 
-		void Initialize() override
-		{
-
-		}
-
-		void Deinitialize() override
-		{
-		}
-
-		void BeginScene() override
-		{
-
-		}
-
-		void EndScene() override
-		{
-			
-		}
-
-		void Update(float _deltaTime) override
-		{
-			
-		}
-
 	private:
 		Ref<VertexArray> Vao;
 		Ref<VertexBuffer> Vbo;
@@ -127,47 +103,15 @@ namespace Denix
 		TransformComponent() : Component(ObjectInitializer("Transform Component")) {}
 		TransformComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Transform Component")) {}
 
-		TransformComponent& operator=(const TransformComponent& _other)
-		{
-			m_Position = _other.m_Position;
-			m_Rotation = _other.m_Rotation;
-			m_Scale = _other.m_Scale;
-
-			Model = _other.Model;
-
-			return *this;
-		}
-
 		// Destructors
 		~TransformComponent() override = default;
 
-		void Initialize() override
-		{
-
-		}
-
-		void Deinitialize() override
-		{
-		}
-		void BeginScene() override
-		{
-		
-		}
-
+	
 		void EndScene() override
 		{
 			m_Position = glm::vec3(0.f);
 			m_Rotation = glm::vec3(0.f);
 			m_Scale = glm::vec3(1.f);
-		}
-
-		void Update(float _deltaTime) override
-		{
-			Model = glm::translate(glm::mat4(1.0f), m_Position); // Should translate from camera position
-			Model = glm::rotate(Model, glm::degrees(m_Rotation.x), glm::vec3(1, 0, 0));
-			Model = glm::rotate(Model, glm::degrees(m_Rotation.y), glm::vec3(0, 1, 0));
-			Model = glm::rotate(Model, glm::degrees(m_Rotation.z), glm::vec3(0, 0, 1));
-			Model = glm::scale(Model, m_Scale);
 		}
 
 		// Getters
@@ -199,7 +143,9 @@ namespace Denix
 	class PhysicsComponent : public Component
 	{
 	public:
-		PhysicsComponent() : Component(ObjectInitializer("Physics Component")) {}
+		PhysicsComponent() : Component(ObjectInitializer("Physics Component")) 
+		{
+		}
 		PhysicsComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Physics Component")) {}
 
 
@@ -214,35 +160,11 @@ namespace Denix
 			Verlet
 		};
 
-		void Initialize() override
+	public:
+		void Step(float _deltaTime)
 		{
-			//Register with the scene
-			//Engine::Get().GetEngineScene()->RegisterTransformComponent(m_ParentObjectID, this);
-		}
-
-		void BeginScene() override
-		{
-		
-		}
-
-		void EndScene() override
-		{
-		
-		}
-
-		void Update(float _deltaTime) override
-		{
-			// Clear forces
-			m_Force = glm::vec3(0.f);
-
-
-			// Compute forces
-			m_Force = m_Mass * m_Gravity;
-
-			// Compute collision response
-
 			// Step integration
-			switch(m_StepMethod)
+			switch (m_StepMethod)
 			{
 			case StepMethod::Euler:
 				StepEuler(_deltaTime);
@@ -260,16 +182,7 @@ namespace Denix
 				StepVerlet(_deltaTime);
 				break;
 			}
-
-			// Temp Collision Response
-			if (m_TempPosition.y <= 0.f)
-			{
-				m_TempPosition.y = 0.f;
-				m_Velocity = glm::vec3(0.f);
-			}
 		}
-
-	public:
 		void StepEuler(float _deltaTime)
 		{
 			// Calculate the net force
@@ -399,6 +312,7 @@ namespace Denix
 
 		/** Method used to step the physics simulation */
 		StepMethod m_StepMethod = StepMethod::Euler;
+
 	private:
 		/** Mass of the object */
 		float m_Mass = 1.0f;
@@ -427,6 +341,8 @@ namespace Denix
 		glm::vec3 m_TempPosition = glm::vec3(0.f);
 
 		friend class SceneSubSystem;
+		friend class PhysicsSubSystem;
+		friend class GameObject;
 	};
 
 	class RenderComponent : public Component
@@ -475,5 +391,8 @@ namespace Denix
 	private:
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 		Ref<GLShader> m_Shader;
+
+		friend class SceneSubSystem;
+		friend class RenderSubsSystem;
 	};
 }

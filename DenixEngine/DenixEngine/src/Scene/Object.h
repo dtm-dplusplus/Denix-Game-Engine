@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Core/DeLog.h"
+#include "Core/Logger.h"
 #include "GL/glew.h"
 
 namespace Denix
@@ -35,7 +35,7 @@ namespace Denix
 
 			// Register object with object manager (future)
 
-			DE_LOG(LogObject, Trace, "Object #{} {} created", m_ID, m_Name.c_str())
+			//DE_LOG(LogObject, Trace, "Object #{} {} created", m_ID, m_Name.c_str())
 
 			// else
 			//DE_LOG(LogObject, Error, "Object {} failed to create", m_Name.c_str())
@@ -58,12 +58,12 @@ namespace Denix
 
 		virtual void Update(float _deltaTime) {}
 
-
-
 		GLint GetID() const { return m_ID; }
 
 		std::string GetName() { return m_Name; }
 
+		bool IsRubbish() const { return m_IsRubbish; }
+		void SetIsRubbish() { m_IsRubbish = true; }
 	protected:
 
 		/* Name and ID should be hashed in some way in the future */
@@ -73,6 +73,8 @@ namespace Denix
 		/* Name of the object */
 		std::string m_Name;
 
+		/** Clean up value, if marked as rubbish, it will be deleted once the frame has finished*/
+		bool m_IsRubbish = false;
 	private:
 
 		/* Used to assign object IDs. Represents the tota number of objects created */

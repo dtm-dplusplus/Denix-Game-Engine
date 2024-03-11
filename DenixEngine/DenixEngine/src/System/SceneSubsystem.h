@@ -4,8 +4,6 @@
 #include "Scene/Scene.h"
 #include "Scene/ExampleScenes.h"
 #include "SubSystem.h"
-#include "WindowSubSystem.h"
-#include "../../contrib/imgui/imgui.h"
 
 namespace Denix
 {
@@ -21,7 +19,6 @@ namespace Denix
 
 			DE_LOG_CREATE(LogSceneSubSystem)
 			DE_LOG_CREATE(LogScene)
-			DE_LOG_CREATE(LogPhysics)
 			DE_LOG_CREATE(LogObject)
 		}
 
@@ -31,23 +28,12 @@ namespace Denix
 			s_SceneSubSystem = nullptr;
 		}
 
-		void Initialize() override
-		{
-			LoadScene(MakeRef<DefaultScene>());
-			OpenScene("DefaultScene");
-			DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Initialized")
+		void CleanRubbish();
 
-			m_Initialized = true;
-		}
+	public:
+		void Initialize() override;
 
-		void Deinitialize() override
-		{
-			m_LoadedScenes.clear();
-
-			DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Deinitialized")
-
-			m_Initialized = false;
-		}
+		void Deinitialize() override;
 
 		void Update(float _deltaTime) override;
 
@@ -66,95 +52,17 @@ namespace Denix
 				return nullptr;
 		}
 	public:
-		bool LoadScene(const Ref<Scene>& _scene)
-		{
-			// Check if the pointer is valid
-			if (!_scene)
-			{
-				DE_LOG(LogSceneSubSystem, Error, "Load Scene: Invalid scene reference")
-				return false;
-			}
+		bool LoadScene(const Ref<Scene>& _scene);
 
-			// Check it isn't already loaded
-			if (m_LoadedScenes.contains(_scene->GetName()))
-			{
-				DE_LOG(LogSceneSubSystem, Error, "Load Scene: A scene name {} is already loaded", _scene->GetName())
-				return false;
-			}
+		void UnloadScene(const std::string& _name);
 
-			// Load the scene
-			if (!_scene->Load())
-			{
-				DE_LOG(LogSceneSubSystem, Critical, "Failed to load scene")
-				return false;
-			}
+		void OpenScene(const std::string& _name);
 
-			m_LoadedScenes[_scene->GetName()] = _scene;
-			DE_LOG(LogSceneSubSystem, Trace, "Scene loaded: ", _scene->GetName())
+		void PlayScene();
 
-			return true;
-		}
+		void StopScene();
 
-		void UnloadScene(const std::string& _name)
-		{
-			if (const Ref<Scene>scene = m_LoadedScenes[_name])
-			{
-				scene->Unload();
-				m_LoadedScenes.erase(_name);
-				m_ActiveScene = nullptr;
-
-				DE_LOG(LogSceneSubSystem, Info, "Unloaded Scene: {}", _name)
-					return;
-			}
-
-			DE_LOG(LogSceneSubSystem, Error, "Load Scene: Invalid scene name, or the scene isn't loaded")
-
-
-		}
-
-		void OpenScene(const std::string& _name)
-		{
-			if (const Ref<Scene>scene = m_LoadedScenes[_name])
-			{
-				m_ActiveScene = scene;
-				DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}", _name)
-				return;
-			}
-	
-			DE_LOG(LogSceneSubSystem, Error, "Cound't find Scene: {}", _name)
-		}
-
-		void PlayScene()
-		{
-			if (m_ActiveScene)
-			{
-				m_ActiveScene->BeginScene();
-			
-				DE_LOG(LogSceneSubSystem, Trace, "Scene Started")
-			}
-		}
-
-		void StopScene()
-		{
-			if (m_ActiveScene)
-			{
-				m_ActiveScene->EndScene();
-
-				UnloadScene(m_ActiveScene->GetName());
-			
-				// TEMP : this may cause memory leaks. Will move to a better solution later
-				DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
-
-				LoadScene(MakeRef<DefaultScene>());
-				OpenScene("DefaultScene");
-			}
-		}
-
-		void PauseScene()
-		{
-			DE_LOG(LogSceneSubSystem, Trace, "Scene Paused")
-		}
-
+		void PauseScene();
 
 	private:
 		static SceneSubSystem* s_SceneSubSystem;
@@ -162,6 +70,23 @@ namespace Denix
 		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
 
 		Ref<Scene> m_ActiveScene;
+		
+		std::vector< Ref<class TransformComponent>> m_TransformComponets;
+
+		class PhysicsSubSystem* s_PhysicsSubSystem;
+		class WindowSubSystem* s_WindowSubSystem;
+
+	private:
+		// TEMP ImGui
+		int ObjectSelection = 0;
+		bool ScenePanelOpen = true;
+		bool ShowDemoWindow = false;
+
+		float DragSpeed = 1.0f;
+		float DragSpeedDelta;
+
+		void ScenePanel();
+		void DetailsPanel();
 
 		friend class Engine;
 	};

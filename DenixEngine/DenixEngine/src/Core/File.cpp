@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "DeLog.h"
+#include "Logger.h"
 
 // std::string File::m_ResDir{};
 

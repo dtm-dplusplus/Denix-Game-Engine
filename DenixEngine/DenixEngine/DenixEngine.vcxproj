@@ -159,6 +159,10 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
   <ItemGroup>
     <ClCompile Include="Project.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
+    <ClCompile Include="src\System\PhysicsSubSystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\System\SceneSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -191,7 +195,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Core\DeLog.cpp">
+    <ClCompile Include="src\Core\Logger.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -220,6 +224,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
   <ItemGroup>
     <ClInclude Include="Project.h" />
     <ClInclude Include="src\Scene\Camera.h" />
+    <ClInclude Include="src\System\PhysicsSubSystem.h" />
     <ClInclude Include="src\System\SceneSubsystem.h" />
     <ClInclude Include="src\Scene\Component.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
@@ -238,7 +243,7 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
     <ClInclude Include="src\Video\GL\GLObject.h" />
     <ClInclude Include="src\Video\GL\GLShader.h" />
     <ClInclude Include="src\Core\File.h" />
-    <ClInclude Include="src\Core\DeLog.h" />
+    <ClInclude Include="src\Core\Logger.h" />
     <ClInclude Include="src\DePch.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Video\GL\VertexArray.h" />

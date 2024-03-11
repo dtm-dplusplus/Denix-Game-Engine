@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "Camera.h"
+#include "System/PhysicsSubSystem.h"
 
 namespace Denix
 {
@@ -14,24 +15,10 @@ namespace Denix
 
 		Scene() = default;
 
-		Scene(const ObjectInitializer& _object_init) : Object(_object_init), m_Camera{ MakeRef<Camera>() }
+		Scene(const ObjectInitializer& _object_init) : Object(_object_init), m_Camera{ nullptr }
 		{
 		}
 
-		Scene(const Scene& _other) : Object(_other), m_IsLive(_other.m_IsLive), m_SceneGravity(_other.m_SceneGravity)
-		{
-			// Deep copy the m_SceneObjects vector
-			for (const auto& gameObject : _other.m_SceneObjects)
-			{
-				m_SceneObjects.push_back(MakeRef<GameObject>(*gameObject));
-			}
-
-			// Deep copy the m_Camera object
-			if (_other.m_Camera)
-			{
-				m_Camera = MakeRef<Camera>(*_other.m_Camera);
-			}
-		}
 
 		~Scene() override = default;
 
@@ -49,16 +36,13 @@ namespace Denix
 
 		virtual void Unload() 
 		{
+			
 		}
 
 		void BeginScene() override 
 		{
 			m_IsLive = true;
 
-			for (const auto& obj : m_SceneObjects)
-			{
-				obj->BeginScene();
-			}
 		}
 
 		void EndScene() override 
@@ -92,5 +76,6 @@ namespace Denix
 		Ref<Camera> m_Camera;
 
 		friend class SceneSubSystem;
+		friend class Engine;
 	};
 }
