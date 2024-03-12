@@ -16,7 +16,9 @@ public:
 		
 	}
 
-
+	void Test() override
+	{
+	}
 	
 };
 

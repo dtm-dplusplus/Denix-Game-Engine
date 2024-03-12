@@ -4,14 +4,14 @@
 
 //#include "Core/DeLog.h"
 
-#ifdef DE_PLATFORM_WINDOWS
-	#ifdef DE_BUILD_DLL
-		#define DE_API __declspec(dllexport)
-	#else
-		#define DE_API __declspec(dllimport)
-	#endif
-
-#endif
+//#ifdef DE_PLATFORM_WINDOWS
+//	#ifdef DE_BUILD_DLL
+//		#define DE_API __declspec(dllexport)
+//	#else
+//		#define DE_API __declspec(dllimport)
+//	#endif
+//
+//#endif
 
 
 namespace Denix

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SubSystem.h"
-#include "Core.h"
+#include "Denix/Core.h"
 
 namespace Denix
 {

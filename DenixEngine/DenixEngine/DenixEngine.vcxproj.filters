@@ -33,6 +33,9 @@
     <Filter Include="src\Denix\GL">
       <UniqueIdentifier>{ebf94400-6011-430a-a689-83db897bf1d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="contrib\imgui\backends">
+      <UniqueIdentifier>{f4dd6696-9f6d-4666-982b-f03bd6f81f0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Denix\Engine.cpp">
@@ -40,6 +43,45 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Core.cpp">
       <Filter>src\Denix</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Core\DeLog.cpp">
+      <Filter>src\Denix\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\System\WindowSubSystem.cpp">
+      <Filter>src\Denix\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Video\Window.cpp">
+      <Filter>src\Denix\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="contrib\imgui\imgui_widgets.cpp">
+      <Filter>contrib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="contrib\imgui\imgui.cpp">
+      <Filter>contrib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="contrib\imgui\imgui_demo.cpp">
+      <Filter>contrib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="contrib\imgui\imgui_draw.cpp">
+      <Filter>contrib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="contrib\imgui\imgui_tables.cpp">
+      <Filter>contrib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\DePch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="contrib\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>contrib\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp">
+      <Filter>contrib\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\System\UISubSystem.cpp">
+      <Filter>src\Denix\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\System\SubSystem.cpp">
+      <Filter>src\Denix\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +94,48 @@
     </ClInclude>
     <ClInclude Include="src\Denix\EntryPoint.h">
       <Filter>src\Denix</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Core\DeLog.h">
+      <Filter>src\Denix\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\System\WindowSubSystem.h">
+      <Filter>src\Denix\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Video\Window.h">
+      <Filter>src\Denix\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="contrib\imgui\imstb_truetype.h">
+      <Filter>contrib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="contrib\imgui\imconfig.h">
+      <Filter>contrib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="contrib\imgui\imgui.h">
+      <Filter>contrib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="contrib\imgui\imgui_internal.h">
+      <Filter>contrib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="contrib\imgui\imstb_rectpack.h">
+      <Filter>contrib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="contrib\imgui\imstb_textedit.h">
+      <Filter>contrib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\DePch.h">
+      <Filter>src\Denix</Filter>
+    </ClInclude>
+    <ClInclude Include="contrib\imgui\backends\imgui_impl_sdl2.h">
+      <Filter>contrib\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>contrib\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\System\UISubSystem.h">
+      <Filter>src\Denix\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\System\SubSystem.h">
+      <Filter>src\Denix\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

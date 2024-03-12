@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
+#include "Denix/Core/DeLog.h"
 
 namespace Denix
 {
