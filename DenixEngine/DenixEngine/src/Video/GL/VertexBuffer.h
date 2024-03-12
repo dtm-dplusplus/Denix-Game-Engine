@@ -9,8 +9,10 @@ namespace Denix
 	{
 	public:
 		VertexBuffer() = default;
-		VertexBuffer(const GLenum _target, const GLsizei _size, const void* _data, const GLuint _count, const GLenum _type)
+		VertexBuffer(const GLenum _target, const GLsizei _size, const void* _data, 
+			const GLuint _count, const GLenum _type, const GLenum _drawMode =  GL_TRIANGLES)
 		{
+			m_DrawMode = _drawMode;
 			GenVertexBuffer();
 			Bind(_target);
 			BufferData(_target, _size, _data, _count, _type);
@@ -56,6 +58,8 @@ namespace Denix
 
 		GLenum GetType() const { return m_Type; }
 
+		GLenum GetDrawMode() const { return m_DrawMode; }
+
 		GLuint GetTarget() const { return m_Target; }
 
 		GLsizei GetSize() const { return m_Size; }
@@ -67,6 +71,9 @@ namespace Denix
 		// Type of data stored in buffer, e.g. GL_FLOAT
 		GLenum m_Type;
 
+		// Draw mode used by renderer
+		GLenum m_DrawMode;
+
 		// Target of buffer, e.g. GL_ARRAY_BUFFER
 		GLenum m_Target;
 
@@ -75,5 +82,7 @@ namespace Denix
 
 		// Number of attributes per vertex
 		GLuint m_Count;
+
+
 	};
 }

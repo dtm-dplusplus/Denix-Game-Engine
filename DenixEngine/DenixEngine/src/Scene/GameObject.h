@@ -27,6 +27,7 @@ namespace Denix
 
 			m_RenderComponent = MakeRef<RenderComponent>(m_ID);
 			m_Components["Render"] = m_RenderComponent;
+
 		}
 
 		// Destructors

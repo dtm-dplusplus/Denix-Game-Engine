@@ -28,22 +28,29 @@ namespace Denix
 		};
 
 		// VBO creation
-		Vbo = MakeRef<VertexBuffer>
-			(GL_ARRAY_BUFFER, sizeof(data), data, 3, GL_FLOAT);
+		m_MeshComponent = MakeRef<MeshComponent>
+			(m_ID, 
+				GL_ARRAY_BUFFER, 
+				sizeof(data), 
+				data, 
+				6, 
+				GL_FLOAT,
+				GL_TRIANGLES
+			);
 
 
 		// Create a new VAO on the GPU and bind it
-		Vao = MakeRef<VertexArray>();
+		/*Vao = MakeRef<VertexArray>();
 		Vao->GenVertexArray();
-		Vao->Bind();
+		Vao->Bind();*/
 
 		// Bind the vbos & attribs
-		Vbo->Bind(GL_ARRAY_BUFFER);
-		Vao->AttribPtr(Vbo->GetCount(), GL_FLOAT);
+	/*	Vbo->Bind(GL_ARRAY_BUFFER);
+		Vao->AttribPtr(Vbo->GetCount(), GL_FLOAT);*/
 
 		// Reset the state
-		VertexBuffer::Unbind(GL_ARRAY_BUFFER);
-		VertexArray::Unbind();
+		/*VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+		VertexArray::Unbind();*/
 	}
 
 	TestObject::~TestObject() = default;
@@ -64,31 +71,31 @@ namespace Denix
 
 		const Ref<GLShader> shader = shaderSubSystem->GetShader("DebugShader");
 
-		// Move this to renderer in the future
+		//// Move this to renderer in the future
 		shader->Bind();
-		Vao->Bind();
+		m_VAO->Bind();
 
-		// Upload the model matrix
-		glUniformMatrix4fv(shader->GetUniform("u_Model"), 1, GL_FALSE, glm::value_ptr(m_TransformComponent->GetModel()));
+		//// Upload the model matrix
+		//glUniformMatrix4fv(shader->GetUniform("u_Model"), 1, GL_FALSE, glm::value_ptr(m_TransformComponent->GetModel()));
 
-		if(const Ref<Camera> camera = SceneSubSystem::Get()->GetActiveCamera())
-		{
-			// Upload the projection matrix
-			glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1, GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+		//if(const Ref<Camera> camera = SceneSubSystem::Get()->GetActiveCamera())
+		//{
+		//	// Upload the projection matrix
+		//	glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1, GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
 
-			// Upload the view matrix
-			glUniformMatrix4fv(shader->GetUniform("u_View"), 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
-		}
+		//	// Upload the view matrix
+		//	glUniformMatrix4fv(shader->GetUniform("u_View"), 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+		//}
 	
 
-		// Upload the color
-		glUniform4fv(shader->GetUniform("u_Color"), 1, &m_RenderComponent->GetDebugColor()[0]);
+		//// Upload the color
+		//glUniform4fv(shader->GetUniform("u_Color"), 1, &m_RenderComponent->GetDebugColor()[0]);
 
-		// Draw the triangle
+		//// Draw the triangle
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		VertexArray::Unbind();
-		GLShader::Unbind();
+		//VertexArray::Unbind();
+		//GLShader::Unbind();
 	}
 
 	////////////// DefaultScene ////////////////////////

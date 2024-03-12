@@ -69,18 +69,19 @@ namespace Denix
 		MeshComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Mesh Component")) {}
 
 		MeshComponent(const GLint _parentID, 
-			const GLenum _target, const GLsizei _size, const void* _data, const GLuint _count, const GLenum _type) :
+			const GLenum _target, const GLsizei _size, const void* _data, const GLuint _count, 
+			const GLenum _type, const GLenum _drawType = GL_TRIANGLES) :
 				Component(_parentID, ObjectInitializer("Mesh Component"))
 		{
-			Vbo = MakeRef<VertexBuffer>(_target, sizeof(SqureData), SqureData, _count, _type);
+			m_VBO = MakeRef<VertexBuffer>(_target, sizeof(SqureData), SqureData, _count, _type,  _drawType);
 
-			Vao = MakeRef<VertexArray>();
-			Vao->GenVertexArray();
-			Vao->Bind();
+			m_VAO = MakeRef<VertexArray>();
+			m_VAO->GenVertexArray();
+			m_VAO->Bind();
 
 			// Bind the vbos & attribs
-			Vbo->Bind(Vbo->GetTarget());
-			Vao->AttribPtr(Vbo->GetCount(), Vbo->GetType());
+			m_VBO->Bind(m_VBO->GetTarget());
+			m_VAO->AttribPtr(m_VBO->GetCount(), m_VBO->GetType());
 
 			// Reset the state
 			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
@@ -89,9 +90,14 @@ namespace Denix
 
 		~MeshComponent() override =  default;
 
+		void BindVAO() const { if(m_VAO) m_VAO->Bind(); }
+		void BindVBO() const { if(m_VBO) m_VBO->Bind(m_VBO->GetTarget()); }	
 	private:
-		Ref<VertexArray> Vao;
-		Ref<VertexBuffer> Vbo;
+		Ref<VertexArray> m_VAO;
+		Ref<VertexBuffer> m_VBO;
+	
+		friend class RendererSubSystem;
+
 	};
 
 
@@ -350,10 +356,26 @@ namespace Denix
 	public:
 		RenderComponent() : Component(ObjectInitializer("Render Component"))
 		{
+			if (!m_Shader)
+			{
+				if (const Ref<GLShader> shader = ShaderSubSystem::Get()->GetShader("DebugShader"))
+				{
+					m_Shader = shader;
+					DE_LOG(LogRender, Trace, "RenderComponent: {} Shader set to DebugShader", m_Name)
+				}
+			}
 		}
 
 		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
 		{
+			if (!m_Shader)
+			{
+				if (const Ref<GLShader> shader = ShaderSubSystem::Get()->GetShader("DebugShader"))
+				{
+					m_Shader = shader;
+					DE_LOG(LogRender, Trace, "RenderComponent: {} Shader set to DebugShader", m_Name)
+				}
+			}
 		}
 
 		~RenderComponent() override = default;
@@ -368,13 +390,7 @@ namespace Denix
 
 		void BeginScene() override
 		{
-			if (!m_Shader)
-			{
-				if (const Ref<GLShader> shader = ShaderSubSystem::Get()->GetShader("DebugShader"))
-				{
-					m_Shader = shader;
-				}
-			}
+			
 		}
 
 		void EndScene() override{}
@@ -383,6 +399,12 @@ namespace Denix
 		{
 
 		}
+
+	public:
+		void BindShader() const { if (m_Shader) m_Shader->Bind(); }
+		void SetShader(const Ref<GLShader>& _shader) { m_Shader = _shader; }
+		Ref<GLShader> GetShader() const { return m_Shader; }
+
 	public:
 		glm::vec4 GetDebugColor() const { return m_DebugColor; }
 		glm::vec4& GetDebugColor() { return m_DebugColor; }
@@ -393,6 +415,6 @@ namespace Denix
 		Ref<GLShader> m_Shader;
 
 		friend class SceneSubSystem;
-		friend class RenderSubsSystem;
+		friend class RendererSubSystem;
 	};
 }

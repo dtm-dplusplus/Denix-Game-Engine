@@ -125,6 +125,9 @@
     <ClCompile Include="src\System\PhysicsSubSystem.cpp">
       <Filter>src\System</Filter>
     </ClCompile>
+    <ClCompile Include="src\System\RendererSubSystem.cpp">
+      <Filter>src\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DePch.h">
@@ -218,6 +221,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\System\PhysicsSubSystem.h">
+      <Filter>src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\RendererSubSystem.h">
       <Filter>src\System</Filter>
     </ClInclude>
   </ItemGroup>

@@ -44,6 +44,8 @@ namespace Denix
 
 		Ref<class ShaderSubSystem> m_ShaderSubSystem;
 
+		Ref<class RendererSubSystem> m_RendererSubSystem;
+
 		Ref<class UISubSystem> m_UISubSytem;
 	};
 }

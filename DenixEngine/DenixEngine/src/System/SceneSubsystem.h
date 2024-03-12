@@ -75,7 +75,7 @@ namespace Denix
 
 		class PhysicsSubSystem* s_PhysicsSubSystem;
 		class WindowSubSystem* s_WindowSubSystem;
-
+		class RendererSubSystem* s_RendererSubSystem;
 	private:
 		// TEMP ImGui
 		int ObjectSelection = 0;

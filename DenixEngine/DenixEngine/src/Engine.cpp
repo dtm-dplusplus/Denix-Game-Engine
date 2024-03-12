@@ -7,6 +7,7 @@
 #include "System/ShaderSubSystem.h"
 #include "System/SceneSubSystem.h"
 #include "System/PhysicsSubSystem.h"
+#include "System/RendererSubSystem.h"
 #include "System/UISubSystem.h"
 
 namespace Denix
@@ -25,6 +26,9 @@ namespace Denix
 
 		m_ShaderSubSystem = MakeRef<ShaderSubSystem>();
 		m_SubSystems["Shader"] = m_ShaderSubSystem;
+
+		m_RendererSubSystem = MakeRef<RendererSubSystem>();
+		m_SubSystems["Renderer"] = m_RendererSubSystem;
 
 		m_UISubSytem = MakeRef<UISubSystem>();
 		m_SubSystems["UI"] = m_UISubSytem;
@@ -66,11 +70,11 @@ namespace Denix
 
 			m_SceneSubSystem->Update(0.3f);
 
+			m_RendererSubSystem->Draw();
+
 			m_WindowSubSystem->m_Window->SwapBuffers();
 
 			m_SceneSubSystem->CleanRubbish();
-
-			SDL_Delay(5); // Delay for physics
 		}
 
 		Deinitialize();

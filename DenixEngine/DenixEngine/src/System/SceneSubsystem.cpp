@@ -2,6 +2,8 @@
 #include "SceneSubsystem.h"
 #include "WindowSubsystem.h"
 #include "PhysicsSubSystem.h"
+#include "RendererSubSystem.h"
+
 #include "imgui.h"
 
 namespace Denix
@@ -14,6 +16,7 @@ namespace Denix
 	{
 		s_PhysicsSubSystem = PhysicsSubSystem::Get();
 		s_WindowSubSystem = WindowSubSystem::Get();
+		s_RendererSubSystem = RendererSubSystem::Get();
 
 		LoadScene(MakeRef<DefaultScene>());
 		OpenScene("DefaultScene");
@@ -104,6 +107,7 @@ namespace Denix
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
 			m_ActiveScene = scene;
+			s_RendererSubSystem->SetActiveCamera(m_ActiveScene->m_Camera);
 			DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}", _name)
 			return;
 		}
@@ -246,8 +250,11 @@ namespace Denix
 			s_PhysicsSubSystem->Update(_deltaTime);
 		}
 
-		
-
+		// Submit the object components to the Renderer
+		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
+		{
+			s_RendererSubSystem->Submit(gameObject->m_RenderComponent, gameObject->m_TransformComponent, gameObject->m_MeshComponent);
+		}
 
 		// Update the Scene Editor
 		DragSpeedDelta = DragSpeed * _deltaTime;

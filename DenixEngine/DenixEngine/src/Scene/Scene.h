@@ -26,17 +26,13 @@ namespace Denix
 		{
 			m_Camera = MakeRef<Camera>();
 
-			if (!m_Camera)
-			{
-				return false;
-			}
 
 			return true;
 		}
 
 		virtual void Unload() 
 		{
-			
+			m_Camera = nullptr;
 		}
 
 		void BeginScene() override 
@@ -62,6 +58,7 @@ namespace Denix
 		glm::vec3 GetGravity() const { return m_SceneGravity; }
 
 		Ref<Camera> GetCamera() { return m_Camera; }
+
 	protected:
 		/** determine if the engine is in editor or tool side mode.
 		 * True if the scene is being played. False if in editor mode.
