@@ -25,34 +25,35 @@ public:
 	static std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> m_OutputSink;
 
 
-	static std::shared_ptr<spdlog::logger> GetLogger(const std::string& _name)
+	static std::shared_ptr<spdlog::logger> GetLogger(const std::string_view _name)
 	{
-		for(auto& logger : m_Loggers)
+		for (auto& logger : m_Loggers)
 		{
 			if (logger->name() == _name)
 				return logger;
 		}
 
-		DE_LOG(Log, Error, "Logger not found: {}", _name)
+		DE_LOG(Log, Error, "Logger not found: {}", _name.data())
 
-		return m_Loggers[0];
+			return m_Loggers[0];
 	}
 
-	static void CreateLogger(const std::string& _name)
+	static void CreateLogger(const std::string_view _name)
 	{
 		std::vector<spdlog::sink_ptr> sinks = { m_FileSink, m_OutputSink };
-		if (const auto logger = std::make_shared<spdlog::logger>(_name, sinks.begin(), sinks.end()))
+		if (const auto logger = std::make_shared<spdlog::logger>(_name.data(), sinks.begin(), sinks.end()))
 		{
 			logger->set_level(spdlog::level::trace);
 			logger->set_pattern("%^[%T] [%n]: %v%$");
 			logger->flush_on(spdlog::level::trace);
 			m_Loggers.push_back(logger);
 
-			DE_LOG(Log, Trace, "Created logger: {}", _name)
+			// Atomic error
+			// DE_LOG(_name.data(), Trace, "Created logger: %s", _name.data())
 		}
 		else
 		{
-			DE_LOG(Log, Error, "Failed to create logger: {}", _name)
+			DE_LOG(Log, Error, "Failed to create logger: {}", _name.data())
 		}
 	}
 
@@ -74,20 +75,20 @@ public:
 
 		// Default log catergories Should be stored in a config file
 		DE_LOG_CREATE(Log)
-		DE_LOG_CREATE(LogEngine)
+			DE_LOG_CREATE(LogEngine)
 
-		
-		/*DE_LOG_CREATE(LogGL)
-		DE_LOG_CREATE(LogWindow)
-		DE_LOG_CREATE(LogShader)*/
-		
-		DE_LOG(Log, Trace, "Logger starting")
+
+			DE_LOG_CREATE(LogGL)
+			DE_LOG_CREATE(LogWindow)
+			DE_LOG_CREATE(LogShader)
+
+			DE_LOG(Log, Trace, "Logger starting")
 	}
 
 	static void Deinitialize()
 	{
-		DE_LOG(Log,Trace, "Logger stopping")
-		m_Loggers.clear();
+		DE_LOG(Log, Trace, "Logger stopping")
+			m_Loggers.clear();
 		spdlog::shutdown();
 	}
 };

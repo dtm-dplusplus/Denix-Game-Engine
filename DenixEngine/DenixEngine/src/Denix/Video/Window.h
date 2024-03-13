@@ -1,23 +1,17 @@
 #pragma once
 
-<<<<<<< HEAD:DenixEngine/DenixEngine/src/Denix/Video/Window.h
 #include "Denix/Core.h"
-=======
-#include "Core.h"
->>>>>>> main:DenixEngine/DenixEngine/src/Video/Window.h
 
 #include "SDL_video.h"
 #include "glm/glm.hpp"
 #include "GL/glew.h"
-
-#include <string>
 
 namespace Denix
 {
 	class Window
 	{
 	public:
-		Window(): m_IsOpen{false}, m_Title{"Window"}, m_WinX{1920}, m_WinY{1080} {}
+		Window() : m_IsOpen{ false }, m_Title{ "Denix Engine" }, m_WinX{ 1920 }, m_WinY{ 1080 } {}
 
 		virtual ~Window() = default;
 
@@ -31,14 +25,14 @@ namespace Denix
 
 		bool IsOpen() const { return m_IsOpen; }
 
-		glm::vec2 GetWindowSize() const { return {m_WinX, m_WinY}; }
+		glm::vec2 GetWindowSize() const { return { m_WinX, m_WinY }; }
 
 		int GetWindowSizeX() const { return m_WinX; }
 		int GetWindowSizeY() const { return m_WinY; }
 
 		std::string GetTitle() const { return m_Title; }
 
-	
+
 	protected:
 		bool m_IsOpen;
 
@@ -53,11 +47,11 @@ namespace Denix
 	class SDL_GLWindow final : public Window
 	{
 	public:
-		SDL_GLWindow(): m_SDL_GLWindow(nullptr), m_SDL_GLContext(nullptr)
+		SDL_GLWindow() : m_SDL_GLWindow(nullptr), m_SDL_GLContext(nullptr)
 		{
 			m_SDL_WindowFlags = static_cast<SDL_WindowFlags>(
-				SDL_WINDOW_OPENGL | 
-				SDL_WINDOW_MAXIMIZED | 
+				SDL_WINDOW_OPENGL |
+				SDL_WINDOW_MAXIMIZED |
 				SDL_WINDOW_RESIZABLE |
 				SDL_WINDOW_ALLOW_HIGHDPI
 				);
@@ -82,7 +76,7 @@ namespace Denix
 
 		void ClearBuffer() override;
 		void SwapBuffers() override;
-					
+
 		void PollEvents() override;
 
 		std::string GetGLSLVersion() const { return m_GLSLVersion; }

@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "SubSystem.h"
-#include "Core/Logger.h"
-#include "Scene/Component.h"
+#include "Denix/Core/Logger.h"
+#include "Denix/Scene/Component.h"
 
 namespace Denix
 {

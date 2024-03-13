@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 
 #include "GLObject.h"
-#include "Core.h"
+#include "Denix/Core.h"
 
 namespace Denix
 {

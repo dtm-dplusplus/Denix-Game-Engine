@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Core/Logger.h"
+#include "Denix/Core/Logger.h"
 #include "GL/glew.h"
 
 namespace Denix
@@ -27,7 +27,7 @@ namespace Denix
 	class Object
 	{
 	public:
-		Object(const ObjectInitializer& _object_init = ObjectInitializer::Get()): m_ID{ 0 }, m_Name{ _object_init.Name }
+		Object(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : m_ID{ 0 }, m_Name{ _object_init.Name }
 		{
 			// Try to innit object of class (future)
 			// if(object instantiated correctly)

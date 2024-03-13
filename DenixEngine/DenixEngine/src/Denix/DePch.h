@@ -5,4 +5,8 @@
 #include <string_view>
 #include <memory>
 #include <unordered_map>
+#include <ranges>
 
+#include <filesystem>
+#include <fstream>
+#include <sstream>

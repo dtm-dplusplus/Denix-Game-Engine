@@ -4,12 +4,12 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "Camera.h"
-#include "System/PhysicsSubSystem.h"
+#include "Denix/System/PhysicsSubSystem.h"
 
 namespace Denix
 {
 	// Basic Scene class so I can start creating and testing features
-	class Scene: public Object
+	class Scene : public Object
 	{
 	public:
 
@@ -34,18 +34,18 @@ namespace Denix
 			return true;
 		}
 
-		virtual void Unload() 
+		virtual void Unload()
 		{
-			
+
 		}
 
-		void BeginScene() override 
+		void BeginScene() override
 		{
 			m_IsLive = true;
 
 		}
 
-		void EndScene() override 
+		void EndScene() override
 		{
 			m_IsLive = false;
 
@@ -55,7 +55,7 @@ namespace Denix
 			}
 		}
 
-		void Update(float _deltaTime) override{}
+		void Update(float _deltaTime) override {}
 
 		bool IsLive() const { return m_IsLive; }
 

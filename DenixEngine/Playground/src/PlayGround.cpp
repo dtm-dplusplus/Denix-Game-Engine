@@ -1,6 +1,4 @@
-#include <Denix.h>
-#include <Denix/EntryPoint.h>
-
+#include "Denix.h"
 
 class Playground: public Denix::Engine
 {
@@ -8,7 +6,6 @@ public:
 
 	Playground()
 	{
-		
 	}
 
 	~Playground() override
@@ -16,10 +13,6 @@ public:
 		
 	}
 
-	void Test() override
-	{
-	}
-	
 };
 
 Denix::Engine* Denix::CreateEngine()

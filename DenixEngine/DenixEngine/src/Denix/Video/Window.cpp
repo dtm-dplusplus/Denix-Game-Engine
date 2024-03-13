@@ -6,7 +6,6 @@
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
-#include "Denix/Core/DeLog.h"
 
 namespace Denix
 {
@@ -45,8 +44,8 @@ namespace Denix
 		else
 		{
 			DE_LOG(LogWindow, Critical, "SDL_CreateWindow failed! SDL_Error: {}", SDL_GetError())
-			return false;
-	
+				return false;
+
 		}
 
 		// Create SDL GL Context
@@ -58,21 +57,21 @@ namespace Denix
 		else
 		{
 			DE_LOG(LogWindow, Critical, "SDL_GL_CreateContext failed! SDL_Error: {}", SDL_GetError())
-			return false;
+				return false;
 		}
 
 		// Make current context
-		if(SDL_GL_MakeCurrent(m_SDL_GLWindow, m_SDL_GLContext) < 0)
+		if (SDL_GL_MakeCurrent(m_SDL_GLWindow, m_SDL_GLContext) < 0)
 		{
 			DE_LOG(LogWindow, Critical, "SDL_GL_MakeCurrent failed! SDL_Error: {}", SDL_GetError())
-			return false;
+				return false;
 		}
 
 		// Enable Vsync
-		if(SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
+		if (SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
 		{
 			DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
-			return false;
+				return false;
 		}
 
 		// Set Viewport
@@ -82,7 +81,7 @@ namespace Denix
 
 		DE_LOG(LogWindow, Trace, "Created Window: {} Res: {}x{}", m_Title, m_WinX, m_WinY)
 
-		return true;
+			return true;
 	}
 
 	void SDL_GLWindow::Deinitialize()
@@ -124,35 +123,35 @@ namespace Denix
 				switch (e.window.event)
 				{
 				case SDL_WINDOWEVENT_CLOSE: // Additioanl CHeck e.window.windowID == SDL_GetWindowID(m_SDL_GLWindow)
-					{
-						m_IsOpen = false;
-						DE_LOG(LogWindow, Trace, "Window Close Event")
-					}
-					break;
+				{
+					m_IsOpen = false;
+					DE_LOG(LogWindow, Trace, "Window Close Event")
+				}
+				break;
 
 				case SDL_WINDOW_MINIMIZED:
-					{
-						DE_LOG(LogWindow, Trace, "Window Minimized Event")
-					}
-					break;
+				{
+					DE_LOG(LogWindow, Trace, "Window Minimized Event")
+				}
+				break;
 
 				case SDL_WINDOW_MAXIMIZED:
-					{
-						DE_LOG(LogWindow, Trace, "Window Maximized Event")
-					}
-					break;
+				{
+					DE_LOG(LogWindow, Trace, "Window Maximized Event")
+				}
+				break;
 
 				case SDL_WINDOWEVENT_RESIZED:
-					{
-						m_WinX = e.window.data1;
-						m_WinY = e.window.data2;
-						glViewport(0, 0, m_WinX, m_WinY);
+				{
+					m_WinX = e.window.data1;
+					m_WinY = e.window.data2;
+					glViewport(0, 0, m_WinX, m_WinY);
 
-						DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", m_WinX, m_WinY)
-					}
-					break;
+					DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", m_WinX, m_WinY)
+				}
+				break;
 
-				default : break;
+				default: break;
 				}
 			}
 		}

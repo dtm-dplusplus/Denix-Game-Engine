@@ -8,13 +8,13 @@
 namespace Denix
 {
 	/*	Base class for all game objects
-	*	
+	*
 	*/
 	class GameObject : public Object
 	{
 	public:
 		// Constructors
-		GameObject(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : Object(_object_init) 
+		GameObject(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : Object(_object_init)
 		{
 			m_TransformComponent = MakeRef<TransformComponent>(m_ID);
 			m_Components["Transform"] = m_TransformComponent;

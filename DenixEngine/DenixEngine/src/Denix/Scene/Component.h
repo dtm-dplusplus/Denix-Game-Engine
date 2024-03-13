@@ -3,22 +3,22 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-#include "Core.h"
+#include "Denix/Core.h"
 
 #include "Object.h"
-#include "Video/GL/VertexArray.h"
-#include "Video/GL/VertexBuffer.h"
-#include "Video/GL/GLShader.h"
-#include "System/ShaderSubSystem.h"
+#include "Denix/Video/GL/VertexArray.h"
+#include "Denix/Video/GL/VertexBuffer.h"
+#include "Denix/Video/GL/GLShader.h"
+#include "Denix/System/ShaderSubSystem.h"
 
 namespace Denix
 {
 	/*	Base class for all object components */
-	class Component: public Object
+	class Component : public Object
 	{
 	public:
 		// Constructors
-		Component(const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectID{0}
+		Component(const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectID{ 0 }
 		{
 			//DE_LOG(LogObject, Trace, "Created Component: {} without Parent Object", m_Name)
 		}
@@ -68,9 +68,9 @@ namespace Denix
 
 		MeshComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Mesh Component")) {}
 
-		MeshComponent(const GLint _parentID, 
+		MeshComponent(const GLint _parentID,
 			const GLenum _target, const GLsizei _size, const void* _data, const GLuint _count, const GLenum _type) :
-				Component(_parentID, ObjectInitializer("Mesh Component"))
+			Component(_parentID, ObjectInitializer("Mesh Component"))
 		{
 			Vbo = MakeRef<VertexBuffer>(_target, sizeof(SqureData), SqureData, _count, _type);
 
@@ -87,7 +87,7 @@ namespace Denix
 			VertexArray::Unbind();
 		}
 
-		~MeshComponent() override =  default;
+		~MeshComponent() override = default;
 
 	private:
 		Ref<VertexArray> Vao;
@@ -106,7 +106,7 @@ namespace Denix
 		// Destructors
 		~TransformComponent() override = default;
 
-	
+
 		void EndScene() override
 		{
 			m_Position = glm::vec3(0.f);
@@ -131,7 +131,7 @@ namespace Denix
 		void SetPosition(const glm::vec3& _position) { m_Position = _position; }
 		void SetRotation(const glm::vec3& _rotation) { m_Rotation = _rotation; }
 		void SetScale(const glm::vec3& _scale) { m_Scale = _scale; }
-	
+
 	protected:
 		glm::vec3 m_Position = glm::vec3(0.f);
 		glm::vec3 m_Rotation = glm::vec3(0.f);
@@ -143,7 +143,7 @@ namespace Denix
 	class PhysicsComponent : public Component
 	{
 	public:
-		PhysicsComponent() : Component(ObjectInitializer("Physics Component")) 
+		PhysicsComponent() : Component(ObjectInitializer("Physics Component"))
 		{
 		}
 		PhysicsComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Physics Component")) {}
@@ -233,7 +233,7 @@ namespace Denix
 		{
 			m_IsSimulated = !m_IsSimulated;
 
-			if(m_IsSimulated)
+			if (m_IsSimulated)
 			{
 				DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
 			}
@@ -247,13 +247,13 @@ namespace Denix
 		{
 			m_IsCustomGravity = !m_IsCustomGravity;
 
-			if(m_IsCustomGravity)
+			if (m_IsCustomGravity)
 			{
 				DE_LOG(LogPhysics, Trace, "Custom Gravity enabled")
 
-				// Get the scene gravity (future)
-				// Just use the default gravity for now
-				m_Gravity = glm::vec3(0.f, -9.81, 0.f);
+					// Get the scene gravity (future)
+					// Just use the default gravity for now
+					m_Gravity = glm::vec3(0.f, -9.81, 0.f);
 			}
 			else
 			{
@@ -264,11 +264,11 @@ namespace Denix
 		bool IsSimulated() const { return m_IsSimulated; }
 		bool& IsSimulated() { return m_IsSimulated; }
 
-		void SetStepMethod(StepMethod _method) 
+		void SetStepMethod(StepMethod _method)
 		{
-			m_StepMethod = _method; 
-		
-		
+			m_StepMethod = _method;
+
+
 			DE_LOG(LogPhysics, Trace, "Physics step method set to: {}", GetStepMethod(_method))
 		}
 		StepMethod GetStepMethod() const { return m_StepMethod; }
@@ -377,7 +377,7 @@ namespace Denix
 			}
 		}
 
-		void EndScene() override{}
+		void EndScene() override {}
 
 		void Update(float _deltaTime) override
 		{

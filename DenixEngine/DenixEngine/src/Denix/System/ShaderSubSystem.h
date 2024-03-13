@@ -1,8 +1,8 @@
 #pragma once
 #include "SubSystem.h"
-#include "Video/GL/GLShader.h"
+#include "Denix/Video/GL/GLShader.h"
 #include "../Core.h"
-#include "Core/File.h"
+#include "Denix/Core/File.h"
 
 namespace Denix
 {
@@ -33,8 +33,8 @@ namespace Denix
 
 			// Create Debug Shader
 			std::vector<std::pair<GLenum, std::string>> shaders;
-			shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res/shaders/Vertex.glsl"));
-			shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res/shaders/Fragment.glsl"));
+			shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res\\shaders\\Vertex.glsl"));
+			shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\Fragment.glsl"));
 			LoadShader(shaders, "DebugShader");
 
 			const Ref<GLShader> program = GetShader("DebugShader");
