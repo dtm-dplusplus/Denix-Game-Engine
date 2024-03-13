@@ -1,6 +1,10 @@
 #pragma once
 
+<<<<<<< HEAD:DenixEngine/DenixEngine/src/Denix/Video/Window.h
 #include "Denix/Core.h"
+=======
+#include "Core.h"
+>>>>>>> main:DenixEngine/DenixEngine/src/Video/Window.h
 
 #include "SDL_video.h"
 #include "glm/glm.hpp"

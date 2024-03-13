@@ -5,7 +5,11 @@
 #include <fstream>
 #include <sstream>
 
+<<<<<<< HEAD:DenixEngine/DenixEngine/src/Denix/Core/File.cpp
 #include "DeLog.h"
+=======
+#include "Logger.h"
+>>>>>>> main:DenixEngine/DenixEngine/src/Core/File.cpp
 
 // std::string File::m_ResDir{};
 
