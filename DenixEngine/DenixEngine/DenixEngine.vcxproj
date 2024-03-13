@@ -166,10 +166,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\Scene\ExampleScenes.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="src\Denix\System\SceneSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -188,7 +184,6 @@
     <ClInclude Include="src\Denix\Core\Logger.h" />
     <ClInclude Include="src\Denix\DePch.h" />
     <ClInclude Include="src\Denix\EntryPoint.h" />
-    <ClInclude Include="src\Denix\Scene\ExampleScenes.h" />
     <ClInclude Include="src\Denix\System\PhysicsSubSystem.h" />
     <ClInclude Include="src\Denix\System\SubSystem.h" />
     <ClInclude Include="src\Denix\System\UISubSystem.h" />

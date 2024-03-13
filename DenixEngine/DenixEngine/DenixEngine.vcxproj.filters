@@ -89,9 +89,6 @@
     <ClCompile Include="src\Denix\Core\Logger.cpp">
       <Filter>src\Denix\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\Scene\ExampleScenes.cpp">
-      <Filter>src\Denix\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\Core\File.cpp">
       <Filter>src\Denix\Core</Filter>
     </ClCompile>
@@ -113,17 +110,17 @@
     <ClCompile Include="src\Denix\System\WindowSubSystem.cpp">
       <Filter>src\Denix\System</Filter>
     </ClCompile>
+    <ClCompile Include="src\Denix\Video\GL\VertexBuffer.cpp">
+      <Filter>src\Denix\Video\GL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Denix\Video\GL\GLObject.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Denix\Video\GL</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\Video\GL\GLShader.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Denix\Video\GL</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\Video\GL\VertexArray.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Denix\Video\GL\VertexBuffer.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Denix\Video\GL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -206,14 +203,17 @@
     <ClInclude Include="src\Denix\Scene\Camera.h">
       <Filter>src\Denix\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\Scene\ExampleScenes.h">
-      <Filter>src\Denix\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="src\Denix\System\WindowSubSystem.h">
       <Filter>src\Denix\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\Video\GL\VertexBuffer.h" />
-    <ClInclude Include="src\Denix\Video\GL\GLObject.h" />
-    <ClInclude Include="src\Denix\Video\GL\VertexArray.h" />
+    <ClInclude Include="src\Denix\Video\GL\VertexBuffer.h">
+      <Filter>src\Denix\Video\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Video\GL\GLObject.h">
+      <Filter>src\Denix\Video\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Video\GL\VertexArray.h">
+      <Filter>src\Denix\Video\GL</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

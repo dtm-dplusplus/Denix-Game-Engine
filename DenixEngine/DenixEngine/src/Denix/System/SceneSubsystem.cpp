@@ -15,9 +15,6 @@ namespace Denix
 		s_PhysicsSubSystem = PhysicsSubSystem::Get();
 		s_WindowSubSystem = WindowSubSystem::Get();
 
-		LoadScene(MakeRef<DefaultScene>());
-		OpenScene("DefaultScene");
-
 		DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Initialized")
 
 		m_Initialized = true;
@@ -131,8 +128,7 @@ namespace Denix
 			
 			// TEMP : this may cause memory leaks. Will move to a better solution later
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
-
-			LoadScene(MakeRef<DefaultScene>());
+			LoadScene(MakeRef<Scene>());
 			OpenScene("DefaultScene");
 		}
 	}

@@ -2,7 +2,6 @@
 
 #include "Denix/Core.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Scene/ExampleScenes.h"
 #include "SubSystem.h"
 
 namespace Denix

@@ -29,7 +29,6 @@ namespace Denix
 		void Initialize() override
 		{
 			DE_LOG(Log, Trace, "GLShader SubSystem Initialized")
-			m_Initialized = true;
 
 			// Create Debug Shader
 			std::vector<std::pair<GLenum, std::string>> shaders;
@@ -45,7 +44,7 @@ namespace Denix
 			program->GetUniform("u_Color");
 			program->GetUniform("u_View");
 
-
+			m_Initialized = true;
 		}
 
 		void Deinitialize() override

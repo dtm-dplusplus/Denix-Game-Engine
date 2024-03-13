@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Scene.h"
+#include "Denix/Scene/Scene.h"
 
-#include <GL/glew.h>
-#include "glm/glm.hpp"
 #include <memory>
 
 namespace Denix
@@ -27,16 +25,14 @@ namespace Denix
 		Ref<VertexBuffer> Vbo;
 		Ref<GLShader> Program;
 
-
-
-		friend class DefaultScene;
+		friend class PlaygroundScene;
 	};
 
-	class DefaultScene final : public Scene
+	class PlaygroundScene final : public Scene
 	{
 	public:
-		DefaultScene();
-		~DefaultScene() override;
+		PlaygroundScene(const ObjectInitializer& _objInit = ObjectInitializer::Get());
+		~PlaygroundScene() override;
 
 		bool Load() override;
 		void Unload() override;
@@ -50,8 +46,5 @@ namespace Denix
 		Ref<VertexBuffer> Vbo;
 		Ref<GLShader> Program;
 
-		//// Rotation
-		//bool IsRotating = false;
-		//float RotSpeed = 0.01f;
 	};
 }

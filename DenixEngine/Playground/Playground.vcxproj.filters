@@ -20,5 +20,11 @@
     <ClCompile Include="src\PlayGround.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scenes\PlaygroundScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Scenes\PlaygroundScene.h" />
   </ItemGroup>
 </Project>

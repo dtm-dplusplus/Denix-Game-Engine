@@ -1,17 +1,11 @@
-#include "DePch.h"
-#include "ExampleScenes.h"
-
-#include "imgui.h"
-
+#include "PlaygroundScene.h"
 
 #include "Denix/Video/GL/VertexBuffer.h"
 #include "Denix/Video/GL/VertexArray.h"
 #include "Denix/Video/GL/GLShader.h"
 
-#include "Object.h"
-#include "GameObject.h"
-#include "../System/SceneSubsystem.h"
-#include "../System/ShaderSubSystem.h"
+#include "Denix/System/SceneSubsystem.h"
+#include "Denix/System/ShaderSubSystem.h"
 
 namespace Denix
 {
@@ -91,16 +85,17 @@ namespace Denix
 		GLShader::Unbind();
 	}
 
-	////////////// DefaultScene ////////////////////////
-	DefaultScene::DefaultScene() : Scene(ObjectInitializer("DefaultScene"))
+	////////////// PlaygroundScene ////////////////////////
+	PlaygroundScene::PlaygroundScene(const ObjectInitializer& _objInit):
+		Scene(_objInit)
+	{ 
+	}
+
+	PlaygroundScene::~PlaygroundScene()
 	{
 	}
 
-	DefaultScene::~DefaultScene()
-	{
-	}
-
-	bool DefaultScene::Load()
+	bool PlaygroundScene::Load()
 	{
 		Scene::Load();
 
@@ -108,23 +103,23 @@ namespace Denix
 		return true;
 	}
 
-	void DefaultScene::Unload()
+	void PlaygroundScene::Unload()
 	{
 		Scene::Unload();
 	}
 
-	void DefaultScene::BeginScene()
+	void PlaygroundScene::BeginScene()
 	{
 		Scene::BeginScene();
 
 	}
 
-	void DefaultScene::EndScene()
+	void PlaygroundScene::EndScene()
 	{
 		Scene::EndScene();
 	}
 
-	void DefaultScene::Update(float _deltaTime)
+	void PlaygroundScene::Update(float _deltaTime)
 	{
 		Scene::Update(_deltaTime);
 	}

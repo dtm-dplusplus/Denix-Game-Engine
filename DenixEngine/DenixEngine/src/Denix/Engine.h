@@ -23,7 +23,8 @@ namespace Denix
 		static Engine& Get() { return *s_Engine; }
 
 	public:
-		virtual void PostInitialize() {}
+		virtual void PostInitialize() = 0;
+
 	private:
 		static Engine* s_Engine;
 

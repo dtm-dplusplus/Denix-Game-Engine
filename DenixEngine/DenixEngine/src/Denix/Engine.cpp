@@ -46,6 +46,8 @@ namespace Denix
 			subSystem->Initialize();
 
 		DE_LOG(LogEngine, Info, "Engine Initialized")
+
+		PostInitialize();
 	}
 
 	void Engine::Deinitialize()
