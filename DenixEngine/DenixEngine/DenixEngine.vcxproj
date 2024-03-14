@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -26,27 +18,14 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -56,12 +35,6 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -78,56 +51,32 @@
     <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)bin-int\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DE_PLATFORM_WINDOWS; DE_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\stb;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)contrib\sdl\lib\x64;$(ProjectDir)contrib\glew\lib\x64;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY "$(ProjectDir)res" "$(TargetDir)res\" /S /Y
-if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -135,10 +84,10 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DE_PLATFORM_WINDOWS; DE_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\stb;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -147,114 +96,122 @@ if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)contrib\sdl\lib\x64;$(ProjectDir)contrib\glew\lib\x64;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY "$(ProjectDir)res" "$(TargetDir)res\" /S /Y
-if not exist "$(OutDir)glew32.dll" XCOPY /y "$(ProjectDir)glew32.dll" "$(OutDir)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Project.cpp" />
-    <ClCompile Include="src\System\RendererSubSystem.cpp" />
-    <ClCompile Include="src\Scene\Camera.cpp" />
-    <ClCompile Include="src\System\PhysicsSubSystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\System\SceneSubsystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Scene\Component.cpp" />
+    <ClCompile Include="src\Denix\Scene\Component\MeshComponent.cpp" />
+    <ClCompile Include="src\Denix\Scene\Component\PhysicsComponent.cpp" />
+    <ClCompile Include="src\Denix\Scene\Component\RenderComponent.cpp" />
+    <ClCompile Include="src\Denix\Scene\Camera.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp" />
-    <ClCompile Include="contrib\imgui\imgui.cpp" />
-    <ClCompile Include="contrib\imgui\imgui_demo.cpp" />
-    <ClCompile Include="contrib\imgui\imgui_draw.cpp" />
-    <ClCompile Include="contrib\imgui\imgui_tables.cpp" />
-    <ClCompile Include="contrib\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\Scene\GameObject.cpp" />
-    <ClCompile Include="src\Scene\Object.cpp" />
-    <ClCompile Include="src\Scene\ExampleScenes.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Core.cpp" />
-    <ClCompile Include="src\Scene\Scene.cpp">
+    <ClCompile Include="contrib\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Video\GL\GLObject.cpp" />
-    <ClCompile Include="src\Video\GL\GLShader.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Core\File.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Core\Logger.cpp">
+    <ClCompile Include="contrib\imgui\imgui_demo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\DePch.cpp">
+    <ClCompile Include="contrib\imgui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="contrib\imgui\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="contrib\imgui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Core.cpp" />
+    <ClCompile Include="src\Denix\Core\File.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Core\Logger.cpp" />
+    <ClCompile Include="src\Denix\DePch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DePch.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DePch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\Engine.cpp">
+    <ClCompile Include="src\Denix\Engine.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\Video\GL\VertexArray.cpp" />
-    <ClCompile Include="src\Video\GL\VertexBuffer.cpp" />
-    <ClCompile Include="src\Video\Window.cpp">
+    <ClCompile Include="src\Denix\Scene\Component.cpp" />
+    <ClCompile Include="src\Denix\Scene\GameObject.cpp" />
+    <ClCompile Include="src\Denix\Scene\Object.cpp" />
+    <ClCompile Include="src\Denix\Scene\Scene.cpp" />
+    <ClCompile Include="src\Denix\System\PhysicsSubSystem.cpp" />
+    <ClCompile Include="src\Denix\System\SubSystem.cpp" />
+    <ClCompile Include="src\Denix\System\UISubSystem.cpp" />
+    <ClCompile Include="src\Denix\System\WindowSubSystem.cpp" />
+    <ClCompile Include="src\Denix\Video\GL\GLObject.cpp" />
+    <ClCompile Include="src\Denix\Video\GL\GLShader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\System\SubSystem.cpp" />
-    <ClCompile Include="src\System\WindowSubSystem.cpp" />
-    <ClCompile Include="src\System\UISubSystem.cpp" />
-    <ClCompile Include="src\System\ShaderSubSystem.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Project.h" />
-    <ClInclude Include="src\System\RendererSubSystem.h" />
-    <ClInclude Include="src\Scene\Camera.h" />
-    <ClInclude Include="src\System\PhysicsSubSystem.h" />
-    <ClInclude Include="src\System\SceneSubsystem.h" />
-    <ClInclude Include="src\Scene\Component.h" />
+    <ClCompile Include="src\Denix\Video\GL\VertexArray.cpp" />
+    <ClCompile Include="src\Denix\Video\GL\VertexBuffer.cpp" />
+    <ClCompile Include="src\Denix\Video\Window.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Denix\System\SceneSubsystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Denix\System\ShaderSubSystem.cpp" />
+    <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
+    <ClInclude Include="src\Denix\Scene\Component\MeshComponent.h" />
+    <ClInclude Include="src\Denix\Scene\Component\PhysicsComponent.h" />
+    <ClInclude Include="src\Denix\Scene\Component\RenderComponent.h" />
+    <ClInclude Include="src\Denix\Scene\Camera.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
-    <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_sdl2.h" />
+    <ClInclude Include="contrib\imgui\imconfig.h" />
     <ClInclude Include="contrib\imgui\imgui.h" />
     <ClInclude Include="contrib\imgui\imgui_internal.h" />
     <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Scene\GameObject.h" />
-    <ClInclude Include="src\Scene\Object.h" />
-    <ClInclude Include="src\Scene\ExampleScenes.h" />
-    <ClInclude Include="src\Core.h" />
-    <ClInclude Include="src\Scene\Scene.h" />
-    <ClInclude Include="src\Video\GL\GLObject.h" />
-    <ClInclude Include="src\Video\GL\GLShader.h" />
-    <ClInclude Include="src\Core\File.h" />
-    <ClInclude Include="src\Core\Logger.h" />
-    <ClInclude Include="src\DePch.h" />
-    <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\Video\GL\VertexArray.h" />
-    <ClInclude Include="src\Video\GL\VertexBuffer.h" />
-    <ClInclude Include="src\Video\Window.h" />
-    <ClInclude Include="src\System\SubSystem.h" />
-    <ClInclude Include="src\System\WindowSubSystem.h" />
-    <ClInclude Include="src\System\UISubSystem.h" />
-    <ClInclude Include="src\System\ShaderSubSystem.h" />
+    <ClInclude Include="src\Denix\Core\File.h" />
+    <ClInclude Include="src\Denix\Core\Logger.h" />
+    <ClInclude Include="src\Denix\DePch.h" />
+    <ClInclude Include="src\Denix\EntryPoint.h" />
+    <ClInclude Include="src\Denix\System\PhysicsSubSystem.h" />
+    <ClInclude Include="src\Denix\System\SubSystem.h" />
+    <ClInclude Include="src\Denix\System\UISubSystem.h" />
+    <ClInclude Include="src\Denix\System\WindowSubSystem.h" />
+    <ClInclude Include="src\Denix\Video\GL\GLObject.h" />
+    <ClInclude Include="src\Denix\Video\GL\VertexArray.h" />
+    <ClInclude Include="src\Denix\Video\GL\VertexBuffer.h" />
+    <ClInclude Include="src\Denix\Video\Window.h" />
+    <ClInclude Include="src\Denix\Scene\Component.h" />
+    <ClInclude Include="src\Denix\Scene\GameObject.h" />
+    <ClInclude Include="src\Denix\Scene\Object.h" />
+    <ClInclude Include="src\Denix\Scene\Scene.h" />
+    <ClInclude Include="src\Denix\System\SceneSubsystem.h" />
+    <ClInclude Include="src\Denix\System\ShaderSubSystem.h" />
+    <ClInclude Include="src\Denix\Video\GL\GLShader.h" />
+    <ClInclude Include="src\Denix\Scene\Component\TransformComponent.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Denix.h" />
+    <ClInclude Include="src\Denix\Core.h" />
+    <ClInclude Include="src\Denix\Engine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
