@@ -24,7 +24,7 @@ namespace Denix
 
 	public:
 		virtual void PostInitialize() = 0;
-
+		virtual void RestartScene() = 0;
 	private:
 		static Engine* s_Engine;
 

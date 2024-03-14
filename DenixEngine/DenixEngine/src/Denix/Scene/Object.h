@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Denix/Core.h"
 #include "Denix/Core/Logger.h"
 #include "GL/glew.h"
 
@@ -27,25 +28,22 @@ namespace Denix
 	class Object
 	{
 	public:
+
 		Object(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : m_ID{ 0 }, m_Name{ _object_init.Name }
 		{
-			// Try to innit object of class (future)
-			// if(object instantiated correctly)
 			m_ID = CreateNewID();
-
-			// Register object with object manager (future)
-
-			//DE_LOG(LogObject, Trace, "Object #{} {} created", m_ID, m_Name.c_str())
-
-			// else
-			//DE_LOG(LogObject, Error, "Object {} failed to create", m_Name.c_str())
-			// m_ID = -1;
 		}
 
 		// Create Object
+		static Ref<Object> Create()
+		{
+			return MakeRef<Object>();
+		}
 
-
-		// Create Object by class
+		static Ref<Object> Create(const ObjectInitializer& _object_init = ObjectInitializer::Get())
+		{
+			return MakeRef<Object>(_object_init);
+		}
 
 		// Destructors
 		virtual ~Object() = default;
@@ -53,8 +51,6 @@ namespace Denix
 		// Called when the scene is set as active
 		virtual void BeginScene() {}
 		virtual void EndScene() {}
-
-
 
 		virtual void Update(float _deltaTime) {}
 

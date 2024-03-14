@@ -58,7 +58,7 @@
       <PreprocessorDefinitions>DE_PLATFORM_WINDOWS; _CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -82,7 +82,7 @@ XCOPY "$(SolutionDir)DenixEngine\res\*.*" "$(OutDir)\res" /Y /I /E</Command>
       <PreprocessorDefinitions>DE_PLATFORM_WINDOWS; _CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -112,6 +112,7 @@ XCOPY "$(SolutionDir)DenixEngine\res\*.*" "$(OutDir)\res" /Y /I /E</Command>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Scenes\PlaygroundScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -16,5 +16,10 @@
 #include "Denix/Scene/GameObject.h"
 
 #include "Denix/Scene/Component.h"
+#include "Denix/Scene/Component/MeshComponent.h"
+#include "Denix/Scene/Component/TransformComponent.h"
+#include "Denix/Scene/Component/PhysicsComponent.h"
+#include "Denix/Scene/Component/RenderComponent.h"
+
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Scene.h"

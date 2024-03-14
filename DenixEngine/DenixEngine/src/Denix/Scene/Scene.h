@@ -36,7 +36,6 @@ namespace Denix
 
 		virtual void Unload()
 		{
-
 		}
 
 		void BeginScene() override

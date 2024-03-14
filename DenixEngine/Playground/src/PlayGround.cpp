@@ -20,16 +20,21 @@ public:
 	{
 		DE_LOG(LogEngine, Trace, "Playground Post-Initialized")
 
-		using namespace Denix;
-		
-		if (SceneSubSystem* sceneSys = SceneSubSystem::Get())
+		RestartScene();
+	}
+
+	void RestartScene() override
+	{
+		if (Denix::SceneSubSystem* sceneSys = Denix::SceneSubSystem::Get())
 		{
-			if (auto scene = MakeRef<PlaygroundScene>(ObjectInitializer("Playground")))
+			if (const auto scene = 
+				MakeRef<Denix::PlaygroundScene>(Denix::ObjectInitializer("Playground")))
 			{
 				sceneSys->LoadScene(scene);
 				sceneSys->OpenScene("Playground");
 			}
 		}
+		DE_LOG(LogEngine, Trace, "Playground RestartScene")
 	}
 };
 

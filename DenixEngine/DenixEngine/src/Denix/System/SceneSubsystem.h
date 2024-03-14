@@ -63,6 +63,31 @@ namespace Denix
 
 		void PauseScene();
 
+		void RegisterTransformComponent(const Ref<TransformComponent>& _transformComponent)
+		{
+			DE_LOG(LogSceneSubSystem, Trace, "TransformComponent Registered: #{} {}", _transformComponent->GetID(), _transformComponent->GetName())
+			m_TransformComponets.push_back(_transformComponent);
+		}
+
+		void UnregisterTransformComponent(const Ref<TransformComponent>& _transformComponent)
+		{
+			DE_LOG(LogSceneSubSystem, Trace, "TransformComponent Unregistered: #{} {}", _transformComponent->GetID(), _transformComponent->GetName())
+
+			std::erase(m_TransformComponets, _transformComponent);
+		}	
+
+		void UnregisterTransformComponent(const int _transformComponentID)
+		{
+			for (const auto& transformComponent : m_TransformComponets)
+			{
+				if (transformComponent->GetID() == _transformComponentID)
+				{
+					DE_LOG(LogSceneSubSystem, Trace, "TransformComponent Unregistered: #{} {}", transformComponent->GetID(), transformComponent->GetName())
+					std::erase(m_TransformComponets, transformComponent);
+				}
+			}
+		}
+
 	private:
 		static SceneSubSystem* s_SceneSubSystem;
 

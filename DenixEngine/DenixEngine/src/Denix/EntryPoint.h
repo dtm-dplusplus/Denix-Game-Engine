@@ -5,7 +5,7 @@
 extern Denix::Engine* Denix::CreateEngine();
 
 
-inline int main(int argc, char** argv)
+int main(int argc, char** argv)
 {
 	Logger::Initialize();
 

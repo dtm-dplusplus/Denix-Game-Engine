@@ -15,16 +15,24 @@
     <Filter Include="contrib\imgui">
       <UniqueIdentifier>{d72a7525-9890-493b-852c-bdd3f027d11a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Scenes">
+      <UniqueIdentifier>{02348264-9021-4cdd-842f-6f318ffe9a38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PlayGround.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Scenes\PlaygroundScene.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Scenes\PlaygroundScene.h" />
+    <ClInclude Include="src\Scenes\PlaygroundScene.h">
+      <Filter>src\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

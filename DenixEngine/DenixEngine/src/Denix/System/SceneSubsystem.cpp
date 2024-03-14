@@ -2,6 +2,7 @@
 #include "SceneSubsystem.h"
 #include "WindowSubsystem.h"
 #include "PhysicsSubSystem.h"
+#include "Denix/Engine.h"
 #include "imgui.h"
 
 namespace Denix
@@ -54,12 +55,12 @@ namespace Denix
 		}
 
 		// Register Components
-		PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get();
+		//PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get();
 
 		for (const auto& obj : _scene->m_SceneObjects)
 		{
-			if (obj->m_PhysicsComponent) physicsSystem->RegisterComponent(obj->m_PhysicsComponent);
-			if (obj->m_TransformComponent) m_TransformComponets.push_back(obj->m_TransformComponent);
+			if (obj->m_PhysicsComponent) obj->m_PhysicsComponent->RegisterComponent();
+			if (obj->m_TransformComponent) obj->m_TransformComponent->RegisterComponent();
 		}
 
 		m_LoadedScenes[_scene->GetName()] = _scene;
@@ -75,11 +76,12 @@ namespace Denix
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
 			// Unregister Components
-			PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get();
+			//PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get();
 
 			for (const auto& obj : m_ActiveScene->m_SceneObjects)
 			{
-				if (obj->m_PhysicsComponent) physicsSystem->UnregisterComponent(obj->m_PhysicsComponent);
+				if (obj->m_PhysicsComponent) obj->m_PhysicsComponent->UnregisterComponent();
+				if (obj->m_TransformComponent) obj->m_TransformComponent->UnregisterComponent();
 			}
 
 			m_TransformComponets.clear();
@@ -87,7 +89,6 @@ namespace Denix
 			// Unload the scene
 			scene->Unload();
 			m_LoadedScenes.erase(_name);
-			m_ActiveScene = nullptr;
 
 			DE_LOG(LogSceneSubSystem, Info, "Unloaded Scene: {}", _name)
 			return;
@@ -100,8 +101,7 @@ namespace Denix
 	{
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
-			m_ActiveScene = MakeRef<Scene>();
-			*m_ActiveScene = *scene;
+			m_ActiveScene = scene;
 			DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}", _name)
 			return;
 		}
@@ -124,13 +124,14 @@ namespace Denix
 		if (m_ActiveScene)
 		{
 			m_ActiveScene->EndScene();
+			UnloadScene(m_ActiveScene->GetName());
 			m_ActiveScene = nullptr;
-			//UnloadScene(m_ActiveScene->GetName());
 			
 			// TEMP : this may cause memory leaks. Will move to a better solution later
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
-			//LoadScene(MakeRef<Scene>());
-			OpenScene("Playground");
+
+			Engine& engine = Engine::Get();
+			engine.RestartScene();
 		}
 	}
 
@@ -216,7 +217,7 @@ namespace Denix
 				glm::mat4& model = transform->GetModel();
 				glm::vec3& scale = transform->GetScale();
 				glm::vec3& position = transform->GetPosition();
-				glm::vec3& rotation = transform->GetRotation();
+				const glm::vec3& rotation = transform->GetRotation();
 
 				// Update the Model matrix
 				model = glm::translate(glm::mat4(1.0f), position);
@@ -227,13 +228,7 @@ namespace Denix
 			}
 		}
 
-		// Update the GameObjects
-		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
-		{
-			// TEMP Update transform components after physics calculations
-			gameObject->m_PhysicsComponent->m_TempPosition = gameObject->m_TransformComponent->GetPosition();
-			gameObject->Update(_deltaTime);
-		}
+		
 
 		// Update Physics Components
 		if (m_ActiveScene->m_IsLive)
@@ -242,12 +237,24 @@ namespace Denix
 		}
 
 		// TEMP Update position from phsyics calculations
+		if (m_ActiveScene->m_IsLive)
+		{
+			for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
+			{
+				// TEMP Update transform components after physics calculations
+				if(gameObject->m_PhysicsComponent->IsSimulated())
+					gameObject->m_TransformComponent->SetPosition(gameObject->m_PhysicsComponent->m_TempPosition);
+			}
+		}
+		
+
+		// Update the GameObjects
 		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
 		{
 			// TEMP Update transform components after physics calculations
-			gameObject->m_TransformComponent->SetPosition(gameObject->m_PhysicsComponent->m_TempPosition);
+			gameObject->m_PhysicsComponent->m_TempPosition = gameObject->m_TransformComponent->GetPosition();
+			gameObject->Update(_deltaTime);
 		}
-
 
 		// Update the Scene Editor
 		DragSpeedDelta = DragSpeed * _deltaTime;
@@ -298,23 +305,6 @@ namespace Denix
 			// Scene Properties
 			if (ImGui::CollapsingHeader("Scene Properties"))
 			{
-				const char* names[5] = { "Label1", "Label2", "Label3", "Label4", "Label5" };
-				static int selected = -1;
-				for (int n = 0; n < 5; n++)
-				{
-					if (ImGui::Selectable(names[n], selected == n))
-						selected = n;
-					if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
-					{
-						selected = n;
-						ImGui::Text("This a popup for \"%s\"!", names[n]);
-						if (ImGui::Button("Close"))
-							ImGui::CloseCurrentPopup();
-						ImGui::EndPopup();
-					}
-					ImGui::SetItemTooltip("Right-click to open popup");
-				}
-
 				ImGui::Checkbox("Show Demo Window", &ShowDemoWindow);
 				if (ShowDemoWindow) ImGui::ShowDemoWindow(&ShowDemoWindow);
 				ImGui::DragFloat("UI Drag Speed", &DragSpeed, 0.1f, 0.1f, 10.0f);

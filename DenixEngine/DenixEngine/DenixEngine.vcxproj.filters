@@ -36,6 +36,9 @@
     <Filter Include="src\Denix\Video\GL">
       <UniqueIdentifier>{70818da8-1dc0-4e7c-ac1d-59a5ff13a0e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Denix\Scene\Component">
+      <UniqueIdentifier>{8e1903dc-2f04-4513-97a5-b6355dba97a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Denix\Engine.cpp">
@@ -121,6 +124,18 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Video\GL\VertexArray.cpp">
       <Filter>src\Denix\Video\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Scene\Component\PhysicsComponent.cpp">
+      <Filter>src\Denix\Scene\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Scene\Component\RenderComponent.cpp">
+      <Filter>src\Denix\Scene\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Scene\Component\MeshComponent.cpp">
+      <Filter>src\Denix\Scene\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp">
+      <Filter>src\Denix\Scene\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +229,18 @@
     </ClInclude>
     <ClInclude Include="src\Denix\Video\GL\VertexArray.h">
       <Filter>src\Denix\Video\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Scene\Component\PhysicsComponent.h">
+      <Filter>src\Denix\Scene\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Scene\Component\TransformComponent.h">
+      <Filter>src\Denix\Scene\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Scene\Component\RenderComponent.h">
+      <Filter>src\Denix\Scene\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Scene\Component\MeshComponent.h">
+      <Filter>src\Denix\Scene\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

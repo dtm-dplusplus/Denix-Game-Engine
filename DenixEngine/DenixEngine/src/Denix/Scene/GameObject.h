@@ -4,6 +4,10 @@
 
 #include "Object.h"
 #include "Component.h"
+#include "Component/MeshComponent.h"
+#include "Component/PhysicsComponent.h"
+#include "Component/RenderComponent.h"
+#include "Component/TransformComponent.h"
 
 namespace Denix
 {
@@ -32,24 +36,6 @@ namespace Denix
 		// Destructors
 		~GameObject() override = default;
 
-		void BeginScene() override
-		{
-			for (const auto& component : m_Components | std::views::values)
-			{
-				component->BeginScene();
-			}
-		}
-		void EndScene() override
-		{
-			for (const auto& component : m_Components | std::views::values)
-			{
-				component->EndScene();
-			}
-		}
-
-		void Update(float _deltaTime) override {}
-
-	public:
 		Ref<Component> AddComponent(const Ref<Component>& _component)
 		{
 			m_Components[_component->GetName()] = _component;
@@ -74,6 +60,31 @@ namespace Denix
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
 
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
+
+	public:
+		void BeginScene() override
+		{
+			Object::BeginScene();
+
+			for (const auto& component : m_Components | std::views::values)
+			{
+				component->BeginScene();
+			}
+		}
+		void EndScene() override
+		{
+			for (const auto& component : m_Components | std::views::values)
+			{
+				component->EndScene();
+			}
+
+			Object::EndScene();
+		}
+
+		void Update(float _deltaTime) override
+		{
+			Object::Update(_deltaTime);
+		}
 
 	protected:
 		std::unordered_map<std::string, Ref<Component>> m_Components;
