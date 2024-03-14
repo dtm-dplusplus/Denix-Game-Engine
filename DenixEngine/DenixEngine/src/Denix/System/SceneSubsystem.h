@@ -25,6 +25,7 @@ namespace Denix
 		{
 			m_ActiveScene = nullptr;
 			s_SceneSubSystem = nullptr;
+			s_RendererSubSystem = nullptr;
 		}
 
 		void CleanRubbish();

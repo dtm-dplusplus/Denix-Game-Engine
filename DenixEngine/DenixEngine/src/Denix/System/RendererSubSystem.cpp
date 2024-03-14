@@ -1,6 +1,7 @@
 #include "RendererSubSystem.h"
 
-#include "Scene/Camera.h"
+#include "Denix/Scene/Camera.h"
+#include "Denix/Scene/Camera.h"
 
 namespace Denix
 {
@@ -10,11 +11,11 @@ namespace Denix
 	{
 		for(const auto& [render, transform, mesh] : m_RendererComponents)
 		{
-			render->BindShader();
-			mesh->BindVAO();
+			render->m_Shader->Bind();
+			mesh->m_VAO->Bind();
 
 			// Draw the triangle
-			glDrawArrays(mesh->m_VBO->GetDrawMode(), 0, mesh->m_VBO->GetCount());
+			glDrawArrays(GL_TRIANGLES, 0, mesh->m_VBO->GetCount());
 
 			VertexArray::Unbind();
 			GLShader::Unbind();
@@ -25,8 +26,8 @@ namespace Denix
 	{
 		if(_render && _transform && _mesh)
 		{
-			_render->BindShader();
-			_mesh->BindVAO();
+			_render->m_Shader->Bind();
+			_mesh->m_VAO->Bind();
 
 			// Upload the model matrix
 			glUniformMatrix4fv(_render->m_Shader->GetUniform("u_Model"), 1, 

@@ -114,5 +114,6 @@ namespace Denix
 
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
 
+		
 	};
 }

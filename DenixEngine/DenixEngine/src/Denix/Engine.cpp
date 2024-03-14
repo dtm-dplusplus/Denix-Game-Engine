@@ -7,6 +7,7 @@
 #include "System/UISubSystem.h"
 #include "System/PhysicsSubSystem.h"
 #include "System/SceneSubSystem.h"
+#include "System/RendererSubSystem.h"
 
 namespace Denix
 {
@@ -40,6 +41,9 @@ namespace Denix
 
 		m_SceneSubSystem = MakeRef<SceneSubSystem>();
 		m_SubSystems["Scene"] = m_SceneSubSystem;
+
+		m_RendererSubSystem = MakeRef<RendererSubSystem>();
+		m_SubSystems["Renderer"] = m_RendererSubSystem;
 
 		// Order of initialization is defined above
 		for(const auto& subSystem : m_SubSystems | std::views::values)

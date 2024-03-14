@@ -1,10 +1,11 @@
 #pragma once
 
-#include <queue>
-
 #include "SubSystem.h"
-#include "Core.h"
-#include "Scene/Component.h"
+#include "Denix/Core.h"
+#include "Denix/Core/Logger.h"
+#include "Denix/Scene/Component/TransformComponent.h"
+#include "Denix/Scene/Component/MeshComponent.h"
+#include "Denix/Scene/Component/RenderComponent.h"
 
 namespace Denix
 {

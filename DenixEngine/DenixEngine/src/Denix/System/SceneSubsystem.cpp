@@ -4,18 +4,17 @@
 #include "PhysicsSubSystem.h"
 #include "Denix/Engine.h"
 #include "imgui.h"
+#include "RendererSubSystem.h"
 
 namespace Denix
 {
 	SceneSubSystem* SceneSubSystem::s_SceneSubSystem{ nullptr };
 
-
-
 	void SceneSubSystem::Initialize()
 	{
 		s_PhysicsSubSystem = PhysicsSubSystem::Get();
 		s_WindowSubSystem = WindowSubSystem::Get();
-
+		s_RendererSubSystem = RendererSubSystem::Get();
 		DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Initialized")
 
 		m_Initialized = true;
@@ -102,6 +101,7 @@ namespace Denix
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
 			m_ActiveScene = scene;
+			s_RendererSubSystem->SetActiveCamera(m_ActiveScene->m_Camera);
 			DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}", _name)
 			return;
 		}
@@ -225,6 +225,8 @@ namespace Denix
 				model = glm::rotate(model, glm::degrees(rotation.y), glm::vec3(0, 1, 0));
 				model = glm::rotate(model, glm::degrees(rotation.z), glm::vec3(0, 0, 1));
 				model = glm::scale(model, scale);
+
+
 			}
 		}
 
@@ -246,13 +248,18 @@ namespace Denix
 					gameObject->m_TransformComponent->SetPosition(gameObject->m_PhysicsComponent->m_TempPosition);
 			}
 		}
-		
 
 		// Update the GameObjects
 		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
 		{
 			// TEMP Update transform components after physics calculations
 			gameObject->m_PhysicsComponent->m_TempPosition = gameObject->m_TransformComponent->GetPosition();
+			
+			s_RendererSubSystem->Submit(
+				gameObject->GetRenderComponent(),
+				gameObject->GetTransformComponent(),
+				gameObject->GetMeshComponent());
+			
 			gameObject->Update(_deltaTime);
 		}
 

@@ -40,6 +40,9 @@ namespace Denix
 
 		Ref<class UISubSystem> m_UISubSytem;
 
+		Ref<class RendererSubSystem> m_RendererSubSystem;
+
+
 		friend int ::main(int argc, char** argv);
 	};
 

@@ -13,10 +13,24 @@ namespace Denix
 	public:
 		RenderComponent() : Component(ObjectInitializer("Render Component"))
 		{
+			if (!m_Shader)
+			{
+				if (const Ref<GLShader> shader = ShaderSubSystem::Get()->GetShader("DebugShader"))
+				{
+					m_Shader = shader;
+				}
+			}
 		}
 
 		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
 		{
+			if (!m_Shader)
+			{
+				if (const Ref<GLShader> shader = ShaderSubSystem::Get()->GetShader("DebugShader"))
+				{
+					m_Shader = shader;
+				}
+			}
 		}
 
 		~RenderComponent() override = default;
@@ -31,13 +45,7 @@ namespace Denix
 
 		void BeginScene() override
 		{
-			if (!m_Shader)
-			{
-				if (const Ref<GLShader> shader = ShaderSubSystem::Get()->GetShader("DebugShader"))
-				{
-					m_Shader = shader;
-				}
-			}
+			
 		}
 
 		void EndScene() override {}
@@ -46,6 +54,8 @@ namespace Denix
 		{
 
 		}
+
+		Ref<GLShader> GetShader() const { return m_Shader; }
 	public:
 		glm::vec4 GetDebugColor() const { return m_DebugColor; }
 		glm::vec4& GetDebugColor() { return m_DebugColor; }
@@ -56,6 +66,6 @@ namespace Denix
 		Ref<GLShader> m_Shader;
 
 		friend class SceneSubSystem;
-		friend class RenderSubsSystem;
+		friend class RendererSubSystem;
 	};
 }

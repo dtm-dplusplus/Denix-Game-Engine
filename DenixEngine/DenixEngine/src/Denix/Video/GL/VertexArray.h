@@ -8,7 +8,10 @@ namespace Denix
 	class VertexArray final : public GLObject
 	{
 	public:
-		VertexArray() = default;
+		VertexArray()
+		{
+			GenVertexArray();
+		}
 
 		~VertexArray() override
 		{
