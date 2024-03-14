@@ -100,7 +100,8 @@ namespace Denix
 	{
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
-			m_ActiveScene = scene;
+			m_ActiveScene = MakeRef<Scene>();
+			*m_ActiveScene = *scene;
 			DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}", _name)
 			return;
 		}
@@ -123,13 +124,13 @@ namespace Denix
 		if (m_ActiveScene)
 		{
 			m_ActiveScene->EndScene();
-
-			UnloadScene(m_ActiveScene->GetName());
+			m_ActiveScene = nullptr;
+			//UnloadScene(m_ActiveScene->GetName());
 			
 			// TEMP : this may cause memory leaks. Will move to a better solution later
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
-			LoadScene(MakeRef<Scene>());
-			OpenScene("DefaultScene");
+			//LoadScene(MakeRef<Scene>());
+			OpenScene("Playground");
 		}
 	}
 
@@ -230,9 +231,7 @@ namespace Denix
 		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
 		{
 			// TEMP Update transform components after physics calculations
-			if (gameObject->m_PhysicsComponent->m_IsSimulated && m_ActiveScene->m_IsLive)
-				gameObject->m_TransformComponent->SetPosition(gameObject->m_PhysicsComponent->m_TempPosition);
-
+			gameObject->m_PhysicsComponent->m_TempPosition = gameObject->m_TransformComponent->GetPosition();
 			gameObject->Update(_deltaTime);
 		}
 
@@ -242,7 +241,12 @@ namespace Denix
 			s_PhysicsSubSystem->Update(_deltaTime);
 		}
 
-		
+		// TEMP Update position from phsyics calculations
+		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
+		{
+			// TEMP Update transform components after physics calculations
+			gameObject->m_TransformComponent->SetPosition(gameObject->m_PhysicsComponent->m_TempPosition);
+		}
 
 
 		// Update the Scene Editor
