@@ -3,12 +3,13 @@
 #include "SubSystem.h"
 #include "Denix/Core.h"
 #include "Denix/Core/Logger.h"
-#include "Denix/Scene/Component/TransformComponent.h"
-#include "Denix/Scene/Component/MeshComponent.h"
-#include "Denix/Scene/Component/RenderComponent.h"
+
 
 namespace Denix
 {
+	class MeshComponent;
+	class TransformComponent;
+	class RenderComponent;
 	class Camera;
 
 	/** Manages Rendering of objects. Will move to component based submission instead of passing game object soon */
@@ -27,10 +28,12 @@ namespace Denix
 			s_RendererSubSystem = nullptr;
 		}
 
-		void Draw();
-
-		void Submit(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh);
+		void DrawImmediate(
+			const Ref<RenderComponent>& _render, 
+			const Ref<TransformComponent>& _transform, 
+			const Ref<MeshComponent>& _mesh);
 			
+		void SetActiveCamera(const Ref<Camera>& _camera);
 
 	public:
 		static RendererSubSystem* Get() { return s_RendererSubSystem; }
@@ -48,7 +51,6 @@ namespace Denix
 			m_Initialized = false;
 		}
 
-		void SetActiveCamera(const Ref<Camera>& _camera);
 
 	private:
 		static RendererSubSystem* s_RendererSubSystem;

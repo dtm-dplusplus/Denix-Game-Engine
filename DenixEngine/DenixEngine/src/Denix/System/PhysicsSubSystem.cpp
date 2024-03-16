@@ -11,10 +11,7 @@ namespace Denix
 		{
 			if(!component->m_IsSimulated) continue;
 
-			// Clear forces
-			component->m_Force = glm::vec3(0.f);
-
-			// Compute forces
+			// Clear force & Compute mg
 			component->m_Force = component->m_Mass * component->m_Gravity;
 
 			// Compute collision response

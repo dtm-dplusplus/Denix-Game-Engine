@@ -155,7 +155,10 @@
     <ClCompile Include="src\Denix\Scene\Object.cpp" />
     <ClCompile Include="src\Denix\Scene\Scene.cpp" />
     <ClCompile Include="src\Denix\System\PhysicsSubSystem.cpp" />
-    <ClCompile Include="src\Denix\System\RendererSubSystem.cpp" />
+    <ClCompile Include="src\Denix\System\RendererSubSystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Denix\System\SubSystem.cpp" />
     <ClCompile Include="src\Denix\System\UISubSystem.cpp" />
     <ClCompile Include="src\Denix\System\WindowSubSystem.cpp" />
@@ -192,6 +195,7 @@
     <ClInclude Include="src\Denix\Core\Logger.h" />
     <ClInclude Include="src\Denix\DePch.h" />
     <ClInclude Include="src\Denix\EntryPoint.h" />
+    <ClInclude Include="src\Denix\Scene\MeshData.h" />
     <ClInclude Include="src\Denix\System\PhysicsSubSystem.h" />
     <ClInclude Include="src\Denix\System\RendererSubSystem.h" />
     <ClInclude Include="src\Denix\System\SubSystem.h" />

@@ -138,7 +138,7 @@
       <Filter>src\Denix\Scene\Component</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\System\RendererSubSystem.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Denix\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +245,11 @@
     <ClInclude Include="src\Denix\Scene\Component\MeshComponent.h">
       <Filter>src\Denix\Scene\Component</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\System\RendererSubSystem.h" />
+    <ClInclude Include="src\Denix\System\RendererSubSystem.h">
+      <Filter>src\Denix\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Scene\MeshData.h">
+      <Filter>src\Denix\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

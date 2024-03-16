@@ -35,26 +35,12 @@ namespace Denix
 
 		~RenderComponent() override = default;
 
-		void Initialize() override
-		{
-		}
+		void BeginScene() override;
 
-		void Deinitialize() override
-		{
-		}
+		void EndScene() override;
 
-		void BeginScene() override
-		{
-			
-		}
-
-		void EndScene() override {}
-
-		void Update(float _deltaTime) override
-		{
-
-		}
-
+		void RegisterComponent() override;
+		void UnregisterComponent() override;
 		Ref<GLShader> GetShader() const { return m_Shader; }
 	public:
 		glm::vec4 GetDebugColor() const { return m_DebugColor; }

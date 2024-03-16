@@ -1,28 +1,16 @@
+#include "DePch.h"
 #include "RendererSubSystem.h"
 
 #include "Denix/Scene/Camera.h"
-#include "Denix/Scene/Camera.h"
+#include "Denix/Scene/Component/TransformComponent.h"
+#include "Denix/Scene/Component/MeshComponent.h"
+#include "Denix/Scene/Component/RenderComponent.h"
 
 namespace Denix
 {
-	RendererSubSystem* RendererSubSystem::s_RendererSubSystem = nullptr;
+	RendererSubSystem* RendererSubSystem::s_RendererSubSystem{ nullptr };
 
-	void RendererSubSystem::Draw()
-	{
-		for(const auto& [render, transform, mesh] : m_RendererComponents)
-		{
-			render->m_Shader->Bind();
-			mesh->m_VAO->Bind();
-
-			// Draw the triangle
-			glDrawArrays(GL_TRIANGLES, 0, mesh->m_VBO->GetCount());
-
-			VertexArray::Unbind();
-			GLShader::Unbind();
-		}
-	}
-
-	void RendererSubSystem::Submit(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh)
+	void RendererSubSystem::DrawImmediate(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh)
 	{
 		if(_render && _transform && _mesh)
 		{
@@ -48,9 +36,13 @@ namespace Denix
 			// Upload the color
 			glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
 
-			m_RendererComponents.emplace_back(_render, _transform, _mesh);
+			glDrawArrays(GL_TRIANGLES, 0, _mesh->m_VBO->GetCount());
+
+			//m_RendererComponents.emplace_back(_render, _transform, _mesh);
+
+			VertexArray::Unbind();
+			GLShader::Unbind();
 		}
-		
 	}
 
 	void RendererSubSystem::SetActiveCamera(const Ref<Camera>& _camera)

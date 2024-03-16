@@ -16,13 +16,8 @@ namespace Denix
 		// Destructors
 		~TransformComponent() override = default;
 
-
-		void EndScene() override
-		{
-			/*m_Position = glm::vec3(0.f);
-			m_Rotation = glm::vec3(0.f);
-			m_Scale = glm::vec3(1.f);*/
-		}
+		void BeginScene() override;
+		void EndScene() override;
 
 		void RegisterComponent() override;
 		void UnregisterComponent() override;

@@ -15,9 +15,13 @@ namespace Denix
 		}
 		PhysicsComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Physics Component")) {}
 
-
+		
 		// Destructors
 		~PhysicsComponent() override = default;
+
+		void BeginScene() override;
+
+		void EndScene() override;
 
 		void RegisterComponent() override;
 
@@ -57,17 +61,13 @@ namespace Denix
 		void StepEuler(float _deltaTime)
 		{
 			// Calculate the net force
-			const glm::vec3 netF = m_Force - m_Drag * m_Velocity;
+			m_Force -= m_Drag * m_Velocity;
 
 			// Calculate new velocity at time t + dt
-			const glm::vec3 vNew = m_Velocity + (netF / m_Mass) * _deltaTime;
+			m_Velocity +=  m_Force / m_Mass * _deltaTime;
 
 			// Calculate new displacement at time t + dt
-			const glm::vec3 disp = m_TempPosition + vNew * _deltaTime;
-
-			// Update the object's velocity and position
-			m_Velocity = vNew;
-			m_TempPosition = disp;
+			m_TempPosition +=  + m_Velocity * _deltaTime;
 		}
 
 		void StepRK2(float _deltaTime)

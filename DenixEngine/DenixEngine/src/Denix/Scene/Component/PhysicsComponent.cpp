@@ -1,18 +1,36 @@
 #include "PhysicsComponent.h"
 #include "Denix/System/PhysicsSubSystem.h"
 
-void Denix::PhysicsComponent::RegisterComponent()
+namespace Denix
 {
-    if (PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get())
+    void PhysicsComponent::BeginScene()
     {
-        physicsSystem->RegisterComponent(shared_from_this());
-    }
-}
+        Component::BeginScene();
 
-void Denix::PhysicsComponent::UnregisterComponent()
-{
-    if (PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get())
-    {
-        physicsSystem->UnregisterComponent(shared_from_this());
+        RegisterComponent();
     }
+
+    void PhysicsComponent::EndScene()
+    {
+        UnregisterComponent();
+
+        Component::EndScene();
+    }
+
+    void PhysicsComponent::RegisterComponent()
+    {
+        if (PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get())
+        {
+            physicsSystem->RegisterComponent(shared_from_this());
+        }
+    }
+
+    void PhysicsComponent::UnregisterComponent()
+    {
+        if (PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get())
+        {
+            physicsSystem->UnregisterComponent(shared_from_this());
+        }
+    }
+
 }

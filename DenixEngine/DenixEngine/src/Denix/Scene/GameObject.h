@@ -8,6 +8,9 @@
 #include "Component/PhysicsComponent.h"
 #include "Component/RenderComponent.h"
 #include "Component/TransformComponent.h"
+#include "MeshData.h"
+
+
 
 namespace Denix
 {
@@ -31,7 +34,6 @@ namespace Denix
 
 			m_RenderComponent = MakeRef<RenderComponent>(m_ID);
 			m_Components["Render"] = m_RenderComponent;
-
 		}
 
 		// Destructors
@@ -72,6 +74,7 @@ namespace Denix
 				component->BeginScene();
 			}
 		}
+
 		void EndScene() override
 		{
 			for (const auto& component : m_Components | std::views::values)
@@ -80,6 +83,27 @@ namespace Denix
 			}
 
 			Object::EndScene();
+		}
+
+
+		void BeginPlay() override
+		{
+			Object::BeginPlay();
+
+			for (const auto& component : m_Components | std::views::values)
+			{
+				component->BeginPlay();
+			}
+		}
+
+		void EndPlay() override
+		{
+			for (const auto& component : m_Components | std::views::values)
+			{
+				component->EndPlay();
+			}
+
+			Object::EndPlay();
 		}
 
 		void Update(float _deltaTime) override
@@ -99,5 +123,74 @@ namespace Denix
 		Ref<RenderComponent> m_RenderComponent;
 
 		friend class SceneSubSystem;
+	};
+
+	class Triangle : public GameObject
+	{
+	public:
+		Triangle() : GameObject({ "Triangle" })
+		{
+			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
+			vbo->Bind(GL_ARRAY_BUFFER);
+			vbo->BufferData(GL_ARRAY_BUFFER, sizeof(TriangleData), TriangleData, 3, 6, GL_FLOAT);
+
+			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
+
+			vao->Bind();
+			vbo->Bind(vbo->GetTarget());
+
+			// Bind Attribute at Location 0
+			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
+
+			//// Reset the state
+			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+			VertexArray::Unbind();
+		}
+	};
+
+	class Plane : public GameObject
+	{
+	public:
+		Plane() : GameObject({"Plane"})
+		{
+			const Ref<VertexBuffer> vbo =m_MeshComponent->GetVertexBuffer();
+			vbo->Bind(GL_ARRAY_BUFFER);
+			vbo->BufferData(GL_ARRAY_BUFFER, sizeof(PlaneData), PlaneData, 3, 6, GL_FLOAT);
+
+			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
+
+			vao->Bind();
+			vbo->Bind(vbo->GetTarget());
+
+			// Bind Attribute at Location 0
+			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
+
+			//// Reset the state
+			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+			VertexArray::Unbind();
+		}
+	};
+
+	class Cube : public GameObject
+	{
+	public:
+		Cube() : GameObject({ "Cube" })
+		{
+			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
+			vbo->Bind(GL_ARRAY_BUFFER);
+			vbo->BufferData(GL_ARRAY_BUFFER, sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
+
+			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
+
+			vao->Bind();
+			vbo->Bind(vbo->GetTarget());
+
+			// Bind Attribute at Location 0
+			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
+
+			//// Reset the state
+			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+			VertexArray::Unbind();
+		}
 	};
 }

@@ -40,9 +40,9 @@ namespace Denix
 		}
 
 		// Check it isn't already loaded
-		if (m_LoadedScenes.contains(_scene->GetName()))
+		if (m_LoadedScenes.contains(_scene->GetFriendlyName()))
 		{
-			DE_LOG(LogSceneSubSystem, Error, "Load Scene: A scene name {} is already loaded", _scene->GetName())
+			DE_LOG(LogSceneSubSystem, Error, "Load Scene: A scene name {} is already loaded", _scene->GetFriendlyName())
 			return false;
 		}
 
@@ -53,19 +53,8 @@ namespace Denix
 			return false;
 		}
 
-		// Register Components
-		//PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get();
-
-		for (const auto& obj : _scene->m_SceneObjects)
-		{
-			if (obj->m_PhysicsComponent) obj->m_PhysicsComponent->RegisterComponent();
-			if (obj->m_TransformComponent) obj->m_TransformComponent->RegisterComponent();
-		}
-
-		m_LoadedScenes[_scene->GetName()] = _scene;
-		DE_LOG(LogSceneSubSystem, Trace, "Scene loaded: ", _scene->GetName())
-
-		
+		m_LoadedScenes[_scene->GetFriendlyName()] = _scene;
+		DE_LOG(LogSceneSubSystem, Trace, "Scene loaded: ", _scene->GetFriendlyName())
 
 		return true;
 	}
@@ -74,17 +63,6 @@ namespace Denix
 	{
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
-			// Unregister Components
-			//PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get();
-
-			for (const auto& obj : m_ActiveScene->m_SceneObjects)
-			{
-				if (obj->m_PhysicsComponent) obj->m_PhysicsComponent->UnregisterComponent();
-				if (obj->m_TransformComponent) obj->m_TransformComponent->UnregisterComponent();
-			}
-
-			m_TransformComponets.clear();
-
 			// Unload the scene
 			scene->Unload();
 			m_LoadedScenes.erase(_name);
@@ -101,6 +79,7 @@ namespace Denix
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
 			m_ActiveScene = scene;
+			m_ActiveScene->BeginScene();
 			s_RendererSubSystem->SetActiveCamera(m_ActiveScene->m_Camera);
 			DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}", _name)
 			return;
@@ -113,9 +92,9 @@ namespace Denix
 	{
 		if (m_ActiveScene)
 		{
-			m_ActiveScene->BeginScene();
+			m_ActiveScene->BeginPlay();
 			
-			DE_LOG(LogSceneSubSystem, Trace, "Scene Started")
+			DE_LOG(LogSceneSubSystem, Trace, "Scene Playing")
 		}
 	}
 
@@ -123,15 +102,18 @@ namespace Denix
 	{
 		if (m_ActiveScene)
 		{
+			// TEMP Will move to a better solution later
+			m_ActiveScene->EndPlay();
 			m_ActiveScene->EndScene();
-			UnloadScene(m_ActiveScene->GetName());
+
+			UnloadScene(m_ActiveScene->GetFriendlyName());
 			m_ActiveScene = nullptr;
 			
-			// TEMP : this may cause memory leaks. Will move to a better solution later
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
 
 			Engine& engine = Engine::Get();
 			engine.RestartScene();
+			ObjectSelection = -1;
 		}
 	}
 
@@ -225,21 +207,17 @@ namespace Denix
 				model = glm::rotate(model, glm::degrees(rotation.y), glm::vec3(0, 1, 0));
 				model = glm::rotate(model, glm::degrees(rotation.z), glm::vec3(0, 0, 1));
 				model = glm::scale(model, scale);
-
-
 			}
 		}
 
-		
-
 		// Update Physics Components
-		if (m_ActiveScene->m_IsLive)
+		if (m_ActiveScene->m_IsPlaying)
 		{
 			s_PhysicsSubSystem->Update(_deltaTime);
 		}
 
 		// TEMP Update position from phsyics calculations
-		if (m_ActiveScene->m_IsLive)
+		if (m_ActiveScene->m_IsPlaying)
 		{
 			for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
 			{
@@ -255,12 +233,15 @@ namespace Denix
 			// TEMP Update transform components after physics calculations
 			gameObject->m_PhysicsComponent->m_TempPosition = gameObject->m_TransformComponent->GetPosition();
 			
-			s_RendererSubSystem->Submit(
+			// Update the GameObject -  This will always be here
+			gameObject->Update(_deltaTime);
+
+			// TEMP Immediate Mode Rendering
+			s_RendererSubSystem->DrawImmediate(
 				gameObject->GetRenderComponent(),
 				gameObject->GetTransformComponent(),
 				gameObject->GetMeshComponent());
 			
-			gameObject->Update(_deltaTime);
 		}
 
 		// Update the Scene Editor
@@ -279,7 +260,7 @@ namespace Denix
 		if(ImGui::Begin("Scene Panel", &ScenePanelOpen, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse))
 		{
 			// Play/Pause/Deinitialize/Reload Widgets
-			if (!m_ActiveScene->m_IsLive)
+			if (!m_ActiveScene->m_IsPlaying)
 			{
 				// Play Button
 				if (ImGui::Button("Play"))
@@ -315,6 +296,8 @@ namespace Denix
 				ImGui::Checkbox("Show Demo Window", &ShowDemoWindow);
 				if (ShowDemoWindow) ImGui::ShowDemoWindow(&ShowDemoWindow);
 				ImGui::DragFloat("UI Drag Speed", &DragSpeed, 0.1f, 0.1f, 10.0f);
+
+				ImGui::Text("Transform Components: %d", m_TransformComponets.size());
 			}
 
 			// Camera Properties
@@ -340,29 +323,71 @@ namespace Denix
 			}
 
 			// Scene Objects
-			ImGui::BeginChild("Scene Objects", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
-			for (int i = 0; i < m_ActiveScene->m_SceneObjects.size(); i++)
+			if (ImGui::BeginChild("Scene Objects", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX))
 			{
-				// FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
-				if (ImGui::Selectable(m_ActiveScene->m_SceneObjects[i]->GetName().c_str(), ObjectSelection == i))
-				{
-					ObjectSelection = i;
-				}
+				bool createdObject = false;
 
-				if (ImGui::BeginPopupContextItem()) //uses last item id as popup id
-				{
-					ObjectSelection = i;
+				const char* names[] = { "Plane", "Cube", "Triangle"};
 
-					// Delete Button
-					if (ImGui::Button("Delete"))
+				if (ImGui::Button("Add"))
+					ImGui::OpenPopup("add_object_popup");
+
+				if (ImGui::BeginPopup("add_object_popup"))
+				{
+					for (auto& name : names)
 					{
-						m_ActiveScene->m_SceneObjects[i]->SetIsRubbish();
-						ImGui::CloseCurrentPopup();
+						if (ImGui::Selectable(name))
+						{
+							createdObject = true;
+							if (strcmp(name, "Plane") == 0)
+							{
+								const Ref<Plane> plane = MakeRef<Plane>();
+								plane->BeginScene();
+								m_ActiveScene->m_SceneObjects.push_back(plane);
+							}
+							else if (strcmp(name, "Cube") == 0)
+							{
+								const Ref<Cube> cube = MakeRef<Cube>();
+								cube->BeginScene();
+								m_ActiveScene->m_SceneObjects.push_back(cube);
+							}
+							else if (strcmp(name, "Triangle") == 0)
+							{
+								const Ref<Triangle> tri = MakeRef<Triangle>();
+								tri->BeginScene();
+								m_ActiveScene->m_SceneObjects.push_back(tri);
+							}
+						}
 					}
 					ImGui::EndPopup();
 				}
+
+				// Set new selection to created object
+				if(createdObject) ObjectSelection = m_ActiveScene->m_SceneObjects.size() - 1;
+
+				for (int i = 0; i < m_ActiveScene->m_SceneObjects.size(); i++)
+				{
+					// FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
+					if (ImGui::Selectable(m_ActiveScene->m_SceneObjects[i]->GetName().c_str(), ObjectSelection == i))
+					{
+						ObjectSelection = i;
+					}
+					
+					if (ImGui::BeginPopupContextItem()) //uses last item id as popup id
+					{
+						ObjectSelection = i;
+
+						// Delete Button
+						if (ImGui::Button("Delete"))
+						{
+							m_ActiveScene->m_SceneObjects[i]->SetIsRubbish();
+							ImGui::CloseCurrentPopup();
+						}
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::EndChild();
 			}
-			ImGui::EndChild();
 			ImGui::End();
 		}
 	}
@@ -376,7 +401,7 @@ namespace Denix
 
 		if (ImGui::Begin("Details Panel", &ScenePanelOpen, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse))
 		{
-			if (!m_ActiveScene->m_SceneObjects.empty())
+			if (ObjectSelection >= 0 && ObjectSelection < m_ActiveScene->m_SceneObjects.size())
 			{
 				const Ref<GameObject> selectedObject = m_ActiveScene->m_SceneObjects[ObjectSelection];
 

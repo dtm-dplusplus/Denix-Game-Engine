@@ -19,18 +19,10 @@ namespace Denix
 		{
 		}
 
-
 		~Scene() override = default;
 
 		virtual bool Load()
 		{
-			m_Camera = MakeRef<Camera>();
-
-			if (!m_Camera)
-			{
-				return false;
-			}
-
 			return true;
 		}
 
@@ -40,23 +32,45 @@ namespace Denix
 
 		void BeginScene() override
 		{
-			m_IsLive = true;
+			m_Camera = MakeRef<Camera>();
 
+			for (const auto& obj : m_SceneObjects)
+			{
+				obj->BeginScene();
+			}
 		}
+
 
 		void EndScene() override
 		{
-			m_IsLive = false;
-
 			for (const auto& obj : m_SceneObjects)
 			{
 				obj->EndScene();
 			}
 		}
 
+		void BeginPlay() override
+		{
+			m_IsPlaying = true;
+
+			for (const auto& obj : m_SceneObjects)
+			{
+				obj->BeginPlay();
+			}
+		}
+
+		void EndPlay() override
+		{
+			m_IsPlaying = false;
+
+			for (const auto& obj : m_SceneObjects)
+			{
+				obj->EndPlay();
+			}
+		}
 		void Update(float _deltaTime) override {}
 
-		bool IsLive() const { return m_IsLive; }
+		bool IsPlaying() const { return m_IsPlaying; }
 
 		glm::vec3 GetGravity() const { return m_SceneGravity; }
 
@@ -65,7 +79,7 @@ namespace Denix
 		/** determine if the engine is in editor or tool side mode.
 		 * True if the scene is being played. False if in editor mode.
 		 */
-		bool m_IsLive = false;
+		bool m_IsPlaying = false;
 
 		glm::vec3 m_SceneGravity = glm::vec3(0.0f, -9.8f, 0.0f);
 

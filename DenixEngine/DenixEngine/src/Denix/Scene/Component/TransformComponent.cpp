@@ -3,6 +3,20 @@
 
 namespace Denix
 {
+    void TransformComponent::BeginScene()
+    {
+        Component::BeginScene();
+
+        RegisterComponent();
+    }
+
+    void TransformComponent::EndScene()
+    {
+        UnregisterComponent();
+    
+        Component::EndScene();
+    }
+
     void TransformComponent::RegisterComponent()
     {
         if (SceneSubSystem* sceneSystem = SceneSubSystem::Get())
