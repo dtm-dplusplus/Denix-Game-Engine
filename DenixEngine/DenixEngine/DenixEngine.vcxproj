@@ -60,7 +60,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>depch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -89,7 +89,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>depch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -110,6 +110,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Denix\Editor\EditorSubsystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Denix\Scene\Component\MeshComponent.cpp" />
     <ClCompile Include="src\Denix\Scene\Component\PhysicsComponent.cpp" />
     <ClCompile Include="src\Denix\Scene\Component\RenderComponent.cpp" />
@@ -142,7 +146,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Denix\Core\Logger.cpp" />
-    <ClCompile Include="src\Denix\DePch.cpp">
+    <ClCompile Include="src\Denix\depch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
@@ -179,6 +183,7 @@
     </ClCompile>
     <ClCompile Include="src\Denix\System\ShaderSubSystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
+    <ClInclude Include="src\Denix\Editor\EditorSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\Component\MeshComponent.h" />
     <ClInclude Include="src\Denix\Scene\Component\PhysicsComponent.h" />
     <ClInclude Include="src\Denix\Scene\Component\RenderComponent.h" />
@@ -193,7 +198,7 @@
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Denix\Core\File.h" />
     <ClInclude Include="src\Denix\Core\Logger.h" />
-    <ClInclude Include="src\Denix\DePch.h" />
+    <ClInclude Include="src\Denix\depch.h" />
     <ClInclude Include="src\Denix\EntryPoint.h" />
     <ClInclude Include="src\Denix\Scene\MeshData.h" />
     <ClInclude Include="src\Denix\System\PhysicsSubSystem.h" />

@@ -89,6 +89,7 @@ namespace Denix
 		Ref<Camera> m_Camera;
 
 		friend class SceneSubSystem;
+		friend class EditorSubsystem;
 		friend class Engine;
 	};
 }

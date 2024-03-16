@@ -1,4 +1,4 @@
-#include "DePch.h"
+#include "depch.h"
 #include "Window.h"
 
 #include "SDL.h"

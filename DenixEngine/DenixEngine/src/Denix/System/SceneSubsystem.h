@@ -102,16 +102,7 @@ namespace Denix
 		class WindowSubSystem* s_WindowSubSystem;
 		class RendererSubSystem* s_RendererSubSystem;
 	private:
-		// TEMP ImGui
-		int ObjectSelection = 0;
-		bool ScenePanelOpen = true;
-		bool ShowDemoWindow = false;
-
-		float DragSpeed = 1.0f;
-		float DragSpeedDelta;
-
-		void ScenePanel();
-		void DetailsPanel();
+	
 
 		friend class Engine;
 	};

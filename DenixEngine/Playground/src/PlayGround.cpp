@@ -16,9 +16,14 @@ public:
 		DE_LOG(LogPlayground, Trace, "Playground Destroyed")
 	}
 
+	void PreInitialize() override
+	{
+		Engine::PreInitialize();
+	}
+
 	void PostInitialize() override
 	{
-		DE_LOG(LogEngine, Trace, "Playground Post-Initialized")
+		Engine::PostInitialize();
 
 		RestartScene();
 	}

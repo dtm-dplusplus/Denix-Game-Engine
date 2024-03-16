@@ -65,5 +65,7 @@ namespace Denix
 		glm::vec2 Aspect = glm::vec2(800.f, 600.f);
 
 		friend class SceneSubSystem;
+		friend class EditorSubsystem;
+
 	};
 }

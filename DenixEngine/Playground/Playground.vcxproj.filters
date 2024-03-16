@@ -31,8 +31,5 @@
     <ClInclude Include="src\Scenes\PlaygroundScene.h">
       <Filter>src\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model.h">
-      <Filter>src</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

@@ -23,8 +23,11 @@ namespace Denix
 		static Engine& Get() { return *s_Engine; }
 
 	public:
-		virtual void PostInitialize() = 0;
-		virtual void RestartScene() = 0;
+		virtual void PreInitialize();
+		virtual void PostInitialize();
+
+		// TEMP
+		virtual void RestartScene() {}
 	private:
 		static Engine* s_Engine;
 
@@ -42,6 +45,7 @@ namespace Denix
 
 		Ref<class RendererSubSystem> m_RendererSubSystem;
 
+		Ref<class EditorSubsystem> m_EditorSubSystem;
 
 		friend int ::main(int argc, char** argv);
 	};

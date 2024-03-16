@@ -1,4 +1,4 @@
-#include "DePch.h"
+#include "depch.h"
 #include "Engine.h"
 
 
@@ -8,6 +8,7 @@
 #include "System/PhysicsSubSystem.h"
 #include "System/SceneSubSystem.h"
 #include "System/RendererSubSystem.h"
+#include "Denix/Editor/EditorSubsystem.h"
 
 namespace Denix
 {
@@ -25,7 +26,9 @@ namespace Denix
 
 	void Engine::Initialize()
 	{
-		DE_LOG(Log, Trace, "Engine Starting up")
+		DE_LOG(LogEngine, Trace, "Engine Starting up")
+
+		PreInitialize();
 
 		m_WindowSubSystem = MakeRef<WindowSubSystem>();
 		m_SubSystems["Window"] = m_WindowSubSystem;
@@ -33,17 +36,21 @@ namespace Denix
 		m_ShaderSubSystem = MakeRef<ShaderSubSystem>();
 		m_SubSystems["Shader"] = m_ShaderSubSystem;
 
+		m_RendererSubSystem = MakeRef<RendererSubSystem>();
+		m_SubSystems["Renderer"] = m_RendererSubSystem;
+
 		m_UISubSytem = MakeRef<UISubSystem>();
 		m_SubSystems["UI"] = m_UISubSytem;
 
-		m_PhysicsSubSystem = MakeRef<PhysicsSubSystem>();
-		m_SubSystems["Physics"] = m_PhysicsSubSystem;
+		m_EditorSubSystem = MakeRef<EditorSubsystem>();
+		m_SubSystems["Editor"] = m_EditorSubSystem;
 
 		m_SceneSubSystem = MakeRef<SceneSubSystem>();
 		m_SubSystems["Scene"] = m_SceneSubSystem;
 
-		m_RendererSubSystem = MakeRef<RendererSubSystem>();
-		m_SubSystems["Renderer"] = m_RendererSubSystem;
+		m_PhysicsSubSystem = MakeRef<PhysicsSubSystem>();
+		m_SubSystems["Physics"] = m_PhysicsSubSystem;
+
 
 		// Order of initialization is defined above
 		for(const auto& subSystem : m_SubSystems | std::views::values)
@@ -75,6 +82,8 @@ namespace Denix
 
 			m_WindowSubSystem->m_Window->ClearBuffer();
 
+			m_EditorSubSystem->Update(0.3f);
+
 			m_SceneSubSystem->Update(0.3f);
 
 			m_WindowSubSystem->m_Window->SwapBuffers();
@@ -83,5 +92,15 @@ namespace Denix
 		}
 
 		Deinitialize();
+	}
+
+	void Engine::PreInitialize()
+	{
+		DE_LOG(LogEngine, Trace, "Engine Pre-Initialized")
+	}
+
+	void Engine::PostInitialize()
+	{
+		DE_LOG(LogEngine, Trace, "Engine Post-Initialized")
 	}
 }
