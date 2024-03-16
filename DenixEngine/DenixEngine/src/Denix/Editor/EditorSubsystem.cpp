@@ -28,53 +28,121 @@ namespace Denix
 
 	void EditorSubsystem::Update(float _deltaTime)
 	{
-		// Update the Scene Editor
 		DragSpeedDelta = DragSpeed * _deltaTime;
-		ScenePanel();
-		DetailsPanel();
+
+		MenuBar();
+
+		if(m_IsScenePanelOpen) ScenePanel();
+		if (m_IsDetailsPanelOpen) DetailsPanel();
 	}
 
-	void EditorSubsystem::ScenePanel()
+	void EditorSubsystem::MenuBar()
 	{
 		const glm::vec2 winSize = s_WindowSubSystem->GetWindow()->GetWindowSize();
 
-		ImGui::SetNextWindowSize(ImVec2((winSize.x / 6), winSize.y), ImGuiCond_Once);
-		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
 
-		if (ImGui::Begin("Scene Panel", &ScenePanelOpen, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse))
+		if (ImGui::BeginMainMenuBar())
 		{
-			// Play/Pause/Deinitialize/Reload Widgets
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("New")) {}
+				if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+				
+				ImGui::Separator();
+				if (ImGui::BeginMenu("Options"))
+				{
+					static bool enabled = true;
+					ImGui::MenuItem("Enabled", "", &enabled);
+					ImGui::BeginChild("child", ImVec2(0, 60), ImGuiChildFlags_Border);
+					for (int i = 0; i < 10; i++)
+						ImGui::Text("Scrolling Text %d", i);
+					ImGui::EndChild();
+					static float f = 0.5f;
+					static int n = 0;
+					ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
+					ImGui::InputFloat("Input", &f, 0.1f);
+					ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
+					ImGui::EndMenu();
+				}
+
+				// Here we demonstrate appending again to the "Options" menu (which we already created above)
+				// Of course in this demo it is a little bit silly that this function calls BeginMenu("Options") twice.
+				// In a real code-base using it would make senses to use this feature from very different code locations.
+				if (ImGui::BeginMenu("Options")) // <-- Append!
+				{
+					//IMGUI_DEMO_MARKER("Examples/Menu/Append to an existing menu");
+					static bool b = true;
+					ImGui::Checkbox("SomeOption", &b);
+					ImGui::EndMenu();
+				}
+
+				ImGui::Separator();
+				if (ImGui::MenuItem("Quit", "Alt+F4")) 
+				{
+					s_WindowSubSystem->GetWindow()->RequestClose();
+				}
+
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Edit"))
+			{
+				if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+				if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+				ImGui::Separator();
+				if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+				if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+				if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Window"))
+			{
+				ImGui::SeparatorText("Panels");
+				ImGui::Checkbox("Scene Panel", &m_IsScenePanelOpen);
+				ImGui::Checkbox("Details Panel", &m_IsDetailsPanelOpen);
+
+				if (ImGui::MenuItem("Toggle Fullscreen", "F11"))
+				{
+					s_WindowSubSystem->GetWindow()->ToggleFullscreen();
+				}
+
+				ImGui::EndMenu();
+			}
+
 			if (!m_ActiveScene->IsPlaying())
 			{
-				// Play Button
 				if (ImGui::Button("Play"))
 				{
 					s_SceneSubSystem->PlayScene();
-					ImGui::End();
-					return;
 				}
 			}
 			else
 			{
-				// Pause Button
 				if (ImGui::Button("Pause"))
 				{
 					s_SceneSubSystem->PauseScene();
-					ImGui::End();
-					return;
 				}
-
-				// Stop Button
 				ImGui::SameLine();
 				if (ImGui::Button("Stop"))
 				{
 					ObjectSelection = -1;
 					s_SceneSubSystem->StopScene();
-					ImGui::End();
-					return;
 				}
 			}
 
+			ImGui::EndMainMenuBar();
+		}
+	}
+
+
+	void EditorSubsystem::ScenePanel()
+	{
+		const glm::vec2 winSize = s_WindowSubSystem->GetWindow()->GetWindowSize();
+
+		ImGui::SetNextWindowSize(ImVec2((winSize.x / 6), winSize.y), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2(0, MenuBarHeight + 5), ImGuiCond_Appearing);
+
+		if (ImGui::Begin("Scene Panel", &ScenePanelOpen))
+		{
 			// Scene Properties
 			if (ImGui::CollapsingHeader("Scene Properties"))
 			{
@@ -179,17 +247,19 @@ namespace Denix
 	{
 		const glm::vec2 winSize = s_WindowSubSystem->GetWindow()->GetWindowSize();
 
-		ImGui::SetNextWindowSize(ImVec2((winSize.x / 6), winSize.y), ImGuiCond_Once);
-		ImGui::SetNextWindowPos(ImVec2((winSize.x / 6), 0), ImGuiCond_Once);
+		ImGui::SetNextWindowSize(ImVec2((winSize.x / 6), winSize.y), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2((winSize.x / 6), MenuBarHeight + 5), ImGuiCond_Appearing);
 
-		if (ImGui::Begin("Details Panel", &ScenePanelOpen, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse))
+		if (ImGui::Begin("Details Panel", &ScenePanelOpen))
 		{
 			if (ObjectSelection >= 0 && ObjectSelection < m_ActiveScene->m_SceneObjects.size())
 			{
 				const Ref<GameObject> selectedObject = m_ActiveScene->m_SceneObjects[ObjectSelection];
 
+				ImGui::SeparatorText(selectedObject->GetName().c_str());
+
 				// Transform Component
-				ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+				ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
 				if (ImGui::CollapsingHeader("Transform Component"))
 				{
 					const Ref<TransformComponent> transform = selectedObject->GetTransformComponent();
@@ -208,7 +278,7 @@ namespace Denix
 				}
 
 				// Physics Component
-				ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+				ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
 				if (ImGui::CollapsingHeader("Physics Component"))
 				{
 					const Ref<PhysicsComponent> physics = selectedObject->GetPhysicsComponent();
@@ -288,10 +358,7 @@ namespace Denix
 		}
 	}
 
-	void EditorSubsystem::MenuBar()
-	{
-	}
-
+	
 	void EditorSubsystem::SetActiveScene(const Ref<Scene>& _scene)
 	{
 		m_ActiveScene = _scene;

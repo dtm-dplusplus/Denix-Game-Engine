@@ -24,6 +24,7 @@ namespace Denix
 		virtual void PollEvents() = 0;
 
 		bool IsOpen() const { return m_IsOpen; }
+		bool IsFullscreen() const { return m_IsFullscreen; }
 
 		glm::vec2 GetWindowSize() const { return { m_WinX, m_WinY }; }
 
@@ -35,6 +36,7 @@ namespace Denix
 
 	protected:
 		bool m_IsOpen;
+		bool m_IsFullscreen = false;
 
 		std::string m_Title;
 
@@ -58,6 +60,25 @@ namespace Denix
 		}
 
 		~SDL_GLWindow() override = default;
+		void ToggleFullscreen()
+		{
+			if (m_IsFullscreen)
+			{
+				SDL_SetWindowFullscreen(m_SDL_GLWindow, SDL_WINDOW_MAXIMIZED);
+				m_IsFullscreen = false;
+			}
+			else
+			{
+				SDL_SetWindowFullscreen(m_SDL_GLWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				m_IsFullscreen = true;
+			}
+			DE_LOG(LogWindow, Info, "Toggled Fullscreen: {}", m_IsFullscreen);
+		}
+
+		void RequestClose()
+		{
+			m_IsOpen = false;
+		}
 
 		enum class SDL_GLVsyncMode
 		{
@@ -86,8 +107,30 @@ namespace Denix
 		SDL_GLContext GetSDL_GLContext() const { return m_SDL_GLContext; }
 
 		SDL_GLVsyncMode GetVsyncMode() const { return m_VsyncMode; }
-		void SetVsyncMode(const SDL_GLVsyncMode mode) { m_VsyncMode = mode; }
+		void SetVsyncMode(const SDL_GLVsyncMode mode) 
+		{
+			m_VsyncMode = mode; 
+			if (SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
+			{
+				DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
+			}
+		}
+		void ToggleVsync()
+		{
+			if (m_VsyncMode == SDL_GLVsyncMode::Off)
+			{
+				m_VsyncMode = SDL_GLVsyncMode::On;
+			}
+			else
+			{
+				m_VsyncMode = SDL_GLVsyncMode::Off;
+			}
 
+			if (SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
+			{
+				DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
+			}
+		}
 	private:
 
 		SDL_Window* m_SDL_GLWindow;

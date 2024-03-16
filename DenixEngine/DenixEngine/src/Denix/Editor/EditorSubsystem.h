@@ -43,9 +43,16 @@ namespace Denix
 		float DragSpeed = 1.0f;
 		float DragSpeedDelta;
 
+		// UI
 		void ScenePanel();
+		bool m_IsScenePanelOpen = true;
+
 		void DetailsPanel();
+		bool m_IsDetailsPanelOpen = true;
+
+		// Menu Bar
 		void MenuBar();
+		float MenuBarHeight = 15.f;
 	};
 
 }
