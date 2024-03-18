@@ -146,6 +146,9 @@
     <ClCompile Include="src\Denix\Editor\EditorSubsystem.cpp">
       <Filter>src\Denix\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="src\Denix\Scene\Component\ColliderComponent.cpp">
+      <Filter>src\Denix\Scene\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Denix.h" />
@@ -259,6 +262,9 @@
     </ClInclude>
     <ClInclude Include="src\Denix\Editor\EditorSubsystem.h">
       <Filter>src\Denix\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Scene\Component\ColliderComponent.h">
+      <Filter>src\Denix\Scene\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

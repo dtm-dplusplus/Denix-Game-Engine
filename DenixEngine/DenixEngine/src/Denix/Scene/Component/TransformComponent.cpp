@@ -19,6 +19,8 @@ namespace Denix
 
     void TransformComponent::RegisterComponent()
     {
+        Component::RegisterComponent();
+
         if (SceneSubSystem* sceneSystem = SceneSubSystem::Get())
         {
             sceneSystem->RegisterTransformComponent(shared_from_this());

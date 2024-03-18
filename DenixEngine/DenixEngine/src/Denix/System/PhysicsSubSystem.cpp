@@ -14,15 +14,13 @@ namespace Denix
 			// Clear force & Compute mg
 			component->m_Force = component->m_Mass * component->m_Gravity;
 
-			// Compute collision response
-			if (component->m_TempPosition.y <= 0.f) // Temp 
-			{
-				component->m_TempPosition.y = 0.f;
-				component->m_Velocity = glm::vec3(0.f);
-			}
+			// Compute collision response - Null effect for now
+			component->m_ColliderComponent->ComputeCollision();
 
 			// Step Intergration
 			component->Step(_deltaTime);
+
+			if (component->m_ColliderComponent->m_IsColliding) component->m_ActorTransformComponent->GetPosition().y = 0.f;
 		}
 	}
 }

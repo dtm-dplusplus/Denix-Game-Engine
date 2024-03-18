@@ -19,7 +19,6 @@ namespace Denix
 		RendererSubSystem()
 		{
 			s_RendererSubSystem = this;
-
 			DE_LOG_CREATE(LogRenderer)
 		}
 

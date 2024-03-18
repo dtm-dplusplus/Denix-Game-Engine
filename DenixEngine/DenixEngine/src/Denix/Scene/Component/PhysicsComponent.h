@@ -3,6 +3,7 @@
 #include "Denix/Core.h"
 #include <glm/vec3.hpp>
 
+#include "ColliderComponent.h"
 #include "Denix/Scene/Component.h"
 
 namespace Denix
@@ -12,10 +13,21 @@ namespace Denix
 	public:
 		PhysicsComponent() : Component(ObjectInitializer("Physics Component"))
 		{
+			m_ColliderComponent = MakeRef<ColliderComponent>();
 		}
-		PhysicsComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Physics Component")) {}
+		PhysicsComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Physics Component")) 
+		{
+			m_ColliderComponent = MakeRef<ColliderComponent>(m_ID);
+		}
 
-		
+		enum class StepMethod
+		{
+			Euler,
+			RK2,
+			RK4,
+			Verlet
+		};
+
 		// Destructors
 		~PhysicsComponent() override = default;
 
@@ -27,13 +39,10 @@ namespace Denix
 
 		void UnregisterComponent() override;
 
-		enum class StepMethod
-		{
-			Euler,
-			RK2,
-			RK4,
-			Verlet
-		};
+
+		Ref<ColliderComponent> GetColliderComponent() { return m_ColliderComponent; }
+
+		
 
 	public:
 		void Step(float _deltaTime)
@@ -67,7 +76,7 @@ namespace Denix
 			m_Velocity +=  m_Force / m_Mass * _deltaTime;
 
 			// Calculate new displacement at time t + dt
-			m_TempPosition +=  + m_Velocity * _deltaTime;
+			m_ActorTransformComponent->GetPosition() += +m_Velocity * _deltaTime;
 		}
 
 		void StepRK2(float _deltaTime)
@@ -89,7 +98,7 @@ namespace Denix
 			m_Velocity += (k1 + k2) / 2.f;
 
 			// Calculate new displacement at time t + dt
-			m_TempPosition += m_Velocity * _deltaTime;
+			m_ActorTransformComponent->GetPosition() += m_Velocity * _deltaTime;
 		}
 
 		void StepRK4(float _deltaTime)
@@ -206,10 +215,11 @@ namespace Denix
 		/** Force acting on the object */
 		glm::vec3 m_Force = glm::vec3(0.f);
 
-		/** Temporary position of the object
-		 * Will be removed in the future
-		 */
-		glm::vec3 m_TempPosition = glm::vec3(0.f);
+		/** Collider used to compute collision responses. Belongs to the physics component */
+		Ref<ColliderComponent> m_ColliderComponent;
+
+		/** Transform component which is attached to this components game object */
+		Ref<TransformComponent> m_ActorTransformComponent;
 
 		friend class SceneSubSystem;
 		friend class PhysicsSubSystem;

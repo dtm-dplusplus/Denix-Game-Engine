@@ -21,6 +21,7 @@ namespace Denix
 
 		void RegisterComponent() override;
 		void UnregisterComponent() override;
+
 		// Getters
 		glm::mat4 GetModel() const { return Model; }
 		glm::mat4& GetModel() { return Model; }

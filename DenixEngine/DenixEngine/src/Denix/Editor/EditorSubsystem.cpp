@@ -29,18 +29,17 @@ namespace Denix
 	void EditorSubsystem::Update(float _deltaTime)
 	{
 		DragSpeedDelta = DragSpeed * _deltaTime;
+		const glm::vec2 winSize = s_WindowSubSystem->GetWindow()->GetWindowSize();
+		WinX = winSize.x;
+		WinY = winSize.y;
 
 		MenuBar();
-
 		if(m_IsScenePanelOpen) ScenePanel();
 		if (m_IsDetailsPanelOpen) DetailsPanel();
 	}
 
 	void EditorSubsystem::MenuBar()
 	{
-		const glm::vec2 winSize = s_WindowSubSystem->GetWindow()->GetWindowSize();
-
-
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
@@ -128,6 +127,16 @@ namespace Denix
 					s_SceneSubSystem->StopScene();
 				}
 			}
+			
+
+			// Scene Properties
+			if (ImGui::BeginMenu("Scene Properties"))
+			{
+				ImGui::Checkbox("Show Demo Window", &ShowDemoWindow);
+				if (ShowDemoWindow) ImGui::ShowDemoWindow(&ShowDemoWindow);
+				ImGui::DragFloat("UI Drag Speed", &DragSpeed, DragSpeed, 0.1f, 10.0f);
+				ImGui::EndMenu();
+			}
 
 			ImGui::EndMainMenuBar();
 		}
@@ -136,26 +145,21 @@ namespace Denix
 
 	void EditorSubsystem::ScenePanel()
 	{
-		const glm::vec2 winSize = s_WindowSubSystem->GetWindow()->GetWindowSize();
-
-		ImGui::SetNextWindowSize(ImVec2((winSize.x / 6), winSize.y), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2(0, MenuBarHeight + 5), ImGuiCond_Appearing);
+		ImGui::SetNextWindowSize(ImVec2((WinX / 6), WinY), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2(0, MenuBarHeight), ImGuiCond_Appearing); // + ViewportBarHeight
+		ImGui::SetNextItemOpen(&ScenePanelOpen, ImGuiCond_Appearing);
 
 		if (ImGui::Begin("Scene Panel", &ScenePanelOpen))
 		{
 			// Scene Properties
-			if (ImGui::CollapsingHeader("Scene Properties"))
-			{
-				ImGui::Checkbox("Show Demo Window", &ShowDemoWindow);
-				if (ShowDemoWindow) ImGui::ShowDemoWindow(&ShowDemoWindow);
-				ImGui::DragFloat("UI Drag Speed", &DragSpeed, 0.1f, 0.1f, 10.0f);
-			}
+			ImGui::Combo("Viewport Mode", &s_SceneSubSystem->GetViewportMode(), "Default\0Collider\0\0");
 
 			// Camera Properties
-			if (ImGui::CollapsingHeader("Camera Properties"))
 			{
+				ImGui::SeparatorText("Camera Properties");
+
 				ImGui::DragFloat("MoveSpeed", &m_ActiveScene->m_Camera->MoveSpeed, DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_Camera->MoveSpeed = 0.1f;
+				if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_Camera->MoveSpeed = 0.5f;
 				ImGui::SetItemTooltip("Reset");
 
 				ImGui::Checkbox("Perspective Projection", &m_ActiveScene->m_Camera->IsPerspective);
@@ -248,7 +252,7 @@ namespace Denix
 		const glm::vec2 winSize = s_WindowSubSystem->GetWindow()->GetWindowSize();
 
 		ImGui::SetNextWindowSize(ImVec2((winSize.x / 6), winSize.y), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2((winSize.x / 6), MenuBarHeight + 5), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2((winSize.x / 6), MenuBarHeight + ViewportBarHeight), ImGuiCond_Appearing);
 
 		if (ImGui::Begin("Details Panel", &ScenePanelOpen))
 		{
@@ -342,11 +346,24 @@ namespace Denix
 				if (ImGui::CollapsingHeader("Render Component"))
 				{
 					const Ref<RenderComponent> render = selectedObject->GetRenderComponent();
+
+					ImGui::Checkbox("Visible", &render->IsVisible());
 					if (ImGui::Combo("Draw Mode", &render->GetDrawMode(), "Points\0Lines\0Line Loop\0Line Strip\0Triangles\0\0"))
 					{
 						DE_LOG(Log, Trace, "Draw Mode Changed to: {}", render->GetDrawMode());
 					}
 					ImGui::ColorEdit4("Debug Color", &render->GetDebugColor()[0]);
+				}
+
+				// Collider Component
+				if (ImGui::CollapsingHeader("Collider Component"))
+				{
+					const Ref<ColliderComponent> collider = selectedObject->GetColliderComponent();
+					const Ref<RenderComponent> render = collider->GetRenderComponent();
+
+					ImGui::Checkbox("Show Collider", &render->IsVisible());
+					if (ImGui::Button("Is Colliding")) collider->ToggleColliding();
+					ImGui::ColorEdit4("Collider Color", &render->GetDebugColor()[0]);
 				}
 
 				// Mesh Component

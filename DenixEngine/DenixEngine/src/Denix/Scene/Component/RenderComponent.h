@@ -52,9 +52,16 @@ namespace Denix
 		glm::vec4& GetDebugColor() { return m_DebugColor; }
 		glm::vec4 SetDebugColor(const glm::vec4& _color) { return m_DebugColor = _color; }
 
-		GLenum GetDrawMode() const { return (GLenum)m_DrawMode; }
+		GLenum GetDrawMode() const { return static_cast<GLenum>(m_DrawMode); }
 		int& GetDrawMode() { return m_DrawMode; }
-		void SetDrawMode(const GLenum _mode) { m_DrawMode = _mode; }	
+		void SetDrawMode(const GLenum _mode) 
+		{
+			m_DrawMode = _mode;
+		}	
+
+		bool IsVisible() const { return m_IsVisible; }
+		bool& IsVisible() { return m_IsVisible; }
+		void SetIsVisible(const bool _visible) { m_IsVisible = _visible; }
 	public:
 		void BeginScene() override;
 
@@ -65,6 +72,8 @@ namespace Denix
 		
 
 	private:
+		bool m_IsVisible = true;
+
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 		Ref<GLShader> m_Shader;
 		int m_DrawMode = GL_TRIANGLES;

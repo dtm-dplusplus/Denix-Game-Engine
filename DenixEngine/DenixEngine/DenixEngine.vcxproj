@@ -110,6 +110,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Denix\Scene\Component\ColliderComponent.cpp" />
     <ClCompile Include="src\Denix\Editor\EditorSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -183,6 +184,7 @@
     </ClCompile>
     <ClCompile Include="src\Denix\System\ShaderSubSystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
+    <ClInclude Include="src\Denix\Scene\Component\ColliderComponent.h" />
     <ClInclude Include="src\Denix\Editor\EditorSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\Component\MeshComponent.h" />
     <ClInclude Include="src\Denix\Scene\Component\PhysicsComponent.h" />

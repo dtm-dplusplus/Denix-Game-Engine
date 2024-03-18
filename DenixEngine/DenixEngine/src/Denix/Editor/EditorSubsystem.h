@@ -39,6 +39,8 @@ namespace Denix
 		int ObjectSelection = 0;
 		bool ScenePanelOpen = true;
 		bool ShowDemoWindow = false;
+		float WinX = 0.0f;
+		float WinY = 0.0f;
 
 		float DragSpeed = 1.0f;
 		float DragSpeedDelta;
@@ -53,6 +55,7 @@ namespace Denix
 		// Menu Bar
 		void MenuBar();
 		float MenuBarHeight = 15.f;
+		float ViewportBarHeight = 15.f;
 	};
 
 }

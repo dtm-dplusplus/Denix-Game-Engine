@@ -136,7 +136,7 @@ namespace Denix
 			{
 				// Unregister Components
 				s_PhysicsSubSystem->UnregisterComponent(gameObject->GetPhysicsComponent());
-				//gameObject->m_TransformComponent = MakeRef<TransformComponent>(m_ID);
+				//gameObject->m_ActorTransformComponent = MakeRef<TransformComponent>(m_ID);
 				//gameObject->m_MeshComponent = MakeRef<MeshComponent>(m_ID);
 				//gameObject->m_RenderComponent = MakeRef<RenderComponent>(m_ID);
 
@@ -197,7 +197,7 @@ namespace Denix
 		m_ActiveScene->Update(_deltaTime);
 
 		// Update Transform Components
-		for (const auto& transform : m_TransformComponets)
+		for (const auto& transform : m_TransformComponents)
 		{
 			if (transform)
 			{
@@ -221,33 +221,61 @@ namespace Denix
 			s_PhysicsSubSystem->Update(_deltaTime);
 		}
 
-		// TEMP Update position from phsyics calculations
-		if (m_ActiveScene->m_IsPlaying)
-		{
-			for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
-			{
-				// TEMP Update transform components after physics calculations
-				if (gameObject->m_PhysicsComponent->IsSimulated())
-					gameObject->m_TransformComponent->SetPosition(gameObject->m_PhysicsComponent->m_TempPosition);
-			}
-		}
-
 		// Update the GameObjects
 		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
 		{
-			// TEMP Update transform components after physics calculations
-			gameObject->m_PhysicsComponent->m_TempPosition = gameObject->m_TransformComponent->GetPosition();
-
 			// Update the GameObject -  This will always be here
 			gameObject->Update(_deltaTime);
 
 			// TEMP Immediate Mode Rendering
-			s_RendererSubSystem->DrawImmediate(
-				gameObject->GetRenderComponent(),
-				gameObject->GetTransformComponent(),
-				gameObject->GetMeshComponent());
+			switch (static_cast<ViewportMode>(m_ViewportMode))
+			{
+				case ViewportMode::Render:
+				{
+					// Draw the GameObject
+					if (gameObject->GetRenderComponent()->IsVisible())
+					{
+						s_RendererSubSystem->DrawImmediate(
+							gameObject->GetRenderComponent(),
+							gameObject->GetTransformComponent(),
+							gameObject->GetMeshComponent());
+					}
 
+					// Draw Collider over gameobject if set to visible
+					if (const Ref<ColliderComponent> collider = gameObject->GetColliderComponent())
+					{
+						if (Ref<RenderComponent> render = collider->GetRenderComponent())
+						{
+							if (render->IsVisible() && m_ViewportMode != static_cast<int>(ViewportMode::Collider))
+							{
+								s_RendererSubSystem->DrawImmediate(
+									render,
+									gameObject->GetTransformComponent(),
+									collider->GetMeshComponent());
+							}
+						}
+					}
+				}
+					break;
+
+				case ViewportMode::Collider:
+				{
+					// TEMP Collider Rendering - This disregards whether the collider is visible or not
+					if (const Ref<ColliderComponent> collider = gameObject->GetColliderComponent())
+					{
+						if (Ref<RenderComponent> render = collider->GetRenderComponent())
+						{
+							s_RendererSubSystem->DrawImmediate(
+								render,
+								gameObject->GetTransformComponent(),
+								collider->GetMeshComponent());
+						}
+					}
+				}
+					break;
+
+				default: break;
+			}
 		}
-
 	}
 }

@@ -8,9 +8,8 @@
 #include "Component/PhysicsComponent.h"
 #include "Component/RenderComponent.h"
 #include "Component/TransformComponent.h"
+#include "Component/ColliderComponent.h"
 #include "MeshData.h"
-
-
 
 namespace Denix
 {
@@ -27,6 +26,8 @@ namespace Denix
 			m_Components["Transform"] = m_TransformComponent;
 
 			m_PhysicsComponent = MakeRef<PhysicsComponent>(m_ID);
+			m_PhysicsComponent->m_ActorTransformComponent = m_TransformComponent;
+			m_PhysicsComponent->m_ColliderComponent->m_ActorTransformComponent = m_TransformComponent;
 			m_Components["Physics"] = m_PhysicsComponent;
 
 			m_MeshComponent = MakeRef<MeshComponent>(m_ID);
@@ -59,6 +60,8 @@ namespace Denix
 		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
+
+		Ref<ColliderComponent> GetColliderComponent() const { return m_PhysicsComponent->m_ColliderComponent; }
 
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
 
