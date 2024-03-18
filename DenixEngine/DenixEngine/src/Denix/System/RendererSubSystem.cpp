@@ -36,7 +36,7 @@ namespace Denix
 			// Upload the color
 			glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
 
-			glDrawArrays(GL_TRIANGLES, 0, _mesh->m_VBO->GetCount());
+			glDrawArrays(_render->GetDrawMode(), 0, _mesh->m_VBO->GetCount());
 
 			//m_RendererComponents.emplace_back(_render, _transform, _mesh);
 

@@ -342,7 +342,10 @@ namespace Denix
 				if (ImGui::CollapsingHeader("Render Component"))
 				{
 					const Ref<RenderComponent> render = selectedObject->GetRenderComponent();
-
+					if (ImGui::Combo("Draw Mode", &render->GetDrawMode(), "Points\0Lines\0Line Loop\0Line Strip\0Triangles\0\0"))
+					{
+						DE_LOG(Log, Trace, "Draw Mode Changed to: {}", render->GetDrawMode());
+					}
 					ImGui::ColorEdit4("Debug Color", &render->GetDebugColor()[0]);
 				}
 
