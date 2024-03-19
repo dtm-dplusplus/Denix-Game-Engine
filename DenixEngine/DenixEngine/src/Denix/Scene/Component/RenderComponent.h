@@ -2,7 +2,7 @@
 #include <glm/vec4.hpp>
 
 #include "Denix/Scene/Component.h"
-#include "Denix/System/ShaderSubSystem.h"
+#include "Denix/System/ShaderSubsystem.h"
 #include "Denix/Video/GL/GLShader.h"
 
 
@@ -15,7 +15,7 @@ namespace Denix
 		{
 			if (!m_Shader)
 			{
-				if (const Ref<GLShader> shader = ShaderSubSystem::Get()->GetShader("DebugShader"))
+				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("DebugShader"))
 				{
 					m_Shader = shader;
 				}
@@ -26,7 +26,7 @@ namespace Denix
 		{
 			if (!m_Shader)
 			{
-				if (const Ref<GLShader> shader = ShaderSubSystem::Get()->GetShader("DebugShader"))
+				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("DebugShader"))
 				{
 					m_Shader = shader;
 				}
@@ -77,7 +77,7 @@ namespace Denix
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 		Ref<GLShader> m_Shader;
 		int m_DrawMode = GL_TRIANGLES;
-		friend class SceneSubSystem;
-		friend class RendererSubSystem;
+		friend class SceneSubsystem;
+		friend class RendererSubsystem;
 	};
 }

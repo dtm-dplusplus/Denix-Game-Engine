@@ -1,23 +1,23 @@
 #pragma once
 
-#include "SubSystem.h"
+#include "Subsystem.h"
 #include "Denix/Core.h"
 
 namespace Denix
 {
-	class UISubSystem: public SubSystem
+	class UISubsystem: public Subsystem
 	{
 	public:
-		UISubSystem();
-		~UISubSystem() override;
+		UISubsystem();
+		~UISubsystem() override;
 
-		static UISubSystem* Get() { return s_UISubSystem; }
+		static UISubsystem* Get() { return s_UISubSystem; }
 
 		void Initialize() override;
 
 		void Deinitialize() override;
 
 	private:
-		static UISubSystem* s_UISubSystem;
+		static UISubsystem* s_UISubSystem;
 	};
 }

@@ -1,27 +1,27 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "SubSystem.h"
+#include "Subsystem.h"
 #include "Denix/Video/Window.h"
 #include <SDL.h>
 #include <GL/glew.h>
 
 namespace Denix
 {
-	class WindowSubSystem: public SubSystem
+	class WindowSubsystem: public Subsystem
 	{
 	public:
-		WindowSubSystem()
+		WindowSubsystem()
 		{
 			s_WindowSubSystem = this;
 		}
 
-		~WindowSubSystem() override
+		~WindowSubsystem() override
 		{
 			s_WindowSubSystem = nullptr;
 		}
 
-		static WindowSubSystem* Get() { return s_WindowSubSystem; }
+		static WindowSubsystem* Get() { return s_WindowSubSystem; }
 
 		void Initialize() override
 		{
@@ -61,7 +61,7 @@ namespace Denix
 	private:
 		Ref<SDL_GLWindow> m_Window;
 
-		static WindowSubSystem* s_WindowSubSystem;
+		static WindowSubsystem* s_WindowSubSystem;
 
 
 		friend class Engine;

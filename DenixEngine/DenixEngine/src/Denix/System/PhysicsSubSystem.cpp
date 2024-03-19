@@ -1,11 +1,11 @@
 ﻿#include "Denix/depch.h"
-#include "PhysicsSubSystem.h"
+#include "PhysicsSubsystem.h"
 
 namespace Denix
 {
-	PhysicsSubSystem* PhysicsSubSystem::s_PhysicsSubSystem{ nullptr };
+	PhysicsSubsystem* PhysicsSubsystem::s_PhysicsSubSystem{ nullptr };
 
-	void PhysicsSubSystem::Update(float _deltaTime)
+	void PhysicsSubsystem::Update(float _deltaTime)
 	{
 		for (const auto& component : m_PhysicsComponents)
 		{

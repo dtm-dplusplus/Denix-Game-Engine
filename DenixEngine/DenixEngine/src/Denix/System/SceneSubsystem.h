@@ -2,30 +2,30 @@
 
 #include "Denix/Core.h"
 #include "Denix/Scene/Scene.h"
-#include "SubSystem.h"
+#include "Subsystem.h"
 
 namespace Denix
 {
 	/* Subsystem that manages the scenes
 	* A scene must always be loaded in order to render anything
 	*/ 
-	class SceneSubSystem: public SubSystem
+	class SceneSubsystem: public Subsystem
 	{
 	public:
-		SceneSubSystem()
+		SceneSubsystem()
 		{
-			s_SceneSubSystem = this;
+			s_SceneSubsystem = this;
 
 			DE_LOG_CREATE(LogSceneSubSystem)
 			DE_LOG_CREATE(LogScene)
 			DE_LOG_CREATE(LogObject)
 		}
 
-		~SceneSubSystem() override
+		~SceneSubsystem() override
 		{
 			m_ActiveScene = nullptr;
-			s_SceneSubSystem = nullptr;
-			s_RendererSubSystem = nullptr;
+			s_SceneSubsystem = nullptr;
+			s_RendererSubsystem = nullptr;
 		}
 
 		enum class ViewportMode
@@ -42,7 +42,7 @@ namespace Denix
 
 		void Update(float _deltaTime) override;
 
-		static SceneSubSystem* Get() { return s_SceneSubSystem; }
+		static SceneSubsystem* Get() { return s_SceneSubsystem; }
 
 		Ref<Scene> GetActiveScene() const { return m_ActiveScene; }
 
@@ -102,11 +102,12 @@ namespace Denix
 		int& GetViewportMode() { return m_ViewportMode; }
 
 	private:
-		static SceneSubSystem* s_SceneSubSystem;
+		static SceneSubsystem* s_SceneSubsystem;
 
-		class PhysicsSubSystem* s_PhysicsSubSystem;
-		class WindowSubSystem* s_WindowSubSystem;
-		class RendererSubSystem* s_RendererSubSystem;
+		class InputSubsystem* s_InputSubsystem;
+		class PhysicsSubsystem* s_PhysicsSubsystem;
+		class WindowSubsystem* s_WindowSubsystem;
+		class RendererSubsystem* s_RendererSubsystem;
 
 		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
 
@@ -117,5 +118,6 @@ namespace Denix
 		int m_ViewportMode = static_cast<int>(ViewportMode::Render);
 
 		friend class Engine;
+		friend class EditorSubsystem;
 	};
 }

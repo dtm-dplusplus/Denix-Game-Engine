@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SDL_events.h>
+
 #include "Denix/Core.h"
 
 #include "SDL_video.h"
@@ -21,7 +23,7 @@ namespace Denix
 		virtual void ClearBuffer() = 0;
 		virtual void SwapBuffers() = 0;
 
-		virtual void PollEvents() = 0;
+		virtual void WindowEvent(const SDL_Event* _event) {}
 
 		bool IsOpen() const { return m_IsOpen; }
 		bool IsFullscreen() const { return m_IsFullscreen; }
@@ -43,8 +45,9 @@ namespace Denix
 		int m_WinX;
 		int m_WinY;
 
-		friend class WindowSubSystem;
+		friend class WindowSubsystem;
 	};
+
 
 	class SDL_GLWindow final : public Window
 	{
@@ -60,6 +63,10 @@ namespace Denix
 		}
 
 		~SDL_GLWindow() override = default;
+
+		void WindowEvent(const SDL_Event* _event) override;
+
+
 		void ToggleFullscreen()
 		{
 			if (m_IsFullscreen)
@@ -97,8 +104,6 @@ namespace Denix
 
 		void ClearBuffer() override;
 		void SwapBuffers() override;
-
-		void PollEvents() override;
 
 		std::string GetGLSLVersion() const { return m_GLSLVersion; }
 		GLint GetGLMajorVersion() const { return m_GLMajorVersion; }
@@ -151,7 +156,7 @@ namespace Denix
 		GLint m_GLStencilSize = 8;
 		GLint m_GLDoubleBuffer = 1;
 
-		friend class WindowSubSystem;
+		friend class WindowSubsystem;
 
 	};
 }

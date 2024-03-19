@@ -1,5 +1,5 @@
 #pragma once
-#include "SubSystem.h"
+#include "Subsystem.h"
 #include "Denix/Video/GL/GLShader.h"
 #include "../Core.h"
 #include "Denix/Core/File.h"
@@ -9,26 +9,26 @@ namespace Denix
 	/**
 	 * \ Responsible for managing shaders
 	 */
-	class ShaderSubSystem: public SubSystem
+	class ShaderSubsystem: public Subsystem
 	{
 	public:
-		ShaderSubSystem()
+		ShaderSubsystem()
 		{
 			s_ShaderSubSystem = this;
 
 			DE_LOG_CREATE(LogShaderSubSystem)
 		}
 
-		~ShaderSubSystem() override
+		~ShaderSubsystem() override
 		{
 			s_ShaderSubSystem = nullptr;
 		}
 
-		static ShaderSubSystem* Get() { return s_ShaderSubSystem; }
+		static ShaderSubsystem* Get() { return s_ShaderSubSystem; }
 
 		void Initialize() override
 		{
-			DE_LOG(Log, Trace, "GLShader SubSystem Initialized")
+			DE_LOG(Log, Trace, "GLShader Subsystem Initialized")
 
 			// Create Debug Shader
 			std::vector<std::pair<GLenum, std::string>> shaders;
@@ -49,7 +49,7 @@ namespace Denix
 
 		void Deinitialize() override
 		{
-			DE_LOG(Log, Trace, "GLShader SubSystem Initialized")
+			DE_LOG(Log, Trace, "GLShader Subsystem Initialized")
 			m_Initialized = false;
 		}
 
@@ -97,7 +97,7 @@ namespace Denix
 			return nullptr;
 		}
 	private:
-		static ShaderSubSystem* s_ShaderSubSystem;
+		static ShaderSubsystem* s_ShaderSubSystem;
 
 		std::unordered_map<std::string, Ref<GLShader>> m_ShaderPrograms;
 	};

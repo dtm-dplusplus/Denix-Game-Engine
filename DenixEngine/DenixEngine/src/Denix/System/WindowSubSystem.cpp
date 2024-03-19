@@ -1,3 +1,3 @@
-#include "WindowSubSystem.h"
+#include "WindowSubsystem.h"
 
-Denix::WindowSubSystem* Denix::WindowSubSystem::s_WindowSubSystem{nullptr};
+Denix::WindowSubsystem* Denix::WindowSubsystem::s_WindowSubSystem{nullptr};

@@ -2,6 +2,7 @@
 #include "EditorSubsystem.h"
 
 #include "imgui.h"
+#include "Denix/Input/InputSubsystem.h"
 #include "Denix/System/SceneSubsystem.h"
 #include "Denix/System/WindowSubsystem.h"
 #include "Denix/Scene/Scene.h"
@@ -12,8 +13,9 @@ namespace Denix
 
 	void EditorSubsystem::Initialize()
 	{
-		s_WindowSubSystem = WindowSubSystem::Get();
-		s_SceneSubSystem = SceneSubSystem::Get();
+		s_WindowSubSystem = WindowSubsystem::Get();
+		s_SceneSubSystem = SceneSubsystem::Get();
+		s_InputSubsystem = InputSubsystem::Get();
 
 		DE_LOG(Log, Trace, "Editor Subsystem Initialized")
 
@@ -36,6 +38,7 @@ namespace Denix
 		MenuBar();
 		if(m_IsScenePanelOpen) ScenePanel();
 		if (m_IsDetailsPanelOpen) DetailsPanel();
+		if(m_IsInputPanelOpen) s_InputSubsystem->InputPanel();
 	}
 
 	void EditorSubsystem::MenuBar()
@@ -44,11 +47,7 @@ namespace Denix
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New")) {}
-				if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-				
-				ImGui::Separator();
-				if (ImGui::BeginMenu("Options"))
+				/*if (ImGui::BeginMenu("Options"))
 				{
 					static bool enabled = true;
 					ImGui::MenuItem("Enabled", "", &enabled);
@@ -62,20 +61,8 @@ namespace Denix
 					ImGui::InputFloat("Input", &f, 0.1f);
 					ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
 					ImGui::EndMenu();
-				}
+				}*/
 
-				// Here we demonstrate appending again to the "Options" menu (which we already created above)
-				// Of course in this demo it is a little bit silly that this function calls BeginMenu("Options") twice.
-				// In a real code-base using it would make senses to use this feature from very different code locations.
-				if (ImGui::BeginMenu("Options")) // <-- Append!
-				{
-					//IMGUI_DEMO_MARKER("Examples/Menu/Append to an existing menu");
-					static bool b = true;
-					ImGui::Checkbox("SomeOption", &b);
-					ImGui::EndMenu();
-				}
-
-				ImGui::Separator();
 				if (ImGui::MenuItem("Quit", "Alt+F4")) 
 				{
 					s_WindowSubSystem->GetWindow()->RequestClose();
@@ -83,22 +70,28 @@ namespace Denix
 
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Edit"))
-			{
-				if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-				if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-				ImGui::Separator();
-				if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-				if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-				if (ImGui::MenuItem("Paste", "CTRL+V")) {}
-				ImGui::EndMenu();
-			}
+			//if (ImGui::BeginMenu("Edit"))
+			//{
+			//	if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+			//	if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+			//	ImGui::Separator();
+			//	if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+			//	if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+			//	if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+			//	ImGui::EndMenu();
+			//}
 			if (ImGui::BeginMenu("Window"))
 			{
 				ImGui::SeparatorText("Panels");
 				ImGui::Checkbox("Scene Panel", &m_IsScenePanelOpen);
 				ImGui::Checkbox("Details Panel", &m_IsDetailsPanelOpen);
+				ImGui::Checkbox("Input Panel", &m_IsInputPanelOpen);
+		
+				ImGui::EndMenu();
+			}
 
+			if (ImGui::BeginMenu("View"))
+			{
 				if (ImGui::MenuItem("Toggle Fullscreen", "F11"))
 				{
 					s_WindowSubSystem->GetWindow()->ToggleFullscreen();
@@ -106,6 +99,8 @@ namespace Denix
 
 				ImGui::EndMenu();
 			}
+
+			
 
 			if (!m_ActiveScene->IsPlaying())
 			{
@@ -158,7 +153,10 @@ namespace Denix
 			{
 				ImGui::SeparatorText("Camera Properties");
 
-				ImGui::DragFloat("MoveSpeed", &m_ActiveScene->m_Camera->MoveSpeed, DragSpeedDelta); ImGui::SameLine();
+				ImGui::Text("Is Panning: {}", m_ActiveScene->m_Camera->m_IsPanMode ? "true" : "false");
+				ImGui::Text("Is Move Speed Delta: {}", m_ActiveScene->m_Camera->m_IsMoveSpeedDelta ? "true" : "false");
+
+				ImGui::DragFloat("MoveSpeed", &m_ActiveScene->m_Camera->MoveSpeed, DragSpeedDelta, 1.f, 10.f); ImGui::SameLine();
 				if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_Camera->MoveSpeed = 0.5f;
 				ImGui::SetItemTooltip("Reset");
 
@@ -176,6 +174,16 @@ namespace Denix
 				if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) m_ActiveScene->m_Camera->FarPlane = 100.f;
 				ImGui::SetItemTooltip("Reset");
 			}
+
+			if (ImGui::CollapsingHeader("Registered Components"))
+			{
+				for (const auto& transform : s_SceneSubSystem->m_TransformComponents)
+				{
+					ImGui::Text("Name: %s", transform->GetName().c_str());
+				}
+
+			}
+
 
 			// Scene Objects
 			if (ImGui::BeginChild("Scene Objects", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX))

@@ -2,11 +2,11 @@
 
 namespace Denix
 {
-	class SubSystem
+	class Subsystem
 	{
 	public:
-		SubSystem() = default;
-		virtual ~SubSystem() = default;
+		Subsystem() = default;
+		virtual ~Subsystem() = default;
 	
 
 		virtual void Initialize() {}

@@ -1,5 +1,5 @@
 #include "PhysicsComponent.h"
-#include "Denix/System/PhysicsSubSystem.h"
+#include "Denix/System/PhysicsSubsystem.h"
 
 namespace Denix
 {
@@ -19,7 +19,7 @@ namespace Denix
 
     void PhysicsComponent::RegisterComponent()
     {
-        if (PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get())
+        if (PhysicsSubsystem* physicsSystem = PhysicsSubsystem::Get())
         {
             physicsSystem->RegisterComponent(shared_from_this());
         }
@@ -27,7 +27,7 @@ namespace Denix
 
     void PhysicsComponent::UnregisterComponent()
     {
-        if (PhysicsSubSystem* physicsSystem = PhysicsSubSystem::Get())
+        if (PhysicsSubsystem* physicsSystem = PhysicsSubsystem::Get())
         {
             physicsSystem->UnregisterComponent(shared_from_this());
         }

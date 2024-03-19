@@ -4,7 +4,7 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "Camera.h"
-#include "Denix/System/PhysicsSubSystem.h"
+#include "Denix/System/PhysicsSubsystem.h"
 
 namespace Denix
 {
@@ -33,6 +33,7 @@ namespace Denix
 		void BeginScene() override
 		{
 			m_Camera = MakeRef<Camera>();
+			m_SceneObjects.push_back(m_Camera);
 
 			for (const auto& obj : m_SceneObjects)
 			{
@@ -88,7 +89,7 @@ namespace Denix
 
 		Ref<Camera> m_Camera;
 
-		friend class SceneSubSystem;
+		friend class SceneSubsystem;
 		friend class EditorSubsystem;
 		friend class Engine;
 	};

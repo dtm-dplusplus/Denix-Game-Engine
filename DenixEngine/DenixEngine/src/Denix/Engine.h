@@ -6,7 +6,7 @@ int main(int argc, char** argv);
 
 namespace Denix
 {
-	class SubSystem;
+	class Subsystem;
 
 	class Engine
 	{
@@ -31,21 +31,23 @@ namespace Denix
 	private:
 		static Engine* s_Engine;
 
-		std::unordered_map<std::string, Ref<SubSystem>>  m_SubSystems;
+		std::unordered_map<std::string, Ref<Subsystem>>  m_Subsystems;
 
-		Ref<class WindowSubSystem> m_WindowSubSystem;
+		Ref<class WindowSubsystem> m_WindowSubSystem;
 
-		Ref<class SceneSubSystem> m_SceneSubSystem;
+		Ref<class SceneSubsystem> m_SceneSubSystem;
 
-		Ref<class ShaderSubSystem> m_ShaderSubSystem;
+		Ref<class ShaderSubsystem> m_ShaderSubSystem;
 
-		Ref<class PhysicsSubSystem> m_PhysicsSubSystem;
+		Ref<class PhysicsSubsystem> m_PhysicsSubSystem;
 
-		Ref<class UISubSystem> m_UISubSytem;
+		Ref<class UISubsystem> m_UISubSytem;
 
-		Ref<class RendererSubSystem> m_RendererSubSystem;
+		Ref<class RendererSubsystem> m_RendererSubSystem;
 
 		Ref<class EditorSubsystem> m_EditorSubSystem;
+
+		Ref<class InputSubsystem> m_InputSubsystem;
 
 		friend int ::main(int argc, char** argv);
 	};

@@ -1,28 +1,30 @@
 #include "depch.h"
 #include "SceneSubsystem.h"
 #include "WindowSubsystem.h"
-#include "PhysicsSubSystem.h"
-#include "RendererSubSystem.h"
+#include "PhysicsSubsystem.h"
+#include "RendererSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
 
 #include "Denix/Engine.h"
 #include "imgui.h"
+#include "Denix/Input/InputSubsystem.h"
 
 namespace Denix
 {
-	SceneSubSystem* SceneSubSystem::s_SceneSubSystem{ nullptr };
+	SceneSubsystem* SceneSubsystem::s_SceneSubsystem{ nullptr };
 
-	void SceneSubSystem::Initialize()
+	void SceneSubsystem::Initialize()
 	{
-		s_PhysicsSubSystem = PhysicsSubSystem::Get();
-		s_WindowSubSystem = WindowSubSystem::Get();
-		s_RendererSubSystem = RendererSubSystem::Get();
+		s_InputSubsystem = InputSubsystem::Get();
+		s_PhysicsSubsystem = PhysicsSubsystem::Get();
+		s_WindowSubsystem = WindowSubsystem::Get();
+		s_RendererSubsystem = RendererSubsystem::Get();
 		DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Initialized")
 
 		m_Initialized = true;
 	}
 
-	void SceneSubSystem::Deinitialize()
+	void SceneSubsystem::Deinitialize()
 	{
 		m_LoadedScenes.clear();
 
@@ -32,7 +34,7 @@ namespace Denix
 	}
 
 
-	bool SceneSubSystem::LoadScene(const Ref<Scene>& _scene)
+	bool SceneSubsystem::LoadScene(const Ref<Scene>& _scene)
 	{
 		// Check if the pointer is valid
 		if (!_scene)
@@ -61,7 +63,7 @@ namespace Denix
 		return true;
 	}
 
-	void SceneSubSystem::UnloadScene(const std::string& _name)
+	void SceneSubsystem::UnloadScene(const std::string& _name)
 	{
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
@@ -76,7 +78,7 @@ namespace Denix
 		DE_LOG(LogSceneSubSystem, Error, "Load Scene: Invalid scene name, or the scene isn't loaded")
 	}
 
-	void SceneSubSystem::OpenScene(const std::string& _name)
+	void SceneSubsystem::OpenScene(const std::string& _name)
 	{
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
@@ -84,7 +86,7 @@ namespace Denix
 			m_ActiveScene->BeginScene();
 
 			// Set dependencies with new scene pointer
-			s_RendererSubSystem->SetActiveCamera(m_ActiveScene->m_Camera);
+			s_RendererSubsystem->SetActiveCamera(m_ActiveScene->m_Camera);
 			EditorSubsystem::Get()->SetActiveScene(m_ActiveScene);
 
 			DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}", _name)
@@ -94,7 +96,7 @@ namespace Denix
 		DE_LOG(LogSceneSubSystem, Error, "Cound't find Scene: {}", _name)
 	}
 
-	void SceneSubSystem::PlayScene()
+	void SceneSubsystem::PlayScene()
 	{
 		if (m_ActiveScene)
 		{
@@ -104,7 +106,7 @@ namespace Denix
 		}
 	}
 
-	void SceneSubSystem::StopScene()
+	void SceneSubsystem::StopScene()
 	{
 		if (m_ActiveScene)
 		{
@@ -122,12 +124,12 @@ namespace Denix
 		}
 	}
 
-	void SceneSubSystem::PauseScene()
+	void SceneSubsystem::PauseScene()
 	{
 		DE_LOG(LogSceneSubSystem, Trace, "Scene Paused")
 	}
 
-	void SceneSubSystem::CleanRubbish()
+	void SceneSubsystem::CleanRubbish()
 	{
 		// Cleanup rubbish objects here. TEMP loop, will be moved to a queue
 		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
@@ -135,7 +137,7 @@ namespace Denix
 			if (gameObject->IsRubbish())
 			{
 				// Unregister Components
-				s_PhysicsSubSystem->UnregisterComponent(gameObject->GetPhysicsComponent());
+				s_PhysicsSubsystem->UnregisterComponent(gameObject->GetPhysicsComponent());
 				//gameObject->m_ActorTransformComponent = MakeRef<TransformComponent>(m_ID);
 				//gameObject->m_MeshComponent = MakeRef<MeshComponent>(m_ID);
 				//gameObject->m_RenderComponent = MakeRef<RenderComponent>(m_ID);
@@ -145,7 +147,7 @@ namespace Denix
 		}
 	}
 
-	void SceneSubSystem::Update(float _deltaTime)
+	void SceneSubsystem::Update(float _deltaTime)
 	{
 		// Instead of updating the object as a whole, we break it down into components and update them individually
 		// Components should act as containers for the data, the logic should be implemented on the system side
@@ -153,43 +155,67 @@ namespace Denix
 		// Update Camera
 		if (const Ref<Camera> cam = m_ActiveScene->GetCamera())
 		{
-			cam->Aspect = s_WindowSubSystem->GetWindow()->GetWindowSize();
+			cam->Aspect = s_WindowSubsystem->GetWindow()->GetWindowSize();
 			cam->Update(_deltaTime);
 
 			// Camera Movement
-			if (const Uint8* keyboard = SDL_GetKeyboardState(NULL))
+			if (const InputSubsystem* input = InputSubsystem::Get())
 			{
-				if (keyboard[SDL_SCANCODE_W])
+				// XZ 
+				if (input->IsKeyDown(SDL_SCANCODE_W))
 				{
 					DE_LOG(LogScene, Info, "W Pressed")
 						cam->GetTransformComponent()->GetPosition().z += cam->MoveSpeed * _deltaTime;
 				}
-				if (keyboard[SDL_SCANCODE_S])
+				if (input->IsKeyDown(SDL_SCANCODE_S))
 				{
 					DE_LOG(LogScene, Info, "S Pressed")
 						cam->GetTransformComponent()->GetPosition().z -= cam->MoveSpeed * _deltaTime;
 				}
-				if (keyboard[SDL_SCANCODE_A])
+				if (input->IsKeyDown(SDL_SCANCODE_A))
 				{
-					DE_LOG(LogScene, Info, "A Pressed")
-						cam->GetTransformComponent()->GetPosition().x += cam->MoveSpeed * _deltaTime;
+					cam->GetTransformComponent()->GetPosition().x += cam->MoveSpeed * _deltaTime;
+				}
+				if (input->IsKeyDown(SDL_SCANCODE_D))
+				{
+					cam->GetTransformComponent()->GetPosition().x -= cam->MoveSpeed * _deltaTime;
+				}
 
-				}
-				if (keyboard[SDL_SCANCODE_D])
+				// Y
+				if (input->IsKeyDown(SDL_SCANCODE_E))
 				{
-					DE_LOG(LogScene, Info, "D Pressed")
-						cam->GetTransformComponent()->GetPosition().x -= cam->MoveSpeed * _deltaTime;
+					cam->GetTransformComponent()->GetPosition().y -= cam->MoveSpeed * _deltaTime;
 				}
-				if (keyboard[SDL_SCANCODE_E])
+				if (input->IsKeyDown(SDL_SCANCODE_Q))
 				{
-					DE_LOG(LogScene, Info, "E Pressed")
-						cam->GetTransformComponent()->GetPosition().y -= cam->MoveSpeed * _deltaTime;
+					cam->GetTransformComponent()->GetPosition().y += cam->MoveSpeed * _deltaTime;
 				}
-				if (keyboard[SDL_SCANCODE_Q])
-				{
-					DE_LOG(LogScene, Info, "Q Pressed")
-						cam->GetTransformComponent()->GetPosition().y += cam->MoveSpeed * _deltaTime;
-				}
+			}
+
+			// Camera Mouse Input
+			const MouseData& mouse = s_InputSubsystem->GetMouseData();
+
+			// Change move speed if mouse wheel is scrolled
+			if (mouse.WheelY != 0)
+			{
+				cam->MoveSpeed += mouse.WheelY * _deltaTime;
+				cam->m_IsMoveSpeedDelta = true;
+			}
+			else
+			{
+				cam->m_IsMoveSpeedDelta = false;
+			}
+
+			// Pan Camera if right mouse down
+			if (mouse.Right && ((int)mouse.RelX || (int)mouse.RelY))
+			{
+				cam->GetTransformComponent()->GetRotation().y += mouse.RelX * cam->RotateSpeed * _deltaTime; 
+				cam->GetTransformComponent()->GetRotation().x += mouse.RelY * cam->RotateSpeed * _deltaTime; 
+				cam->m_IsPanMode= true;
+			}
+			else
+			{
+				cam->m_IsPanMode = false;
 			}
 		}
 
@@ -218,7 +244,7 @@ namespace Denix
 		// Update Physics Components
 		if (m_ActiveScene->m_IsPlaying)
 		{
-			s_PhysicsSubSystem->Update(_deltaTime);
+			s_PhysicsSubsystem->Update(_deltaTime);
 		}
 
 		// Update the GameObjects
@@ -235,7 +261,7 @@ namespace Denix
 					// Draw the GameObject
 					if (gameObject->GetRenderComponent()->IsVisible())
 					{
-						s_RendererSubSystem->DrawImmediate(
+						s_RendererSubsystem->DrawImmediate(
 							gameObject->GetRenderComponent(),
 							gameObject->GetTransformComponent(),
 							gameObject->GetMeshComponent());
@@ -248,7 +274,7 @@ namespace Denix
 						{
 							if (render->IsVisible() && m_ViewportMode != static_cast<int>(ViewportMode::Collider))
 							{
-								s_RendererSubSystem->DrawImmediate(
+								s_RendererSubsystem->DrawImmediate(
 									render,
 									gameObject->GetTransformComponent(),
 									collider->GetMeshComponent());
@@ -265,7 +291,7 @@ namespace Denix
 					{
 						if (Ref<RenderComponent> render = collider->GetRenderComponent())
 						{
-							s_RendererSubSystem->DrawImmediate(
+							s_RendererSubsystem->DrawImmediate(
 								render,
 								gameObject->GetTransformComponent(),
 								collider->GetMeshComponent());

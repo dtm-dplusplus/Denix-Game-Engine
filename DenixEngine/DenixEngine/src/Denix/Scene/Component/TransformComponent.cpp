@@ -1,5 +1,5 @@
 #include "TransformComponent.h"
-#include "Denix/System/SceneSubSystem.h"
+#include "Denix/System/SceneSubsystem.h"
 
 namespace Denix
 {
@@ -21,7 +21,7 @@ namespace Denix
     {
         Component::RegisterComponent();
 
-        if (SceneSubSystem* sceneSystem = SceneSubSystem::Get())
+        if (SceneSubsystem* sceneSystem = SceneSubsystem::Get())
         {
             sceneSystem->RegisterTransformComponent(shared_from_this());
         }
@@ -29,7 +29,7 @@ namespace Denix
 
     void TransformComponent::UnregisterComponent()
     {
-        if (SceneSubSystem* sceneSystem = SceneSubSystem::Get())
+        if (SceneSubsystem* sceneSystem = SceneSubsystem::Get())
         {
             sceneSystem->UnregisterTransformComponent(shared_from_this());
         }

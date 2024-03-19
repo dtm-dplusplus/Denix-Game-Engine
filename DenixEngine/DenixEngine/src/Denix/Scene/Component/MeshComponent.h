@@ -57,6 +57,6 @@ namespace Denix
 		Ref<VertexArray> m_VAO;
 		Ref<VertexBuffer> m_VBO;
 
-		friend class RendererSubSystem;
+		friend class RendererSubsystem;
 	};
 }

@@ -1,22 +1,22 @@
 ﻿#pragma once
 
-#include "SubSystem.h"
+#include "Subsystem.h"
 #include "Denix/Core/Logger.h"
 #include "Denix/Scene/Component/PhysicsComponent.h"
 
 namespace Denix
 {
-	class PhysicsSubSystem : public SubSystem
+	class PhysicsSubsystem : public Subsystem
 	{
 	public:
-		PhysicsSubSystem()
+		PhysicsSubsystem()
 		{
 			s_PhysicsSubSystem = this;
 
 			DE_LOG_CREATE(LogPhysics)
 		}
 
-		~PhysicsSubSystem() override
+		~PhysicsSubsystem() override
 		{
 			s_PhysicsSubSystem = nullptr;
 		}
@@ -48,23 +48,23 @@ namespace Denix
 
 		void Update(float _deltaTime) override;
 	public: 
-		static PhysicsSubSystem* Get() { return s_PhysicsSubSystem; }
+		static PhysicsSubsystem* Get() { return s_PhysicsSubSystem; }
 
 		void Initialize() override
 		{
-			DE_LOG(LogPhysics, Trace, "PhysicsSubSystem Initialized")
+			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Initialized")
 
 			m_Initialized = true;
 		}
 
 		void Deinitialize() override
 		{
-			DE_LOG(LogPhysics, Trace, "PhysicsSubSystem Deinitialized")
+			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
 			m_Initialized = false;
 		}
 
 	private:
-		static PhysicsSubSystem* s_PhysicsSubSystem;
+		static PhysicsSubsystem* s_PhysicsSubSystem;
 
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
 	};

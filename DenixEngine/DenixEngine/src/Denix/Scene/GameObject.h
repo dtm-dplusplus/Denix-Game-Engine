@@ -125,7 +125,7 @@ namespace Denix
 
 		Ref<RenderComponent> m_RenderComponent;
 
-		friend class SceneSubSystem;
+		friend class SceneSubsystem;
 	};
 
 	class Triangle : public GameObject

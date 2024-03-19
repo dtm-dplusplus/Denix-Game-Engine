@@ -30,7 +30,7 @@ public:
 
 	void RestartScene() override
 	{
-		if (Denix::SceneSubSystem* sceneSys = Denix::SceneSubSystem::Get())
+		if (Denix::SceneSubsystem* sceneSys = Denix::SceneSubsystem::Get())
 		{
 			if (const auto scene = 
 				MakeRef<Denix::PlaygroundScene>(Denix::ObjectInitializer("Playground")))

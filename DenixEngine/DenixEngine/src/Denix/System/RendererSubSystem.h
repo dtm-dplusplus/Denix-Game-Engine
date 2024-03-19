@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SubSystem.h"
+#include "Subsystem.h"
 #include "Denix/Core.h"
 #include "Denix/Core/Logger.h"
 
@@ -13,16 +13,16 @@ namespace Denix
 	class Camera;
 
 	/** Manages Rendering of objects. Will move to component based submission instead of passing game object soon */
-	class RendererSubSystem : public SubSystem
+	class RendererSubsystem : public Subsystem
 	{
 	public:
-		RendererSubSystem()
+		RendererSubsystem()
 		{
 			s_RendererSubSystem = this;
 			DE_LOG_CREATE(LogRenderer)
 		}
 
-		~RendererSubSystem() override
+		~RendererSubsystem() override
 		{
 			s_RendererSubSystem = nullptr;
 		}
@@ -35,24 +35,24 @@ namespace Denix
 		void SetActiveCamera(const Ref<Camera>& _camera);
 
 	public:
-		static RendererSubSystem* Get() { return s_RendererSubSystem; }
+		static RendererSubsystem* Get() { return s_RendererSubSystem; }
 
 		void Initialize() override
 		{
-			DE_LOG(LogRenderer, Trace, "RendererSubSystem Initialized")
+			DE_LOG(LogRenderer, Trace, "RendererSubsystem Initialized")
 
 			m_Initialized = true;
 		}
 
 		void Deinitialize() override
 		{
-			DE_LOG(LogRenderer, Trace, "RendererSubSystem Deinitialized")
+			DE_LOG(LogRenderer, Trace, "RendererSubsystem Deinitialized")
 			m_Initialized = false;
 		}
 
 
 	private:
-		static RendererSubSystem* s_RendererSubSystem;
+		static RendererSubsystem* s_RendererSubSystem;
 
 		
 		std::vector<std::tuple<

@@ -1,5 +1,5 @@
 #include "depch.h"
-#include "RendererSubSystem.h"
+#include "RendererSubsystem.h"
 
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Component/TransformComponent.h"
@@ -8,9 +8,9 @@
 
 namespace Denix
 {
-	RendererSubSystem* RendererSubSystem::s_RendererSubSystem{ nullptr };
+	RendererSubsystem* RendererSubsystem::s_RendererSubSystem{ nullptr };
 
-	void RendererSubSystem::DrawImmediate(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh)
+	void RendererSubsystem::DrawImmediate(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh)
 	{
 		if(_render && _transform && _mesh)
 		{
@@ -45,7 +45,7 @@ namespace Denix
 		}
 	}
 
-	void RendererSubSystem::SetActiveCamera(const Ref<Camera>& _camera)
+	void RendererSubsystem::SetActiveCamera(const Ref<Camera>& _camera)
 	{
 		m_ActiveCamera = _camera;
 	}

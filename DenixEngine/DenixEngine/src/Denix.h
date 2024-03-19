@@ -5,12 +5,12 @@
 #include "Denix/Core.h"
 #include "Denix/Core/File.h"
 
-#include "Denix/System/SubSystem.h"
-#include "Denix/System/SceneSubSystem.h"
-#include "Denix/System/WindowSubSystem.h"
-#include "Denix/System/ShaderSubSystem.h"
-#include "Denix/System/PhysicsSubSystem.h"
-#include "Denix/System/UISubSystem.h"
+#include "Denix/System/Subsystem.h"
+#include "Denix/System/SceneSubsystem.h"
+#include "Denix/System/WindowSubsystem.h"
+#include "Denix/System/ShaderSubsystem.h"
+#include "Denix/System/PhysicsSubsystem.h"
+#include "Denix/System/UISubsystem.h"
 
 #include "Denix/Scene/Object.h"
 #include "Denix/Scene/GameObject.h"

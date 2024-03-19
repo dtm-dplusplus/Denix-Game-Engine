@@ -1,30 +1,30 @@
-#include "UISubSystem.h"
+#include "UISubsystem.h"
 
 #include <SDL_video.h>
 
-#include "WindowSubSystem.h"
+#include "WindowSubsystem.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 
 namespace Denix
 {
-	UISubSystem* UISubSystem::s_UISubSystem{ nullptr };
+	UISubsystem* UISubsystem::s_UISubSystem{ nullptr };
 
 
-	UISubSystem::UISubSystem()
+	UISubsystem::UISubsystem()
 	{
 		s_UISubSystem = this;
 
 		DE_LOG_CREATE(LogUISubSystem)
 	}
 
-	UISubSystem::~UISubSystem()
+	UISubsystem::~UISubsystem()
 	{
 		s_UISubSystem = nullptr;
 	}
 
 
-	void UISubSystem::Initialize()
+	void UISubsystem::Initialize()
 	{
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
@@ -39,7 +39,7 @@ namespace Denix
 		ImGui::StyleColorsDark();
 		
 		// Setup Platform/Renderer backends
-		if(const WindowSubSystem* windowSystem = WindowSubSystem::Get())
+		if(const WindowSubsystem* windowSystem = WindowSubsystem::Get())
 		{
 			// Setup Platform/Renderer bindings
 			ImGui_ImplSDL2_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(), SDL_GL_GetCurrentContext());
@@ -55,7 +55,7 @@ namespace Denix
 		m_Initialized = true;
 	}
 
-	void UISubSystem::Deinitialize()
+	void UISubsystem::Deinitialize()
 	{
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplSDL2_Shutdown();

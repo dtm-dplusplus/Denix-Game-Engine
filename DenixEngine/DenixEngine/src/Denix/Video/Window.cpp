@@ -111,49 +111,40 @@ namespace Denix
 		SDL_GL_SwapWindow(m_SDL_GLWindow);
 	}
 
-	void SDL_GLWindow::PollEvents()
+	void SDL_GLWindow::WindowEvent(const SDL_Event* _event)
 	{
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
+		switch (_event->window.event)
 		{
-			ImGui_ImplSDL2_ProcessEvent(&e);
+		case SDL_WINDOWEVENT_CLOSE: // Additioanl CHeck e.window.windowID == SDL_GetWindowID(m_SDL_GLWindow)
+		{
+			m_IsOpen = false;
+			DE_LOG(LogWindow, Trace, "Window Close Event")
+		}
+			break;
 
-			if (e.type == SDL_WINDOWEVENT)
-			{
-				switch (e.window.event)
-				{
-				case SDL_WINDOWEVENT_CLOSE: // Additioanl CHeck e.window.windowID == SDL_GetWindowID(m_SDL_GLWindow)
-				{
-					m_IsOpen = false;
-					DE_LOG(LogWindow, Trace, "Window Close Event")
-				}
-				break;
+		case SDL_WINDOW_MINIMIZED:
+		{
+			DE_LOG(LogWindow, Trace, "Window Minimized Event")
+		}
+			break;
 
-				case SDL_WINDOW_MINIMIZED:
-				{
-					DE_LOG(LogWindow, Trace, "Window Minimized Event")
-				}
-				break;
+		case SDL_WINDOW_MAXIMIZED:
+		{
+			DE_LOG(LogWindow, Trace, "Window Maximized Event")
+		}
+			break;
 
-				case SDL_WINDOW_MAXIMIZED:
-				{
-					DE_LOG(LogWindow, Trace, "Window Maximized Event")
-				}
-				break;
+		case SDL_WINDOWEVENT_RESIZED:
+		{
+			m_WinX = _event->window.data1;
+			m_WinY = _event->window.data2;
+			glViewport(0, 0, m_WinX, m_WinY);
 
-				case SDL_WINDOWEVENT_RESIZED:
-				{
-					m_WinX = e.window.data1;
-					m_WinY = e.window.data2;
-					glViewport(0, 0, m_WinX, m_WinY);
+			DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", m_WinX, m_WinY)
+		}
+			break;
 
-					DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", m_WinX, m_WinY)
-				}
-				break;
-
-				default: break;
-				}
-			}
+		default:	break;
 		}
 	}
 }

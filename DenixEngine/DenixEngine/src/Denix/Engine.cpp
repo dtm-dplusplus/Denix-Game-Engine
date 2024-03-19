@@ -2,13 +2,14 @@
 #include "Engine.h"
 
 
-#include "System/WindowSubSystem.h"
-#include "System/ShaderSubSystem.h"
-#include "System/UISubSystem.h"
-#include "System/PhysicsSubSystem.h"
-#include "System/SceneSubSystem.h"
-#include "System/RendererSubSystem.h"
-#include "Denix/Editor/EditorSubsystem.h"
+#include "System/WindowSubsystem.h"
+#include "System/ShaderSubsystem.h"
+#include "System/UISubsystem.h"
+#include "System/PhysicsSubsystem.h"
+#include "System/SceneSubsystem.h"
+#include "System/RendererSubsystem.h"
+#include "Input/InputSubsystem.h"
+#include "Editor/EditorSubsystem.h"
 
 namespace Denix
 {
@@ -30,31 +31,33 @@ namespace Denix
 
 		PreInitialize();
 
-		m_WindowSubSystem = MakeRef<WindowSubSystem>();
-		m_SubSystems["Window"] = m_WindowSubSystem;
+		m_WindowSubSystem = MakeRef<WindowSubsystem>();
+		m_Subsystems["Window"] = m_WindowSubSystem;
 
-		m_ShaderSubSystem = MakeRef<ShaderSubSystem>();
-		m_SubSystems["Shader"] = m_ShaderSubSystem;
+		m_ShaderSubSystem = MakeRef<ShaderSubsystem>();
+		m_Subsystems["Shader"] = m_ShaderSubSystem;
 
-		m_RendererSubSystem = MakeRef<RendererSubSystem>();
-		m_SubSystems["Renderer"] = m_RendererSubSystem;
+		m_RendererSubSystem = MakeRef<RendererSubsystem>();
+		m_Subsystems["Renderer"] = m_RendererSubSystem;
 
-		m_UISubSytem = MakeRef<UISubSystem>();
-		m_SubSystems["UI"] = m_UISubSytem;
+		m_UISubSytem = MakeRef<UISubsystem>();
+		m_Subsystems["UI"] = m_UISubSytem;
 
 		m_EditorSubSystem = MakeRef<EditorSubsystem>();
-		m_SubSystems["Editor"] = m_EditorSubSystem;
+		m_Subsystems["Editor"] = m_EditorSubSystem;
 
-		m_SceneSubSystem = MakeRef<SceneSubSystem>();
-		m_SubSystems["Scene"] = m_SceneSubSystem;
+		m_SceneSubSystem = MakeRef<SceneSubsystem>();
+		m_Subsystems["Scene"] = m_SceneSubSystem;
 
-		m_PhysicsSubSystem = MakeRef<PhysicsSubSystem>();
-		m_SubSystems["Physics"] = m_PhysicsSubSystem;
+		m_PhysicsSubSystem = MakeRef<PhysicsSubsystem>();
+		m_Subsystems["Physics"] = m_PhysicsSubSystem;
 
+		m_InputSubsystem = MakeRef<InputSubsystem>();
+		m_Subsystems["Input"] = m_InputSubsystem;
 
 		// Order of initialization is defined above
-		for(const auto& subSystem : m_SubSystems | std::views::values)
-			subSystem->Initialize();
+		for(const auto& subsystem : m_Subsystems | std::views::values)
+			subsystem->Initialize();
 
 		DE_LOG(LogEngine, Info, "Engine Initialized")
 
@@ -66,7 +69,7 @@ namespace Denix
 		DE_LOG(LogEngine, Trace, "Engine Shutting Down")
 
 		// Deinitialie SubSystems in the reverse order of initialization
-		for (const auto& subSystem : std::views::reverse(m_SubSystems) | std::views::values)
+		for (const auto& subSystem : std::views::reverse(m_Subsystems) | std::views::values)
 			subSystem->Deinitialize();
 
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
@@ -78,7 +81,7 @@ namespace Denix
 
 		while(m_WindowSubSystem->m_Window->IsOpen())
 		{
-			m_WindowSubSystem->m_Window->PollEvents();
+			m_InputSubsystem->Poll();
 
 			m_WindowSubSystem->m_Window->ClearBuffer();
 

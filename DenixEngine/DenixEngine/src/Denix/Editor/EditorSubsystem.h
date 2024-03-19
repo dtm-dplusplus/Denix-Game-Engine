@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/System/SubSystem.h"
+#include "Denix/System/Subsystem.h"
 
 namespace Denix
 {
 	class Scene;
 
-	class EditorSubsystem : public SubSystem
+	class EditorSubsystem : public Subsystem
 	{
 	public:
 		EditorSubsystem()
@@ -30,8 +30,9 @@ namespace Denix
 
 	private:
 		static EditorSubsystem* s_EditorSubsystem;
-		class WindowSubSystem* s_WindowSubSystem;
-		class SceneSubSystem* s_SceneSubSystem;
+		class WindowSubsystem* s_WindowSubSystem;
+		class SceneSubsystem* s_SceneSubSystem;
+		class InputSubsystem* s_InputSubsystem;
 
 		Ref<Scene> m_ActiveScene;
 
@@ -51,6 +52,9 @@ namespace Denix
 
 		void DetailsPanel();
 		bool m_IsDetailsPanelOpen = true;
+
+		// Input
+		bool m_IsInputPanelOpen = true;
 
 		// Menu Bar
 		void MenuBar();

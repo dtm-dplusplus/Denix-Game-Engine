@@ -221,8 +221,8 @@ namespace Denix
 		/** Transform component which is attached to this components game object */
 		Ref<TransformComponent> m_ActorTransformComponent;
 
-		friend class SceneSubSystem;
-		friend class PhysicsSubSystem;
+		friend class SceneSubsystem;
+		friend class PhysicsSubsystem;
 		friend class GameObject;
 	};
 }
