@@ -236,6 +236,7 @@ namespace Denix
 						ObjectSelection = i;
 					}
 
+					
 					if (ImGui::BeginPopupContextItem()) //uses last item id as popup id
 					{
 						ObjectSelection = i;

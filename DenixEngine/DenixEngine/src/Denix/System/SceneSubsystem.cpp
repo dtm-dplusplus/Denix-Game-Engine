@@ -164,31 +164,19 @@ namespace Denix
 				// XZ 
 				if (input->IsKeyDown(SDL_SCANCODE_W))
 				{
-					DE_LOG(LogScene, Info, "W Pressed")
-						cam->GetTransformComponent()->GetPosition().z += cam->MoveSpeed * _deltaTime;
+					cam->GetTransformComponent()->GetPosition() += cam->MoveSpeed * cam->CameraFront * _deltaTime;
 				}
 				if (input->IsKeyDown(SDL_SCANCODE_S))
 				{
-					DE_LOG(LogScene, Info, "S Pressed")
-						cam->GetTransformComponent()->GetPosition().z -= cam->MoveSpeed * _deltaTime;
+					cam->GetTransformComponent()->GetPosition() -= cam->MoveSpeed * cam->CameraFront  * _deltaTime;
 				}
 				if (input->IsKeyDown(SDL_SCANCODE_A))
 				{
-					cam->GetTransformComponent()->GetPosition().x += cam->MoveSpeed * _deltaTime;
+					cam->GetTransformComponent()->GetPosition() -= cam->MoveSpeed * glm::normalize(glm::cross(cam->CameraFront, cam->CameraUp)) *_deltaTime;
 				}
 				if (input->IsKeyDown(SDL_SCANCODE_D))
 				{
-					cam->GetTransformComponent()->GetPosition().x -= cam->MoveSpeed * _deltaTime;
-				}
-
-				// Y
-				if (input->IsKeyDown(SDL_SCANCODE_E))
-				{
-					cam->GetTransformComponent()->GetPosition().y -= cam->MoveSpeed * _deltaTime;
-				}
-				if (input->IsKeyDown(SDL_SCANCODE_Q))
-				{
-					cam->GetTransformComponent()->GetPosition().y += cam->MoveSpeed * _deltaTime;
+					cam->GetTransformComponent()->GetPosition() += cam->MoveSpeed * glm::normalize(glm::cross(cam->CameraFront, cam->CameraUp)) * _deltaTime;
 				}
 			}
 
@@ -198,7 +186,7 @@ namespace Denix
 			// Change move speed if mouse wheel is scrolled
 			if (mouse.WheelY != 0)
 			{
-				cam->MoveSpeed += mouse.WheelY * _deltaTime;
+				cam->MoveSpeed += mouse.WheelY * 0.01 * _deltaTime;
 				cam->m_IsMoveSpeedDelta = true;
 			}
 			else
@@ -210,7 +198,7 @@ namespace Denix
 			if (mouse.Right && ((int)mouse.RelX || (int)mouse.RelY))
 			{
 				cam->GetTransformComponent()->GetRotation().y += mouse.RelX * cam->RotateSpeed * _deltaTime; 
-				cam->GetTransformComponent()->GetRotation().x += mouse.RelY * cam->RotateSpeed * _deltaTime; 
+				cam->GetTransformComponent()->GetRotation().x -= mouse.RelY * cam->RotateSpeed * _deltaTime; 
 				cam->m_IsPanMode= true;
 			}
 			else

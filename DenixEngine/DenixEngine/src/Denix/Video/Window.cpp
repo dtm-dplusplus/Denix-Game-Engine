@@ -76,7 +76,7 @@ namespace Denix
 
 		// Set Viewport
 		glViewport(0, 0, m_WinX, m_WinY);
-
+		glEnable(GL_DEPTH_TEST);
 		m_IsOpen = true;
 
 		DE_LOG(LogWindow, Trace, "Created Window: {} Res: {}x{}", m_Title, m_WinX, m_WinY)
