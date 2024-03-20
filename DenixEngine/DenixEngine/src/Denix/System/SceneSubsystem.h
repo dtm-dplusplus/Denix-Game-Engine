@@ -24,8 +24,10 @@ namespace Denix
 		~SceneSubsystem() override
 		{
 			m_ActiveScene = nullptr;
-			s_SceneSubsystem = nullptr;
 			s_RendererSubsystem = nullptr;
+			s_PhysicsSubsystem = nullptr;
+
+			s_SceneSubsystem = nullptr;
 		}
 
 		enum class ViewportMode
@@ -105,10 +107,9 @@ namespace Denix
 		static SceneSubsystem* s_SceneSubsystem;
 
 		class InputSubsystem* s_InputSubsystem;
-		class PhysicsSubsystem* s_PhysicsSubsystem;
 		class WindowSubsystem* s_WindowSubsystem;
 		class RendererSubsystem* s_RendererSubsystem;
-
+		class PhysicsSubsystem* s_PhysicsSubsystem;
 		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
 
 		Ref<Scene> m_ActiveScene;

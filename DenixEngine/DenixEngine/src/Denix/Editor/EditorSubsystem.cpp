@@ -261,7 +261,7 @@ namespace Denix
 		const glm::vec2 winSize = s_WindowSubSystem->GetWindow()->GetWindowSize();
 
 		ImGui::SetNextWindowSize(ImVec2((winSize.x / 6), winSize.y), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2((winSize.x / 6), MenuBarHeight + ViewportBarHeight), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2((winSize.x / 6), MenuBarHeight), ImGuiCond_Appearing);
 
 		if (ImGui::Begin("Details Panel", &ScenePanelOpen))
 		{

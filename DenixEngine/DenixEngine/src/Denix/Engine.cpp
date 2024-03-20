@@ -88,6 +88,9 @@ namespace Denix
 			m_EditorSubSystem->Update(0.3f);
 
 			m_SceneSubSystem->Update(0.3f);
+			
+			m_PhysicsSubSystem->Update(0.3f);
+			
 
 			m_WindowSubSystem->m_Window->SwapBuffers();
 

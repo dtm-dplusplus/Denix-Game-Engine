@@ -54,7 +54,7 @@ namespace Denix
 		bool m_IsDetailsPanelOpen = true;
 
 		// Input
-		bool m_IsInputPanelOpen = true;
+		bool m_IsInputPanelOpen = false;
 
 		// Menu Bar
 		void MenuBar();

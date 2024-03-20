@@ -14,6 +14,9 @@ namespace Denix
 		{
 			m_TransformComponent->SetPosition(glm::vec3(0.0f, 0.0f, 100.f));
 			m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
+
+			// Should probably remove the physics component from the camera
+			m_PhysicsComponent->IsSimulated() = false;
 		}
 
 		~Camera() override = default;
@@ -38,11 +41,6 @@ namespace Denix
 			}
 
 			// View Matrix
-			//View = glm::translate(glm::mat4(1.0f), m_TransformComponent->GetPosition());
-			//View = glm::rotate(View, glm::radians(m_TransformComponent->GetRotation().x), glm::vec3(1, 0, 0));	
-			//View = glm::rotate(View, glm::radians(m_TransformComponent->GetRotation().y), glm::vec3(0, 1, 0));
-			//View = glm::rotate(View, glm::radians(m_TransformComponent->GetRotation().z), glm::vec3(0, 0, 1));
-			
 			glm::vec3 direction;
 			direction.x = cos(glm::radians(m_TransformComponent->GetRotation().y)) * cos(glm::radians(m_TransformComponent->GetRotation().x));
 			direction.y = sin(glm::radians(m_TransformComponent->GetRotation().x));
@@ -62,6 +60,24 @@ namespace Denix
 			return View;
 		}
 
+		float GetMoveSpeed() const
+		{
+			return MoveSpeed;
+		}
+		float& GetMoveSpeed()
+		{
+			return MoveSpeed;
+		}
+
+		float GetFov() const
+		{
+			return Fov;
+		}
+
+		float& GetFov()
+		{
+			return Fov;
+		}
 	protected:
 		// Camera
 		//Projection m_ProjectionType = Projection::Perspective;

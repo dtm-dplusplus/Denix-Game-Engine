@@ -47,6 +47,8 @@ namespace Denix
 		}
 
 		void Update(float _deltaTime) override;
+
+		void SetIsSimulating(const bool _isSimulating) { m_IsSimulating = _isSimulating; }
 	public: 
 		static PhysicsSubsystem* Get() { return s_PhysicsSubSystem; }
 
@@ -67,5 +69,8 @@ namespace Denix
 		static PhysicsSubsystem* s_PhysicsSubSystem;
 
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
+
+		/** Set to true by scene subsytem when game is playing, and false when its stopped */
+		bool m_IsSimulating = false;
 	};
 }

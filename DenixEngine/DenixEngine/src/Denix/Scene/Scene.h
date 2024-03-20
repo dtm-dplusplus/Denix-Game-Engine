@@ -23,6 +23,9 @@ namespace Denix
 
 		virtual bool Load()
 		{
+			m_Camera = MakeRef<Camera>();
+			m_SceneObjects.push_back(m_Camera);
+
 			return true;
 		}
 
@@ -32,8 +35,7 @@ namespace Denix
 
 		void BeginScene() override
 		{
-			m_Camera = MakeRef<Camera>();
-			m_SceneObjects.push_back(m_Camera);
+			
 
 			for (const auto& obj : m_SceneObjects)
 			{

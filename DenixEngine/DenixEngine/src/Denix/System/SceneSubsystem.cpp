@@ -1,8 +1,8 @@
 #include "depch.h"
 #include "SceneSubsystem.h"
 #include "WindowSubsystem.h"
-#include "PhysicsSubsystem.h"
 #include "RendererSubsystem.h"
+#include "Denix/System/PhysicsSubSystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
 
 #include "Denix/Engine.h"
@@ -16,9 +16,9 @@ namespace Denix
 	void SceneSubsystem::Initialize()
 	{
 		s_InputSubsystem = InputSubsystem::Get();
-		s_PhysicsSubsystem = PhysicsSubsystem::Get();
 		s_WindowSubsystem = WindowSubsystem::Get();
 		s_RendererSubsystem = RendererSubsystem::Get();
+		s_PhysicsSubsystem = PhysicsSubsystem::Get();
 		DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Initialized")
 
 		m_Initialized = true;
@@ -101,7 +101,7 @@ namespace Denix
 		if (m_ActiveScene)
 		{
 			m_ActiveScene->BeginPlay();
-			
+			s_PhysicsSubsystem->SetIsSimulating(true);
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Playing")
 		}
 	}
@@ -112,6 +112,7 @@ namespace Denix
 		{
 			// TEMP Will move to a better solution later
 			m_ActiveScene->EndPlay();
+			s_PhysicsSubsystem->SetIsSimulating(false);
 			m_ActiveScene->EndScene();
 
 			UnloadScene(m_ActiveScene->GetFriendlyName());
@@ -136,12 +137,8 @@ namespace Denix
 		{
 			if (gameObject->IsRubbish())
 			{
-				// Unregister Components
-				s_PhysicsSubsystem->UnregisterComponent(gameObject->GetPhysicsComponent());
-				//gameObject->m_ActorTransformComponent = MakeRef<TransformComponent>(m_ID);
-				//gameObject->m_MeshComponent = MakeRef<MeshComponent>(m_ID);
-				//gameObject->m_RenderComponent = MakeRef<RenderComponent>(m_ID);
-
+				// This will removec registered Components & other neccessary cleanups
+				gameObject->EndScene();
 				std::erase(m_ActiveScene->m_SceneObjects, gameObject);
 			}
 		}
@@ -222,17 +219,11 @@ namespace Denix
 
 				// Update the Model matrix
 				model = glm::translate(glm::mat4(1.0f), position);
-				model = glm::rotate(model, glm::degrees(rotation.x), glm::vec3(1, 0, 0));
-				model = glm::rotate(model, glm::degrees(rotation.y), glm::vec3(0, 1, 0));
-				model = glm::rotate(model, glm::degrees(rotation.z), glm::vec3(0, 0, 1));
+				model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1, 0, 0));
+				model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0, 1, 0));
+				model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0, 0, 1));
 				model = glm::scale(model, scale);
 			}
-		}
-
-		// Update Physics Components
-		if (m_ActiveScene->m_IsPlaying)
-		{
-			s_PhysicsSubsystem->Update(_deltaTime);
 		}
 
 		// Update the GameObjects
