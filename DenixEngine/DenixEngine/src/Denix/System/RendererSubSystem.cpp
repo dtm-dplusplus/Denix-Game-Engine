@@ -32,13 +32,11 @@ namespace Denix
 					GL_FALSE, glm::value_ptr(m_ActiveCamera->GetViewMatrix()));
 			}
 
-
 			// Upload the color
 			glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
 
+			// Draw
 			glDrawArrays(_render->GetDrawMode(), 0, _mesh->m_VBO->GetCount());
-
-			//m_RendererComponents.emplace_back(_render, _transform, _mesh);
 
 			VertexArray::Unbind();
 			GLShader::Unbind();

@@ -36,13 +36,13 @@ namespace Denix
 			shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\Fragment.glsl"));
 			LoadShader(shaders, "DebugShader");
 
-			const Ref<GLShader> program = GetShader("DebugShader");
+			const Ref<GLShader> debugProgram = GetShader("DebugShader");
 		
 			// Check Uniforms
-			program->GetUniform("u_Model");
-			program->GetUniform("u_Projection");
-			program->GetUniform("u_Color");
-			program->GetUniform("u_View");
+			debugProgram->GetUniform("u_Model");
+			debugProgram->GetUniform("u_Projection");
+			debugProgram->GetUniform("u_Color");
+			debugProgram->GetUniform("u_View");
 
 			m_Initialized = true;
 		}

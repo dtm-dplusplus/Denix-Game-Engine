@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/vec3.hpp>
+
 #include "GLObject.h"
 #include "Denix/Core.h"
 
@@ -53,6 +55,29 @@ namespace Denix
 			else DE_LOG(LogGL, Error, "Failed to upload data to VBO ID: {}", m_glID)
 		}
 
+		std::vector<glm::vec3> ComputeNormals(const void* _data)
+		{
+			std::vector<glm::vec3> normals;
+
+			for(int i = 0; i < m_Count; i += m_VertexPerPrimitive)
+			{
+				glm::vec3 p1 = *(glm::vec3*)((char*)_data + i * m_Size);
+				glm::vec3 p2 = *(glm::vec3*)((char*)_data + (i + 1) * m_Size);
+				glm::vec3 p3 = *(glm::vec3*)((char*)_data + (i + 2) * m_Size);
+
+				glm::vec3 u = p2 - p1;
+				glm::vec3 v = p3 - p1;
+
+				glm::vec3 normal = glm::vec3(u.y * v.z - u.z * v.y,
+				                              u.z * v.x - u.x * v.z,
+				                              u.x * v.y - u.y * v.x);
+
+				normals.push_back(normal);
+			}
+			
+			return normals;
+		}
+
 		GLsizei BufferSize(GLenum _target) const
 		{
 			GLsizei size = 0;
@@ -87,5 +112,6 @@ namespace Denix
 
 		// Size of data stored in buffer
 		GLsizei m_Size;
+
 	};
 }

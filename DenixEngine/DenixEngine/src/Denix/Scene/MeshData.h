@@ -15,6 +15,7 @@ constexpr float PlaneData[] = {
 		-0.5f, 0.5f, 0.0f // top left point
 };
 
+
 constexpr float CubeData[]{
 	  -1.0f,-1.0f,-1.0f, // triangle 1 : begin
 	-1.0f,-1.0f, 1.0f,

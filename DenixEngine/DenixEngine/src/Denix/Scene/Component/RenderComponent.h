@@ -13,23 +13,23 @@ namespace Denix
 	public:
 		RenderComponent() : Component(ObjectInitializer("Render Component"))
 		{
+			const Ref<GLShader> debugShader = ShaderSubsystem::Get()->GetShader("DebugShader");
+			m_DebugShader = debugShader;
+
 			if (!m_Shader)
 			{
-				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("DebugShader"))
-				{
-					m_Shader = shader;
-				}
+				m_Shader = debugShader;
 			}
 		}
 
 		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
 		{
+			const Ref<GLShader> debugShader = ShaderSubsystem::Get()->GetShader("DebugShader");
+			m_DebugShader = debugShader;
+
 			if (!m_Shader)
 			{
-				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("DebugShader"))
-				{
-					m_Shader = shader;
-				}
+				m_Shader = debugShader;
 			}
 		}
 
@@ -74,7 +74,10 @@ namespace Denix
 	private:
 		bool m_IsVisible = true;
 
+		Ref<GLShader> m_DebugShader;
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
+		bool m_IsDebugDraw = false;
+
 		Ref<GLShader> m_Shader;
 		int m_DrawMode = GL_TRIANGLES;
 		friend class SceneSubsystem;
