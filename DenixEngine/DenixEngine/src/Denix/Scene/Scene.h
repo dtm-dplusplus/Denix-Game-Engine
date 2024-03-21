@@ -84,7 +84,8 @@ namespace Denix
 		 */
 		bool m_IsPlaying = false;
 
-		glm::vec3 m_SceneGravity = glm::vec3(0.0f, -9.8f, 0.0f);
+		/** Gravity of the scene */
+		glm::vec3 m_SceneGravity = glm::vec3(0.0f, -9.81f, 0.0f);
 
 		/** List of Objects in the scene */
 		std::vector<Ref<GameObject>> m_SceneObjects;

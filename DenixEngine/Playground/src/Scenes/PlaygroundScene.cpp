@@ -20,6 +20,7 @@ namespace Denix
 		m_Camera->GetFov() = 80.0f;
 
 		Ref<Cube> cube = MakeRef<Cube>();
+		cube->SetMoveability(Moveability::Dynamic);
 		Ref<TransformComponent> transform = cube->GetTransformComponent();
 		transform->SetPosition({ 15.0, 50,0.0 });
 		transform->SetRotation({ 0.0, 0.0, 0.0 });

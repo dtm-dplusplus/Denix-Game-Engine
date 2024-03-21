@@ -13,6 +13,7 @@ namespace Denix
 		virtual void Deinitialize() {}
 
 		virtual void Update(float _deltaTime){}
+		virtual void LateUpdate(float _deltaTime) {}
 		bool IsInitialized() const { return m_Initialized; }
 
 	protected:

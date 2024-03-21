@@ -146,8 +146,11 @@ namespace Denix
 
 		if (ImGui::Begin("Scene Panel", &ScenePanelOpen))
 		{
-			// Scene Properties
+			// Viewport Mode
 			ImGui::Combo("Viewport Mode", &s_SceneSubSystem->GetViewportMode(), "Default\0Collider\0\0");
+
+			// Scene gravity
+			ImGui::DragFloat3("Scene Gravity", &s_SceneSubSystem->m_ActiveScene->GetGravity()[0], DragSpeedDelta, -FLT_MAX, FLT_MAX);
 
 			// Camera Properties
 			{
@@ -288,6 +291,13 @@ namespace Denix
 					ImGui::DragFloat3("Scale", &transform->GetScale()[0], DragSpeedDelta); ImGui::SameLine();
 					if (ImGui::ArrowButton("##ResetScale", ImGuiDir_Left)) transform->SetScale(glm::vec3(1.f));
 					ImGui::SetItemTooltip("Reset");
+
+					ImGui::Spacing();
+					ImGui::SeparatorText("Moveability");
+					if (ImGui::Combo("Moveability", &selectedObject->GetMoveability(), "Static\0Dynamic\0\0"))
+					{
+						selectedObject->SetMoveability(static_cast<Moveability>(selectedObject->GetMoveability()));
+					}
 				}
 
 				// Physics Component

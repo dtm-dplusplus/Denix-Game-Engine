@@ -62,6 +62,9 @@ namespace Denix
 		// Called every frame
 		virtual void Update(float _deltaTime) {}
 
+		// Called after all updates, often used when objetcs change flags during update
+		virtual void LateUpdate(float _deltaTime) {}
+
 		GLint GetID() const { return m_ID; }
 
 		std::string GetName() { return m_Name; }

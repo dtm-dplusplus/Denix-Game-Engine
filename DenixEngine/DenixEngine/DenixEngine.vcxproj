@@ -188,6 +188,7 @@
     </ClCompile>
     <ClCompile Include="src\Denix\System\ShaderSubsystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
+    <ClInclude Include="src\Denix\Scene\GameObjectData.h" />
     <ClInclude Include="src\Denix\Input\InputSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\Component\ColliderComponent.h" />
     <ClInclude Include="src\Denix\Editor\EditorSubsystem.h" />

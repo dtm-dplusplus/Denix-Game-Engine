@@ -9,9 +9,19 @@
 #include "Denix/Scene/Component/RenderComponent.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Scene/MeshData.h"
+#include "Denix/Scene/GameObjectData.h"
 
 namespace Denix
 {
+	struct CollisionEvent
+	{
+		Ref<class ColliderComponent> ColliderA;
+		Ref<class ColliderComponent> ColliderB;
+
+		glm::vec3 Normal;
+		glm::vec3 ContactPoint;
+	};
+
 	class ColliderComponent : public Component
 	{
 	public:
@@ -99,24 +109,6 @@ namespace Denix
 			color = m_IsColliding ? glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 		}
 
-		void ComputeCollision()
-		{
-			if (m_ActorTransformComponent->GetPosition().y <= 0.f) // Temp 
-			{
-				m_ActorTransformComponent->GetPosition().y = 0.f;
-				m_IsColliding = true;
-				glm::vec4& color = m_RenderComponent->GetDebugColor();
-				color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-			}
-			else
-			{
-				m_IsColliding = false;
-				glm::vec4& color = m_RenderComponent->GetDebugColor();
-				color = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-			}
-
-			
-		}
 
 	public:
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
@@ -124,6 +116,8 @@ namespace Denix
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 	private:
+		Moveability m_Moveability = Moveability::Static;
+
 		bool m_IsColliding = false;
 		
 		std::unordered_map<std::string, Ref<Component>> m_Components;

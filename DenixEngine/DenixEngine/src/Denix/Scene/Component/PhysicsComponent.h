@@ -5,6 +5,7 @@
 
 #include "ColliderComponent.h"
 #include "Denix/Scene/Component.h"
+#include "Denix/Scene/GameObjectData.h"
 
 namespace Denix
 {
@@ -31,7 +32,19 @@ namespace Denix
 		// Destructors
 		~PhysicsComponent() override = default;
 
+		void SetMoveability(const Moveability _moveability)
+		{
+			m_Moveability = _moveability;
+			m_ColliderComponent->m_Moveability = _moveability;
+		}
 	public:
+
+		void ComputeCenterOfMass()
+		{
+			// Compute the center of mass of the object
+			// For now, we will assume the center of mass is at the center of the object
+			m_CenterOfMass = m_ActorTransform->GetPosition();
+		}
 		void Step(float _deltaTime)
 		{
 			// Step integration
@@ -63,7 +76,7 @@ namespace Denix
 			m_Velocity += m_Force / m_Mass * _deltaTime;
 
 			// Calculate new displacement at time t + dt
-			m_ActorTransformComponent->GetPosition() += m_Velocity * _deltaTime;
+			m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;
 		}
 
 		void StepRK2(float _deltaTime)
@@ -85,7 +98,7 @@ namespace Denix
 			m_Velocity += (k1 + k2) / 2.f;
 
 			// Calculate new displacement at time t + dt
-			m_ActorTransformComponent->GetPosition() += m_Velocity * _deltaTime;
+			m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;
 		}
 
 		void StepRK4(float _deltaTime)
@@ -200,6 +213,9 @@ namespace Denix
 		StepMethod m_StepMethod = StepMethod::Euler;
 
 	private:
+		/** Moveability of the object */
+		Moveability m_Moveability = Moveability::Static;
+		
 		/** Mass of the object */
 		float m_Mass = 1.0f;
 
@@ -231,7 +247,7 @@ namespace Denix
 		Ref<ColliderComponent> m_ColliderComponent;
 
 		/** Transform component which is attached to this components game object */
-		Ref<TransformComponent> m_ActorTransformComponent;
+		Ref<TransformComponent> m_ActorTransform;
 
 		friend class SceneSubsystem;
 		friend class PhysicsSubsystem;

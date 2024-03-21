@@ -275,5 +275,8 @@
     <ClInclude Include="src\Denix\Input\InputSubsystem.h">
       <Filter>src\Denix\Input</Filter>
     </ClInclude>
+    <ClInclude Include="src\Denix\Scene\GameObjectData.h">
+      <Filter>src\Denix\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

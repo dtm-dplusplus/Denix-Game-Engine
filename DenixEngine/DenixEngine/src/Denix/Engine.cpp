@@ -81,19 +81,20 @@ namespace Denix
 
 		while(m_WindowSubSystem->m_Window->IsOpen())
 		{
+			const float deltaTime = 0.3f;
 			m_InputSubsystem->Poll();
 
 			m_WindowSubSystem->m_Window->ClearBuffer();
 
-			m_EditorSubSystem->Update(0.3f);
+			m_EditorSubSystem->Update(deltaTime);
 
-			m_SceneSubSystem->Update(0.3f);
+			m_SceneSubSystem->Update(deltaTime);
 			
-			m_PhysicsSubSystem->Update(0.3f);
+			m_PhysicsSubSystem->Update(deltaTime);
 			
-
 			m_WindowSubSystem->m_Window->SwapBuffers();
 
+			m_PhysicsSubSystem->LateUpdate(deltaTime);
 			m_SceneSubSystem->CleanRubbish();
 		}
 

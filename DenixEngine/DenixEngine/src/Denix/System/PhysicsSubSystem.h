@@ -6,6 +6,8 @@
 
 namespace Denix
 {
+	class Scene;
+
 	class PhysicsSubsystem : public Subsystem
 	{
 	public:
@@ -21,32 +23,13 @@ namespace Denix
 			s_PhysicsSubSystem = nullptr;
 		}
 
-		void RegisterComponent(const Ref<PhysicsComponent>& _component)
-		{
-			DE_LOG(LogPhysics, Trace, "PhysicsComponent Registered: #{} {}", _component->GetID(), _component->GetName())
-			m_PhysicsComponents.push_back(_component);
-		}
+		void SetActiveScene(const Ref<Scene>& _scene) { m_ActiveScene = _scene; }
 
-		void UnregisterComponent(const Ref<PhysicsComponent>& _component)
-		{
-			DE_LOG(LogPhysics, Trace, "PhysicsComponent Unregistered: #{} {}", _component->GetID(), _component->GetName())
-
-			std::erase(m_PhysicsComponents, _component);
-		}
-
-		void UnregisterComponent(const int _componentID)
-		{
-			for (const auto& component : m_PhysicsComponents)
-			{
-				if (component->GetID() == _componentID)
-				{
-					DE_LOG(LogPhysics, Trace, "PhysicsComponent Unregistered: #{} {}", component->GetID(), component->GetName())
-					std::erase(m_PhysicsComponents, component);
-				}
-			}
-		}
-
+		void RegisterComponent(const Ref<PhysicsComponent>& _component);
+		void UnregisterComponent(const Ref<PhysicsComponent>& _component);
+		void UpdateCollisionDetection(float _deltaTime);
 		void Update(float _deltaTime) override;
+		void LateUpdate(float _deltaTime) override;
 
 		void SetIsSimulating(const bool _isSimulating) { m_IsSimulating = _isSimulating; }
 	public: 
@@ -69,6 +52,8 @@ namespace Denix
 		static PhysicsSubsystem* s_PhysicsSubSystem;
 
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
+
+		Ref<Scene> m_ActiveScene;
 
 		/** Set to true by scene subsytem when game is playing, and false when its stopped */
 		bool m_IsSimulating = false;

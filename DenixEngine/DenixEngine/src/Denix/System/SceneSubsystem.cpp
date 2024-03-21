@@ -83,11 +83,14 @@ namespace Denix
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])
 		{
 			m_ActiveScene = scene;
-			m_ActiveScene->BeginScene();
 
 			// Set dependencies with new scene pointer
 			s_RendererSubsystem->SetActiveCamera(m_ActiveScene->m_Camera);
+			s_PhysicsSubsystem->SetActiveScene(m_ActiveScene);
 			EditorSubsystem::Get()->SetActiveScene(m_ActiveScene);
+
+			// Begin new scene
+			m_ActiveScene->BeginScene();
 
 			DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}", _name)
 			return;
@@ -111,8 +114,9 @@ namespace Denix
 		if (m_ActiveScene)
 		{
 			// TEMP Will move to a better solution later
-			m_ActiveScene->EndPlay();
 			s_PhysicsSubsystem->SetIsSimulating(false);
+
+			m_ActiveScene->EndPlay();
 			m_ActiveScene->EndScene();
 
 			UnloadScene(m_ActiveScene->GetFriendlyName());
