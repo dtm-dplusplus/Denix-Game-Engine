@@ -236,6 +236,9 @@ namespace Denix
 			// Update the GameObject -  This will always be here
 			gameObject->Update(_deltaTime);
 
+			// Skip Camera for rendering
+			if(typeid(Camera) == typeid(*gameObject)) continue;
+			
 			// TEMP Immediate Mode Rendering
 			switch (static_cast<ViewportMode>(m_ViewportMode))
 			{

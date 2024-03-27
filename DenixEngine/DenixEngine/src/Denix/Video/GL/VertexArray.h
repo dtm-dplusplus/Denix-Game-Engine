@@ -1,37 +1,32 @@
 #pragma once
 
-#include "GLObject.h"
 #include "Denix/Core.h"
+#include <GL/glew.h>
 
 namespace Denix
 {
-	class VertexArray final : public GLObject
+	class VertexArray
 	{
 	public:
 		VertexArray()
 		{
-			GenVertexArray();
-		}
+			glGenVertexArrays(1, &m_GL_ID);
 
-		~VertexArray() override
-		{
-			if(m_glID) glDeleteVertexArrays(1, &m_glID);
-		}
-
-		void GenVertexArray() 
-		{
-			glGenVertexArrays(1, &m_glID);
-
-			if (m_glID) DE_LOG(LogGL, Trace, "Created VAO ID: {}", m_glID)
+			if (m_GL_ID) DE_LOG(LogGL, Trace, "Created VAO ID: {}", m_GL_ID)
 			else DE_LOG(LogGL, Error, "Failed to create VAO")
 		}
 
-		void Bind() const { glBindVertexArray(m_glID); }
+		~VertexArray()
+		{
+			if(m_GL_ID) glDeleteVertexArrays(1, &m_GL_ID);
+		}
+
+		void Bind() const { glBindVertexArray(m_GL_ID); }
 		static void Unbind() { glBindVertexArray(0); }
 
 		void AttribPtr(const GLsizei _size, const GLenum _type,
 					   const GLboolean _normalized = false,
-					   const void* _ptr = (void*)0)
+					   const void* _ptr = nullptr)
 		{
 			m_Stride += _size * sizeof(_type);
 			glVertexAttribPointer(m_Index, _size, _type, _normalized, m_Stride, _ptr);
@@ -39,6 +34,7 @@ namespace Denix
 		}
 
 	private:
+		GLuint m_GL_ID = 0;
 		GLsizei m_Stride = 0;
 		GLuint m_Index = 0;
 	};

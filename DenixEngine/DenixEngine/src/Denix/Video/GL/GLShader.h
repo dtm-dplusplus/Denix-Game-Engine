@@ -1,24 +1,23 @@
 #pragma once
 #include <GL/glew.h>
 
-#include "GLObject.h"
 #include "Denix/Core.h"
 
 namespace Denix
 {
-	class GLShader final : public GLObject
+	class GLShader final
 	{
 	public:
 		GLShader() = default;
 
-		~GLShader() override = default;
+		~GLShader() = default;
 
 		/*static Ref<GLShader> Create()
 		{
 			return MakeRef<GLShader>();
 		}*/
 
-		void Bind() const { glUseProgram(m_glID); }
+		void Bind() const { glUseProgram(m_GL_ID); }
 		static void Unbind() { glUseProgram(0); }
 
 		GLuint CreateProgram();
@@ -26,7 +25,7 @@ namespace Denix
 
 		void DeleteProgram() const
 		{
-			glDeleteProgram(m_glID);
+			glDeleteProgram(m_GL_ID);
 		}
 
 		GLuint CompileShader(GLenum _type, const std::string& _source)
@@ -57,13 +56,13 @@ namespace Denix
 
 		void AttachShader(const GLuint _shaderID) const
 		{
-			glAttachShader(m_glID, _shaderID);
+			glAttachShader(m_GL_ID, _shaderID);
 		}
 
 
 		void DetachShader(const GLuint _shaderID) const
 		{
-			glDetachShader(m_glID, _shaderID);
+			glDetachShader(m_GL_ID, _shaderID);
 		}
 
 		GLuint CreateShader(const GLenum _type) const
@@ -78,13 +77,13 @@ namespace Denix
 
 		void BindAttrib(const GLuint _index, const std::string& _name) const
 		{
-			glBindAttribLocation(m_glID, _index, _name.data());
+			glBindAttribLocation(m_GL_ID, _index, _name.data());
 		}
 
 	
 		GLint GetUniform(const std::string& _uniform)
 		{
-			if (const GLint uniform = glGetUniformLocation(m_glID, _uniform.c_str()); uniform != -1)
+			if (const GLint uniform = glGetUniformLocation(m_GL_ID, _uniform.c_str()); uniform != -1)
 			{
 				m_ShaderUniforms[_uniform] = uniform;
 				//DE_LOG(LogShader, Trace, "Uniform {} found", _uniform)
@@ -110,7 +109,7 @@ namespace Denix
 	
 
 	private:
-
+		GLuint m_GL_ID;
 
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
 

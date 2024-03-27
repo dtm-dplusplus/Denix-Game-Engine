@@ -164,26 +164,67 @@ namespace Denix
 		friend class SceneSubsystem;
 	};
 
-	class Triangle : public GameObject
+	class EqualTriangle : public GameObject
 	{
 	public:
-		Triangle() : GameObject({ "Triangle" })
+		EqualTriangle() : GameObject({ "EqualTriangle" })
 		{
 			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
-			vbo->Bind(GL_ARRAY_BUFFER);
-			vbo->BufferData(GL_ARRAY_BUFFER, sizeof(TriangleData), TriangleData, 3, 6, GL_FLOAT);
+			vbo->Bind();
+			vbo->VertexBufferData(sizeof(EqualTriangleData), EqualTriangleData, 3, 3, GL_FLOAT);
 
+			const Ref<IndexBuffer> ibo = m_MeshComponent->GetIndexBuffer();
+			ibo->Bind();
+			ibo->IndexBufferData(sizeof(EqualTriangleIndices), EqualTriangleIndices, 3,GL_UNSIGNED_INT);
+
+			// Setup Vertex Array
 			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
-
 			vao->Bind();
-			vbo->Bind(vbo->GetTarget());
 
-			// Bind Attribute at Location 0
+			// Bind Vertex Buffer at Location 0
+			vbo->Bind();
 			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
 
+			// Bind Index Buffer at Location 1
+			ibo->Bind();
+			vao->AttribPtr(ibo->GetIndexCount(), ibo->GetType());
+
 			//// Reset the state
-			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+			VertexBuffer::Unbind();
 			VertexArray::Unbind();
+			IndexBuffer::Unbind();
+		}
+	};
+
+	class RightTriangle : public GameObject
+	{
+	public:
+		RightTriangle() : GameObject({ "RightTriangle" })
+		{
+			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
+			vbo->Bind();
+			vbo->VertexBufferData(sizeof(RightTriangleData), RightTriangleData, 3, 3, GL_FLOAT);
+
+			const Ref<IndexBuffer> ibo = m_MeshComponent->GetIndexBuffer();
+			ibo->Bind();
+			ibo->IndexBufferData(sizeof(RightTriangleIndices), RightTriangleIndices, 3, GL_UNSIGNED_INT);
+
+			// Setup Vertex Array
+			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
+			vao->Bind();
+
+			// Bind Vertex Buffer at Location 0
+			vbo->Bind();
+			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
+
+			// Bind Index Buffer at Location 1
+			ibo->Bind();
+			vao->AttribPtr(ibo->GetIndexCount(), ibo->GetType());
+
+			//// Reset the state
+			VertexBuffer::Unbind();
+			VertexArray::Unbind();
+			IndexBuffer::Unbind();
 		}
 	};
 
@@ -193,20 +234,29 @@ namespace Denix
 		Plane() : GameObject({"Plane"})
 		{
 			const Ref<VertexBuffer> vbo =m_MeshComponent->GetVertexBuffer();
-			vbo->Bind(GL_ARRAY_BUFFER);
-			vbo->BufferData(GL_ARRAY_BUFFER, sizeof(PlaneData), PlaneData, 3, 6, GL_FLOAT);
+			vbo->Bind();
+			vbo->VertexBufferData(sizeof(PlaneData), PlaneData, 3, 4, GL_FLOAT);
 
+			const Ref<IndexBuffer> ibo = m_MeshComponent->GetIndexBuffer();
+			ibo->Bind();
+			ibo->IndexBufferData(sizeof(PlaneIndices), PlaneIndices, 6, GL_UNSIGNED_INT);
+
+			// Setup Vertex Array
 			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
-
 			vao->Bind();
-			vbo->Bind(vbo->GetTarget());
 
-			// Bind Attribute at Location 0
+			// Bind Vertex Buffer at Location 0
+			vbo->Bind();
 			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
 
+			// Bind Index Buffer at Location 1
+			ibo->Bind();
+			vao->AttribPtr(ibo->GetIndexCount(), ibo->GetType());
+
 			//// Reset the state
-			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+			VertexBuffer::Unbind();
 			VertexArray::Unbind();
+			IndexBuffer::Unbind();
 		}
 	};
 
@@ -216,20 +266,29 @@ namespace Denix
 		Cube() : GameObject({ "Cube" })
 		{
 			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
-			vbo->Bind(GL_ARRAY_BUFFER);
-			vbo->BufferData(GL_ARRAY_BUFFER, sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
+			vbo->Bind();
+			vbo->VertexBufferData(sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
 
+			const Ref<IndexBuffer> ibo = m_MeshComponent->GetIndexBuffer();
+			ibo->Bind();
+			ibo->IndexBufferData(sizeof(CubeIndices), CubeIndices, 6, GL_UNSIGNED_INT);
+
+			// Setup Vertex Array
 			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
-
 			vao->Bind();
-			vbo->Bind(vbo->GetTarget());
 
-			// Bind Attribute at Location 0
+			// Bind Vertex Buffer at Location 0
+			vbo->Bind();
 			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
 
+			// Bind Index Buffer at Location 1
+			ibo->Bind();
+			vao->AttribPtr(ibo->GetIndexCount(), ibo->GetType());
+
 			//// Reset the state
-			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+			VertexBuffer::Unbind();
 			VertexArray::Unbind();
+			IndexBuffer::Unbind();
 		}
 	};
 }

@@ -9,17 +9,13 @@ namespace Denix
 	class PlaygroundScene final : public Scene
 	{
 	public:
-		PlaygroundScene(const ObjectInitializer& _objInit = ObjectInitializer::Get());
-		~PlaygroundScene() override;
-
+		PlaygroundScene(const ObjectInitializer& _objInit = ObjectInitializer("PlaygroundScene")) {}
+		~PlaygroundScene() override {}
 		bool Load() override;
-		void Unload() override;
-
-		void BeginScene() override;
-		void EndScene() override;
 		void Update(float _deltaTime) override;
 
-	private:
-
+		Ref<EqualTriangle> EqualTri;
+		Ref<RightTriangle> RightTri;
+		Ref<Plane> Square;
 	};
 }

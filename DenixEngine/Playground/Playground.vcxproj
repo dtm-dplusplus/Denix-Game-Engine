@@ -58,7 +58,7 @@
       <PreprocessorDefinitions>DE_PLATFORM_WINDOWS; _CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\contrib\stb;$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -81,7 +81,7 @@
       <PreprocessorDefinitions>DE_PLATFORM_WINDOWS; _CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\contrib\stb;$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -103,6 +103,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Scenes\TextureScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DenixEngine\DenixEngine.vcxproj">
@@ -111,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Scenes\PlaygroundScene.h" />
+    <ClInclude Include="src\Scenes\TextureScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

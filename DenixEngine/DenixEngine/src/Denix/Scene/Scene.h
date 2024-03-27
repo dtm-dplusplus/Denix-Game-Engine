@@ -2,9 +2,7 @@
 
 #include "Object.h"
 #include "GameObject.h"
-#include "Component.h"
 #include "Camera.h"
-#include "Denix/System/PhysicsSubsystem.h"
 
 namespace Denix
 {

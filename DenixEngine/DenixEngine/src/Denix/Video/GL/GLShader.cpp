@@ -7,7 +7,7 @@ namespace Denix
 	{
 		if (const GLuint program = glCreateProgram())
 		{
-			m_glID = program;
+			m_GL_ID = program;
 			DE_LOG(LogShader, Trace, "Created shader program ID: {}", program)
 
 			return program;
@@ -19,14 +19,14 @@ namespace Denix
 
 	bool GLShader::LinkProgram() const
 	{
-		glLinkProgram(m_glID);
+		glLinkProgram(m_GL_ID);
 
 		GLint result;
-		glGetProgramiv(m_glID, GL_LINK_STATUS, &result);
+		glGetProgramiv(m_GL_ID, GL_LINK_STATUS, &result);
 		if (!result)
 		{
 			GLchar infoLog[512];
-			glGetProgramInfoLog(m_glID, 512, NULL, infoLog);
+			glGetProgramInfoLog(m_GL_ID, 512, NULL, infoLog);
 			DE_LOG(LogShader, Error, "GLShader Program Link Fail: {}", infoLog)
 			return false;
 		}

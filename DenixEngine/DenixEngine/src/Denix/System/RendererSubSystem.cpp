@@ -12,6 +12,8 @@ namespace Denix
 
 	void RendererSubsystem::DrawImmediate(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh)
 	{
+		if (!_render->m_IsVisible) return;
+
 		if(_render && _transform && _mesh)
 		{
 			_render->m_Shader->Bind();
@@ -32,13 +34,11 @@ namespace Denix
 					GL_FALSE, glm::value_ptr(m_ActiveCamera->GetViewMatrix()));
 			}
 
-
 			// Upload the color
 			glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
 
-			glDrawArrays(_render->GetDrawMode(), 0, _mesh->m_VBO->GetCount());
-
-			//m_RendererComponents.emplace_back(_render, _transform, _mesh);
+			// Draw the indexed mesh
+			glDrawElements(_render->GetDrawMode(), _mesh->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
 
 			VertexArray::Unbind();
 			GLShader::Unbind();

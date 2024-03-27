@@ -1,7 +1,10 @@
 #include "Denix.h"
 #include "Scenes/PlaygroundScene.h"
+#include "Scenes/TextureScene.h"
 
-class Playground: public Denix::Engine
+using namespace Denix;
+
+class Playground: public Engine
 {
 public:
 
@@ -30,16 +33,14 @@ public:
 
 	void RestartScene() override
 	{
-		if (Denix::SceneSubsystem* sceneSys = Denix::SceneSubsystem::Get())
+		if (SceneSubsystem* sceneSys = SceneSubsystem::Get())
 		{
-			if (const auto scene = 
-				MakeRef<Denix::PlaygroundScene>(Denix::ObjectInitializer("Playground")))
+			if (const auto scene = MakeRef<PlaygroundScene>())
 			{
 				sceneSys->LoadScene(scene);
-				sceneSys->OpenScene("Playground");
+				sceneSys->OpenScene(scene->GetFriendlyName());
 			}
 		}
-		DE_LOG(LogEngine, Trace, "Playground RestartScene")
 	}
 };
 

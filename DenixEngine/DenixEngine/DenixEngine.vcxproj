@@ -171,7 +171,6 @@
     <ClCompile Include="src\Denix\System\Subsystem.cpp" />
     <ClCompile Include="src\Denix\System\UISubsystem.cpp" />
     <ClCompile Include="src\Denix\System\WindowSubsystem.cpp" />
-    <ClCompile Include="src\Denix\Video\GL\GLObject.cpp" />
     <ClCompile Include="src\Denix\Video\GL\GLShader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -214,7 +213,6 @@
     <ClInclude Include="src\Denix\System\Subsystem.h" />
     <ClInclude Include="src\Denix\System\UISubsystem.h" />
     <ClInclude Include="src\Denix\System\WindowSubsystem.h" />
-    <ClInclude Include="src\Denix\Video\GL\GLObject.h" />
     <ClInclude Include="src\Denix\Video\GL\VertexArray.h" />
     <ClInclude Include="src\Denix\Video\GL\VertexBuffer.h" />
     <ClInclude Include="src\Denix\Video\Window.h" />

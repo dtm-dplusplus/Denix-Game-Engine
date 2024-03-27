@@ -36,6 +36,8 @@ namespace Denix
 		WinY = winSize.y;
 
 		MenuBar();
+
+		if (!m_ActiveScene) return;
 		if(m_IsScenePanelOpen) ScenePanel();
 		if (m_IsDetailsPanelOpen) DetailsPanel();
 		if(m_IsInputPanelOpen) s_InputSubsystem->InputPanel();
@@ -193,7 +195,7 @@ namespace Denix
 			{
 				bool createdObject = false;
 
-				const char* names[] = { "Plane", "Cube", "Triangle" };
+				const char* names[] = { "Plane", "Cube", "EqualTriangle" };
 
 				if (ImGui::Button("Add"))
 					ImGui::OpenPopup("add_object_popup");
@@ -217,9 +219,9 @@ namespace Denix
 								cube->BeginScene();
 								m_ActiveScene->m_SceneObjects.push_back(cube);
 							}
-							else if (strcmp(name, "Triangle") == 0)
+							else if (strcmp(name, "EqualTriangle") == 0)
 							{
-								const Ref<Triangle> tri = MakeRef<Triangle>();
+								const Ref<EqualTriangle> tri = MakeRef<EqualTriangle>();
 								tri->BeginScene();
 								m_ActiveScene->m_SceneObjects.push_back(tri);
 							}

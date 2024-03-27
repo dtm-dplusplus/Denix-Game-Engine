@@ -36,19 +36,19 @@ namespace Denix
 			m_Components["Mesh"] = m_MeshComponent;
 
 			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
-			vbo->Bind(GL_ARRAY_BUFFER);
-			vbo->BufferData(GL_ARRAY_BUFFER, sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
+			vbo->Bind();
+			vbo->VertexBufferData(sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
 
 			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
 
 			vao->Bind();
-			vbo->Bind(vbo->GetTarget());
+			vbo->Bind();
 
 			// Bind Attribute at Location 0
 			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
 
 			//// Reset the state
-			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+			VertexBuffer::Unbind();
 			VertexArray::Unbind();
 		}
 
@@ -64,19 +64,19 @@ namespace Denix
 			m_Components["Mesh"] = m_MeshComponent;
 
 			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
-			vbo->Bind(GL_ARRAY_BUFFER);
-			vbo->BufferData(GL_ARRAY_BUFFER, sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
+			vbo->Bind();
+			vbo->VertexBufferData(sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
 
 			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
 
 			vao->Bind();
-			vbo->Bind(vbo->GetTarget());
+			vbo->Bind();
 
 			// Bind Attribute at Location 0
 			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
 
 			//// Reset the state
-			VertexBuffer::Unbind(GL_ARRAY_BUFFER);
+			VertexBuffer::Unbind();
 			VertexArray::Unbind();
 		}
 

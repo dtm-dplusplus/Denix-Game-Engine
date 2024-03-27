@@ -26,9 +26,15 @@
     <ClCompile Include="src\Scenes\PlaygroundScene.cpp">
       <Filter>src\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scenes\TextureScene.cpp">
+      <Filter>src\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Scenes\PlaygroundScene.h">
+      <Filter>src\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scenes\TextureScene.h">
       <Filter>src\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
