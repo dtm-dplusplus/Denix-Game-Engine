@@ -44,9 +44,9 @@ namespace Denix
 		}
 
 		// Check it isn't already loaded
-		if (m_LoadedScenes.contains(_scene->GetFriendlyName()))
+		if (m_LoadedScenes.contains(_scene->GetName()))
 		{
-			DE_LOG(LogSceneSubSystem, Error, "Load Scene: A scene name {} is already loaded", _scene->GetFriendlyName())
+			DE_LOG(LogSceneSubSystem, Error, "Load Scene: A scene name {} is already loaded", _scene->GetName())
 			return false;
 		}
 
@@ -57,8 +57,8 @@ namespace Denix
 			return false;
 		}
 
-		m_LoadedScenes[_scene->GetFriendlyName()] = _scene;
-		DE_LOG(LogSceneSubSystem, Trace, "Scene loaded: ", _scene->GetFriendlyName())
+		m_LoadedScenes[_scene->GetName()] = _scene;
+		DE_LOG(LogSceneSubSystem, Trace, "Scene loaded: ", _scene->GetName())
 
 		return true;
 	}
@@ -119,7 +119,7 @@ namespace Denix
 			m_ActiveScene->EndPlay();
 			m_ActiveScene->EndScene();
 
-			UnloadScene(m_ActiveScene->GetFriendlyName());
+			UnloadScene(m_ActiveScene->GetName());
 			m_ActiveScene = nullptr;
 			
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")

@@ -110,6 +110,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Denix\Scene\Object.cpp" />
     <ClCompile Include="src\Denix\Input\InputSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -145,7 +146,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\Core.cpp" />
     <ClCompile Include="src\Denix\Core\File.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -159,24 +159,18 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\Scene\Component.cpp" />
     <ClCompile Include="src\Denix\Scene\GameObject.cpp" />
-    <ClCompile Include="src\Denix\Scene\Object.cpp" />
-    <ClCompile Include="src\Denix\Scene\Scene.cpp" />
     <ClCompile Include="src\Denix\System\PhysicsSubsystem.cpp" />
     <ClCompile Include="src\Denix\System\RendererSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\System\Subsystem.cpp" />
     <ClCompile Include="src\Denix\System\UISubsystem.cpp" />
     <ClCompile Include="src\Denix\System\WindowSubsystem.cpp" />
     <ClCompile Include="src\Denix\Video\GL\GLShader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\Video\GL\VertexArray.cpp" />
-    <ClCompile Include="src\Denix\Video\GL\VertexBuffer.cpp" />
     <ClCompile Include="src\Denix\Video\Window.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -208,6 +202,7 @@
     <ClInclude Include="src\Denix\depch.h" />
     <ClInclude Include="src\Denix\EntryPoint.h" />
     <ClInclude Include="src\Denix\Scene\MeshData.h" />
+    <ClInclude Include="src\Denix\Scene\SceneObject.h" />
     <ClInclude Include="src\Denix\System\PhysicsSubsystem.h" />
     <ClInclude Include="src\Denix\System\RendererSubsystem.h" />
     <ClInclude Include="src\Denix\System\Subsystem.h" />

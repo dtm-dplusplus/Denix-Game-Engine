@@ -14,9 +14,6 @@ namespace Denix
 		{
 			m_TransformComponent->SetPosition(glm::vec3(0.0f, 0.0f, 100.f));
 			m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
-
-			// Should probably remove the physics component from the camera
-			m_PhysicsComponent->IsSimulated() = false;
 		}
 
 		~Camera() override = default;
@@ -96,12 +93,12 @@ namespace Denix
 
 		glm::vec3 CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 		glm::vec3 CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
 		// Debug 
 		bool m_IsPanMode = false;
 		bool m_IsMoveSpeedDelta = false;
 
 		friend class SceneSubsystem;
 		friend class EditorSubsystem;
-
 	};
 }

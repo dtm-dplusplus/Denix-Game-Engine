@@ -1,23 +1,24 @@
 #pragma once
 
-#include "Object.h"
 #include "GameObject.h"
 #include "Camera.h"
 
 namespace Denix
 {
-	// Basic Scene class so I can start creating and testing features
-	class Scene : public Object
+	// Basic Scene class
+	class Scene
 	{
 	public:
 
 		Scene() = default;
 
-		Scene(const ObjectInitializer& _object_init) : Object(_object_init), m_Camera{ nullptr }
+		Scene(const std::string& _name) :m_Camera{ nullptr }
 		{
 		}
 
-		~Scene() override = default;
+		virtual ~Scene() = default;
+
+		std::string GetName() const { return m_SceneName; }
 
 		virtual bool Load()
 		{
@@ -31,7 +32,7 @@ namespace Denix
 		{
 		}
 
-		void BeginScene() override
+		virtual void BeginScene()
 		{
 			
 
@@ -42,7 +43,7 @@ namespace Denix
 		}
 
 
-		void EndScene() override
+		virtual void EndScene()
 		{
 			for (const auto& obj : m_SceneObjects)
 			{
@@ -50,7 +51,7 @@ namespace Denix
 			}
 		}
 
-		void BeginPlay() override
+		virtual void BeginPlay()
 		{
 			m_IsPlaying = true;
 
@@ -60,7 +61,7 @@ namespace Denix
 			}
 		}
 
-		void EndPlay() override
+		virtual void EndPlay()
 		{
 			m_IsPlaying = false;
 
@@ -69,7 +70,7 @@ namespace Denix
 				obj->EndPlay();
 			}
 		}
-		void Update(float _deltaTime) override {}
+		virtual void Update(float _deltaTime) {}
 
 		bool IsPlaying() const { return m_IsPlaying; }
 
@@ -77,6 +78,10 @@ namespace Denix
 
 		Ref<Camera> GetCamera() { return m_Camera; }
 	protected:
+
+		/** Name of the scene. Must be uniqiue */
+		std::string m_SceneName;
+
 		/** determine if the engine is in editor or tool side mode.
 		 * True if the scene is being played. False if in editor mode.
 		 */

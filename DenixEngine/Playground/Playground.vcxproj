@@ -103,7 +103,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Scenes\TextureScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DenixEngine\DenixEngine.vcxproj">
@@ -112,7 +111,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Scenes\PlaygroundScene.h" />
-    <ClInclude Include="src\Scenes\TextureScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

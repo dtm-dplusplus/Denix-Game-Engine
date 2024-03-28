@@ -1,6 +1,5 @@
 #include "Denix.h"
 #include "Scenes/PlaygroundScene.h"
-#include "Scenes/TextureScene.h"
 
 using namespace Denix;
 
@@ -38,7 +37,7 @@ public:
 			if (const auto scene = MakeRef<PlaygroundScene>())
 			{
 				sceneSys->LoadScene(scene);
-				sceneSys->OpenScene(scene->GetFriendlyName());
+				sceneSys->OpenScene(scene->GetName());
 			}
 		}
 	}
