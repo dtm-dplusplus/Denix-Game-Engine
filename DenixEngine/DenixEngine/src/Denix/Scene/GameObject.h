@@ -267,11 +267,11 @@ namespace Denix
 		{
 			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
 			vbo->Bind();
-			vbo->VertexBufferData(sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
+			vbo->VertexBufferData(sizeof(CubeData), CubeData, 3, 8, GL_FLOAT);
 
 			const Ref<IndexBuffer> ibo = m_MeshComponent->GetIndexBuffer();
 			ibo->Bind();
-			ibo->IndexBufferData(sizeof(CubeIndices), CubeIndices, 6, GL_UNSIGNED_INT);
+			ibo->IndexBufferData(sizeof(CubeIndices), CubeIndices, 36, GL_UNSIGNED_INT);
 
 			// Setup Vertex Array
 			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();

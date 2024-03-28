@@ -57,18 +57,21 @@ namespace Denix
 		//wall4->GetPhysicsComponent()->IsSimulated() = false;
 		//m_SceneObjects.push_back(wall4);
 
-		EqualTri = MakeRef<EqualTriangle>();
-		EqualTri->GetTransformComponent()->SetScale({10.0, 10.0, 1.0});
-		m_SceneObjects.push_back(EqualTri);
+		//EqualTri = MakeRef<EqualTriangle>();
+		//EqualTri->GetTransformComponent()->SetScale({10.0, 10.0, 1.0});
+		//m_SceneObjects.push_back(EqualTri);
+		//
+		//RightTri = MakeRef<RightTriangle>();
+		//RightTri->GetTransformComponent()->SetScale({ 10.0, 10.0, 1.0 });
+		//m_SceneObjects.push_back(RightTri);
+		//
+		//Square = MakeRef<Plane>();
+		//Square->GetTransformComponent()->SetScale({ 10.0, 10.0, 1.0 });
+		//m_SceneObjects.push_back(Square);
 
-		RightTri = MakeRef<RightTriangle>();
-		RightTri->GetTransformComponent()->SetScale({ 10.0, 10.0, 1.0 });
-		m_SceneObjects.push_back(RightTri);
-		
-		Square = MakeRef<Plane>();
-		Square->GetTransformComponent()->SetScale({ 10.0, 10.0, 1.0 });
-		m_SceneObjects.push_back(Square);
-
+		Ref<Cube> cube = MakeRef<Cube>();
+		cube->GetTransformComponent()->SetScale({ 10.0, 10.0, 10.0 });
+		m_SceneObjects.push_back(cube);
 		return true;
 	}
 

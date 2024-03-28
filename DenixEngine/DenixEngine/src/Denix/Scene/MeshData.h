@@ -27,27 +27,53 @@ constexpr unsigned int RightTriangleIndices[] = {
 constexpr float PlaneData[] = {
 	-0.5f, -0.5f, 0.0f, // bottom left
 	 0.5f, -0.5f, 0.0f, // bottom right
-	 0.5f,  0.5f, 0.0f, //  top right
-	 -0.5f,  0.5f, 0.0f //  top left
+	 -0.5f,  0.5f, 0.0f, //  top left
+	 0.5f,  0.5f, 0.0f //  top right
 };
 
 constexpr unsigned int PlaneIndices[] = {
 	0, 1, 2, // bottom left, bottom right, top right
-	0, 2, 3 // bottom left, top right, top left
+	1, 3, 2 // bottom right, top right, top left
 };
 
 constexpr float CubeData[] = {
-	-0.5f, -0.5f, 0.0f, // Tri 1 bottom left
-	 0.5f, -0.5f, 0.0f, // Tri 1 bottom right
-	 0.5f,  0.5f, 0.0f, // Tri 1 top right
-	 -0.5f,  0.5f, 0.0f, // Tri 1 top left
+	// Front Face
+	-0.5f, -0.5f, 0.5f, // bottom left
+	 0.5f, -0.5f, 0.5f, // bottom right
+	 -0.5f,  0.5f, 0.5f, //  top left
+	 0.5f,  0.5f, 0.5f, //  top right
 
-
+	 // Back Face
+	-0.5f, -0.5f, -0.5f, // bottom left
+	 0.5f, -0.5f, -0.5f, // bottom right
+	 -0.5f,  0.5f, -0.5f, //  top left
+	 0.5f,  0.5f, -0.5f //  top right
 };
 
 constexpr unsigned int CubeIndices[] = {
+	// Front Face
 	0, 1, 2, // bottom left, bottom right, top right
-	0, 2, 3 // bottom left, top right, top left
+	1, 3, 2, // bottom left, top right, top left
+	
+	// Back Face
+	4,5,6, //
+	5,7,6,
+
+	// Top Face
+	2, 7, 6,
+	2, 3, 7,
+
+	// Bottom Face
+	0,5,1,
+	0,4,5,
+
+	// Left Face
+	4,0,6,
+	0,2,6,
+
+	// Right Face
+	1,5,7,
+	1,7,3
 };
 
 //constexpr float CubeData[]{
