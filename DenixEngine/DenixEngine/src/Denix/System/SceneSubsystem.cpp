@@ -244,6 +244,8 @@ namespace Denix
 			{
 				case ViewportMode::Render:
 				{
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 					// Draw the GameObject
 					if (gameObject->GetRenderComponent()->IsVisible())
 					{
@@ -256,27 +258,10 @@ namespace Denix
 					// Draw Collider over gameobject if set to visible
 					if (const Ref<ColliderComponent> collider = gameObject->GetColliderComponent())
 					{
-						if (Ref<RenderComponent> render = collider->GetRenderComponent())
+						if (const Ref<RenderComponent> render = collider->GetRenderComponent(); render->IsVisible())
 						{
-							if (render->IsVisible() && m_ViewportMode != static_cast<int>(ViewportMode::Collider))
-							{
-								s_RendererSubsystem->DrawImmediate(
-									render,
-									gameObject->GetTransformComponent(),
-									collider->GetMeshComponent());
-							}
-						}
-					}
-				}
-					break;
+							glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-				case ViewportMode::Collider:
-				{
-					// TEMP Collider Rendering - This disregards whether the collider is visible or not
-					if (const Ref<ColliderComponent> collider = gameObject->GetColliderComponent())
-					{
-						if (Ref<RenderComponent> render = collider->GetRenderComponent())
-						{
 							s_RendererSubsystem->DrawImmediate(
 								render,
 								gameObject->GetTransformComponent(),
@@ -286,7 +271,20 @@ namespace Denix
 				}
 					break;
 
-				default: break;
+				case ViewportMode::Collider:
+				{
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+					// Draw the GameObject
+						Ref<ColliderComponent> collider = gameObject->GetColliderComponent();
+						s_RendererSubsystem->DrawImmediate(
+							collider->GetRenderComponent(),
+							gameObject->GetTransformComponent(),
+							gameObject->GetMeshComponent());
+				}
+					break;
+
+				default: DE_LOG(LogScene, Error, "Invalid Viewport") break;
 			}
 		}
 	}

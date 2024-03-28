@@ -4,15 +4,6 @@
 #include "Denix/Video/GL/VertexArray.h"
 #include "Denix/Video/GL/VertexBuffer.h"
 
-constexpr float SqureData[] = {
-			-0.5f, 0.5f, 0.0f, // top left point
-			0.5f, 0.5f, 0.0f, // top right point
-			0.5f, -0.5f, 0.0f, // bottom right point
-			0.5f, -0.5f, 0.0f, // bottom right point
-			-0.5f, -0.5f, 0.0f, // bottom left point
-			-0.5f, 0.5f, 0.0f // top left point
-};
-
 namespace Denix
 {
 	class MeshComponent : public Denix::Component

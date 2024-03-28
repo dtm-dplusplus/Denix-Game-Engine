@@ -12,8 +12,6 @@ namespace Denix
 
 	void RendererSubsystem::DrawImmediate(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh)
 	{
-		if (!_render->m_IsVisible) return;
-
 		if(_render && _transform && _mesh)
 		{
 			_render->m_Shader->Bind();
@@ -38,7 +36,7 @@ namespace Denix
 			glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
 
 			// Draw the indexed mesh
-			glDrawElements(_render->GetDrawMode(), _mesh->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, _mesh->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
 
 			VertexArray::Unbind();
 			GLShader::Unbind();

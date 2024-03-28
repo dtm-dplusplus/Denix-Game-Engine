@@ -28,7 +28,6 @@ namespace Denix
 		ColliderComponent() : Component(ObjectInitializer("Collider Component"))
 		{
 			m_RenderComponent = MakeRef<RenderComponent>(m_ID);
-			m_RenderComponent->SetDrawMode(GL_LINES);
 			m_RenderComponent->SetIsVisible(false);
 			m_Components["Render"] = m_RenderComponent;
 
@@ -62,22 +61,6 @@ namespace Denix
 
 			m_MeshComponent = MakeRef<MeshComponent>(m_ID);
 			m_Components["Mesh"] = m_MeshComponent;
-
-			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
-			vbo->Bind();
-			vbo->VertexBufferData(sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
-
-			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
-
-			vao->Bind();
-			vbo->Bind();
-
-			// Bind Attribute at Location 0
-			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
-
-			//// Reset the state
-			VertexBuffer::Unbind();
-			VertexArray::Unbind();
 		}
 
 		~ColliderComponent() override
