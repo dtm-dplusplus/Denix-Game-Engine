@@ -260,6 +260,8 @@ namespace Denix
 		}
 	};
 
+	
+
 	class Cube : public GameObject
 	{
 	public:

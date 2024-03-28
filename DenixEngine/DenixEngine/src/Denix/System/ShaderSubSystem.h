@@ -31,18 +31,38 @@ namespace Denix
 			DE_LOG(Log, Trace, "GLShader Subsystem Initialized")
 
 			// Create Debug Shader
-			std::vector<std::pair<GLenum, std::string>> shaders;
-			shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res\\shaders\\Vertex.glsl"));
-			shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\Fragment.glsl"));
-			LoadShader(shaders, "DebugShader");
+			{
+				std::vector<std::pair<GLenum, std::string>> shaders;
+				shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res\\shaders\\Vertex.glsl"));
+				shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\Fragment.glsl"));
+				LoadShader(shaders, "DebugShader");
 
-			const Ref<GLShader> program = GetShader("DebugShader");
-		
-			// Check Uniforms
-			program->GetUniform("u_Model");
-			program->GetUniform("u_Projection");
-			program->GetUniform("u_Color");
-			program->GetUniform("u_View");
+				const Ref<GLShader> program = GetShader("DebugShader");
+
+				// Check Uniforms
+				program->GetUniform("u_Model");
+				program->GetUniform("u_Projection");
+				program->GetUniform("u_Color");
+				program->GetUniform("u_View");
+			}
+			
+
+			// Create Texture Shader
+			{
+				std::vector<std::pair<GLenum, std::string>> shaders;
+				shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res\\shaders\\TexVert.glsl"));
+				shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\TexFrag.glsl"));
+				LoadShader(shaders, "TextureShader");
+
+				const Ref<GLShader> program = GetShader("TextureShader");
+
+				// Check Uniforms
+				program->GetUniform("u_Model");
+				program->GetUniform("u_Projection");
+				program->GetUniform("u_View");
+				program->GetUniform("u_Texture");
+			}
+			
 
 			m_Initialized = true;
 		}
