@@ -6,8 +6,60 @@
 #include "Denix/Video/GL/GLShader.h"
 
 
+
 namespace Denix
 {
+	class Texture
+	{
+	public:
+		Texture()
+		{
+			textureID = 0;
+			width = 0;
+			height = 0;
+			bitDepth = 0;
+			fileLocation = "";
+		}
+
+		Texture(const char* fileLoc)
+		{
+			textureID = 0;
+			width = 0;
+			height = 0;
+			bitDepth = 0;
+			fileLocation = fileLoc;
+		}
+
+		void LoadTexture();
+
+		void Bind()
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textureID);
+		}
+
+		void Unbind()
+		{
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		void ClearTexture()
+		{
+			glDeleteTextures(1, &textureID);
+			textureID = 0;
+			width = 0;
+			height = 0;
+			bitDepth = 0;
+			fileLocation = "";
+		}
+
+		GLuint GetID() const { return textureID; }
+
+		GLuint textureID;
+		int width, height, bitDepth;
+
+		const char* fileLocation;
+	};
+
 	class RenderComponent : public Component
 	{
 	public:
@@ -34,6 +86,12 @@ namespace Denix
 		}
 
 		~RenderComponent() override = default;
+
+		void LoadTexture(const std::string& _path)
+		{
+			m_Texture = MakeRef<Texture>(_path.c_str());
+			m_Texture->LoadTexture();
+		}
 
 		enum class DrawMode
 		{
@@ -77,7 +135,11 @@ namespace Denix
 
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 		Ref<GLShader> m_Shader;
+		Ref<Texture> m_Texture;
+
+		// Null effect atm as we are overriding with glPolygonMode globally
 		int m_DrawMode = GL_TRIANGLES;
+
 		friend class SceneSubsystem;
 		friend class RendererSubsystem;
 	};

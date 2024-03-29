@@ -11,6 +11,7 @@
 #include "Component/ColliderComponent.h"
 #include "MeshData.h"
 #include "Denix/Scene/GameObjectData.h"
+#include <filesystem>
 
 namespace Denix
 {
@@ -164,158 +165,27 @@ namespace Denix
 		friend class SceneSubsystem;
 	};
 
-	class EqualTriangle : public GameObject
-	{
-	public:
-		EqualTriangle() : GameObject({ "EqualTriangle" })
-		{
-			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
-			vbo->Bind();
-			vbo->VertexBufferData(sizeof(EqualTriangleData), EqualTriangleData, 3, 3, GL_FLOAT);
-
-			const Ref<IndexBuffer> ibo = m_MeshComponent->GetIndexBuffer();
-			ibo->Bind();
-			ibo->IndexBufferData(sizeof(EqualTriangleIndices), EqualTriangleIndices, 3,GL_UNSIGNED_INT);
-
-			// Setup Vertex Array
-			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
-			vao->Bind();
-
-			// Bind Vertex Buffer at Location 0
-			vbo->Bind();
-			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
-
-			// Bind Index Buffer at Location 1
-			ibo->Bind();
-			vao->AttribPtr(ibo->GetIndexCount(), ibo->GetType());
-
-			//// Reset the state
-			VertexBuffer::Unbind();
-			VertexArray::Unbind();
-			IndexBuffer::Unbind();
-		}
-	};
-
-	class RightTriangle : public GameObject
-	{
-	public:
-		RightTriangle() : GameObject({ "RightTriangle" })
-		{
-			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
-			vbo->Bind();
-			vbo->VertexBufferData(sizeof(RightTriangleData), RightTriangleData, 3, 3, GL_FLOAT);
-
-			const Ref<IndexBuffer> ibo = m_MeshComponent->GetIndexBuffer();
-			ibo->Bind();
-			ibo->IndexBufferData(sizeof(RightTriangleIndices), RightTriangleIndices, 3, GL_UNSIGNED_INT);
-
-			// Setup Vertex Array
-			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
-			vao->Bind();
-
-			// Bind Vertex Buffer at Location 0
-			vbo->Bind();
-			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
-
-			// Bind Index Buffer at Location 1
-			ibo->Bind();
-			vao->AttribPtr(ibo->GetIndexCount(), ibo->GetType());
-
-			//// Reset the state
-			VertexBuffer::Unbind();
-			VertexArray::Unbind();
-			IndexBuffer::Unbind();
-		}
-	};
-
 	class Plane : public GameObject
 	{
 	public:
 		Plane() : GameObject({"Plane"})
 		{
-			const Ref<VertexBuffer> vbo =m_MeshComponent->GetVertexBuffer();
-			vbo->Bind();
-			vbo->VertexBufferData(sizeof(PlaneData), PlaneData, 3, 4, GL_FLOAT);
+			m_MeshComponent->CreateMesh((GLfloat*)TexPlaneData, (unsigned int*)PlaneIndices, 20, 6);
 
-			const Ref<IndexBuffer> ibo = m_MeshComponent->GetIndexBuffer();
-			ibo->Bind();
-			ibo->IndexBufferData(sizeof(PlaneIndices), PlaneIndices, 6, GL_UNSIGNED_INT);
-
-			// Setup Vertex Array
-			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
-			vao->Bind();
-
-			// Bind Vertex Buffer at Location 0
-			vbo->Bind();
-			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
-
-			// Bind Index Buffer at Location 1
-			ibo->Bind();
-			vao->AttribPtr(ibo->GetIndexCount(), ibo->GetType());
-
-			//// Reset the state
-			VertexBuffer::Unbind();
-			VertexArray::Unbind();
-			IndexBuffer::Unbind();
+			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
+			m_RenderComponent->LoadTexture(def);
 		}
 	};
-
-	
 
 	class Cube : public GameObject
 	{
 	public:
 		Cube() : GameObject({ "Cube" })
 		{
-			const Ref<VertexBuffer> cubeVbo = m_MeshComponent->GetVertexBuffer();
-			cubeVbo->Bind();
-			cubeVbo->VertexBufferData(sizeof(CubeData), CubeData, 3, 8, GL_FLOAT);
+			m_MeshComponent->CreateMesh((GLfloat*)CubeData, (unsigned int*)CubeIndices, 40, 36);
 
-			const Ref<IndexBuffer> cubeIbo = m_MeshComponent->GetIndexBuffer();
-			cubeIbo->Bind();
-			cubeIbo->IndexBufferData(sizeof(CubeIndices), CubeIndices, 36, GL_UNSIGNED_INT);
-
-			// Setup Vertex Array
-			const Ref<VertexArray> CubeVao = m_MeshComponent->GetVertexArray();
-			CubeVao->Bind();
-
-			// Bind Vertex Buffer at Location 0
-			cubeVbo->Bind();
-			CubeVao->AttribPtr(cubeVbo->GetPerPrimitive(), cubeVbo->GetType());
-
-			// Bind Index Buffer at Location 1
-			cubeIbo->Bind();
-			CubeVao->AttribPtr(cubeIbo->GetIndexCount(), cubeIbo->GetType());
-
-			VertexBuffer::Unbind();
-			VertexArray::Unbind();
-			IndexBuffer::Unbind();
-
-			// Setup Collider
-			const Ref<VertexBuffer> colVbo = GetColliderComponent()->GetMeshComponent()->GetVertexBuffer();
-			colVbo->Bind();
-			colVbo->VertexBufferData(sizeof(CubeData), CubeData, 3, 8, GL_FLOAT);
-
-			const Ref<IndexBuffer> colIbo = GetColliderComponent()->GetMeshComponent()->GetIndexBuffer();
-			colIbo->Bind();
-			colIbo->IndexBufferData(sizeof(CubeIndices), CubeIndices, 36, GL_UNSIGNED_INT);
-
-			// Setup Vertex Array
-			const Ref<VertexArray> colVao = GetColliderComponent()->GetMeshComponent()->GetVertexArray();
-			colVao->Bind();
-
-			// Bind Vertex Buffer at Location 0
-			colVbo->Bind();
-			colVao->AttribPtr(colVbo->GetPerPrimitive(), colVbo->GetType());
-
-			// Bind Index Buffer at Location 1
-			colIbo->Bind();
-			colVao->AttribPtr(colIbo->GetIndexCount(), colIbo->GetType());
-
-			//// Reset the state
-			VertexBuffer::Unbind();
-			VertexArray::Unbind();
-			IndexBuffer::Unbind();
+			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
+			m_RenderComponent->LoadTexture(def);
 		}
 	};
 }

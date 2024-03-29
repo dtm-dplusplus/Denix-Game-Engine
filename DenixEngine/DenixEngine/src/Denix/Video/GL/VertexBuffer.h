@@ -88,6 +88,7 @@ namespace Denix
 		}
 
 		void Bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_GL_ID); }
+		void SetIndexCount(GLsizei _indexCount) { m_IndexCount = _indexCount; }
 		static void Unbind() { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
 
 

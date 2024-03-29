@@ -18,6 +18,8 @@ namespace Denix
 		{
 			_render->m_Shader->Bind();
 			_mesh->m_VAO->Bind();
+			_mesh->m_IBO->Bind();
+			if (_render->m_Texture) _render->m_Texture->Bind();
 
 			// Upload the model matrix
 			glUniformMatrix4fv(_render->m_Shader->GetUniform("u_Model"), 1, 
@@ -35,11 +37,14 @@ namespace Denix
 			}
 
 			// Upload the color
-			glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
+			//glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
+
 
 			// Draw the indexed mesh
 			glDrawElements(GL_TRIANGLES, _mesh->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
 
+			if (_render->m_Texture) _render->m_Texture->Unbind();
+			IndexBuffer::Unbind();
 			VertexArray::Unbind();
 			GLShader::Unbind();
 		}

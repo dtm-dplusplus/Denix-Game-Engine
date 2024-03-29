@@ -224,12 +224,6 @@ namespace Denix
 								cube->BeginScene();
 								m_ActiveScene->m_SceneObjects.push_back(cube);
 							}
-							else if (strcmp(name, "EqualTriangle") == 0)
-							{
-								const Ref<EqualTriangle> tri = MakeRef<EqualTriangle>();
-								tri->BeginScene();
-								m_ActiveScene->m_SceneObjects.push_back(tri);
-							}
 						}
 					}
 					ImGui::EndPopup();

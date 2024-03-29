@@ -55,6 +55,7 @@ namespace Denix
 
 			m_IBO = MakeRef<IndexBuffer>();
 			m_IBO->Bind();
+			m_IBO->SetIndexCount(numOfIndices);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numOfIndices, indices, GL_STATIC_DRAW);
 
 			m_VBO = MakeRef<VertexBuffer>();

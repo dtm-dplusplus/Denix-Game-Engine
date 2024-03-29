@@ -50,9 +50,6 @@
     <ClCompile Include="src\Denix\Engine.cpp">
       <Filter>src\Denix</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\Core.cpp">
-      <Filter>src\Denix</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\Video\Window.cpp">
       <Filter>src\Denix\Video</Filter>
     </ClCompile>
@@ -80,9 +77,6 @@
     <ClCompile Include="src\Denix\System\UISubsystem.cpp">
       <Filter>src\Denix\System</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\System\Subsystem.cpp">
-      <Filter>src\Denix\System</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\System\ShaderSubsystem.cpp">
       <Filter>src\Denix\System</Filter>
     </ClCompile>
@@ -101,13 +95,7 @@
     <ClCompile Include="src\Denix\Core\File.cpp">
       <Filter>src\Denix\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\Scene\Scene.cpp">
-      <Filter>src\Denix\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\Scene\Camera.cpp">
-      <Filter>src\Denix\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Denix\Scene\Component.cpp">
       <Filter>src\Denix\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\GameObject.cpp">
@@ -119,13 +107,7 @@
     <ClCompile Include="src\Denix\System\WindowSubsystem.cpp">
       <Filter>src\Denix\System</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\Video\GL\VertexBuffer.cpp">
-      <Filter>src\Denix\Video\GL</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\Video\GL\GLShader.cpp">
-      <Filter>src\Denix\Video\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Denix\Video\GL\VertexArray.cpp">
       <Filter>src\Denix\Video\GL</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\Component\PhysicsComponent.cpp">
@@ -227,9 +209,6 @@
     <ClInclude Include="src\Denix\Scene\Scene.h">
       <Filter>src\Denix\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\Video\GL\GLShader.h">
-      <Filter>src\Denix\Video</Filter>
-    </ClInclude>
     <ClInclude Include="src\Denix\Scene\Camera.h">
       <Filter>src\Denix\Scene</Filter>
     </ClInclude>
@@ -271,6 +250,10 @@
     </ClInclude>
     <ClInclude Include="src\Denix\Scene\GameObjectData.h">
       <Filter>src\Denix\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Scene\SceneObject.h" />
+    <ClInclude Include="src\Denix\Video\GL\GLShader.h">
+      <Filter>src\Denix\Video\GL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
