@@ -12,6 +12,8 @@ namespace Denix
 
 	void RendererSubsystem::DrawImmediate(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh)
 	{
+		if(!m_Active) return;
+
 		if(_render && _transform && _mesh)
 		{
 			_render->m_Shader->Bind();

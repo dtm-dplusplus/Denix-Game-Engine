@@ -112,7 +112,5 @@ namespace Denix
 		GLuint m_GL_ID;
 
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
-
-		
 	};
 }

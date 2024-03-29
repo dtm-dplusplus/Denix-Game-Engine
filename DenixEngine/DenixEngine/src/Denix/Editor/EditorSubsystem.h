@@ -33,6 +33,7 @@ namespace Denix
 		class WindowSubsystem* s_WindowSubSystem;
 		class SceneSubsystem* s_SceneSubSystem;
 		class InputSubsystem* s_InputSubsystem;
+		class RendererSubsystem* s_RendererSubSystem;
 
 		Ref<Scene> m_ActiveScene;
 

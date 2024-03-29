@@ -5,6 +5,7 @@
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/System/SceneSubsystem.h"
 #include "Denix/System/WindowSubsystem.h"
+#include "Denix/System/RendererSubSystem.h"
 #include "Denix/Scene/Scene.h"
 
 namespace Denix
@@ -16,6 +17,7 @@ namespace Denix
 		s_WindowSubSystem = WindowSubsystem::Get();
 		s_SceneSubSystem = SceneSubsystem::Get();
 		s_InputSubsystem = InputSubsystem::Get();
+		s_RendererSubSystem = RendererSubsystem::Get();
 
 		DE_LOG(Log, Trace, "Editor Subsystem Initialized")
 
@@ -150,6 +152,9 @@ namespace Denix
 		{
 			// Viewport Mode
 			ImGui::Combo("Viewport Mode", &s_SceneSubSystem->GetViewportMode(), "Default\0Collider\0\0");
+
+			// Subsystems
+			ImGui::Checkbox("Render Subsystem", &s_RendererSubSystem->IsActive());
 
 			// Scene gravity
 			ImGui::DragFloat3("Scene Gravity", &s_SceneSubSystem->m_ActiveScene->GetGravity()[0], DragSpeedDelta, -FLT_MAX, FLT_MAX);
