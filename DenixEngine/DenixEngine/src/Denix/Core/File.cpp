@@ -5,13 +5,17 @@
 
 namespace fs = std::filesystem;
 
-std::string File::Read(const std::string& _relativePath)
+std::string File::Read(const std::string& _path, bool _absolute)
 {
-	std::string fullPath = fs::current_path().parent_path().string() + "\\DenixEngine\\" + _relativePath;
+	std::string fullPath = fs::current_path().parent_path().string() + "\\DenixEngine\\" + _path;
 
+	if (_absolute)
+	{
+		fullPath = _path;
+	}
 	if (std::ifstream fileStream(fullPath); fileStream.is_open())
 	{
-		DE_LOG(Log, Info, "Opened file: {}", _relativePath)
+		DE_LOG(Log, Info, "Opened file: {}", _path)
 
 		std::stringstream fileString;
 
