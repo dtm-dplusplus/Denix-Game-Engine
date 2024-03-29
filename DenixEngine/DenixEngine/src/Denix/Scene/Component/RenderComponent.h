@@ -47,6 +47,7 @@ namespace Denix
 		};
 
 		Ref<GLShader> GetShader() const { return m_Shader; }
+		void SetShader(const Ref<GLShader>& _shader) { m_Shader = _shader; }
 
 		glm::vec4 GetDebugColor() const { return m_DebugColor; }
 		glm::vec4& GetDebugColor() { return m_DebugColor; }

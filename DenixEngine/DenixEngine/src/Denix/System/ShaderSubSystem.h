@@ -33,8 +33,8 @@ namespace Denix
 			// Create Debug Shader
 			{
 				std::vector<std::pair<GLenum, std::string>> shaders;
-				shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res\\shaders\\Vertex.glsl"));
-				shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\Fragment.glsl"));
+				shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res\\shaders\\DebugVertex.glsl"));
+				shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\DebugFragment.glsl"));
 				LoadShader(shaders, "DebugShader");
 
 				const Ref<GLShader> program = GetShader("DebugShader");
@@ -46,6 +46,20 @@ namespace Denix
 				program->GetUniform("u_View");
 			}
 
+			// Create Texture Shader
+			{
+				std::vector<std::pair<GLenum, std::string>> shaders;
+				shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res\\shaders\\TexVertex.glsl"));
+				shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\TexFragment.glsl"));
+				LoadShader(shaders, "TextureShader");
+
+				const Ref<GLShader> program = GetShader("TextureShader");
+
+				// Check Uniforms
+				program->GetUniform("u_Model");
+				program->GetUniform("u_Projection");
+				program->GetUniform("u_View");
+			}
 			m_Initialized = true;
 		}
 

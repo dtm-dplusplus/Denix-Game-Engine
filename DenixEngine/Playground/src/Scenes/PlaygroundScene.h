@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Denix/Scene/Scene.h"
-#include "Denix/System/ShaderSubSystem.h"
 
 namespace Denix
 {
@@ -24,22 +23,39 @@ namespace Denix
 		const char* fileLocation;
 	};
 
-	class Mesh
+	class TexObject : public GameObject
 	{
-	public:
-		Mesh();
+		public:
+		TexObject(): GameObject({ "TexObject" })
+		{
+			m_MeshComponent->CreateMesh(vertices, indices, 20, 12);
 
-		void CreateMesh(GLfloat* vertices, unsigned int* indices, unsigned int numOfVertices, unsigned int numOfIndices);
-		void RenderMesh();
-		void ClearMesh();
+			//// Reset the state
+			VertexBuffer::Unbind();
+			VertexArray::Unbind();
+			IndexBuffer::Unbind();
+		}
 
-		~Mesh();
+		void Update(float _deltaTime) override
+		{
+						//brickTexture.UseTexture();
+		}
 
-	private:
-		GLuint VAO, VBO, IBO;
-		GLsizei indexCount;
+		unsigned int indices[12] = {
+				0, 3, 1,
+				1, 3, 2,
+				2, 3, 0,
+				0, 1, 2
+		};
+
+		GLfloat vertices[20] = {
+			//	x      y      z			u	  v
+				-1.0f, -1.0f, 0.0f,		0.0f, 0.0f,
+				0.0f, -1.0f, 1.0f,		0.5f, 0.0f,
+				1.0f, -1.0f, 0.0f,		1.0f, 0.0f,
+				0.0f, 1.0f, 0.0f,		0.5f, 1.0f
+		};
 	};
-
 	class PlaygroundScene final : public Scene
 	{
 	public:
@@ -48,39 +64,11 @@ namespace Denix
 		bool Load() override;
 		void Update(float _deltaTime) override;
 
-		//Ref<EqualTriangle> EqualTri;
-		//Ref<RightTriangle> RightTri;
-		Ref<Plane> Square;
-
-		Mesh* Pyramid;
-		Ref<GLShader> GLShader;
+		Ref<TexObject> TextureObj;
 
 		Texture brickTexture;
 
-		std::string vShader;
-		std::string fShader;
-
 		GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0;
 
-		void CreateObjects()
-		{
-			unsigned int indices[] = {
-				0, 3, 1,
-				1, 3, 2,
-				2, 3, 0,
-				0, 1, 2
-			};
-
-			GLfloat vertices[] = {
-				//	x      y      z			u	  v
-					-1.0f, -1.0f, 0.0f,		0.0f, 0.0f,
-					0.0f, -1.0f, 1.0f,		0.5f, 0.0f,
-					1.0f, -1.0f, 0.0f,		1.0f, 0.0f,
-					0.0f, 1.0f, 0.0f,		0.5f, 1.0f
-			};
-
-			Pyramid = new Mesh();
-			Pyramid->CreateMesh(vertices, indices, 20, 12);
-		}
 	};
 }
