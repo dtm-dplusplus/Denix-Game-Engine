@@ -12,14 +12,27 @@ namespace Denix
 
 	void RendererSubsystem::DrawImmediate(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh)
 	{
+		// Global check to see if the renderer is active - Useful for debugging
 		if(!m_Active) return;
 
+		// Begin rendering
 		if(_render && _transform && _mesh)
 		{
 			_render->m_Shader->Bind();
 			_mesh->m_VAO->Bind();
 			_mesh->m_IBO->Bind();
-			if (_render->m_Texture) _render->m_Texture->Bind();
+
+			// TODO This is slow, but as the same texture can be applied to multiple objects, it may have different settigns
+			// So we override the settings here
+			if (_render->m_Texture)
+			{
+				_render->m_Texture->Bind();
+
+				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_WRAP_S, _render->m_TextureSettings.WrapMode);
+				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_WRAP_T, _render->m_TextureSettings.WrapMode);
+				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, _render->m_TextureSettings.FilterMode);
+				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, _render->m_TextureSettings.FilterMode);
+			}
 
 			// Upload the model matrix
 			glUniformMatrix4fv(_render->m_Shader->GetUniform("u_Model"), 1, 
@@ -37,8 +50,7 @@ namespace Denix
 			}
 
 			// Upload the color
-			//glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
-
+			glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
 
 			// Draw the indexed mesh
 			glDrawElements(GL_TRIANGLES, _mesh->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);

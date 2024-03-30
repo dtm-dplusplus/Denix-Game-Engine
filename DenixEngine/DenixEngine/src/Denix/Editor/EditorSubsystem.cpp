@@ -368,10 +368,47 @@ namespace Denix
 					const Ref<RenderComponent> render = selectedObject->GetRenderComponent();
 
 					ImGui::Checkbox("Visible", &render->IsVisible());
-					if (ImGui::Combo("Draw Mode", &render->GetDrawMode(), "Points\0Lines\0Line Loop\0Line Strip\0Triangles\0\0"))
+
+					ImGui::SeparatorText("Texture");
+					if (const Ref<Texture> texture = render->GetTexture())
 					{
-						DE_LOG(Log, Trace, "Draw Mode Changed to: {}", render->GetDrawMode());
+						TextureSettings& texSettings = render->GetTextureSettings();
+
+						ImGui::Text("Texture ID: %d", texture->GetTextureID());
+						ImGui::Text("File Path: %s", texture->GetFileLocation().c_str());
+						ImGui::Text("Size = %d x %d", texture->GetWidth(), texture->GetHeight());
+						ImGui::Separator();
+						if (ImGui::Combo("Wrap Mode", &texSettings.WrapValue, "GL_REPEAT\0GL_MIRRORED_REPEAT\0GL_CLAMP_TO_EDGE\0GL_CLAMP_TO_BORDER\0\0"))
+						{
+							if(texSettings.WrapValue == 0) texSettings.WrapMode = GL_REPEAT;
+							else if(texSettings.WrapValue == 1) texSettings.WrapMode = GL_MIRRORED_REPEAT;
+							else if(texSettings.WrapValue == 2) texSettings.WrapMode = GL_CLAMP_TO_EDGE;
+							else if(texSettings.WrapValue == 3) texSettings.WrapMode = GL_CLAMP_TO_BORDER;
+						}
+						
+						// Texture Filter
+						if (ImGui::Combo("Filter", &texSettings.FilterValue, "GL_NEAREST\0GL_LINEAR\0GL_NEAREST_MIPMAP_NEAREST\0GL_LINEAR_MIPMAP_NEAREST\0GL_NEAREST_MIPMAP_LINEAR\0GL_LINEAR_MIPMAP_LINEAR\0\0"))
+						{
+							if(texSettings.FilterValue == 0) texSettings.FilterMode = GL_NEAREST;
+							else if(texSettings.FilterValue == 1) texSettings.FilterMode = GL_LINEAR;
+							else if(texSettings.FilterValue == 2) texSettings.FilterMode = GL_NEAREST_MIPMAP_NEAREST;
+							else if(texSettings.FilterValue == 3) texSettings.FilterMode = GL_LINEAR_MIPMAP_NEAREST;
+							else if(texSettings.FilterValue == 4) texSettings.FilterMode = GL_NEAREST_MIPMAP_LINEAR;
+							else if(texSettings.FilterValue == 5) texSettings.FilterMode = GL_LINEAR_MIPMAP_LINEAR;
+						}	
+
+						// Texture Preview
+						ImGui::Image((void*)(intptr_t)texture->GetTextureID(), ImVec2(100, 100));
 					}
+					else
+					{
+						ImGui::Text("No Texture");
+					}
+
+					//if (ImGui::Combo("Draw Mode", &render->GetDrawMode(), "Points\0Lines\0Line Loop\0Line Strip\0Triangles\0\0"))
+					//{
+					//	DE_LOG(Log, Trace, "Draw Mode Changed to: {}", render->GetDrawMode());
+					//}
 					ImGui::ColorEdit4("Debug Color", &render->GetDebugColor()[0]);
 				}
 
@@ -403,6 +440,4 @@ namespace Denix
 	{
 		m_ActiveScene = _scene;
 	}
-
-
 }

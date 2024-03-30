@@ -62,5 +62,4 @@ namespace Denix
 		float MenuBarHeight = 15.f;
 		float ViewportBarHeight = 15.f;
 	};
-
 }

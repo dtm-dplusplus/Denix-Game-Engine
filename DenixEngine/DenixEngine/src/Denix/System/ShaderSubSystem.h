@@ -59,6 +59,7 @@ namespace Denix
 				program->GetUniform("u_Model");
 				program->GetUniform("u_Projection");
 				program->GetUniform("u_View");
+				program->GetUniform("u_Color");
 			}
 			m_Initialized = true;
 		}

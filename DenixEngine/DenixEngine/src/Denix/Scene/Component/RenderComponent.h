@@ -1,4 +1,5 @@
 #pragma once
+#include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
 #include "Denix/Scene/Component.h"
@@ -9,55 +10,74 @@
 
 namespace Denix
 {
+	struct TextureSettings
+	{
+		GLint WrapMode = GL_REPEAT;
+		int WrapValue = 0; // ImGui Combo Index
+
+		GLint FilterMode = GL_LINEAR;
+		int FilterValue = 1; // ImGui Combo Index
+	};
+
 	class Texture
 	{
 	public:
 		Texture()
 		{
-			textureID = 0;
-			width = 0;
-			height = 0;
-			bitDepth = 0;
-			fileLocation = "";
+			m_TextureID = 0;
+			m_Width = 0;
+			m_Height = 0;
+			m_BitDepth = 0;
+			m_FileLocation = "";
 		}
 
-		Texture(const char* fileLoc)
+		Texture(const std::string& _fileLoc)
 		{
-			textureID = 0;
-			width = 0;
-			height = 0;
-			bitDepth = 0;
-			fileLocation = fileLoc;
+			m_TextureID = 0;
+			m_Width = 0;
+			m_Height = 0;
+			m_BitDepth = 0;
+			m_FileLocation = _fileLoc;
 		}
 
 		void LoadTexture();
 
-		void Bind()
+		void Bind() const
 		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textureID);
+			glActiveTexture(GL_TEXTURE0); // TODO This unit may change in the future
+			glBindTexture(m_Target, m_TextureID);
 		}
 
-		void Unbind()
+		void Unbind() const
 		{
-			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(m_Target, 0);
 		}
+
 		void ClearTexture()
 		{
-			glDeleteTextures(1, &textureID);
-			textureID = 0;
-			width = 0;
-			height = 0;
-			bitDepth = 0;
-			fileLocation = "";
+			glDeleteTextures(1, &m_TextureID);
+			m_TextureID = 0;
+			m_Width = 0;
+			m_Height = 0;
+			m_BitDepth = 0;
+			m_FileLocation = "";
 		}
 
-		GLuint GetID() const { return textureID; }
+		GLuint GetTextureID() const { return m_TextureID; }
+		GLenum GetTarget() const { return m_Target; }
 
-		GLuint textureID;
-		int width, height, bitDepth;
+		int GetWidth() const { return m_Width; }
+		int GetHeight() const { return m_Height; }
+		glm::vec2 GetSize() const { return {m_Width, m_Height}; }
 
-		const char* fileLocation;
+		std::string GetFileLocation() const { return m_FileLocation; }
+
+	private:
+		GLuint m_TextureID;
+		GLenum m_Target = GL_TEXTURE_2D;
+		int m_Width, m_Height, m_BitDepth;
+
+		std::string m_FileLocation;
 	};
 
 	class RenderComponent : public Component
@@ -89,9 +109,22 @@ namespace Denix
 
 		void LoadTexture(const std::string& _path)
 		{
-			m_Texture = MakeRef<Texture>(_path.c_str());
+			m_Texture = MakeRef<Texture>(_path);
 			m_Texture->LoadTexture();
+
+			if (!m_Texture->GetTextureID()) return;
+
+			m_Texture->Bind();
+
+			glTexParameteri(m_Texture->GetTarget(), GL_TEXTURE_WRAP_S, m_TextureSettings.WrapMode);
+			glTexParameteri(m_Texture->GetTarget(), GL_TEXTURE_WRAP_T, m_TextureSettings.WrapMode);
+			glTexParameteri(m_Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, m_TextureSettings.FilterMode);
+			glTexParameteri(m_Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, m_TextureSettings.FilterMode);
+
+			m_Texture->Unbind();
 		}
+
+		Ref<Texture> GetTexture() const { return m_Texture; }
 
 		enum class DrawMode
 		{
@@ -129,6 +162,7 @@ namespace Denix
 		void RegisterComponent() override;
 		void UnregisterComponent() override;
 		
+		TextureSettings& GetTextureSettings() { return m_TextureSettings; }
 
 	private:
 		bool m_IsVisible = true;
@@ -139,6 +173,10 @@ namespace Denix
 
 		// Null effect atm as we are overriding with glPolygonMode globally
 		int m_DrawMode = GL_TRIANGLES;
+
+		// Texture
+		TextureSettings m_TextureSettings;
+		
 
 		friend class SceneSubsystem;
 		friend class RendererSubsystem;
