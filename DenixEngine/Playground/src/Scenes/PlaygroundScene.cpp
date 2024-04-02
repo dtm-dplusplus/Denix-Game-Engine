@@ -28,6 +28,7 @@ namespace Denix
 	{
 		Scene::Update(_deltaTime);
 
+		ImGui::SetNextWindowPos(ImVec2(1000, 50));
 		ImGui::Begin("Playground Scene");
 		ImGui::ColorEdit3("Light Color", &LightSource->m_LightColor[0]);
 		ImGui::SliderFloat("Ambient Intensity", &LightSource->m_AmbientIntensity, 0.0f, 1.0f);
