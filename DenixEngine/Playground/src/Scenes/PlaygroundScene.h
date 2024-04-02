@@ -7,43 +7,30 @@
 namespace Denix
 {
 	
-
-	class TexObject : public GameObject
+	class Light : public GameObject
 	{
-		public:
-		TexObject(): GameObject({ "TexObject" })
+	public:
+
+		Light(const glm::vec3& _color, GLfloat _ambientIntensity, const ObjectInitializer& _objInit = ObjectInitializer("Light")):
+			GameObject(_objInit), m_LightColor(_color), m_AmbientIntensity(_ambientIntensity)
+		{}
+
+		Light(const ObjectInitializer& _objInit = ObjectInitializer("Light")):
+			GameObject(_objInit), m_LightColor(glm::vec3(1.0f)), m_AmbientIntensity(0.5f)
+		{}
+
+		void UseLight()
 		{
-			m_MeshComponent->CreateMesh(vertices, indices, 20, 12);
-
-			std::string brick = std::filesystem::current_path().parent_path().string() + "\\Playground\\Content\\Textures\\brick.png";
-			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
-			m_RenderComponent->LoadTexture(def);
-
-			m_RenderComponent->SetShader(ShaderSubsystem::Get()->GetShader("TextureShader"));
-			//// Reset the state
-			VertexBuffer::Unbind();
-			VertexArray::Unbind();
-			IndexBuffer::Unbind();
+			m_RenderComponent->GetShader()->Bind();
+			glUniform3f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.Albedo"), m_LightColor.r, m_LightColor.g, m_LightColor.b);
+			glUniform1f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.AmbientIntensity"), m_AmbientIntensity);
+			GLShader::Unbind();
 		}
 
-		void Update(float _deltaTime) override
-		{
-		}
+		glm::vec3 GetLightColor() const { return m_LightColor; }
 
-		unsigned int indices[12] = {
-				0, 3, 1,
-				1, 3, 2,
-				2, 3, 0,
-				0, 1, 2
-		};
-
-		GLfloat vertices[20] = {
-			//	x      y      z			u	  v
-				-1.0f, -1.0f, 0.0f,		0.0f, 0.0f,
-				0.0f, -1.0f, 1.0f,		0.5f, 0.0f,
-				1.0f, -1.0f, 0.0f,		1.0f, 0.0f,
-				0.0f, 1.0f, 0.0f,		0.5f, 1.0f
-		};
+		glm::vec3 m_LightColor;
+		GLfloat m_AmbientIntensity;
 	};
 	class PlaygroundScene final : public Scene
 	{
@@ -53,7 +40,7 @@ namespace Denix
 		bool Load() override;
 		void Update(float _deltaTime) override;
 
-		Ref<TexObject> TextureObj;
-		Ref<Plane> BrickWall;
+		Ref<Cube> Brick;
+		Ref<Light> LightSource;
 	};
 }

@@ -9,24 +9,18 @@ namespace Denix
 	bool PlaygroundScene::Load()
 	{
 		Scene::Load();
-		//TextureObj = MakeRef<TexObject>();
-		//TextureObj->GetTransformComponent()->SetScale(glm::vec3(30.0f));
-		//TextureObj->GetRenderComponent()->SetShader(ShaderSubsystem::Get()->GetShader("TextureShader"));
-		//m_SceneObjects.push_back(TextureObj);
 
-		BrickWall = MakeRef<Plane>();
-		BrickWall->GetTransformComponent()->SetScale(glm::vec3(30.0f));
-		BrickWall->GetRenderComponent()->SetShader(ShaderSubsystem::Get()->GetShader("TextureShader"));
+		Brick = MakeRef<Cube>();
+		Brick->GetTransformComponent()->SetScale(glm::vec3(30.0f));
+		Brick->GetRenderComponent()->SetShader(ShaderSubsystem::Get()->GetShader("TextureShader"));
 		std::string brick = std::filesystem::current_path().parent_path().string() + "\\Playground\\Content\\Textures\\brick.png";
 
-		BrickWall->GetRenderComponent()->LoadTexture(brick);
-		m_SceneObjects.push_back(BrickWall);
+		Brick->GetRenderComponent()->LoadTexture(brick);
+		m_SceneObjects.push_back(Brick);
 
-		Ref<Cube> cube = MakeRef<Cube>();
-		cube->GetTransformComponent()->SetScale(glm::vec3(30.0f));
-		cube->GetRenderComponent()->SetShader(ShaderSubsystem::Get()->GetShader("TextureShader"));
-		m_SceneObjects.push_back(cube);
-
+		LightSource = MakeRef<Light>();
+		LightSource->GetRenderComponent()->SetShader(ShaderSubsystem::Get()->GetShader("TextureShader"));
+		m_SceneObjects.push_back(LightSource);
 		return true;
 	}
 
@@ -35,7 +29,10 @@ namespace Denix
 		Scene::Update(_deltaTime);
 
 		ImGui::Begin("Playground Scene");
-		
+		ImGui::ColorEdit3("Light Color", &LightSource->m_LightColor[0]);
+		ImGui::SliderFloat("Ambient Intensity", &LightSource->m_AmbientIntensity, 0.0f, 1.0f);
 		ImGui::End();
+
+		LightSource->UseLight();
 	}
 }
