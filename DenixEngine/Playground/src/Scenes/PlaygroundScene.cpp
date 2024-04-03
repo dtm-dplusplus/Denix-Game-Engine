@@ -1,7 +1,7 @@
 #include "PlaygroundScene.h"
 #include "imgui.h"
-
-#include "Denix/System/ShaderSubSystem.h"
+#include <filesystem>
+//#include "Denix/System/ShaderSubSystem.h"
 
 
 namespace Denix
@@ -10,17 +10,15 @@ namespace Denix
 	{
 		Scene::Load();
 
-		Brick = MakeRef<Cube>();
-		Brick->GetTransformComponent()->SetScale(glm::vec3(30.0f));
-		Brick->GetRenderComponent()->SetShader(ShaderSubsystem::Get()->GetShader("TextureShader"));
+		DirLight = MakeRef<DirectionalLight>();
+		DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 3.0f, 0.0f));
+		m_SceneObjects.push_back(DirLight);
+
+		WeirdoCube = MakeRef<WeirdCube>();
+		//WeirdoCube->GetTransformComponent()->SetScale(glm::vec3(30.0f));
 		std::string brick = std::filesystem::current_path().parent_path().string() + "\\Playground\\Content\\Textures\\brick.png";
-
-		Brick->GetRenderComponent()->LoadTexture(brick);
-		m_SceneObjects.push_back(Brick);
-
-		LightSource = MakeRef<Light>();
-		LightSource->GetRenderComponent()->SetShader(ShaderSubsystem::Get()->GetShader("TextureShader"));
-		m_SceneObjects.push_back(LightSource);
+		WeirdoCube->GetRenderComponent()->LoadTexture(brick);
+		m_SceneObjects.push_back(WeirdoCube);
 		return true;
 	}
 
@@ -29,11 +27,23 @@ namespace Denix
 		Scene::Update(_deltaTime);
 
 		ImGui::SetNextWindowPos(ImVec2(1000, 50));
-		ImGui::Begin("Playground Scene");
-		ImGui::ColorEdit3("Light Color", &LightSource->m_LightColor[0]);
-		ImGui::SliderFloat("Ambient Intensity", &LightSource->m_AmbientIntensity, 0.0f, 1.0f);
+		ImGui::Begin("Playground Tools");
+
+		ImGui::ColorEdit4("Background Color", &DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);
+
+		ImGui::Checkbox("Affects Lighting", &DirLight->GetRenderComponent()->AffectsLighting());
+
+		ImGui::ColorEdit3("DirectionalLight Color", &DirLight->m_LightColor[0]);
+
+		ImGui::DragFloat("Ambient Intensity", &DirLight->m_AmbientIntensity, _deltaTime,
+			DirLight->m_AmbientConstraints.x, DirLight->m_AmbientConstraints.y);
+
+		ImGui::DragFloat("Diffuse Intensity", &DirLight->m_DiffuseIntensity, 
+			DirLight->m_DiffuseConstraints.x, DirLight->m_DiffuseConstraints.y);
+
+		ImGui::DragFloat3("DirectionalLight Position", &DirLight->m_LightDirection[0], 0.1f);
 		ImGui::End();
 
-		LightSource->UseLight();
+		DirLight->UseLight();
 	}
 }

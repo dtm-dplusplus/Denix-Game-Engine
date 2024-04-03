@@ -2,22 +2,35 @@
 
 struct DircetionalLight
 {
-	//vec3 Direction;
-	vec3 Albedo;
+	vec3 Direction;
+	vec3 Color;
 	float AmbientIntensity;
+	float DiffuseIntensity;
 	//vec3 Specular;
 };	
 
 in vec2 TexCoord;
-
-out vec4 colour;
+in vec3 Normal;
+out vec4 Color;
 
 uniform sampler2D u_Texture;
-uniform vec4 u_Color;
+uniform vec4 u_BaseColor;
 uniform DircetionalLight u_DirLight;
+uniform bool u_AffectsLighting;
 
 void main()
 {
-	vec4 ambientColor = vec4(u_DirLight.Albedo, 1.0f) * u_DirLight.AmbientIntensity;
-	colour = texture(u_Texture, TexCoord) * ambientColor;
+	// This is slow. Will swap shaders instead later.
+	if (!u_AffectsLighting)
+	{
+		Color = texture(u_Texture, TexCoord) * u_BaseColor;
+		return;
+	}
+
+	vec4 ambientColor = vec4(u_DirLight.Color, 1.0f) * u_DirLight.AmbientIntensity;
+
+	float diffuseFactor = max(dot(normalize(Normal), normalize(u_DirLight.Direction)), 0.0f);
+	vec4 diffuseColour = vec4(u_DirLight.Color, 1.0f) * u_DirLight.DiffuseIntensity * diffuseFactor;
+
+	Color = texture(u_Texture, TexCoord)* (ambientColor + diffuseColour);
 }

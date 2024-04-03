@@ -39,12 +39,15 @@ namespace Denix
 
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(_vertices[0]) * 5, 0);
 			glEnableVertexAttribArray(0);
+
 			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(_vertices[0]) * 5, (void*)(sizeof(_vertices[0]) * 3));
 			glEnableVertexAttribArray(1);
 
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(_vertices[0]) * 5, (void*)(sizeof(_vertices[0]) * 8));
+			glEnableVertexAttribArray(2);
+
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 			glBindVertexArray(0);
 		}
 

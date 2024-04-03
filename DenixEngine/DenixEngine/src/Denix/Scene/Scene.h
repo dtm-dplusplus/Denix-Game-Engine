@@ -18,7 +18,7 @@ namespace Denix
 
 		virtual ~Scene() = default;
 
-		std::string GetName() const { return m_SceneName; }
+		std::string GetSceneName() const { return m_SceneName; }
 
 		virtual bool Load()
 		{

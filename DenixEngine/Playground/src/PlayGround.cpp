@@ -37,7 +37,7 @@ public:
 			if (const auto scene = MakeRef<PlaygroundScene>())
 			{
 				sceneSys->LoadScene(scene);
-				sceneSys->OpenScene(scene->GetName());
+				sceneSys->OpenScene(scene->GetSceneName());
 			}
 		}
 	}

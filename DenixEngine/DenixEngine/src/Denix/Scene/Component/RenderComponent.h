@@ -1,4 +1,7 @@
 #pragma once
+
+#include <filesystem>
+
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
@@ -72,6 +75,8 @@ namespace Denix
 
 		std::string GetFileLocation() const { return m_FileLocation; }
 
+		glm::vec4 m_BaseColor = glm::vec4(1.f, 1.f, 1.f, 1.f);
+
 	private:
 		GLuint m_TextureID;
 		GLenum m_Target = GL_TEXTURE_2D;
@@ -87,22 +92,30 @@ namespace Denix
 		{
 			if (!m_Shader)
 			{
-				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("DebugShader"))
+				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("TextureShader"))
 				{
 					m_Shader = shader;
 				}
 			}
+
+			// Load Default Texture
+			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
+			LoadTexture(def);
 		}
 
 		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
 		{
 			if (!m_Shader)
 			{
-				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("DebugShader"))
+				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("TextureShader"))
 				{
 					m_Shader = shader;
 				}
 			}
+
+			// Load Default Texture
+			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
+			LoadTexture(def);
 		}
 
 		~RenderComponent() override = default;
@@ -154,6 +167,11 @@ namespace Denix
 		bool IsVisible() const { return m_IsVisible; }
 		bool& IsVisible() { return m_IsVisible; }
 		void SetIsVisible(const bool _visible) { m_IsVisible = _visible; }
+
+		bool AffectsLighting() const { return m_AffectsLighting; }
+		bool& AffectsLighting() { return m_AffectsLighting; }
+		void SetAffectsLighting(const bool _affectsLighting) { m_AffectsLighting = _affectsLighting; }
+
 	public:
 		void BeginScene() override;
 
@@ -166,6 +184,7 @@ namespace Denix
 
 	private:
 		bool m_IsVisible = true;
+		bool m_AffectsLighting = true;
 
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 		Ref<GLShader> m_Shader;

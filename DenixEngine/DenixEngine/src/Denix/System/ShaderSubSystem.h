@@ -59,7 +59,13 @@ namespace Denix
 				program->GetUniform("u_Model");
 				program->GetUniform("u_Projection");
 				program->GetUniform("u_View");
-				program->GetUniform("u_Color");
+
+				program->GetUniform("u_AffectsLighting");
+				program->GetUniform("u_Texture");
+				program->GetUniform("u_DirLight.Direction");
+				program->GetUniform("u_DirLight.DiffuseIntensity");
+				program->GetUniform("u_DirLight.Color");
+				program->GetUniform("u_DirLight.AmbientIntensity");
 			}
 			m_Initialized = true;
 		}

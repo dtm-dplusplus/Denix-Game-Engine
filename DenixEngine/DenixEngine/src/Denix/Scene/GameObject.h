@@ -171,9 +171,6 @@ namespace Denix
 		Plane() : GameObject({"Plane"})
 		{
 			m_MeshComponent->CreateMesh((GLfloat*)TexPlaneData, (unsigned int*)PlaneIndices, 20, 6);
-
-			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
-			m_RenderComponent->LoadTexture(def);
 		}
 	};
 
@@ -183,9 +180,6 @@ namespace Denix
 		Cube() : GameObject({ "Cube" })
 		{
 			m_MeshComponent->CreateMesh((GLfloat*)CubeData, (unsigned int*)CubeIndices, 40, 36);
-
-			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
-			m_RenderComponent->LoadTexture(def);
 		}
 	};
 }

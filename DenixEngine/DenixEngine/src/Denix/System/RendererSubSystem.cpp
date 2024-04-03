@@ -38,19 +38,24 @@ namespace Denix
 			glUniformMatrix4fv(_render->m_Shader->GetUniform("u_Model"), 1, 
 				GL_FALSE, glm::value_ptr(_transform->GetModel()));
 
+			// Upload Affects Lighting bool
+			glUniform1i(_render->m_Shader->GetUniform("u_AffectsLighting"), _render->m_AffectsLighting);
+			if (!_render->m_AffectsLighting)
+			{
+				const glm::vec4& baseCol = _render->m_Texture->m_BaseColor;
+				glUniform4f(_render->m_Shader->GetUniform("u_BaseColor"), baseCol.r, baseCol.g, baseCol.b, baseCol.a);
+
+			}
+
+			// Upload the camera matrices relative to Object
 			if (m_ActiveCamera)
 			{
-				// Upload the projection matrix
 				glUniformMatrix4fv(_render->m_Shader->GetUniform("u_Projection"), 1, 
 					GL_FALSE, glm::value_ptr(m_ActiveCamera->GetProjectionMatrix()));
 
-				// Upload the view matrix
 				glUniformMatrix4fv(_render->m_Shader->GetUniform("u_View"), 1, 
 					GL_FALSE, glm::value_ptr(m_ActiveCamera->GetViewMatrix()));
 			}
-
-			// Upload the color
-			glUniform4fv(_render->m_Shader->GetUniform("u_Color"), 1, &_render->GetDebugColor()[0]);
 
 			// Draw the indexed mesh
 			glDrawElements(GL_TRIANGLES, _mesh->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);

@@ -12,7 +12,7 @@ namespace Denix
 	public:
 		Camera() : GameObject(ObjectInitializer("Camera"))
 		{
-			m_TransformComponent->SetPosition(glm::vec3(0.0f, 0.0f, 100.f));
+			m_TransformComponent->SetPosition(glm::vec3(0.0f, 0.0f, 5));
 			m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
 		}
 
