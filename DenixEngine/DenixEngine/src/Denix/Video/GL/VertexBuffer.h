@@ -69,6 +69,9 @@ namespace Denix
 
 		// Size of data stored in buffer
 		GLsizei m_Size;
+
+		friend class MeshComponent;
+
 	};
 
 	class IndexBuffer
@@ -129,5 +132,8 @@ namespace Denix
 
 		// Size of data stored in buffer
 		GLsizei m_Size;
+
+		friend class MeshComponent;
+
 	};
 }

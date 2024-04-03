@@ -37,5 +37,7 @@ namespace Denix
 		GLuint m_GL_ID = 0;
 		GLsizei m_Stride = 0;
 		GLuint m_Index = 0;
+
+		friend class MeshComponent;
 	};
 }
