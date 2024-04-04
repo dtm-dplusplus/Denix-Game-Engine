@@ -22,7 +22,7 @@ namespace Denix
 			m_TransformComponent->SetScale(glm::vec3(0.5f));
 
 			m_RenderComponent->SetAffectsLighting(false);
-			//m_RenderComponent->GetTexture()->m_BaseColor = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+			m_RenderComponent->GetTexture()->m_BaseColor = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
 		}
 		
 

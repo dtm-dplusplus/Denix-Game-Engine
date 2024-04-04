@@ -15,8 +15,9 @@ namespace Denix
 		m_SceneObjects.push_back(DirLight);
 
 		WeirdoCube = MakeRef<WeirdCube>();
-
-		WeirdoCube->GetRenderComponent()->SetTexture(ResourceSubsystem::GetTexture("brick"));
+		//WeirdoCube->GetTransformComponent()->SetScale(glm::vec3(30.0f));
+		std::string brick = std::filesystem::current_path().parent_path().string() + "\\Playground\\Content\\Textures\\brick.png";
+		WeirdoCube->GetRenderComponent()->LoadTexture(brick);
 		m_SceneObjects.push_back(WeirdoCube);
 		return true;
 	}

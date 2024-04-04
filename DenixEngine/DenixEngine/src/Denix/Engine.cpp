@@ -3,7 +3,6 @@
 
 
 #include "System/WindowSubsystem.h"
-#include "System/ResourceSubsystem.h"
 #include "System/ShaderSubsystem.h"
 #include "System/UISubsystem.h"
 #include "System/PhysicsSubsystem.h"
@@ -34,9 +33,6 @@ namespace Denix
 
 		m_WindowSubSystem = MakeRef<WindowSubsystem>();
 		m_Subsystems["Window"] = m_WindowSubSystem;
-
-		m_ResourceSubSystem = MakeRef<ResourceSubsystem>();
-		m_Subsystems["Resource"] = m_ResourceSubSystem;
 
 		m_ShaderSubSystem = MakeRef<ShaderSubsystem>();
 		m_Subsystems["Shader"] = m_ShaderSubSystem;
