@@ -1,6 +1,9 @@
 #include "Denix.h"
 #include "Scenes/PlaygroundScene.h"
 
+#include <filesystem>
+#include "Denix/System/ResourceSubsystem.h"
+
 using namespace Denix;
 
 class Playground: public Engine
@@ -26,6 +29,9 @@ public:
 	void PostInitialize() override
 	{
 		Engine::PostInitialize();
+
+		std::string brick = std::filesystem::current_path().parent_path().string() + "\\Playground\\Content\\Textures\\brick.png";
+		ResourceSubsystem::LoadTexture(brick, "brick");	
 
 		RestartScene();
 	}

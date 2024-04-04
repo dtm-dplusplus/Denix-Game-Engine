@@ -10,10 +10,10 @@ namespace Denix
 		unsigned char* texData = stbi_load(m_FileLocation.c_str(), &m_Width, &m_Height, &m_BitDepth, 0);
 		if (!texData)
 		{
-			DE_LOG(LogRender, Error, "Failed to find: {}", m_FileLocation)
+			DE_LOG(LogRenderer, Error, "Failed to find: {}", m_FileLocation)
 			return;
 		}
-		DE_LOG(LogRender, Info, "Loaded Texture: {}", m_FileLocation)
+		DE_LOG(LogRenderer, Info, "Loaded Texture: {}", m_FileLocation)
 
 		glGenTextures(1, &m_TextureID);
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);

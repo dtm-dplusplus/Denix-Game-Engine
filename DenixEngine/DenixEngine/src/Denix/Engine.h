@@ -35,6 +35,8 @@ namespace Denix
 
 		Ref<class WindowSubsystem> m_WindowSubSystem;
 
+		Ref<class ResourceSubsystem> m_ResourceSubSystem;
+
 		Ref<class SceneSubsystem> m_SceneSubSystem;
 
 		Ref<class ShaderSubsystem> m_ShaderSubSystem;
