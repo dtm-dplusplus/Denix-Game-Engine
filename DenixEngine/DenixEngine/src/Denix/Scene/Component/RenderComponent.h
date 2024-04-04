@@ -2,89 +2,15 @@
 
 #include <filesystem>
 
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
 
 #include "Denix/Scene/Component.h"
 #include "Denix/System/ShaderSubsystem.h"
 #include "Denix/Video/GL/GLShader.h"
-
+#include "Denix/Video/GL/Texture.h"
 
 
 namespace Denix
 {
-	struct TextureSettings
-	{
-		GLint WrapMode = GL_REPEAT;
-		int WrapValue = 0; // ImGui Combo Index
-
-		GLint FilterMode = GL_LINEAR;
-		int FilterValue = 1; // ImGui Combo Index
-	};
-
-	class Texture
-	{
-	public:
-		Texture()
-		{
-			m_TextureID = 0;
-			m_Width = 0;
-			m_Height = 0;
-			m_BitDepth = 0;
-			m_FileLocation = "";
-		}
-
-		Texture(const std::string& _fileLoc)
-		{
-			m_TextureID = 0;
-			m_Width = 0;
-			m_Height = 0;
-			m_BitDepth = 0;
-			m_FileLocation = _fileLoc;
-		}
-
-		void LoadTexture();
-
-		void Bind() const
-		{
-			glActiveTexture(GL_TEXTURE0); // TODO This unit may change in the future
-			glBindTexture(m_Target, m_TextureID);
-		}
-
-		void Unbind() const
-		{
-			glBindTexture(m_Target, 0);
-		}
-
-		void ClearTexture()
-		{
-			glDeleteTextures(1, &m_TextureID);
-			m_TextureID = 0;
-			m_Width = 0;
-			m_Height = 0;
-			m_BitDepth = 0;
-			m_FileLocation = "";
-		}
-
-		GLuint GetTextureID() const { return m_TextureID; }
-		GLenum GetTarget() const { return m_Target; }
-
-		int GetWidth() const { return m_Width; }
-		int GetHeight() const { return m_Height; }
-		glm::vec2 GetSize() const { return {m_Width, m_Height}; }
-
-		std::string GetFileLocation() const { return m_FileLocation; }
-
-		glm::vec4 m_BaseColor = glm::vec4(1.f, 1.f, 1.f, 1.f);
-
-	private:
-		GLuint m_TextureID;
-		GLenum m_Target = GL_TEXTURE_2D;
-		int m_Width, m_Height, m_BitDepth;
-
-		std::string m_FileLocation;
-	};
-
 	class RenderComponent : public Component
 	{
 	public:
@@ -100,7 +26,7 @@ namespace Denix
 
 			// Load Default Texture
 			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
-			LoadTexture(def);
+			LoadTexture(def, "DefaultTexture");
 		}
 
 		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
@@ -115,26 +41,16 @@ namespace Denix
 
 			// Load Default Texture
 			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
-			LoadTexture(def);
+			LoadTexture(def, "DefaultTexture");
 		}
 
 		~RenderComponent() override = default;
 
-		void LoadTexture(const std::string& _path)
+		void LoadTexture(const std::string& _path, const std::string& _name)
 		{
-			m_Texture = MakeRef<Texture>(_path);
-			m_Texture->LoadTexture();
-
-			if (!m_Texture->GetTextureID()) return;
-
-			m_Texture->Bind();
-
-			glTexParameteri(m_Texture->GetTarget(), GL_TEXTURE_WRAP_S, m_TextureSettings.WrapMode);
-			glTexParameteri(m_Texture->GetTarget(), GL_TEXTURE_WRAP_T, m_TextureSettings.WrapMode);
-			glTexParameteri(m_Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, m_TextureSettings.FilterMode);
-			glTexParameteri(m_Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, m_TextureSettings.FilterMode);
-
-			m_Texture->Unbind();
+			m_Texture = MakeRef<Texture>(_path, _name);
+			if (!m_Texture->LoadTexture()) return;
+            m_TextureSettings = m_Texture->GetSettings();
 		}
 
 		Ref<Texture> GetTexture() const { return m_Texture; }
@@ -159,10 +75,7 @@ namespace Denix
 
 		GLenum GetDrawMode() const { return static_cast<GLenum>(m_DrawMode); }
 		int& GetDrawMode() { return m_DrawMode; }
-		void SetDrawMode(const GLenum _mode) 
-		{
-			m_DrawMode = _mode;
-		}	
+		void SetDrawMode(const GLenum _mode) { m_DrawMode = _mode; }
 
 		bool IsVisible() const { return m_IsVisible; }
 		bool& IsVisible() { return m_IsVisible; }

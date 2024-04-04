@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Subsystem.h"
+#include "Denix/System/Subsystem.h"
 #include "Denix/Video/Window.h"
 #include <SDL.h>
 #include <GL/glew.h>

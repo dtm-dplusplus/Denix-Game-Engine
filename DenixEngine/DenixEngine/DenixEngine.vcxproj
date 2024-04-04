@@ -181,6 +181,7 @@
     </ClCompile>
     <ClCompile Include="src\Denix\System\ShaderSubsystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
+    <ClCompile Include="src\Denix\Video\GL\Texture.cpp" />
     <ClInclude Include="src\Denix\Scene\GameObjectData.h" />
     <ClInclude Include="src\Denix\Input\InputSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\Component\ColliderComponent.h" />
@@ -219,6 +220,7 @@
     <ClInclude Include="src\Denix\System\ShaderSubsystem.h" />
     <ClInclude Include="src\Denix\Video\GL\GLShader.h" />
     <ClInclude Include="src\Denix\Scene\Component\TransformComponent.h" />
+    <ClInclude Include="src\Denix\Video\GL\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Denix.h" />
