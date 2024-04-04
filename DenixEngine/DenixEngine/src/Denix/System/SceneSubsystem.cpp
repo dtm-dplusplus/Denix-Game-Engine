@@ -62,7 +62,7 @@ namespace Denix
 
 		return true;
 	}
-
+	
 	void SceneSubsystem::UnloadScene(const std::string& _name)
 	{
 		if (const Ref<Scene>scene = m_LoadedScenes[_name])

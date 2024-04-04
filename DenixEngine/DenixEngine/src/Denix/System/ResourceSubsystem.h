@@ -32,6 +32,9 @@ namespace Denix
 
         static Ref<class GLShader> GetShader(const std::string& _name);
 
+        // TEMP - We shouldn't expose this
+        static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_ResourceSubsystem->m_TextureStore; }
+
     private:
         static ResourceSubsystem* s_ResourceSubsystem;
 

@@ -19,14 +19,15 @@ namespace Denix
 		s_InputSubsystem = InputSubsystem::Get();
 		s_RendererSubSystem = RendererSubsystem::Get();
 
-		DE_LOG(Log, Trace, "Editor Subsystem Initialized")
+		DE_LOG_CREATE(LogEditor)
+		DE_LOG(LogEditor, Trace, "Editor Subsystem Initialized")
 
 		m_Initialized = true;
 	}
 
 	void EditorSubsystem::Deinitialize()
 	{
-		DE_LOG(Log, Trace, "Editor Subsystem Initialized")
+		DE_LOG(LogEditor, Trace, "Editor Subsystem Initialized")
 		m_Initialized = false;
 	}
 
@@ -363,7 +364,7 @@ namespace Denix
 				}
 
 				// Render Component
-				if (ImGui::CollapsingHeader("Render Component"))
+				if (ImGui::CollapsingHeader("Render Component", ImGuiTreeNodeFlags_DefaultOpen))
 				{
 					const Ref<RenderComponent> render = selectedObject->GetRenderComponent();
 
@@ -372,12 +373,36 @@ namespace Denix
 					ImGui::SeparatorText("Texture");
 					if (const Ref<Texture> texture = render->GetTexture())
 					{
-						TextureSettings& texSettings = render->GetTextureSettings();
+						
 
+						// Texture Preview + Selection
+						ImGui::Image((void*)(intptr_t)render->GetTexture()->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
+						
+						if (ImGui::BeginCombo("##TextureSelection", render->GetTexture()->GetTextureName().c_str(), ImGuiComboFlags_WidthFitPreview))
+						{
+							for (auto& [fst, snd] : ResourceSubsystem::GetTextureStore())
+							{
+								ImGui::PushID(fst.c_str());
+								ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
+								if (ImGui::Selectable(fst.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(250, 100)))
+								{
+									render->SetTexture(snd);
+									DE_LOG(LogEditor, Info, "Texture on {} set to: {}", render->GetName(), snd->GetTextureName())
+								}
+								ImGui::PopID();
+							}
+							ImGui::EndCombo();
+						}
+
+						// Texture Info
+						ImGui::SeparatorText("Texture Info");
 						ImGui::Text("Texture ID: %d", texture->GetTextureID());
-						ImGui::Text("File Path: %s", texture->GetFileLocation().c_str());
+						ImGui::TextWrapped("File Path : % s", texture->GetFileLocation().c_str());
 						ImGui::Text("Size = %d x %d", texture->GetWidth(), texture->GetHeight());
 						ImGui::Separator();
+
+						// Texture Settings
+						TextureSettings& texSettings = render->GetTextureSettings();
 						if (ImGui::Combo("Wrap Mode", &texSettings.WrapValue, "GL_REPEAT\0GL_MIRRORED_REPEAT\0GL_CLAMP_TO_EDGE\0GL_CLAMP_TO_BORDER\0\0"))
 						{
 							if(texSettings.WrapValue == 0) texSettings.WrapMode = GL_REPEAT;
@@ -397,19 +422,13 @@ namespace Denix
 							else if(texSettings.FilterValue == 5) texSettings.FilterMode = GL_LINEAR_MIPMAP_LINEAR;
 						}	
 
-						// Texture Preview
-						ImGui::Image((void*)(intptr_t)texture->GetTextureID(), ImVec2(100, 100));
-					}
-					else
-					{
-						ImGui::Text("No Texture");
 					}
 
 					//if (ImGui::Combo("Draw Mode", &render->GetDrawMode(), "Points\0Lines\0Line Loop\0Line Strip\0Triangles\0\0"))
 					//{
 					//	DE_LOG(Log, Trace, "Draw Mode Changed to: {}", render->GetDrawMode());
 					//}
-					ImGui::ColorEdit4("Debug Color", &render->GetDebugColor()[0]);
+					//ImGui::ColorEdit4("Debug Color", &render->GetDebugColor()[0]);
 				}
 
 				// Collider Component

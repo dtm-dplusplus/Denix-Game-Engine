@@ -24,7 +24,8 @@ namespace Denix
 		ImGui::SetNextWindowPos(ImVec2(1000, 50));
 		ImGui::Begin("Playground Tools");
 
-		ImGui::ColorEdit4("Background Color", &DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);
+		ImGui::SeparatorText("Directional Light Settings");
+		ImGui::ColorEdit4("Base Color", &DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);
 
 		ImGui::Checkbox("Affects Lighting", &DirLight->GetRenderComponent()->AffectsLighting());
 
@@ -37,6 +38,10 @@ namespace Denix
 			DirLight->m_DiffuseConstraints.x, DirLight->m_DiffuseConstraints.y);
 
 		ImGui::DragFloat3("DirectionalLight Position", &DirLight->m_LightDirection[0], 0.1f);
+
+		ImGui::SeparatorText("Werid Object Settings");
+
+		
 		ImGui::End();
 
 		DirLight->UseLight();
