@@ -1,7 +1,5 @@
 #pragma once
 
-#include <filesystem>
-
 #include "Denix/Scene/Scene.h"
 
 namespace Denix

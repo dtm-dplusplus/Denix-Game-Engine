@@ -1,8 +1,5 @@
 #include "PlaygroundScene.h"
 #include "imgui.h"
-#include <filesystem>
-//#include "Denix/System/ShaderSubSystem.h"
-
 
 namespace Denix
 {
@@ -15,9 +12,7 @@ namespace Denix
 		m_SceneObjects.push_back(DirLight);
 
 		WeirdoCube = MakeRef<WeirdCube>();
-		//WeirdoCube->GetTransformComponent()->SetScale(glm::vec3(30.0f));
-		std::string brick = std::filesystem::current_path().parent_path().string() + "\\Playground\\Content\\Textures\\brick.png";
-		WeirdoCube->GetRenderComponent()->LoadTexture(brick, "brick");
+		WeirdoCube->GetRenderComponent()->SetTexture(ResourceSubsystem::GetTexture("brick"));
 		m_SceneObjects.push_back(WeirdoCube);
 		return true;
 	}
@@ -38,7 +33,7 @@ namespace Denix
 		ImGui::DragFloat("Ambient Intensity", &DirLight->m_AmbientIntensity, _deltaTime,
 			DirLight->m_AmbientConstraints.x, DirLight->m_AmbientConstraints.y);
 
-		ImGui::DragFloat("Diffuse Intensity", &DirLight->m_DiffuseIntensity, 
+		ImGui::DragFloat("Diffuse Intensity", &DirLight->m_DiffuseIntensity, _deltaTime,
 			DirLight->m_DiffuseConstraints.x, DirLight->m_DiffuseConstraints.y);
 
 		ImGui::DragFloat3("DirectionalLight Position", &DirLight->m_LightDirection[0], 0.1f);

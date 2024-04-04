@@ -110,6 +110,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Denix\System\ResourceSubsystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Object.cpp" />
     <ClCompile Include="src\Denix\Input\InputSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -182,6 +183,7 @@
     <ClCompile Include="src\Denix\System\ShaderSubsystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Texture.cpp" />
+    <ClInclude Include="src\Denix\System\ResourceSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\GameObjectData.h" />
     <ClInclude Include="src\Denix\Input\InputSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\Component\ColliderComponent.h" />

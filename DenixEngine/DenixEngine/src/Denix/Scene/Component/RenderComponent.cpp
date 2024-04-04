@@ -4,8 +4,6 @@
 
 namespace Denix
 {
-	
-
 	void RenderComponent::BeginScene()
 	{
 		Component::BeginScene();

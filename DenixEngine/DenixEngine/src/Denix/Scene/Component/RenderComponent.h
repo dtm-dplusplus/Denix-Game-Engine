@@ -4,7 +4,7 @@
 
 
 #include "Denix/Scene/Component.h"
-#include "Denix/System/ShaderSubsystem.h"
+#include "Denix/System/ResourceSubsystem.h"
 #include "Denix/Video/GL/GLShader.h"
 #include "Denix/Video/GL/Texture.h"
 
@@ -16,44 +16,24 @@ namespace Denix
 	public:
 		RenderComponent() : Component(ObjectInitializer("Render Component"))
 		{
-			if (!m_Shader)
-			{
-				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("TextureShader"))
-				{
-					m_Shader = shader;
-				}
-			}
-
-			// Load Default Texture
-			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
-			LoadTexture(def, "DefaultTexture");
+			m_Shader = ResourceSubsystem::GetShader("TextureShader");
+			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
 		}
 
 		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
 		{
-			if (!m_Shader)
-			{
-				if (const Ref<GLShader> shader = ShaderSubsystem::Get()->GetShader("TextureShader"))
-				{
-					m_Shader = shader;
-				}
-			}
-
-			// Load Default Texture
-			std::string def = std::filesystem::current_path().parent_path().string() + "\\DenixEngine\\res\\Textures\\DefaultTexture.png";
-			LoadTexture(def, "DefaultTexture");
+			m_Shader = ResourceSubsystem::GetShader("TextureShader");
+			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
 		}
 
 		~RenderComponent() override = default;
 
-		void LoadTexture(const std::string& _path, const std::string& _name)
-		{
-			m_Texture = MakeRef<Texture>(_path, _name);
-			if (!m_Texture->LoadTexture()) return;
-            m_TextureSettings = m_Texture->GetSettings();
-		}
-
 		Ref<Texture> GetTexture() const { return m_Texture; }
+		void SetTexture(const Ref<Texture>& _texture) { m_Texture = _texture; }
+
+		TextureSettings GetTextureSettings() const { return m_TextureSettings; }
+		TextureSettings& GetTextureSettings() { return m_TextureSettings; }
+		void SetTextureSettings(const TextureSettings& _settings) { m_TextureSettings = _settings; }
 
 		enum class DrawMode
 		{
@@ -93,7 +73,6 @@ namespace Denix
 		void RegisterComponent() override;
 		void UnregisterComponent() override;
 		
-		TextureSettings& GetTextureSettings() { return m_TextureSettings; }
 
 	private:
 		bool m_IsVisible = true;

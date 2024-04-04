@@ -10,6 +10,7 @@
 #include "System/RendererSubsystem.h"
 #include "Input/InputSubsystem.h"
 #include "Editor/EditorSubsystem.h"
+#include "System/ResourceSubsystem.h"
 
 namespace Denix
 {
@@ -55,7 +56,10 @@ namespace Denix
 		m_InputSubsystem = MakeRef<InputSubsystem>();
 		m_Subsystems["Input"] = m_InputSubsystem;
 
-		// Order of initialization is defined above
+		m_ResourceSubSystem = MakeRef<ResourceSubsystem>();
+		m_Subsystems["Resource"] = m_ResourceSubSystem;
+
+	    // Order of initialization is defined above
 		for(const auto& subsystem : m_Subsystems | std::views::values)
 			subsystem->Initialize();
 
