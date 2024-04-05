@@ -11,6 +11,7 @@
 #include "Input/InputSubsystem.h"
 #include "Editor/EditorSubsystem.h"
 #include "System/ResourceSubsystem.h"
+#include "System/FileSubsystem.h"
 
 namespace Denix
 {
@@ -32,35 +33,49 @@ namespace Denix
 
 		PreInitialize();
 
+		m_FileSubSystem = MakeRef<FileSubsystem>();
+		m_FileSubSystem->m_ProjectName = m_ProjectName;
+		m_SubsystemOrder.push_back(m_FileSubSystem);
+		m_Subsystems["File"] = m_FileSubSystem;
+
 		m_WindowSubSystem = MakeRef<WindowSubsystem>();
+		m_SubsystemOrder.push_back(m_WindowSubSystem);
 		m_Subsystems["Window"] = m_WindowSubSystem;
 
 		m_ShaderSubSystem = MakeRef<ShaderSubsystem>();
+		m_SubsystemOrder.push_back(m_ShaderSubSystem);
 		m_Subsystems["Shader"] = m_ShaderSubSystem;
 
 		m_RendererSubSystem = MakeRef<RendererSubsystem>();
+		m_SubsystemOrder.push_back(m_RendererSubSystem);
 		m_Subsystems["Renderer"] = m_RendererSubSystem;
 
 		m_UISubSytem = MakeRef<UISubsystem>();
+		m_SubsystemOrder.push_back(m_UISubSytem);
 		m_Subsystems["UI"] = m_UISubSytem;
 
 		m_EditorSubSystem = MakeRef<EditorSubsystem>();
+		m_SubsystemOrder.push_back(m_EditorSubSystem);
 		m_Subsystems["Editor"] = m_EditorSubSystem;
 
 		m_SceneSubSystem = MakeRef<SceneSubsystem>();
+		m_SubsystemOrder.push_back(m_SceneSubSystem);
 		m_Subsystems["Scene"] = m_SceneSubSystem;
 
 		m_PhysicsSubSystem = MakeRef<PhysicsSubsystem>();
+		m_SubsystemOrder.push_back(m_PhysicsSubSystem);
 		m_Subsystems["Physics"] = m_PhysicsSubSystem;
 
 		m_InputSubsystem = MakeRef<InputSubsystem>();
+		m_SubsystemOrder.push_back(m_InputSubsystem);
 		m_Subsystems["Input"] = m_InputSubsystem;
 
 		m_ResourceSubSystem = MakeRef<ResourceSubsystem>();
+		m_SubsystemOrder.push_back(m_ResourceSubSystem);
 		m_Subsystems["Resource"] = m_ResourceSubSystem;
 
-	    // Order of initialization is defined above
-		for(const auto& subsystem : m_Subsystems | std::views::values)
+	    // Order of initialization is defined above - NO ITS NOT
+		for(const auto& subsystem : m_SubsystemOrder)
 			subsystem->Initialize();
 
 		DE_LOG(LogEngine, Info, "Engine Initialized")
@@ -108,6 +123,7 @@ namespace Denix
 	void Engine::PreInitialize()
 	{
 		DE_LOG(LogEngine, Trace, "Engine Pre-Initialized")
+
 	}
 
 	void Engine::PostInitialize()

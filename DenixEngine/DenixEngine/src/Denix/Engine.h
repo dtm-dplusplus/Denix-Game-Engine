@@ -22,18 +22,28 @@ namespace Denix
 
 		static Engine& Get() { return *s_Engine; }
 
+		std::string GetProjectName() const { return m_ProjectName; }
+
 	public:
 		virtual void PreInitialize();
 		virtual void PostInitialize();
 
 		// TEMP
 		virtual void RestartScene() {}
+
+	protected:
+		std::string m_ProjectName;
+
+		
 	private:
 		static Engine* s_Engine;
 
+		std::vector< Ref<Subsystem>> m_SubsystemOrder;
 		std::unordered_map<std::string, Ref<Subsystem>>  m_Subsystems;
 
 		Ref<class WindowSubsystem> m_WindowSubSystem;
+
+		Ref<class FileSubsystem> m_FileSubSystem;
 
 		Ref<class ResourceSubsystem> m_ResourceSubSystem;
 

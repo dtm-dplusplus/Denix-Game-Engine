@@ -1,8 +1,6 @@
 #include "Denix.h"
 #include "Scenes/PlaygroundScene.h"
 
-#include <filesystem>
-
 using namespace Denix;
 
 class Playground: public Engine
@@ -12,6 +10,9 @@ public:
 	Playground()
 	{
 		DE_LOG_CREATE(LogPlayground)
+
+		m_ProjectName = "Playground";
+
 		DE_LOG(LogPlayground, Trace, "Playground Created")
 	}
 
@@ -29,8 +30,7 @@ public:
 	{
 		Engine::PostInitialize();
 
-		ResourceSubsystem::LoadTexture(std::filesystem::current_path().parent_path().string() +
-                                       R"(\Playground\Content\Textures\brick.png)", "brick");
+		ResourceSubsystem::LoadTexture(FileSubsystem::GetProjectRoot() + R"(Content\Textures\brick.png)", "brick");
 
 		RestartScene();
 	}

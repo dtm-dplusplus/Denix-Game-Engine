@@ -1,8 +1,9 @@
 #pragma once
 #include "Subsystem.h"
 #include "Denix/Video/GL/GLShader.h"
-#include "../Core.h"
-#include "Denix/Core/File.h"
+
+#include "FileSubsystem.h"
+#include "Denix/Core.h"
 
 namespace Denix
 {
@@ -33,8 +34,8 @@ namespace Denix
 			// Create Debug Shader
 			{
 				std::vector<std::pair<GLenum, std::string>> shaders;
-				shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res\\shaders\\DebugVertex.glsl"));
-				shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\DebugFragment.glsl"));
+				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::Read("res\\shaders\\DebugVertex.glsl"));
+				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::Read("res\\shaders\\DebugFragment.glsl"));
 				LoadShader(shaders, "DebugShader");
 
 				const Ref<GLShader> program = GetShader("DebugShader");
@@ -49,8 +50,8 @@ namespace Denix
 			// Create Texture Shader
 			{
 				std::vector<std::pair<GLenum, std::string>> shaders;
-				shaders.emplace_back(GL_VERTEX_SHADER, File::Read("res\\shaders\\TexVertex.glsl"));
-				shaders.emplace_back(GL_FRAGMENT_SHADER, File::Read("res\\shaders\\TexFragment.glsl"));
+				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::Read(FileSubsystem::GetEngineRoot() + R"(res\shaders\TexVertex.glsl)", true));
+				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::Read(FileSubsystem::GetEngineRoot() + R"(res\shaders\TexFragment.glsl)", true));
 				LoadShader(shaders, "TextureShader");
 
 				const Ref<GLShader> program = GetShader("TextureShader");

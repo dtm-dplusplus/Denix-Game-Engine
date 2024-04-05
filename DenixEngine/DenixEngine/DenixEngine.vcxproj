@@ -110,6 +110,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Denix\System\FileSubsystem.cpp" />
     <ClCompile Include="src\Denix\System\ResourceSubsystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Object.cpp" />
     <ClCompile Include="src\Denix\Input\InputSubsystem.cpp">
@@ -147,10 +148,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\Core\File.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="src\Denix\Core\Logger.cpp" />
     <ClCompile Include="src\Denix\depch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -183,6 +180,7 @@
     <ClCompile Include="src\Denix\System\ShaderSubsystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Texture.cpp" />
+    <ClInclude Include="src\Denix\System\FileSubsystem.h" />
     <ClInclude Include="src\Denix\System\ResourceSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\GameObjectData.h" />
     <ClInclude Include="src\Denix\Input\InputSubsystem.h" />
@@ -200,7 +198,6 @@
     <ClInclude Include="contrib\imgui\imstb_rectpack.h" />
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Denix\Core\File.h" />
     <ClInclude Include="src\Denix\Core\Logger.h" />
     <ClInclude Include="src\Denix\depch.h" />
     <ClInclude Include="src\Denix\EntryPoint.h" />

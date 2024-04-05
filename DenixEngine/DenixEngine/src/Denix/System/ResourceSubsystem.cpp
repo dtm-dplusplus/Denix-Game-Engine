@@ -1,13 +1,9 @@
 #include "ResourceSubsystem.h"
 #include "ShaderSubsystem.h"
-
+#include "FileSubsystem.h"
 #include "Denix/Scene/Component/RenderComponent.h"
 #include "Denix/Video/GL/GLShader.h"
 #include "Denix/Video/GL/Texture.h"
-
-#include <filesystem>
-
-namespace fs = std::filesystem;
 
 namespace Denix
 {
@@ -20,9 +16,7 @@ namespace Denix
 		DE_LOG_CREATE(LogResourceSubsystem)
 
 		// Iniatlize Default Assets
-		std::string def = fs::current_path().parent_path().string() + R"(\DenixEngine\res\textures\DefaultTexture.png)";
-
-		LoadTexture(def, "DefaultTexture");
+		LoadTexture(FileSubsystem::GetEngineRoot() + R"(res\textures\DefaultTexture.png)", "DefaultTexture");
 
 	    DE_LOG(LogResourceSubsystem, Trace, "Resource Subsystem Initialized")
 	}

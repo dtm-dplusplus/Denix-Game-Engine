@@ -92,9 +92,6 @@
     <ClCompile Include="src\Denix\Core\Logger.cpp">
       <Filter>src\Denix\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\Core\File.cpp">
-      <Filter>src\Denix\Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\Scene\Camera.cpp">
       <Filter>src\Denix\Scene</Filter>
     </ClCompile>
@@ -133,6 +130,15 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Input\InputSubsystem.cpp">
       <Filter>src\Denix\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\System\ResourceSubsystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Video\GL\Texture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\System\FileSubsystem.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -190,9 +196,6 @@
     </ClInclude>
     <ClInclude Include="src\Denix\System\PhysicsSubsystem.h">
       <Filter>src\Denix\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Denix\Core\File.h">
-      <Filter>src\Denix\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Denix\Core\Logger.h">
       <Filter>src\Denix\Core</Filter>
@@ -255,5 +258,8 @@
     <ClInclude Include="src\Denix\Video\GL\GLShader.h">
       <Filter>src\Denix\Video\GL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Denix\System\ResourceSubsystem.h" />
+    <ClInclude Include="src\Denix\Video\GL\Texture.h" />
+    <ClInclude Include="src\Denix\System\FileSubsystem.h" />
   </ItemGroup>
 </Project>
