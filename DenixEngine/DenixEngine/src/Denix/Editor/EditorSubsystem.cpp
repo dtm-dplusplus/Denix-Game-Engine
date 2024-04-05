@@ -369,12 +369,11 @@ namespace Denix
 					const Ref<RenderComponent> render = selectedObject->GetRenderComponent();
 
 					ImGui::Checkbox("Visible", &render->IsVisible());
+					ImGui::Checkbox("Affects Lighting", &render->AffectsLighting());
 
 					ImGui::SeparatorText("Texture");
 					if (const Ref<Texture> texture = render->GetTexture())
 					{
-						
-
 						// Texture Preview + Selection
 						ImGui::Image((void*)(intptr_t)render->GetTexture()->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
 						
@@ -423,12 +422,6 @@ namespace Denix
 						}	
 
 					}
-
-					//if (ImGui::Combo("Draw Mode", &render->GetDrawMode(), "Points\0Lines\0Line Loop\0Line Strip\0Triangles\0\0"))
-					//{
-					//	DE_LOG(Log, Trace, "Draw Mode Changed to: {}", render->GetDrawMode());
-					//}
-					//ImGui::ColorEdit4("Debug Color", &render->GetDebugColor()[0]);
 				}
 
 				// Collider Component
@@ -439,7 +432,6 @@ namespace Denix
 
 					ImGui::Checkbox("Show Collider", &render->IsVisible());
 					if (ImGui::Button("Is Colliding")) collider->ToggleColliding();
-					ImGui::ColorEdit4("Collider Color", &render->GetDebugColor()[0]);
 				}
 
 				// Mesh Component

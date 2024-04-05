@@ -80,7 +80,6 @@ namespace Denix
 			glBindAttribLocation(m_GL_ID, _index, _name.data());
 		}
 
-	
 		GLint GetUniform(const std::string& _uniform)
 		{
 			if (const GLint uniform = glGetUniformLocation(m_GL_ID, _uniform.c_str()); uniform != -1)
@@ -105,7 +104,7 @@ namespace Denix
 		//GLint ViewUniformId;
 		//GLint ProjectionUniformId;
 
-		private:
+	private:
 	
 
 	private:

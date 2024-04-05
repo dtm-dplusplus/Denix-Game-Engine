@@ -10,6 +10,8 @@ namespace Denix
 {
 	RendererSubsystem* RendererSubsystem::s_RendererSubSystem{ nullptr };
 
+	// This Render function is far too complex and a lot of this stuff should be set prior to rendering the draw command.
+	// Perhaps we call a render pass function, then call draw.
 	void RendererSubsystem::DrawImmediate(const Ref<RenderComponent>& _render, const Ref<TransformComponent>& _transform, const Ref<MeshComponent>& _mesh)
 	{
 		// Global check to see if the renderer is active - Useful for debugging

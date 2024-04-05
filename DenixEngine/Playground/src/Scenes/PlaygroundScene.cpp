@@ -7,8 +7,13 @@ namespace Denix
 	{
 		Scene::Load();
 
+		Ref <Plane> floor = MakeRef<Plane>();
+		floor->GetTransformComponent()->SetRotation({90.0f, 0.0f,0.0f});
+		floor->GetTransformComponent()->SetScale(glm::vec3(50.0f, 50.0f, 1.0f));
+		m_SceneObjects.push_back(floor);
+
 		DirLight = MakeRef<DirectionalLight>();
-		DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 3.0f, 0.0f));
+		DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));
 		m_SceneObjects.push_back(DirLight);
 
 		WeirdoCube = MakeRef<WeirdCube>();
@@ -27,14 +32,13 @@ namespace Denix
 		ImGui::SeparatorText("Directional Light Settings");
 		ImGui::ColorEdit4("Base Color", &DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);
 
-		ImGui::Checkbox("Affects Lighting", &DirLight->GetRenderComponent()->AffectsLighting());
 
 		ImGui::ColorEdit3("DirectionalLight Color", &DirLight->m_LightColor[0]);
 
-		ImGui::DragFloat("Ambient Intensity", &DirLight->m_AmbientIntensity, _deltaTime,
+		ImGui::SliderFloat("Ambient Intensity", &DirLight->m_AmbientIntensity,
 			DirLight->m_AmbientConstraints.x, DirLight->m_AmbientConstraints.y);
 
-		ImGui::DragFloat("Diffuse Intensity", &DirLight->m_DiffuseIntensity, _deltaTime,
+		ImGui::SliderFloat("Diffuse Intensity", &DirLight->m_DiffuseIntensity,
 			DirLight->m_DiffuseConstraints.x, DirLight->m_DiffuseConstraints.y);
 
 		ImGui::DragFloat3("DirectionalLight Position", &DirLight->m_LightDirection[0], 0.1f);

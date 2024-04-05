@@ -54,7 +54,6 @@ namespace Denix
 		ColliderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Collider Component"))
 		{
 			m_RenderComponent = MakeRef<RenderComponent>(m_ID);
-			m_RenderComponent->SetDrawMode(GL_LINES);
 			m_RenderComponent->SetDebugColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 			m_RenderComponent->SetIsVisible(false);
 			m_Components["Render"] = m_RenderComponent;

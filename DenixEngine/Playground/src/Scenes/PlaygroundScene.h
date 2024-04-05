@@ -41,12 +41,12 @@ namespace Denix
 		glm::vec3 m_LightColor;
 
 		GLfloat m_AmbientIntensity;
-		glm::vec2 m_AmbientConstraints = { 0.0f, 10.0f };
+		glm::vec2 m_AmbientConstraints = { 0.0f, 1.0f };
 
 		glm::vec3 m_LightDirection;
 
 		GLfloat m_DiffuseIntensity;
-		glm::vec2 m_DiffuseConstraints = { 0.0f, 10.0f };
+		glm::vec2 m_DiffuseConstraints = { 0.0f, 3.0f };
 	};
 
 	class WeirdCube : public GameObject

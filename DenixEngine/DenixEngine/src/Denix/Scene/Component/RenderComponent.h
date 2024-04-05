@@ -35,27 +35,12 @@ namespace Denix
 		TextureSettings& GetTextureSettings() { return m_TextureSettings; }
 		void SetTextureSettings(const TextureSettings& _settings) { m_TextureSettings = _settings; }
 
-		enum class DrawMode
-		{
-			POINTS = GL_POINTS,
-			LINES = GL_LINES,
-			LINE_LOOP = GL_LINE_LOOP,
-			LINE_STRIP = GL_LINE_STRIP,
-			TRIANGLES = GL_TRIANGLES
-			/*TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
-			TRIANGLE_FAN = GL_TRIANGLE_FAN*/
-		};
-
 		Ref<GLShader> GetShader() const { return m_Shader; }
 		void SetShader(const Ref<GLShader>& _shader) { m_Shader = _shader; }
 
 		glm::vec4 GetDebugColor() const { return m_DebugColor; }
 		glm::vec4& GetDebugColor() { return m_DebugColor; }
 		glm::vec4 SetDebugColor(const glm::vec4& _color) { return m_DebugColor = _color; }
-
-		GLenum GetDrawMode() const { return static_cast<GLenum>(m_DrawMode); }
-		int& GetDrawMode() { return m_DrawMode; }
-		void SetDrawMode(const GLenum _mode) { m_DrawMode = _mode; }
 
 		bool IsVisible() const { return m_IsVisible; }
 		bool& IsVisible() { return m_IsVisible; }
@@ -81,9 +66,6 @@ namespace Denix
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 		Ref<GLShader> m_Shader;
 		Ref<Texture> m_Texture;
-
-		// Null effect atm as we are overriding with glPolygonMode globally
-		int m_DrawMode = GL_TRIANGLES;
 
 		// Texture
 		TextureSettings m_TextureSettings;

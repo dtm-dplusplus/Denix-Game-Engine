@@ -13,8 +13,8 @@ namespace Denix
 		DE_LOG(LogFileSubSystem, Trace, "File Subsystem Initialized")
 
 		m_Root = fs::current_path().parent_path().string() + R"(\)";
-		m_EngineRoot = m_Root + R"(\DenixEngine\)";
-		m_ProjectRoot = m_Root + R"(\)" + m_ProjectName + R"(\)";
+		m_EngineRoot = m_Root + R"(DenixEngine\)";
+		m_ProjectRoot = m_Root + m_ProjectName + R"(\)";
 		m_ContentRoot = m_ProjectRoot + R"(Content\)";
 
 		DE_LOG(LogFileSubSystem, Trace, "Project Name: {0}", m_ProjectName)
@@ -34,7 +34,7 @@ namespace Denix
 
 	std::string FileSubsystem::Read(const std::string& _path, bool _absolute)
 	{
-		std::string fullPath = s_FileSubsystem->m_Root + _path;
+		std::string fullPath = s_FileSubsystem->m_EngineRoot + _path;
 
 		if (_absolute)
 		{
