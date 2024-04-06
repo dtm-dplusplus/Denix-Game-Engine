@@ -16,9 +16,17 @@ namespace Denix
 		DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));
 		m_SceneObjects.push_back(DirLight);
 
-		WeirdoCube = MakeRef<WeirdCube>();
-		WeirdoCube->GetRenderComponent()->SetTexture(ResourceSubsystem::GetTexture("brick"));
-		m_SceneObjects.push_back(WeirdoCube);
+		Pyramid = MakeRef<WeirdCube>();
+		Pyramid->GetTransformComponent()->SetPosition({ 0.0f,5.0f,0.0f });
+		Pyramid->GetRenderComponent()->SetTexture(ResourceSubsystem::GetTexture("brick"));
+		Pyramid->GetRenderComponent()->SetMaterial(MakeRef<Material>(0.5f, 4));
+		m_SceneObjects.push_back(Pyramid);
+
+		TestCube = MakeRef<Cube>();
+		TestCube->GetTransformComponent()->SetPosition({ 5.0f,5.0f,0.0f });
+		TestCube->GetRenderComponent()->SetTexture(ResourceSubsystem::GetTexture("brick"));
+		TestCube->GetRenderComponent()->SetMaterial(MakeRef<Material>(0.5f, 4));
+		m_SceneObjects.push_back(TestCube);
 		return true;
 	}
 
@@ -43,9 +51,19 @@ namespace Denix
 
 		ImGui::DragFloat3("DirectionalLight Position", &DirLight->m_LightDirection[0], 0.1f);
 
-		ImGui::SeparatorText("Werid Object Settings");
+		ImGui::PushID("defmat");
+		Ref<Material> defmat = ResourceSubsystem::GetMaterial("DefaultMaterial");
+		ImGui::SeparatorText("Default Material Settings");
+		ImGui::DragFloat("Specular Intensity", &defmat->GetSpecularIntensity());
+		ImGui::DragFloat("Specular Power", &defmat->GetSpecularPower());
+		ImGui::PopID();
 
-		
+		ImGui::PushID("mat");
+		Ref<Material> mat = Pyramid->GetRenderComponent()->GetMaterial();
+		ImGui::SeparatorText("Werid Object Settings");
+		ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
+		ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
+		ImGui::PopID();
 		ImGui::End();
 
 		DirLight->UseLight();

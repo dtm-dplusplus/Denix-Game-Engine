@@ -6,6 +6,7 @@ layout (location = 2) in vec3 in_Normal;
 
 out vec2 TexCoord;
 out vec3 Normal;
+out vec3 FragPosition;
 
 uniform mat4 u_Model;
 uniform mat4 u_Projection;
@@ -17,4 +18,5 @@ void main()
 	
 	TexCoord = in_TexCoord;
 	Normal = in_Normal;
+	FragPosition = vec3(u_Model * vec4(in_Position, 1.0));
 }

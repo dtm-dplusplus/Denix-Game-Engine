@@ -53,7 +53,7 @@ namespace Denix
 	{
 	public:
 
-		WeirdCube() : GameObject({ "WeirdoCube" })
+		WeirdCube() : GameObject({ "Pyramid" })
 		{
 			unsigned int indices[] = {
 				0, 3, 1,
@@ -64,9 +64,9 @@ namespace Denix
 
 			GLfloat vertices[] = {
 				//	x      y      z			u	  v			nx	  ny    nz
-					-1.0f, -1.0f, 0.0f,		0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+					-1.0f, -1.0f, -0.6f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
 					0.0f, -1.0f, 1.0f,		0.5f, 0.0f,		0.0f, 0.0f, 0.0f,
-					1.0f, -1.0f, 0.0f,		1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+					1.0f, -1.0f, -0.6f,		1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
 					0.0f, 1.0f, 0.0f,		0.5f, 1.0f,		0.0f, 0.0f, 0.0f
 			};
 
@@ -111,7 +111,8 @@ namespace Denix
 		bool Load() override;
 		void Update(float _deltaTime) override;
 
-		Ref<WeirdCube> WeirdoCube;
+		Ref<WeirdCube> Pyramid;
+		Ref<Cube> TestCube;
 		Ref<DirectionalLight> DirLight;
 	};
 }

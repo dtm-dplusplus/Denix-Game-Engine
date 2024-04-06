@@ -6,6 +6,7 @@
 #include "Denix/Scene/Component.h"
 #include "Denix/System/ResourceSubsystem.h"
 #include "Denix/Video/GL/GLShader.h"
+#include "Denix/Video/GL/Material.h"
 #include "Denix/Video/GL/Texture.h"
 
 
@@ -18,12 +19,14 @@ namespace Denix
 		{
 			m_Shader = ResourceSubsystem::GetShader("TextureShader");
 			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
+			m_Material = ResourceSubsystem::GetMaterial("DefaultMaterial");
 		}
 
 		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
 		{
 			m_Shader = ResourceSubsystem::GetShader("TextureShader");
 			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
+			m_Material = ResourceSubsystem::GetMaterial("DefaultMaterial");
 		}
 
 		~RenderComponent() override = default;
@@ -37,6 +40,10 @@ namespace Denix
 
 		Ref<GLShader> GetShader() const { return m_Shader; }
 		void SetShader(const Ref<GLShader>& _shader) { m_Shader = _shader; }
+
+		Ref<Material> GetMaterial() const { return m_Material; }
+		void SetMaterial(const Ref<Material>& _material) { m_Material = _material; }
+		
 
 		glm::vec4 GetDebugColor() const { return m_DebugColor; }
 		glm::vec4& GetDebugColor() { return m_DebugColor; }
@@ -66,6 +73,7 @@ namespace Denix
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 		Ref<GLShader> m_Shader;
 		Ref<Texture> m_Texture;
+		Ref<Material> m_Material;
 
 		// Texture
 		TextureSettings m_TextureSettings;

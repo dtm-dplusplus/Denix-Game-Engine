@@ -4,6 +4,8 @@
 #include "Denix/Scene/Component/RenderComponent.h"
 #include "Denix/Video/GL/GLShader.h"
 #include "Denix/Video/GL/Texture.h"
+#include "Denix/Video/GL/Material.h"
+
 
 namespace Denix
 {
@@ -17,6 +19,8 @@ namespace Denix
 
 		// Iniatlize Default Assets
 		LoadTexture(FileSubsystem::GetEngineRoot() + R"(res\textures\DefaultTexture.png)", "DefaultTexture");
+
+		m_MaterialStore["DefaultMaterial"] = MakeRef<Material>();
 
 	    DE_LOG(LogResourceSubsystem, Trace, "Resource Subsystem Initialized")
 	}
@@ -63,5 +67,15 @@ namespace Denix
 	Ref<GLShader> ResourceSubsystem::GetShader(const std::string& _name)
 	{
 		return ShaderSubsystem::Get()->GetShader(_name);
+	}
+
+	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _name)
+	{
+		if (s_ResourceSubsystem->m_MaterialStore.contains(_name))
+		{
+			return s_ResourceSubsystem->m_MaterialStore[_name];
+		}
+
+		return nullptr;
 	}
 }

@@ -24,17 +24,7 @@ namespace Denix
 			_mesh->m_VAO->Bind();
 			_mesh->m_IBO->Bind();
 
-			// TODO This is slow, but as the same texture can be applied to multiple objects, it may have different settigns
-			// So we override the settings here
-			if (_render->m_Texture)
-			{
-				_render->m_Texture->Bind();
-
-				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_WRAP_S, _render->m_TextureSettings.WrapMode);
-				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_WRAP_T, _render->m_TextureSettings.WrapMode);
-				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, _render->m_TextureSettings.FilterMode);
-				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, _render->m_TextureSettings.FilterMode);
-			}
+			
 
 			// Upload the model matrix
 			glUniformMatrix4fv(_render->m_Shader->GetUniform("u_Model"), 1, 
@@ -57,6 +47,29 @@ namespace Denix
 
 				glUniformMatrix4fv(_render->m_Shader->GetUniform("u_View"), 1, 
 					GL_FALSE, glm::value_ptr(m_ActiveCamera->GetViewMatrix()));
+
+				glUniform3f(_render->m_Shader->GetUniform("u_CameraPosition"), 
+										m_ActiveCamera->GetTransformComponent()->GetPosition().x,
+										m_ActiveCamera->GetTransformComponent()->GetPosition().y,
+										m_ActiveCamera->GetTransformComponent()->GetPosition().z);	
+			}
+
+			// TODO This is slow, but as the same texture can be applied to multiple objects, it may have different settigns
+			// So we override the settings here
+			if (_render->m_Texture)
+			{
+				_render->m_Texture->Bind();
+
+				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_WRAP_S, _render->m_TextureSettings.WrapMode);
+				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_WRAP_T, _render->m_TextureSettings.WrapMode);
+				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, _render->m_TextureSettings.FilterMode);
+				glTexParameteri(_render->m_Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, _render->m_TextureSettings.FilterMode);
+			}
+
+
+			if(_render->m_Material)
+			{
+				_render->m_Material->UseMaterial(_render->m_Shader->GetUniform("u_Material.SpecularPower"), _render->m_Shader->GetUniform("u_Material.SpecularIntensity"));
 			}
 
 			// Draw the indexed mesh

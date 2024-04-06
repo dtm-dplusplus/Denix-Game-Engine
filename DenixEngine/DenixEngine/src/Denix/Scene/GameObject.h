@@ -177,7 +177,7 @@ namespace Denix
 	class Cube : public GameObject
 	{
 	public:
-		Cube() : GameObject({ "Cube" })
+		Cube() : GameObject({ "TestCube" })
 		{
 			m_MeshComponent->CreateMesh((GLfloat*)CubeData, (unsigned int*)CubeIndices, 40, 36);
 		}
