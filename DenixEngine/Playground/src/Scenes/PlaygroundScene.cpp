@@ -40,32 +40,36 @@ namespace Denix
 		ImGui::SeparatorText("Directional Light Settings");
 		ImGui::ColorEdit4("Base Color", &DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);
 
+		ImGui::ColorEdit3("DirectionalLight Color", &DirLight->GetLightColor()[0]);
 
-		ImGui::ColorEdit3("DirectionalLight Color", &DirLight->m_LightColor[0]);
-
-		ImGui::SliderFloat("Ambient Intensity", &DirLight->m_AmbientIntensity,
+		ImGui::SliderFloat("Ambient Intensity", &DirLight->GetAmbientIntensity(),
 			DirLight->m_AmbientConstraints.x, DirLight->m_AmbientConstraints.y);
 
-		ImGui::SliderFloat("Diffuse Intensity", &DirLight->m_DiffuseIntensity,
+		ImGui::SliderFloat("Diffuse Intensity", &DirLight->GetDiffuseIntensity(),
 			DirLight->m_DiffuseConstraints.x, DirLight->m_DiffuseConstraints.y);
 
-		ImGui::DragFloat3("DirectionalLight Position", &DirLight->m_LightDirection[0], 0.1f);
+		ImGui::DragFloat3("DirectionalLight Position", &DirLight->GetLightDirection()[0], 0.1f);
 
 		ImGui::PushID("defmat");
 		Ref<Material> defmat = ResourceSubsystem::GetMaterial("DefaultMaterial");
 		ImGui::SeparatorText("Default Material Settings");
+
 		ImGui::DragFloat("Specular Intensity", &defmat->GetSpecularIntensity());
+
 		ImGui::DragFloat("Specular Power", &defmat->GetSpecularPower());
 		ImGui::PopID();
 
 		ImGui::PushID("mat");
 		Ref<Material> mat = Pyramid->GetRenderComponent()->GetMaterial();
+
 		ImGui::SeparatorText("Werid Object Settings");
+
 		ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
+
 		ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
 		ImGui::PopID();
 		ImGui::End();
 
-		DirLight->UseLight();
+		DirLight->UseLight(0,0,0,0);
 	}
 }

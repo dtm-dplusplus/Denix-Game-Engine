@@ -4,51 +4,6 @@
 
 namespace Denix
 {
-	
-	class DirectionalLight : public GameObject
-	{
-	public:
-
-		DirectionalLight(): GameObject({ "DirectionalLight" }),
-			m_LightColor(glm::vec3(1.0f)),
-			m_AmbientIntensity(0.5f),
-			m_LightDirection(0.0f, -1.0f, 0.0f),
-			m_DiffuseIntensity(0.5f)
-		{
-
-			m_MeshComponent->CreateMesh((GLfloat*)CubeData, (unsigned int*)CubeIndices, 40, 36);
-			m_TransformComponent->SetScale(glm::vec3(0.5f));
-
-			m_RenderComponent->SetAffectsLighting(false);
-			m_RenderComponent->GetTexture()->m_BaseColor = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-		}
-		
-
-		void UseLight()
-		{
-			m_RenderComponent->GetShader()->Bind();
-
-			//glUniform3f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.Direction"), m_LightDirection.x, m_LightDirection.y, m_LightDirection.z);
-			const glm::vec3& position = m_TransformComponent->GetPosition();
-			glUniform3f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.Direction"), position.x, position.y, position.z);
-			glUniform1f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.DiffuseIntensity"), m_DiffuseIntensity);
-
-			glUniform3f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.Color"), m_LightColor.r, m_LightColor.g, m_LightColor.b);
-			glUniform1f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.AmbientIntensity"), m_AmbientIntensity);
-			GLShader::Unbind();
-		}
-
-		glm::vec3 m_LightColor;
-
-		GLfloat m_AmbientIntensity;
-		glm::vec2 m_AmbientConstraints = { 0.0f, 1.0f };
-
-		glm::vec3 m_LightDirection;
-
-		GLfloat m_DiffuseIntensity;
-		glm::vec2 m_DiffuseConstraints = { 0.0f, 3.0f };
-	};
-
 	class WeirdCube : public GameObject
 	{
 	public:

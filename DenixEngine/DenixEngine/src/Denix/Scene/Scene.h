@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameObject.h"
+#include "Object/Light/LightObject.h"
 #include "Camera.h"
 
 namespace Denix

@@ -143,6 +143,9 @@
     <ClCompile Include="src\Denix\Video\GL\Material.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Denix\Scene\Object\Light\LightObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Denix.h" />
@@ -265,5 +268,6 @@
     <ClInclude Include="src\Denix\Video\GL\Texture.h" />
     <ClInclude Include="src\Denix\System\FileSubsystem.h" />
     <ClInclude Include="src\Denix\Video\GL\Material.h" />
+    <ClInclude Include="src\Denix\Scene\Object\Light\LightObject.h" />
   </ItemGroup>
 </Project>
