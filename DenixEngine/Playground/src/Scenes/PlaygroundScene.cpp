@@ -16,17 +16,17 @@ namespace Denix
 		Pyramid = MakeRef<WeirdCube>();
 		Pyramid->GetTransformComponent()->SetPosition({ 0.0f,5.0f,0.0f });
 		Pyramid->GetRenderComponent()->SetTexture(ResourceSubsystem::GetTexture("brick"));
-		Pyramid->GetRenderComponent()->SetMaterial(MakeRef<Material>(0.5f, 4));
 		m_SceneObjects.push_back(Pyramid);
 
-		TestCube = MakeRef<Cube>();
-		TestCube->GetTransformComponent()->SetPosition({ 5.0f,5.0f,0.0f });
-		TestCube->GetRenderComponent()->SetTexture(ResourceSubsystem::GetTexture("brick"));
-		TestCube->GetRenderComponent()->SetMaterial(MakeRef<Material>(0.5f, 4));
-		m_SceneObjects.push_back(TestCube);
-
 		PntLight = MakeRef<PointLight>();
+		PntLight->GetTransformComponent()->SetPosition({ 0.0f, 7.0f, 0.0f });
+		PntLight->SetLightColor({ 1.0f,0.0f,0.0f });
 		m_SceneObjects.push_back(PntLight);
+
+		Ref<Cube> red = MakeRef<Cube>();
+		red->GetTransformComponent()->SetPosition({ 5.0f, 10.0f, 0.0f });
+		red->GetRenderComponent()->SetMaterial(ResourceSubsystem::GetMaterial("MAT_Red"));
+
 		return true;
 	}
 
@@ -34,17 +34,40 @@ namespace Denix
 	{
 		Scene::Update(_deltaTime);
 
+		Ref<GLShader> program = ResourceSubsystem::GetShader("DefaultShader");
+		program->Bind();
+		glUniform1i(program->GetUniform("u_PointLightCount"), (int)m_PointLights.size());
+
+		for (int i = 0; i < (int)m_PointLights.size(); i++)
+		{
+			const glm::vec3& lightCol =	m_PointLights[i]->GetLightColor();
+			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Color"), lightCol.r, lightCol.g, lightCol.b);
+			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.AmbientIntensity"), m_PointLights[i]->GetAmbientIntensity());
+			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.DiffuseIntensity"), m_PointLights[i]->GetDiffuseIntensity());
+
+			const glm::vec3& pos = m_PointLights[i]->GetTransformComponent()->GetPosition();
+			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Position"), pos.x, pos.y, pos.z);
+			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Constant"), m_PointLights[i]->GetConstant());
+			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Linear"), m_PointLights[i]->GetLinear());
+			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Exponent"), m_PointLights[i]->GetExponent());
+		}
+
+		GLShader::Unbind();
+
 		ImGui::SetNextWindowPos(ImVec2(1000, 50));
 		ImGui::Begin("Playground Tools");
+
+		ImGui::SeparatorText("Scene Info");
+		ImGui::Text("Point Lights: %d", m_PointLights.size());
 
 		ImGui::SeparatorText("Point Light Settings");
 		ImGui::DragFloat3("PointLight Position", &PntLight->GetTransformComponent()->GetPosition()[0], 0.1f);
 		ImGui::ColorEdit3("PointLight Color", &PntLight->GetLightColor()[0]);
-		ImGui::SliderFloat("PointLight Intensity", &PntLight->GetDiffuseIntensity(), 0.0f, 3.0f);
-		ImGui::SliderFloat("PointLight Ambient Intensity", &PntLight->GetAmbientIntensity(), 0.0f, 1.0f);
-		ImGui::SliderFloat("PointLight Constant", &PntLight->GetConstant(), 0.0f, 1.0f);
-		ImGui::SliderFloat("PointLight Linear", &PntLight->GetLinear(), 0.0f, 1.0f);
-		ImGui::SliderFloat("PointLight Exponent", &PntLight->GetExponent(), 0.0f, 1.0f);
+		ImGui::DragFloat("PointLight Intensity", &PntLight->GetDiffuseIntensity(), _deltaTime);
+		ImGui::DragFloat("PointLight Ambient Intensity", &PntLight->GetAmbientIntensity(), _deltaTime);
+		ImGui::DragFloat("PointLight Constant", &PntLight->GetConstant(), _deltaTime);
+		ImGui::DragFloat("PointLight Linear", &PntLight->GetLinear(), _deltaTime);
+		ImGui::DragFloat("PointLight Exponent", &PntLight->GetExponent(), _deltaTime);
 
 		ImGui::SeparatorText("Directional Light Settings");
 		ImGui::ColorEdit4("Base Color", &m_DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);
@@ -57,10 +80,7 @@ namespace Denix
 
 
 		ImGui::PushID("defmat");
-		Ref<Material> defmat = ResourceSubsystem::GetMaterial("DefaultMaterial");
-		ImGui::SeparatorText("Default Material Settings");
-		ImGui::DragFloat("Specular Intensity", &defmat->GetSpecularIntensity());
-		ImGui::DragFloat("Specular Power", &defmat->GetSpecularPower());
+		
 		ImGui::PopID();
 
 

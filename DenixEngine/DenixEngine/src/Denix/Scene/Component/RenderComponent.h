@@ -19,14 +19,14 @@ namespace Denix
 		{
 			m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-			m_Material = ResourceSubsystem::GetMaterial("DefaultMaterial");
+			m_Material = ResourceSubsystem::GetMaterial("MAT_Default");
 		}
 
 		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
 		{
 			m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-			m_Material = ResourceSubsystem::GetMaterial("DefaultMaterial");
+			m_Material = ResourceSubsystem::GetMaterial("MAT_Default");
 		}
 
 		~RenderComponent() override = default;
@@ -57,6 +57,10 @@ namespace Denix
 		bool& AffectsLighting() { return m_AffectsLighting; }
 		void SetAffectsLighting(const bool _affectsLighting) { m_AffectsLighting = _affectsLighting; }
 
+		bool GetBaseColorAsTexture() const { return m_BaseColorAsTexture; }
+		bool& GetBaseColorAsTexture() { return m_BaseColorAsTexture; }
+		void SetBaseColorAsTexture(const bool _asTexture) { m_BaseColorAsTexture = _asTexture; }
+
 	public:
 		void BeginScene() override;
 
@@ -69,6 +73,7 @@ namespace Denix
 	private:
 		bool m_IsVisible = true;
 		bool m_AffectsLighting = true;
+		bool m_BaseColorAsTexture = false;
 
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 		Ref<GLShader> m_Shader;

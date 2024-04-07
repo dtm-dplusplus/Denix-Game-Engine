@@ -6,7 +6,6 @@
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Scene/Component/MeshComponent.h"
 #include "Denix/Scene/Component/RenderComponent.h"
-#include "Denix/Scene/Object/Light/LightObject.h"
 
 namespace Denix
 {
@@ -34,11 +33,8 @@ namespace Denix
 
 			// Upload Affects Lighting bool
 			glUniform1i(_render->m_Shader->GetUniform("u_AffectsLighting"), _render->m_AffectsLighting);
-			if (!_render->m_AffectsLighting)
-			{
-				const glm::vec4& baseCol = _render->m_Texture->m_BaseColor;
-				glUniform4f(_render->m_Shader->GetUniform("u_BaseColor"), baseCol.r, baseCol.g, baseCol.b, baseCol.a);
-			}
+			glUniform1i(_render->m_Shader->GetUniform("u_BaseColorAsTexture"), _render->GetBaseColorAsTexture());
+
 
 			// Upload the camera matrices relative to Object
 			if (m_ViewportCamera)
@@ -68,9 +64,12 @@ namespace Denix
 			}
 
 
-			if(_render->m_Material)
+			if(const Ref<Material> mat = _render->m_Material)
 			{
-				_render->m_Material->UseMaterial(_render->m_Shader->GetUniform("u_Material.SpecularPower"), _render->m_Shader->GetUniform("u_Material.SpecularIntensity"));
+				glUniform3f(_render->m_Shader->GetUniform("u_Material.BaseColor"), 
+					mat->GetBaseColor().r,mat->GetBaseColor().g,mat->GetBaseColor().b);
+				glUniform1f(_render->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+				glUniform1f(_render->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
 			}
 
 			// Draw the indexed mesh

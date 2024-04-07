@@ -4,6 +4,7 @@
 
 #include "FileSubsystem.h"
 #include "Denix/Core.h"
+#include "Denix/Scene/Scene.h"
 
 namespace Denix
 {
@@ -71,9 +72,16 @@ namespace Denix
 
 				program->GetUniform("u_PointLightCount");
 
-				for (size_t i = 0; i < 3; i++)
+				for (size_t i = 0; i < MAX_POINT_LIGHTS; i++)
 				{
-					DE_LOG(Log, Trace, "u_PointLights[" + std::to_string(i) + "].Base.Color")
+					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Color");
+					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.AmbientIntensity");
+					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.DiffuseIntensity");
+
+					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Position");
+					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Constant");
+					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Linear");
+					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Exponent");
 				}
 			}
 			m_Initialized = true;

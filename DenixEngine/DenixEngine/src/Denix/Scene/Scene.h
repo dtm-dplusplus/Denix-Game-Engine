@@ -26,6 +26,7 @@ namespace Denix
 		virtual bool Load()
 		{
 			m_ViewportCamera = MakeRef<Camera>();
+			m_ViewportCamera->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
 			m_SceneObjects.push_back(m_ViewportCamera);
 
 			m_DirLight = MakeRef<DirectionalLight>();
@@ -44,6 +45,14 @@ namespace Denix
 			for (const auto& obj : m_SceneObjects)
 			{
 				obj->BeginScene();
+
+				// We need to count the number of point lights in the scene
+				// Currently this is done statically at the start. Meaning there is no way to add or remove point lights at runtime
+				if (typeid(PointLight) == typeid(*obj))
+				{
+					DE_LOG(LogScene, Info, "Point Light Found")
+					m_PointLights.push_back(std::static_pointer_cast<PointLight>(obj));
+				}
 			}
 		}
 
@@ -101,6 +110,10 @@ namespace Denix
 		Ref<Camera> m_ViewportCamera;
 
 		Ref<DirectionalLight> m_DirLight;
+
+		std::vector<Ref<PointLight>> m_PointLights;
+
+		unsigned int m_PointLightCount = 0;
 
 		friend class SceneSubsystem;
 		friend class RendererSubsystem;

@@ -372,7 +372,31 @@ namespace Denix
 
 					ImGui::Checkbox("Visible", &render->IsVisible());
 					ImGui::Checkbox("Affects Lighting", &render->AffectsLighting());
+					ImGui::Checkbox("Base Color As Texture", &render->GetBaseColorAsTexture());
 
+					ImGui::SeparatorText("Material");
+					if(Ref<Material> mat = render->GetMaterial())
+					{
+						if (ImGui::BeginCombo("##MaterialName", mat->GetFriendlyName().c_str()))
+						{
+							for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
+							{
+								ImGui::PushID(fst.c_str());
+								if (ImGui::Selectable(fst.c_str()))
+								{
+									render->SetMaterial(snd);
+									DE_LOG(LogEditor, Info, "Material on {} set to: {}", render->GetName(), snd->GetFriendlyName())
+								}
+								ImGui::PopID();
+							}
+							ImGui::EndCombo();
+						}
+
+						ImGui::ColorEdit3("Base Color", &mat->GetBaseColor()[0]);
+						ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
+						ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
+					}
+					
 					ImGui::SeparatorText("Texture");
 					if (const Ref<Texture> texture = render->GetTexture())
 					{

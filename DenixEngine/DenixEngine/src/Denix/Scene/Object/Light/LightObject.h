@@ -50,26 +50,10 @@ namespace Denix
 	public:
 
 		DirectionalLight() : Light({ "DirectionalLight" }),
-			m_LightDirection(0.0f, -1.0f, 0.0f)
+			m_LightDirection(0.0f, 0.0f, -1.0f) 
 		{
-		}
-
-
-		void UseLight(GLint _u_directon, GLint _u_diffIntensity, GLint _u_color, GLint _u_ambientIntensity)
-		{
-			m_RenderComponent->GetShader()->Bind();
-			const glm::vec3& position = m_TransformComponent->GetPosition();
-			glUniform3f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.Direction"), m_LightDirection.x, m_LightDirection.y, m_LightDirection.z);
-			glUniform1f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.DiffuseIntensity"), m_DiffuseIntensity);
-			glUniform3f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.Color"), m_LightColor.r, m_LightColor.g, m_LightColor.b);
-			glUniform1f(GetRenderComponent()->GetShader()->GetUniform("u_DirLight.AmbientIntensity"), m_AmbientIntensity);
-
-			//glUniform3f(_u_directon, position.x, position.y, position.z);
-			//glUniform1f(_u_diffIntensity, m_DiffuseIntensity);
-			//glUniform3f(_u_color, m_LightColor.r, m_LightColor.g, m_LightColor.b);
-			//glUniform1f(_u_ambientIntensity, m_AmbientIntensity);
-
-			GLShader::Unbind();
+			m_AmbientIntensity = 0.8f;
+			m_DiffuseIntensity = 0.0f;
 		}
 
 		glm::vec3 GetLightDirection() const { return m_LightDirection; }
@@ -84,10 +68,12 @@ namespace Denix
 	class PointLight : public Light
 	{
 	public:
-		PointLight() : Light({"PointLight"}), constant(1.0f), linear(0.0f), exponent(0.0f),
-		               m_Attenuation(1.0f, 0.0f, 0.0f),
-		               m_Range(10.0f)
+		PointLight() : Light({"PointLight"}), constant(0.3f), linear(0.2f), exponent(0.1f)
+		              // m_Attenuation(1.0f, 0.0f, 0.0f),
+		              // m_Range(10.0f)
 		{
+			m_AmbientIntensity = 0.0f;
+			m_DiffuseIntensity = 1.0f;
 		}
 
 		float GetConstant() const { return constant; }
@@ -105,7 +91,7 @@ namespace Denix
 
 	protected:
 		float constant, linear, exponent;
-		glm::vec3 m_Attenuation;
-		float m_Range;
+		//glm::vec3 m_Attenuation;
+		//float m_Range;
 	};
 }

@@ -1,19 +1,19 @@
 #pragma once
-#include <GL/glew.h>
+
+#include <glm/vec3.hpp>
+
+#include "Denix/Scene/Object.h"
 
 namespace Denix
 {
-	class Material
+	class Material: public Object
 	{
 	public:
-		Material(): m_SpecularIntensity(0), m_SpecularPower(0) {}
-		Material(const float _specIntensity, const float _specPower) : m_SpecularIntensity(_specIntensity), m_SpecularPower(_specPower) {}
+		Material(const std::string& _name = "Material") : Object({ _name }) {}
 
-		void UseMaterial(const GLint _specIntensityLocation, const GLint _specPowerLocation)
-		{
-			glUniform1f(_specIntensityLocation, m_SpecularIntensity);
-			glUniform1f(_specPowerLocation, m_SpecularPower);
-		}
+		glm::vec3 GetBaseColor() const { return m_BaseColor; }
+		glm::vec3& GetBaseColor() { return m_BaseColor; }
+		void SetBaseColor(const glm::vec3 _color) { m_BaseColor = _color; }
 
 		float GetSpecularPower() const { return m_SpecularPower; }
 		float& GetSpecularPower() { return m_SpecularPower; }
@@ -24,8 +24,9 @@ namespace Denix
 		void SetSpecularIntensity(const float _intensity) { m_SpecularIntensity = _intensity; }
 
 	private:
-		float m_SpecularIntensity;
-		float m_SpecularPower;
+		glm::vec3 m_BaseColor = glm::vec3(1.0f);
+		float m_SpecularIntensity = 0.5f;
+		float m_SpecularPower = 4.0f;
 	};
 
 

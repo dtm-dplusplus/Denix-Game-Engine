@@ -240,10 +240,11 @@ namespace Denix
 				defShader->Bind();
 				const glm::vec3& lightDir = dirLight->GetLightDirection();
 				const glm::vec3& lightColor = dirLight->GetLightColor();
+				glUniform3f(defShader->GetUniform("u_DirLight.Base.Color"), lightColor.r, lightColor.g, lightColor.b);
+				glUniform1f(defShader->GetUniform("u_DirLight.Base.AmbientIntensity"), dirLight->GetAmbientIntensity());
+				glUniform1f(defShader->GetUniform("u_DirLight.Base.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
 				glUniform3f(defShader->GetUniform("u_DirLight.Direction"), lightDir.x, lightDir.y, lightDir.z);
-				glUniform1f(defShader->GetUniform("u_DirLight.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
-				glUniform3f(defShader->GetUniform("u_DirLight.Color"), lightColor.r, lightColor.g, lightColor.b);
-				glUniform1f(defShader->GetUniform("u_DirLight.AmbientIntensity"), dirLight->GetAmbientIntensity());
+				
 				GLShader::Unbind();
 			}
 		}

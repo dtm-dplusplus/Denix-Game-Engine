@@ -20,7 +20,7 @@ namespace Denix
 		// Iniatlize Default Assets
 		LoadTexture(FileSubsystem::GetEngineRoot() + R"(res\textures\DefaultTexture.png)", "DefaultTexture");
 
-		m_MaterialStore["DefaultMaterial"] = MakeRef<Material>();
+		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
 
 	    DE_LOG(LogResourceSubsystem, Trace, "Resource Subsystem Initialized")
 	}
@@ -33,6 +33,18 @@ namespace Denix
 		m_TextureStore.clear();
 
 		DE_LOG(LogResourceSubsystem, Trace, "Resource Subsystem Deinitialized")
+	}
+
+	void ResourceSubsystem::LoadMaterial(const Ref<Material>& ref)
+	{
+		if (s_ResourceSubsystem->m_MaterialStore.contains(ref->GetFriendlyName()))
+		{
+			DE_LOG(LogResourceSubsystem, Error, "Load Material: A material name: {} is already loaded", ref->GetName())
+			return;
+		}
+
+		DE_LOG(LogResourceSubsystem, Trace, "Material Loaded: {}", ref->GetFriendlyName())
+		s_ResourceSubsystem->m_MaterialStore[ref->GetFriendlyName()] = ref;
 	}
 
 	Ref<Texture> ResourceSubsystem::LoadTexture(const std::string& _path, const std::string& _name)

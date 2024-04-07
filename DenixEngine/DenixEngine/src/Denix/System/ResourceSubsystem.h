@@ -5,7 +5,8 @@
 
 namespace Denix
 {
-    class Texture;
+	class Material;
+	class Texture;
 
     class ResourceSubsystem : public Subsystem
     {
@@ -24,6 +25,8 @@ namespace Denix
 
         void Deinitialize() override;
 
+        static void LoadMaterial(const Ref<Material>& ref);
+
         static Ref<Texture> LoadTexture(const std::string& _path, const std::string& _name);
 
         static ResourceSubsystem* Get() { return s_ResourceSubsystem; }
@@ -33,8 +36,11 @@ namespace Denix
         static Ref<class GLShader> GetShader(const std::string& _name);
 
         static Ref<class Material> GetMaterial(const std::string& _name);
-        // TEMP - We shouldn't expose this
+
         static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_ResourceSubsystem->m_TextureStore; }
+
+        static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_ResourceSubsystem->m_MaterialStore; }
+
 
     private:
         static ResourceSubsystem* s_ResourceSubsystem;
