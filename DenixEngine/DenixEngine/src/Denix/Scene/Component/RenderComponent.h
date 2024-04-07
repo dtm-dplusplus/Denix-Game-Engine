@@ -17,14 +17,14 @@ namespace Denix
 	public:
 		RenderComponent() : Component(ObjectInitializer("Render Component"))
 		{
-			m_Shader = ResourceSubsystem::GetShader("TextureShader");
+			m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
 			m_Material = ResourceSubsystem::GetMaterial("DefaultMaterial");
 		}
 
 		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
 		{
-			m_Shader = ResourceSubsystem::GetShader("TextureShader");
+			m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
 			m_Material = ResourceSubsystem::GetMaterial("DefaultMaterial");
 		}

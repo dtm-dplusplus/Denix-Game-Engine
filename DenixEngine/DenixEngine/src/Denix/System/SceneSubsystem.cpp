@@ -235,7 +235,7 @@ namespace Denix
 		// Upload the Directional Light
 		if (const Ref<DirectionalLight> dirLight = m_ActiveScene->m_DirLight)
 		{
-			if(Ref<GLShader> defShader = ResourceSubsystem::GetShader("TextureShader"))
+			if(Ref<GLShader> defShader = ResourceSubsystem::GetShader("DefaultShader"))
 			{
 				defShader->Bind();
 				const glm::vec3& lightDir = dirLight->GetLightDirection();

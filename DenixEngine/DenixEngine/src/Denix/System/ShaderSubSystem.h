@@ -50,11 +50,11 @@ namespace Denix
 			// Create Texture Shader
 			{
 				std::vector<std::pair<GLenum, std::string>> shaders;
-				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::Read(R"(res\shaders\TexVertex.glsl)"));
-				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::Read(R"(res\shaders\TexFragment.glsl)"));
-				LoadShader(shaders, "TextureShader");
+				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::Read(R"(res\shaders\Vertex.glsl)"));
+				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::Read(R"(res\shaders\Fragment.glsl)"));
+				LoadShader(shaders, "DefaultShader");
 
-				const Ref<GLShader> program = GetShader("TextureShader");
+				const Ref<GLShader> program = GetShader("DefaultShader");
 
 				// Check Uniforms
 				program->GetUniform("u_Model");

@@ -52,12 +52,6 @@ namespace Denix
 		DirectionalLight() : Light({ "DirectionalLight" }),
 			m_LightDirection(0.0f, -1.0f, 0.0f)
 		{
-
-			m_MeshComponent->CreateMesh((GLfloat*)CubeData, (unsigned int*)CubeIndices, 40, 36);
-			m_TransformComponent->SetScale(glm::vec3(0.5f));
-
-			m_RenderComponent->SetAffectsLighting(false);
-			m_RenderComponent->GetTexture()->m_BaseColor = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
 		}
 
 
@@ -84,5 +78,34 @@ namespace Denix
 
 	protected:
 		glm::vec3 m_LightDirection;
+	};
+
+
+	class PointLight : public Light
+	{
+	public:
+		PointLight() : Light({"PointLight"}), constant(1.0f), linear(0.0f), exponent(0.0f),
+		               m_Attenuation(1.0f, 0.0f, 0.0f),
+		               m_Range(10.0f)
+		{
+		}
+
+		float GetConstant() const { return constant; }
+		float& GetConstant() { return constant; }
+		void SetConstant(const float _constant) { constant = _constant; }
+
+		float GetLinear() const { return linear; }
+		float& GetLinear() { return linear; }
+		void SetLinear(const float _linear) { linear = _linear; }
+
+		float GetExponent() const { return exponent; }
+		float& GetExponent() { return exponent; }
+		void SetExponent(const float _exponent) { exponent = _exponent; }
+
+
+	protected:
+		float constant, linear, exponent;
+		glm::vec3 m_Attenuation;
+		float m_Range;
 	};
 }

@@ -68,5 +68,7 @@ namespace Denix
 
 		Ref<WeirdCube> Pyramid;
 		Ref<Cube> TestCube;
+
+		Ref<PointLight> PntLight;
 	};
 }
