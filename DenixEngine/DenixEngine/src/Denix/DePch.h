@@ -11,3 +11,5 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+
+#include "Denix/Core.h"

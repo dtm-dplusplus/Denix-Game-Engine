@@ -61,6 +61,8 @@
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\stb;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>depch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,6 +92,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\stb;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\sdl\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>depch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

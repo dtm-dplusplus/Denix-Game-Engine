@@ -61,6 +61,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\contrib\stb;$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -84,6 +86,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\contrib\stb;$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\imgui;</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
