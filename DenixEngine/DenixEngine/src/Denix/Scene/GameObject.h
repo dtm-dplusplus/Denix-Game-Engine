@@ -168,7 +168,7 @@ namespace Denix
 	class Plane : public GameObject
 	{
 	public:
-		Plane() : GameObject({"Plane"})
+		Plane(const ObjectInitializer& _objInit = { "Plane" }) : GameObject(_objInit)
 		{
 			m_MeshComponent->CreateMesh((GLfloat*)TexPlaneData, (unsigned int*)PlaneIndices, 20, 6);
 		}
@@ -177,7 +177,7 @@ namespace Denix
 	class Cube : public GameObject
 	{
 	public:
-		Cube() : GameObject({ "TestCube" })
+		Cube(const ObjectInitializer& _objInit = { "TestCube" }) : GameObject(_objInit)
 		{
 			m_MeshComponent->CreateMesh((GLfloat*)CubeData, (unsigned int*)CubeIndices, 40, 36);
 		}

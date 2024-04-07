@@ -27,6 +27,8 @@ namespace Denix
 		red->GetTransformComponent()->SetPosition({ 5.0f, 10.0f, 0.0f });
 		red->GetRenderComponent()->SetMaterial(ResourceSubsystem::GetMaterial("MAT_Red"));
 
+		//m_SceneObjects.push_back(MakeRef<Camera>());
+
 		return true;
 	}
 
@@ -60,14 +62,7 @@ namespace Denix
 		ImGui::SeparatorText("Scene Info");
 		ImGui::Text("Point Lights: %d", m_PointLights.size());
 
-		ImGui::SeparatorText("Point Light Settings");
-		ImGui::DragFloat3("PointLight Position", &PntLight->GetTransformComponent()->GetPosition()[0], 0.1f);
-		ImGui::ColorEdit3("PointLight Color", &PntLight->GetLightColor()[0]);
-		ImGui::DragFloat("PointLight Intensity", &PntLight->GetDiffuseIntensity(), _deltaTime);
-		ImGui::DragFloat("PointLight Ambient Intensity", &PntLight->GetAmbientIntensity(), _deltaTime);
-		ImGui::DragFloat("PointLight Constant", &PntLight->GetConstant(), _deltaTime);
-		ImGui::DragFloat("PointLight Linear", &PntLight->GetLinear(), _deltaTime);
-		ImGui::DragFloat("PointLight Exponent", &PntLight->GetExponent(), _deltaTime);
+		
 
 		ImGui::SeparatorText("Directional Light Settings");
 		ImGui::ColorEdit4("Base Color", &m_DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);

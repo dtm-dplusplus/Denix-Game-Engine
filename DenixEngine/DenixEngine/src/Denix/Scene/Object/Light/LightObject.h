@@ -50,10 +50,10 @@ namespace Denix
 	public:
 
 		DirectionalLight() : Light({ "DirectionalLight" }),
-			m_LightDirection(0.0f, 0.0f, -1.0f) 
+			m_LightDirection(0.0f, 1.0f, 0.0f) 
 		{
-			m_AmbientIntensity = 0.8f;
-			m_DiffuseIntensity = 0.0f;
+			m_AmbientIntensity = 0.1f;
+			m_DiffuseIntensity = 0.5f;
 		}
 
 		glm::vec3 GetLightDirection() const { return m_LightDirection; }
@@ -69,8 +69,6 @@ namespace Denix
 	{
 	public:
 		PointLight() : Light({"PointLight"}), constant(0.3f), linear(0.2f), exponent(0.1f)
-		              // m_Attenuation(1.0f, 0.0f, 0.0f),
-		              // m_Range(10.0f)
 		{
 			m_AmbientIntensity = 0.0f;
 			m_DiffuseIntensity = 1.0f;

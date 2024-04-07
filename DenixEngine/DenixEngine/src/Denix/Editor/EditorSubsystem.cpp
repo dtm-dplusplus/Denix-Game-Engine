@@ -166,25 +166,22 @@ namespace Denix
 			{
 				ImGui::SeparatorText("Camera Properties");
 
-				ImGui::Text("Is Panning: {}", m_ActiveScene->m_ViewportCamera->m_IsPanMode ? "true" : "false");
-				ImGui::Text("Is Move Speed Delta: {}", m_ActiveScene->m_ViewportCamera->m_IsMoveSpeedDelta ? "true" : "false");
-
-				ImGui::DragFloat("MoveSpeed", &m_ActiveScene->m_ViewportCamera->MoveSpeed, DragSpeedDelta, 1.f, 10.f); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->MoveSpeed = 0.5f;
+				ImGui::DragFloat("m_MoveSpeed", &m_ActiveScene->m_ViewportCamera->GetMoveSpeed(), DragSpeedDelta, 1.f, 10.f); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetMoveSpeed(0.5f);
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::Checkbox("Perspective Projection", &m_ActiveScene->m_ViewportCamera->IsPerspective);
+				ImGui::Checkbox("Perspective Projection", &m_ActiveScene->m_ViewportCamera->IsPerspective());
 
-				ImGui::DragFloat("Fov", &m_ActiveScene->m_ViewportCamera->Fov, DragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->Fov = 45.f;
+				ImGui::DragFloat("m_Fov", &m_ActiveScene->m_ViewportCamera->GetFov(), DragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetFov(45.f);
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::DragFloat("Near Plane", &m_ActiveScene->m_ViewportCamera->NearPlane, DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->NearPlane = 0.1f;
+				ImGui::DragFloat("Near Plane", &m_ActiveScene->m_ViewportCamera->GetNearPlane(), DragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetNearPlane(0.1f);
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::DragFloat("Far Plane", &m_ActiveScene->m_ViewportCamera->FarPlane, DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->FarPlane = 100.f;
+				ImGui::DragFloat("Far Plane", &m_ActiveScene->m_ViewportCamera->GetFarPlane(), DragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetFarPlane(100.f);
 				ImGui::SetItemTooltip("Reset");
 			}
 
@@ -194,7 +191,6 @@ namespace Denix
 				{
 					ImGui::Text("Name: %s", transform->GetName().c_str());
 				}
-
 			}
 
 
@@ -203,16 +199,88 @@ namespace Denix
 			{
 				bool createdObject = false;
 
-				const char* names[] = { "Plane", "Cube", "EqualTriangle" };
+				const static std::string shapeNames[] = { "Plane", "Cube"};
+				const static std::string lightNames[] = { "Directional Light", "Point Light", "Spot Light" };
 
 				if (ImGui::Button("Add"))
 					ImGui::OpenPopup("add_object_popup");
 
 				if (ImGui::BeginPopup("add_object_popup"))
 				{
-					for (auto& name : names)
+					if (ImGui::BeginMenu("Shapes"))
 					{
-						if (ImGui::Selectable(name))
+						for (auto& name : shapeNames)
+						{
+							if (ImGui::MenuItem(name.c_str()))
+							{
+								createdObject = true;
+								if (name == "Plane")
+								{
+									const Ref<Plane> plane = MakeRef<Plane>();
+									plane->BeginScene();
+									m_ActiveScene->m_SceneObjects.push_back(plane);
+								}
+								else if (name == "Cube")
+								{
+									const Ref<Cube> cube = MakeRef<Cube>();
+									cube->BeginScene();
+									m_ActiveScene->m_SceneObjects.push_back(cube);
+								}
+							}
+						}
+						ImGui::EndMenu();
+					}
+
+					if (ImGui::BeginMenu("Lights"))
+					{
+						for (auto& name : lightNames)
+						{
+							if (ImGui::MenuItem(name.c_str()))
+							{
+								createdObject = true;
+								if (name == lightNames[0])
+								{
+									// Check if the scene already has a directional light
+									if (m_ActiveScene->GetDirectionalLight())
+									{
+										DE_LOG(LogEditor, Warn, "Scene already has a directional light")
+										break;
+									}
+									const Ref<DirectionalLight> dirLight = MakeRef<DirectionalLight>();
+									dirLight->BeginScene();
+									m_ActiveScene->m_DirLight = dirLight;
+									m_ActiveScene->m_SceneObjects.push_back(dirLight);
+									DE_LOG(LogEditor, Info, "Added {} to the scene", lightNames[0])
+								}
+								else if (name == lightNames[1])
+								{
+									const Ref<PointLight> pointLight = MakeRef<PointLight>();
+									pointLight->BeginScene();
+									m_ActiveScene->m_PointLights.push_back(pointLight);
+									m_ActiveScene->m_SceneObjects.push_back(pointLight);
+									DE_LOG(LogEditor, Info, "Added {} to the scene", lightNames[1])
+								}
+								else if (name == lightNames[2])
+								{
+									const Ref<Cube> spotLight = MakeRef<Cube>(ObjectInitializer("Spot Light"));
+									spotLight->BeginScene();
+									m_ActiveScene->m_SceneObjects.push_back(spotLight);
+									DE_LOG(LogEditor, Info, "Added {} to the scene", lightNames[2])
+								}
+							}
+						}
+						ImGui::EndMenu();
+					}
+
+					ImGui::EndPopup();
+				}
+
+				/*if (ImGui::BeginPopup("add_shape_popup"))
+				{
+					for (auto& name : shapeNames)
+					{
+						std::string s = "s";
+						if (ImGui::Selectable(s.c_str()))
 						{
 							createdObject = true;
 							if (strcmp(name, "Plane") == 0)
@@ -230,7 +298,7 @@ namespace Denix
 						}
 					}
 					ImGui::EndPopup();
-				}
+				}*/
 
 				// Set new selection to created object
 				if (createdObject) ObjectSelection = m_ActiveScene->m_SceneObjects.size() - 1;
@@ -301,6 +369,66 @@ namespace Denix
 					if (ImGui::Combo("Moveability", &selectedObject->GetMoveability(), "Static\0Dynamic\0\0"))
 					{
 						selectedObject->SetMoveability(static_cast<Moveability>(selectedObject->GetMoveability()));
+					}
+				}
+
+				// Camera Panel
+				if (const Ref<Camera> camera = std::dynamic_pointer_cast<Camera>(selectedObject))
+				{
+					ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
+					if (ImGui::CollapsingHeader("Camera Component"))
+					{
+						ImGui::Checkbox("Perspective Projection", &camera->IsPerspective());
+
+						ImGui::DragFloat("Fov", &camera->GetFov(), DragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
+						if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) camera->SetFov(45.f);
+						ImGui::SetItemTooltip("Reset");
+
+						ImGui::DragFloat("Rotation Factor", &camera->GetRotationFactor(), DragSpeedDelta); ImGui::SameLine();
+						if (ImGui::ArrowButton("##ResetRotationFactor", ImGuiDir_Left)) camera->SetRotationFactor(0.01f);
+						ImGui::SetItemTooltip("Reset");
+
+						ImGui::DragFloat("Pitch Rotation Rate", &camera->GetPitchRotationRate(), DragSpeedDelta); ImGui::SameLine();
+						if (ImGui::ArrowButton("##ResetPitchRotationRate", ImGuiDir_Left)) camera->SetPitchRotationRate(0.1f);
+						ImGui::SetItemTooltip("Reset");
+
+						ImGui::DragFloat("Yaw Rotation Rate", &camera->GetYawRotationRate(), DragSpeedDelta); ImGui::SameLine();
+						if (ImGui::ArrowButton("##ResetYawRotationRate", ImGuiDir_Left)) camera->SetYawRotationRate(0.1f);
+						ImGui::SetItemTooltip("Reset");
+
+						ImGui::DragFloat("Near Plane", &camera->GetNearPlane(), DragSpeedDelta); ImGui::SameLine();
+						if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) camera->SetNearPlane(0.1f);
+						ImGui::SetItemTooltip("Reset");
+
+						ImGui::DragFloat("Far Plane", &camera->GetFarPlane(), DragSpeedDelta); ImGui::SameLine();
+						if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) camera->SetFarPlane(10000.f);
+						ImGui::SetItemTooltip("Reset");
+					}
+				}
+
+				// Light Panel
+				if(const Ref<Light> light = std::dynamic_pointer_cast<Light>(selectedObject))
+				{
+					ImGui::CollapsingHeader("Light Settings", ImGuiTreeNodeFlags_DefaultOpen);
+					ImGui::ColorEdit3("Light Color", &light->GetLightColor()[0]);
+					ImGui::DragFloat("Ambient Intensity", &light->GetAmbientIntensity(), DragSpeedDelta);
+					ImGui::DragFloat("Diffuse Intensity", &light->GetDiffuseIntensity(), DragSpeedDelta);
+
+					// Directional Light Settings
+					if (const Ref<DirectionalLight> dirLight = std::dynamic_pointer_cast<DirectionalLight>(selectedObject))
+					{
+						ImGui::SeparatorText("Directional Light Settings");
+						ImGui::DragFloat3("Light Direction", &dirLight->GetLightDirection()[0], DragSpeedDelta);
+					}
+
+					// Point Light Settings
+					if (const Ref<PointLight> pointLight = std::dynamic_pointer_cast<PointLight>(selectedObject))
+					{
+						ImGui::SeparatorText("Point Light Settings");
+						ImGui::SeparatorText("Attenuation");
+						ImGui::DragFloat("Constant", &pointLight->GetConstant(), DragSpeedDelta);
+						ImGui::DragFloat("Linear", &pointLight->GetLinear(), DragSpeedDelta);
+						ImGui::DragFloat("Exponent", &pointLight->GetExponent(), DragSpeedDelta);
 					}
 				}
 

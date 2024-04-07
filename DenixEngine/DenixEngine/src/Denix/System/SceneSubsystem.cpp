@@ -154,59 +154,11 @@ namespace Denix
 		// Instead of updating the object as a whole, we break it down into components and update them individually
 		// Components should act as containers for the data, the logic should be implemented on the system side
 
-		// Update Camera
+		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->GetViewportCamera())
 		{
-			cam->Aspect = s_WindowSubsystem->GetWindow()->GetWindowSize();
+			cam->SetAspect(s_WindowSubsystem->GetWindow()->GetWindowSize());
 			cam->Update(_deltaTime);
-
-			// Camera Movement
-			if (const InputSubsystem* input = InputSubsystem::Get())
-			{
-				// XZ 
-				if (input->IsKeyDown(SDL_SCANCODE_W))
-				{
-					cam->GetTransformComponent()->GetPosition() += cam->MoveSpeed * cam->CameraFront * _deltaTime;
-				}
-				if (input->IsKeyDown(SDL_SCANCODE_S))
-				{
-					cam->GetTransformComponent()->GetPosition() -= cam->MoveSpeed * cam->CameraFront  * _deltaTime;
-				}
-				if (input->IsKeyDown(SDL_SCANCODE_A))
-				{
-					cam->GetTransformComponent()->GetPosition() -= cam->MoveSpeed * glm::normalize(glm::cross(cam->CameraFront, cam->CameraUp)) *_deltaTime;
-				}
-				if (input->IsKeyDown(SDL_SCANCODE_D))
-				{
-					cam->GetTransformComponent()->GetPosition() += cam->MoveSpeed * glm::normalize(glm::cross(cam->CameraFront, cam->CameraUp)) * _deltaTime;
-				}
-			}
-
-			// Camera Mouse Input
-			const MouseData& mouse = s_InputSubsystem->GetMouseData();
-
-			// Change move speed if mouse wheel is scrolled
-			if (mouse.WheelY != 0)
-			{
-				cam->MoveSpeed += mouse.WheelY * 0.01 * _deltaTime;
-				cam->m_IsMoveSpeedDelta = true;
-			}
-			else
-			{
-				cam->m_IsMoveSpeedDelta = false;
-			}
-
-			// Pan Camera if right mouse down
-			if (mouse.Right && ((int)mouse.RelX || (int)mouse.RelY))
-			{
-				cam->GetTransformComponent()->GetRotation().y += mouse.RelX * cam->RotateSpeed * _deltaTime; 
-				cam->GetTransformComponent()->GetRotation().x -= mouse.RelY * cam->RotateSpeed * _deltaTime; 
-				cam->m_IsPanMode= true;
-			}
-			else
-			{
-				cam->m_IsPanMode = false;
-			}
 		}
 
 		// Scene update implementation 

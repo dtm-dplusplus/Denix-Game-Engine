@@ -61,7 +61,7 @@ namespace Denix
 	class PlaygroundScene final : public Scene
 	{
 	public:
-		PlaygroundScene(const ObjectInitializer& _objInit = ObjectInitializer("PlaygroundScene")) {}
+		PlaygroundScene(): Scene({ "PlaygroundScene" }) {}
 
 		bool Load() override;
 		void Update(float _deltaTime) override;
