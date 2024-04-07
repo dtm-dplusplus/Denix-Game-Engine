@@ -13,7 +13,7 @@ namespace Denix
 
 		Scene() = default;
 
-		Scene(const std::string& _name) :m_Camera{ nullptr }
+		Scene(const std::string& _name) :m_ViewportCamera{ nullptr }
 		{
 		}
 
@@ -23,8 +23,12 @@ namespace Denix
 
 		virtual bool Load()
 		{
-			m_Camera = MakeRef<Camera>();
-			m_SceneObjects.push_back(m_Camera);
+			m_ViewportCamera = MakeRef<Camera>();
+			m_SceneObjects.push_back(m_ViewportCamera);
+
+			m_DirLight = MakeRef<DirectionalLight>();
+			m_DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));
+			m_SceneObjects.push_back(m_DirLight);
 
 			return true;
 		}
@@ -35,8 +39,6 @@ namespace Denix
 
 		virtual void BeginScene()
 		{
-			
-
 			for (const auto& obj : m_SceneObjects)
 			{
 				obj->BeginScene();
@@ -77,7 +79,7 @@ namespace Denix
 
 		glm::vec3 GetGravity() const { return m_SceneGravity; }
 
-		Ref<Camera> GetCamera() { return m_Camera; }
+		Ref<Camera> GetViewportCamera() { return m_ViewportCamera; }
 	protected:
 
 		/** Name of the scene. Must be uniqiue */
@@ -94,9 +96,12 @@ namespace Denix
 		/** List of Objects in the scene */
 		std::vector<Ref<GameObject>> m_SceneObjects;
 
-		Ref<Camera> m_Camera;
+		Ref<Camera> m_ViewportCamera;
+
+		Ref<DirectionalLight> m_DirLight;
 
 		friend class SceneSubsystem;
+		friend class RendererSubsystem;
 		friend class EditorSubsystem;
 		friend class Engine;
 	};

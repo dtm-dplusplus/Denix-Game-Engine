@@ -85,7 +85,8 @@ namespace Denix
 			m_ActiveScene = scene;
 
 			// Set dependencies with new scene pointer
-			s_RendererSubsystem->SetActiveCamera(m_ActiveScene->m_Camera);
+			s_RendererSubsystem->SetActiveCamera(m_ActiveScene->m_ViewportCamera);
+			s_RendererSubsystem->SetActiveScene(m_ActiveScene);
 			s_PhysicsSubsystem->SetActiveScene(m_ActiveScene);
 			EditorSubsystem::Get()->SetActiveScene(m_ActiveScene);
 
@@ -154,7 +155,7 @@ namespace Denix
 		// Components should act as containers for the data, the logic should be implemented on the system side
 
 		// Update Camera
-		if (const Ref<Camera> cam = m_ActiveScene->GetCamera())
+		if (const Ref<Camera> cam = m_ActiveScene->GetViewportCamera())
 		{
 			cam->Aspect = s_WindowSubsystem->GetWindow()->GetWindowSize();
 			cam->Update(_deltaTime);
@@ -227,6 +228,23 @@ namespace Denix
 				model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0, 1, 0));
 				model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0, 0, 1));
 				model = glm::scale(model, scale);
+			}
+		}
+
+
+		// Upload the Directional Light
+		if (const Ref<DirectionalLight> dirLight = m_ActiveScene->m_DirLight)
+		{
+			if(Ref<GLShader> defShader = ResourceSubsystem::GetShader("TextureShader"))
+			{
+				defShader->Bind();
+				const glm::vec3& lightDir = dirLight->GetLightDirection();
+				const glm::vec3& lightColor = dirLight->GetLightColor();
+				glUniform3f(defShader->GetUniform("u_DirLight.Direction"), lightDir.x, lightDir.y, lightDir.z);
+				glUniform1f(defShader->GetUniform("u_DirLight.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
+				glUniform3f(defShader->GetUniform("u_DirLight.Color"), lightColor.r, lightColor.g, lightColor.b);
+				glUniform1f(defShader->GetUniform("u_DirLight.AmbientIntensity"), dirLight->GetAmbientIntensity());
+				GLShader::Unbind();
 			}
 		}
 

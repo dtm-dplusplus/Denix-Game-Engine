@@ -52,7 +52,7 @@ namespace Denix
 		{
 			if (m_ActiveScene)
 			{
-				return m_ActiveScene->GetCamera();
+				return m_ActiveScene->GetViewportCamera();
 			}
 
 			DE_LOG(LogSceneSubSystem, Error, "No active scene")

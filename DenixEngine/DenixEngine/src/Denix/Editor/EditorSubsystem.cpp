@@ -135,6 +135,8 @@ namespace Denix
 				ImGui::Checkbox("Show Demo Window", &ShowDemoWindow);
 				if (ShowDemoWindow) ImGui::ShowDemoWindow(&ShowDemoWindow);
 				ImGui::DragFloat("UI Drag Speed", &DragSpeed, DragSpeed, 0.1f, 10.0f);
+
+				ImGui::ColorEdit4("Clear Color", &s_WindowSubSystem->GetWindow()->GetClearColor()[0]);
 				ImGui::EndMenu();
 			}
 
@@ -164,25 +166,25 @@ namespace Denix
 			{
 				ImGui::SeparatorText("Camera Properties");
 
-				ImGui::Text("Is Panning: {}", m_ActiveScene->m_Camera->m_IsPanMode ? "true" : "false");
-				ImGui::Text("Is Move Speed Delta: {}", m_ActiveScene->m_Camera->m_IsMoveSpeedDelta ? "true" : "false");
+				ImGui::Text("Is Panning: {}", m_ActiveScene->m_ViewportCamera->m_IsPanMode ? "true" : "false");
+				ImGui::Text("Is Move Speed Delta: {}", m_ActiveScene->m_ViewportCamera->m_IsMoveSpeedDelta ? "true" : "false");
 
-				ImGui::DragFloat("MoveSpeed", &m_ActiveScene->m_Camera->MoveSpeed, DragSpeedDelta, 1.f, 10.f); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_Camera->MoveSpeed = 0.5f;
+				ImGui::DragFloat("MoveSpeed", &m_ActiveScene->m_ViewportCamera->MoveSpeed, DragSpeedDelta, 1.f, 10.f); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->MoveSpeed = 0.5f;
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::Checkbox("Perspective Projection", &m_ActiveScene->m_Camera->IsPerspective);
+				ImGui::Checkbox("Perspective Projection", &m_ActiveScene->m_ViewportCamera->IsPerspective);
 
-				ImGui::DragFloat("Fov", &m_ActiveScene->m_Camera->Fov, DragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) m_ActiveScene->m_Camera->Fov = 45.f;
+				ImGui::DragFloat("Fov", &m_ActiveScene->m_ViewportCamera->Fov, DragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->Fov = 45.f;
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::DragFloat("Near Plane", &m_ActiveScene->m_Camera->NearPlane, DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) m_ActiveScene->m_Camera->NearPlane = 0.1f;
+				ImGui::DragFloat("Near Plane", &m_ActiveScene->m_ViewportCamera->NearPlane, DragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->NearPlane = 0.1f;
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::DragFloat("Far Plane", &m_ActiveScene->m_Camera->FarPlane, DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) m_ActiveScene->m_Camera->FarPlane = 100.f;
+				ImGui::DragFloat("Far Plane", &m_ActiveScene->m_ViewportCamera->FarPlane, DragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->FarPlane = 100.f;
 				ImGui::SetItemTooltip("Reset");
 			}
 

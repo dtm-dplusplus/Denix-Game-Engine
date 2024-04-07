@@ -35,6 +35,9 @@ namespace Denix
 
 		std::string GetTitle() const { return m_Title; }
 
+		glm::vec4 GetClearColor() const { return m_ClearColor; }
+		glm::vec4& GetClearColor() { return m_ClearColor; }
+		void SetClearColor(const glm::vec4& _color) { m_ClearColor = _color; }
 
 	protected:
 		bool m_IsOpen;
@@ -44,6 +47,8 @@ namespace Denix
 
 		int m_WinX;
 		int m_WinY;
+
+		glm::vec4 m_ClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 		friend class WindowSubsystem;
 	};

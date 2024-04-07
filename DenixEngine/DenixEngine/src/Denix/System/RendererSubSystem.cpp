@@ -2,9 +2,11 @@
 #include "RendererSubsystem.h"
 
 #include "Denix/Scene/Camera.h"
+#include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Scene/Component/MeshComponent.h"
 #include "Denix/Scene/Component/RenderComponent.h"
+#include "Denix/Scene/Object/Light/LightObject.h"
 
 namespace Denix
 {
@@ -36,22 +38,21 @@ namespace Denix
 			{
 				const glm::vec4& baseCol = _render->m_Texture->m_BaseColor;
 				glUniform4f(_render->m_Shader->GetUniform("u_BaseColor"), baseCol.r, baseCol.g, baseCol.b, baseCol.a);
-
 			}
 
 			// Upload the camera matrices relative to Object
-			if (m_ActiveCamera)
+			if (m_ViewportCamera)
 			{
 				glUniformMatrix4fv(_render->m_Shader->GetUniform("u_Projection"), 1, 
-					GL_FALSE, glm::value_ptr(m_ActiveCamera->GetProjectionMatrix()));
+					GL_FALSE, glm::value_ptr(m_ViewportCamera->GetProjectionMatrix()));
 
 				glUniformMatrix4fv(_render->m_Shader->GetUniform("u_View"), 1, 
-					GL_FALSE, glm::value_ptr(m_ActiveCamera->GetViewMatrix()));
+					GL_FALSE, glm::value_ptr(m_ViewportCamera->GetViewMatrix()));
 
 				glUniform3f(_render->m_Shader->GetUniform("u_CameraPosition"), 
-										m_ActiveCamera->GetTransformComponent()->GetPosition().x,
-										m_ActiveCamera->GetTransformComponent()->GetPosition().y,
-										m_ActiveCamera->GetTransformComponent()->GetPosition().z);	
+										m_ViewportCamera->GetTransformComponent()->GetPosition().x,
+										m_ViewportCamera->GetTransformComponent()->GetPosition().y,
+										m_ViewportCamera->GetTransformComponent()->GetPosition().z);	
 			}
 
 			// TODO This is slow, but as the same texture can be applied to multiple objects, it may have different settigns
@@ -84,6 +85,11 @@ namespace Denix
 
 	void RendererSubsystem::SetActiveCamera(const Ref<Camera>& _camera)
 	{
-		m_ActiveCamera = _camera;
+		m_ViewportCamera = _camera;
+	}
+
+	void RendererSubsystem::SetActiveScene(const Ref<Scene>& _scene)
+	{
+		m_ActiveScene = _scene;
 	}
 }

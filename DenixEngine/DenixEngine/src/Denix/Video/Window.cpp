@@ -95,7 +95,7 @@ namespace Denix
 	void SDL_GLWindow::ClearBuffer()
 	{
 		// Clear buffer, move to renderer
-		glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
+		glClearColor(m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// New ImGui frame - Move to UI class

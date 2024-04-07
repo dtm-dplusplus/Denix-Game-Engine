@@ -12,9 +12,6 @@ namespace Denix
 		floor->GetTransformComponent()->SetScale(glm::vec3(50.0f, 50.0f, 1.0f));
 		m_SceneObjects.push_back(floor);
 
-		DirLight = MakeRef<DirectionalLight>();
-		DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));
-		m_SceneObjects.push_back(DirLight);
 
 		Pyramid = MakeRef<WeirdCube>();
 		Pyramid->GetTransformComponent()->SetPosition({ 0.0f,5.0f,0.0f });
@@ -34,21 +31,24 @@ namespace Denix
 	{
 		Scene::Update(_deltaTime);
 
+		m_DirLight->UseLight(0, 0, 0, 0);
+
+
 		ImGui::SetNextWindowPos(ImVec2(1000, 50));
 		ImGui::Begin("Playground Tools");
 
 		ImGui::SeparatorText("Directional Light Settings");
-		ImGui::ColorEdit4("Base Color", &DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);
+		ImGui::ColorEdit4("Base Color", &m_DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);
 
-		ImGui::ColorEdit3("DirectionalLight Color", &DirLight->GetLightColor()[0]);
+		ImGui::ColorEdit3("DirectionalLight Color", &m_DirLight->GetLightColor()[0]);
 
-		ImGui::SliderFloat("Ambient Intensity", &DirLight->GetAmbientIntensity(),
-			DirLight->m_AmbientConstraints.x, DirLight->m_AmbientConstraints.y);
+		ImGui::SliderFloat("Ambient Intensity", &m_DirLight->GetAmbientIntensity(),
+			m_DirLight->m_AmbientConstraints.x, m_DirLight->m_AmbientConstraints.y);
 
-		ImGui::SliderFloat("Diffuse Intensity", &DirLight->GetDiffuseIntensity(),
-			DirLight->m_DiffuseConstraints.x, DirLight->m_DiffuseConstraints.y);
+		ImGui::SliderFloat("Diffuse Intensity", &m_DirLight->GetDiffuseIntensity(),
+			m_DirLight->m_DiffuseConstraints.x, m_DirLight->m_DiffuseConstraints.y);
 
-		ImGui::DragFloat3("DirectionalLight Position", &DirLight->GetLightDirection()[0], 0.1f);
+		ImGui::DragFloat3("DirectionalLight Position", &m_DirLight->GetLightDirection()[0], 0.1f);
 
 		ImGui::PushID("defmat");
 		Ref<Material> defmat = ResourceSubsystem::GetMaterial("DefaultMaterial");
@@ -70,6 +70,5 @@ namespace Denix
 		ImGui::PopID();
 		ImGui::End();
 
-		DirLight->UseLight(0,0,0,0);
 	}
 }

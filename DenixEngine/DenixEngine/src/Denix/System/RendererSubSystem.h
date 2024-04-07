@@ -7,6 +7,7 @@
 
 namespace Denix
 {
+	class Scene;
 	class MeshComponent;
 	class TransformComponent;
 	class RenderComponent;
@@ -33,6 +34,7 @@ namespace Denix
 			const Ref<MeshComponent>& _mesh);
 			
 		void SetActiveCamera(const Ref<Camera>& _camera);
+		void SetActiveScene(const Ref<Scene>& _scene);
 
 	public:
 		static RendererSubsystem* Get() { return s_RendererSubSystem; }
@@ -60,7 +62,8 @@ namespace Denix
 			Ref<TransformComponent>, 
 			Ref<MeshComponent>>> m_RendererComponents;
 
-		Ref<Camera> m_ActiveCamera;
+		Ref<Camera> m_ViewportCamera;
+		Ref<Scene> m_ActiveScene;
 	};
 }
 
