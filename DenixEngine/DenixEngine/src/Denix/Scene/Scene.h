@@ -6,6 +6,8 @@
 
 namespace Denix
 {
+	constexpr unsigned int MAX_POINT_LIGHTS = 3;
+
 	// Basic Scene class
 	class Scene
 	{

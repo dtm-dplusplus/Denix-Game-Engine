@@ -61,12 +61,20 @@ namespace Denix
 				program->GetUniform("u_Projection");
 				program->GetUniform("u_View");
 
-				program->GetUniform("u_AffectsLighting");
 				program->GetUniform("u_Texture");
+				program->GetUniform("u_AffectsLighting");
+
 				program->GetUniform("u_DirLight.Direction");
-				program->GetUniform("u_DirLight.DiffuseIntensity");
-				program->GetUniform("u_DirLight.Color");
-				program->GetUniform("u_DirLight.AmbientIntensity");
+				program->GetUniform("u_DirLight.Base.Color");
+				program->GetUniform("u_DirLight.Base.DiffuseIntensity");
+				program->GetUniform("u_DirLight.Base.AmbientIntensity");
+
+				program->GetUniform("u_PointLightCount");
+
+				for (size_t i = 0; i < 3; i++)
+				{
+					DE_LOG(Log, Trace, "u_PointLights[" + std::to_string(i) + "].Base.Color")
+				}
 			}
 			m_Initialized = true;
 		}
