@@ -6,7 +6,8 @@
 
 namespace Denix
 {
-	class MeshComponent final : public Component
+	class
+	MeshComponent final : public Component
 	{
 	public:
 		MeshComponent() : Component(ObjectInitializer("Mesh Component")) 

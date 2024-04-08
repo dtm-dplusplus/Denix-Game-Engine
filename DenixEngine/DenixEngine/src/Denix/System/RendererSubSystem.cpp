@@ -25,8 +25,6 @@ namespace Denix
 			_mesh->m_VAO->Bind();
 			_mesh->m_IBO->Bind();
 
-			
-
 			// Upload the model matrix
 			glUniformMatrix4fv(_render->m_Shader->GetUniform("u_Model"), 1, 
 				GL_FALSE, glm::value_ptr(_transform->GetModel()));

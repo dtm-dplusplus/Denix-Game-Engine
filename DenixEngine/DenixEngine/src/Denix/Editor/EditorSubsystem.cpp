@@ -262,8 +262,9 @@ namespace Denix
 								}
 								else if (name == lightNames[2])
 								{
-									const Ref<Cube> spotLight = MakeRef<Cube>(ObjectInitializer("Spot Light"));
+									const Ref<SpotLight> spotLight = MakeRef<SpotLight>();
 									spotLight->BeginScene();
+									m_ActiveScene->m_SpotLights.push_back(spotLight);
 									m_ActiveScene->m_SceneObjects.push_back(spotLight);
 									DE_LOG(LogEditor, Info, "Added {} to the scene", lightNames[2])
 								}
@@ -274,31 +275,6 @@ namespace Denix
 
 					ImGui::EndPopup();
 				}
-
-				/*if (ImGui::BeginPopup("add_shape_popup"))
-				{
-					for (auto& name : shapeNames)
-					{
-						std::string s = "s";
-						if (ImGui::Selectable(s.c_str()))
-						{
-							createdObject = true;
-							if (strcmp(name, "Plane") == 0)
-							{
-								const Ref<Plane> plane = MakeRef<Plane>();
-								plane->BeginScene();
-								m_ActiveScene->m_SceneObjects.push_back(plane);
-							}
-							else if (strcmp(name, "Cube") == 0)
-							{
-								const Ref<Cube> cube = MakeRef<Cube>();
-								cube->BeginScene();
-								m_ActiveScene->m_SceneObjects.push_back(cube);
-							}
-						}
-					}
-					ImGui::EndPopup();
-				}*/
 
 				// Set new selection to created object
 				if (createdObject) ObjectSelection = m_ActiveScene->m_SceneObjects.size() - 1;
@@ -311,7 +287,6 @@ namespace Denix
 						ObjectSelection = i;
 					}
 
-					
 					if (ImGui::BeginPopupContextItem()) //uses last item id as popup id
 					{
 						ObjectSelection = i;
