@@ -99,6 +99,21 @@ namespace Denix
 
 		Ref<Camera> GetViewportCamera() { return m_ViewportCamera; }
 
+		Ref<Camera> GetActiveCamera() { return m_ActiveCamera; }
+
+		Ref<Camera> GetGameCamera() const
+		{
+			for (const auto& obj : m_SceneObjects)
+			{
+				if (typeid(Camera) == typeid(*obj))
+				{
+					return std::static_pointer_cast<Camera>(obj);
+				}
+			}
+
+			return nullptr;
+		}
+
 		Ref<DirectionalLight> GetDirectionalLight() { return m_DirLight; }
 	protected:
 

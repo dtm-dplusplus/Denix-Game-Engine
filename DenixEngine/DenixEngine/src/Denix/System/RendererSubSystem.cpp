@@ -37,18 +37,18 @@ namespace Denix
 
 
 			// Upload the camera matrices relative to Object
-			if (m_ViewportCamera)
+			if (Ref<Camera> camera = m_ActiveScene->m_ActiveCamera)
 			{
 				glUniformMatrix4fv(_render->m_Shader->GetUniform("u_Projection"), 1, 
-					GL_FALSE, glm::value_ptr(m_ViewportCamera->GetProjectionMatrix()));
+					GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
 
 				glUniformMatrix4fv(_render->m_Shader->GetUniform("u_View"), 1, 
-					GL_FALSE, glm::value_ptr(m_ViewportCamera->GetViewMatrix()));
+					GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
 
 				glUniform3f(_render->m_Shader->GetUniform("u_CameraPosition"), 
-										m_ViewportCamera->GetTransformComponent()->GetPosition().x,
-										m_ViewportCamera->GetTransformComponent()->GetPosition().y,
-										m_ViewportCamera->GetTransformComponent()->GetPosition().z);	
+					camera->GetTransformComponent()->GetPosition().x,
+					camera->GetTransformComponent()->GetPosition().y,
+					camera->GetTransformComponent()->GetPosition().z);
 			}
 
 			// TODO This is slow, but as the same texture can be applied to multiple objects, it may have different settigns
@@ -80,11 +80,6 @@ namespace Denix
 			VertexArray::Unbind();
 			GLShader::Unbind();
 		}
-	}
-
-	void RendererSubsystem::SetActiveCamera(const Ref<Camera>& _camera)
-	{
-		m_ViewportCamera = _camera;
 	}
 
 	void RendererSubsystem::SetActiveScene(const Ref<Scene>& _scene)

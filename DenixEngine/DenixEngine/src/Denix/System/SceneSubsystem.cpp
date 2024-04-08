@@ -85,7 +85,6 @@ namespace Denix
 			m_ActiveScene = scene;
 
 			// Set dependencies with new scene pointer
-			s_RendererSubsystem->SetActiveCamera(m_ActiveScene->m_ViewportCamera);
 			s_RendererSubsystem->SetActiveScene(m_ActiveScene);
 			s_PhysicsSubsystem->SetActiveScene(m_ActiveScene);
 			EditorSubsystem::Get()->SetActiveScene(m_ActiveScene);
@@ -104,7 +103,21 @@ namespace Denix
 	{
 		if (m_ActiveScene)
 		{
+			// Check for Game Camera
+			if(const Ref<Camera> camera = m_ActiveScene->GetGameCamera())
+			{
+				// Set the camera as the active camera
+				m_ActiveScene->m_ActiveCamera = camera;
+				DE_LOG(LogSceneSubSystem, Info, "Game Camera Found: {}", camera->GetName())
+			}
+			else
+			{
+				DE_LOG(LogSceneSubSystem, Warn, "No Game Camera found. Using Viewport Camera Instead")
+			}
+
 			m_ActiveScene->BeginPlay();
+
+			
 			s_PhysicsSubsystem->SetIsSimulating(true);
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Playing")
 		}

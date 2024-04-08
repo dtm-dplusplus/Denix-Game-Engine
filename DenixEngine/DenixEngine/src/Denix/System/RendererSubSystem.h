@@ -33,7 +33,6 @@ namespace Denix
 			const Ref<TransformComponent>& _transform, 
 			const Ref<MeshComponent>& _mesh);
 			
-		void SetActiveCamera(const Ref<Camera>& _camera);
 		void SetActiveScene(const Ref<Scene>& _scene);
 
 	public:
@@ -55,14 +54,12 @@ namespace Denix
 
 	private:
 		static RendererSubsystem* s_RendererSubSystem;
-
 		
 		std::vector<std::tuple<
 			Ref<RenderComponent>, 
 			Ref<TransformComponent>, 
 			Ref<MeshComponent>>> m_RendererComponents;
 
-		Ref<Camera> m_ViewportCamera;
 		Ref<Scene> m_ActiveScene;
 	};
 }
