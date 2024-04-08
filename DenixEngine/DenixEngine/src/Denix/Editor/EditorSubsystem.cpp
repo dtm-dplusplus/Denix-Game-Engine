@@ -414,15 +414,24 @@ namespace Denix
 					ImGui::DragFloat("Ambient Intensity", &light->GetAmbientIntensity(), DragSpeedDelta);
 					ImGui::DragFloat("Diffuse Intensity", &light->GetDiffuseIntensity(), DragSpeedDelta);
 
-					// Directional Light Settings
 					if (const Ref<DirectionalLight> dirLight = std::dynamic_pointer_cast<DirectionalLight>(selectedObject))
 					{
 						ImGui::SeparatorText("Directional Light Settings");
 						ImGui::DragFloat3("Light Direction", &dirLight->GetLightDirection()[0], DragSpeedDelta);
 					}
 
-					// Point Light Settings
-					if (const Ref<PointLight> pointLight = std::dynamic_pointer_cast<PointLight>(selectedObject))
+					else if (const Ref<SpotLight> spotLight = std::dynamic_pointer_cast<SpotLight>(selectedObject))
+					{
+						ImGui::SeparatorText("Spot Light Settings");
+						ImGui::DragFloat("Edge", &spotLight->GetEdge(), DragSpeedDelta);
+						ImGui::DragFloat3("Direction", &spotLight->GetDirection()[0], DragSpeedDelta);
+
+						ImGui::SeparatorText("Attenuation");
+						ImGui::DragFloat("Constant", &spotLight->GetConstant(), DragSpeedDelta);
+						ImGui::DragFloat("Linear", &spotLight->GetLinear(), DragSpeedDelta);
+						ImGui::DragFloat("Exponent", &spotLight->GetExponent(), DragSpeedDelta);
+					}
+					else if (const Ref<PointLight> pointLight = std::dynamic_pointer_cast<PointLight>(selectedObject))
 					{
 						ImGui::SeparatorText("Point Light Settings");
 						ImGui::SeparatorText("Attenuation");

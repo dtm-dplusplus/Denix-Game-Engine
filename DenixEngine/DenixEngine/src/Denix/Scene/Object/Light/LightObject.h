@@ -74,6 +74,12 @@ namespace Denix
 			m_DiffuseIntensity = 1.0f;
 		}
 
+		PointLight(const ObjectInitializer& _objInit) : Light( _objInit ), constant(0.3f), linear(0.2f), exponent(0.1f)
+		{
+			m_AmbientIntensity = 0.0f;
+			m_DiffuseIntensity = 1.0f;
+		}
+
 		float GetConstant() const { return constant; }
 		float& GetConstant() { return constant; }
 		void SetConstant(const float _constant) { constant = _constant; }
@@ -91,5 +97,37 @@ namespace Denix
 		float constant, linear, exponent;
 		//glm::vec3 m_Attenuation;
 		//float m_Range;
+	};
+
+	class SpotLight : public PointLight
+	{
+	public:
+		SpotLight() : PointLight({"SpotLight"}), m_Direction(0.0f, -1.0f,0.0f), m_Edge(5), m_ProcessedEdge(0)
+		{
+			m_AmbientIntensity = 0.5f;
+			m_DiffuseIntensity = 1.0f;
+			m_ProcessedEdge = cosf(glm::radians(m_Edge));
+		}
+
+
+		void Update(float _deltaTime) override
+		{
+			// Update the processed edge
+			m_ProcessedEdge = cosf(glm::radians(m_Edge));
+		}
+
+		glm::vec3 GetDirection() const { return m_Direction; }
+		glm::vec3& GetDirection() { return m_Direction; }
+		void SetDirection(const glm::vec3& _direction) { m_Direction = _direction; }
+
+		float GetEdge() const { return m_Edge; }
+		float& GetEdge() { return m_Edge; }
+
+		float GetProcessedEdge() const { return m_ProcessedEdge; }
+		float& GetProcessedEdge() { return m_ProcessedEdge; }
+		private:
+		glm::vec3 m_Direction;
+		float m_Edge;
+		float m_ProcessedEdge;
 	};
 }

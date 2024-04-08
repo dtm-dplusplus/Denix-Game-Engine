@@ -70,5 +70,6 @@ namespace Denix
 		Ref<Cube> TestCube;
 
 		Ref<PointLight> PntLight;
+		Ref<SpotLight> SptLight;
 	};
 }

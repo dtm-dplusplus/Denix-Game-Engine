@@ -6,6 +6,7 @@ in vec3 FragPosition;
 out vec4 Color;
 
 const int MAX_POINT_LIGHTS = 3;
+const int MAX_SPOT_LIGHTS = 3;
 
 struct Light
 {
@@ -29,6 +30,13 @@ struct PointLight
 	float Exponent;
 };
 
+struct SpotLight
+{
+	PointLight Base;
+	vec3 Direction;
+	float Edge;
+};
+
 struct Material
 {
 	vec3 BaseColor;
@@ -41,6 +49,8 @@ uniform DircetionalLight u_DirLight;
 uniform int u_PointLightCount;
 uniform PointLight u_PointLight[MAX_POINT_LIGHTS];
 
+uniform int u_SpotLightCount;
+uniform SpotLight u_SpotLight[MAX_SPOT_LIGHTS];
 
 
 uniform sampler2D u_Texture;
@@ -81,19 +91,52 @@ vec4 CalcDirLight()
 
 }
 
+vec4 CalcPointLight(PointLight _light)
+{
+	vec3 direction = FragPosition - _light.Position;
+	float dist = length(direction);
+	direction = normalize(direction);
+		
+	vec4 Color = CalcLightByDir(_light.Base, direction);
+	float attenuation = _light.Exponent * pow(dist,2) + _light.Linear * dist + _light.Constant;
+		
+	 return (Color / attenuation);
+}
+
 vec4 CalcPointLights()
 {
 	vec4 totalColor = vec4(0, 0, 0, 0);
 	for(int i = 0; i < u_PointLightCount; i++)
 	{
-		vec3 direction = FragPosition - u_PointLight[i].Position;
-		float dist = length(direction);
-		direction = normalize(direction);
-		
-		vec4 Color = CalcLightByDir(u_PointLight[i].Base, direction);
-		float attenuation = u_PointLight[i].Exponent * pow(dist,2) + u_PointLight[i].Linear * dist + u_PointLight[i].Constant;
-		
-		totalColor += (Color / attenuation);
+		totalColor += CalcPointLight(u_PointLight[i]);
+	}
+	
+	return totalColor;
+}
+
+vec4 CalcSpotLight(SpotLight _light)
+{
+	vec3 rayDirction = normalize(FragPosition - _light.Base.Position);
+	float spotFactor = dot(rayDirction, normalize(_light.Direction));
+
+	if (spotFactor > _light.Edge)
+	{
+		vec4 color = CalcPointLight(_light.Base);
+		return color * (1.0f - (1.0f - spotFactor) * (1.0f/(1.0f - _light.Edge)));
+	}
+	else
+	{
+		return vec4(0.0f);
+	}
+
+}
+
+vec4 CalcSpotLights()
+{
+	vec4 totalColor = vec4(0.0f);
+	for(int i = 0; i < u_SpotLightCount; i++)
+	{
+		totalColor += CalcSpotLight(u_SpotLight[i]);
 	}
 	
 	return totalColor;
@@ -109,7 +152,7 @@ void main()
 	}
 
 	// Get color from lighting
-	vec4 totalColor = CalcDirLight() + CalcPointLights();
+	vec4 totalColor = CalcDirLight() + CalcPointLights() + CalcSpotLights();
 
 	// Get base from color or texture
 	if(!u_BaseColorAsTexture)

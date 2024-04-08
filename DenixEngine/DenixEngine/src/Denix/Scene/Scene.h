@@ -7,6 +7,7 @@
 namespace Denix
 {
 	constexpr unsigned int MAX_POINT_LIGHTS = 3;
+	constexpr unsigned int MAX_SPOT_LIGHTS = 3;
 
 	// Basic Scene class
 	class Scene
@@ -56,6 +57,12 @@ namespace Denix
 				{
 					DE_LOG(LogScene, Info, "Point Light Found")
 					m_PointLights.push_back(std::static_pointer_cast<PointLight>(obj));
+				}
+
+				if (typeid(SpotLight) == typeid(*obj))
+				{
+					DE_LOG(LogScene, Info, "Spot Light Found")
+					m_SpotLights.push_back(std::static_pointer_cast<SpotLight>(obj));
 				}
 			}
 		}
@@ -138,8 +145,7 @@ namespace Denix
 		Ref<DirectionalLight> m_DirLight;
 
 		std::vector<Ref<PointLight>> m_PointLights;
-
-		unsigned int m_PointLightCount = 0;
+		std::vector<Ref<SpotLight>> m_SpotLights;
 
 		friend class SceneSubsystem;
 		friend class RendererSubsystem;

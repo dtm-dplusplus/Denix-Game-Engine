@@ -27,6 +27,9 @@ namespace Denix
 		red->GetTransformComponent()->SetPosition({ 5.0f, 10.0f, 0.0f });
 		red->GetRenderComponent()->SetMaterial(ResourceSubsystem::GetMaterial("MAT_Red"));
 
+		SptLight = MakeRef<SpotLight>();
+		SptLight->GetTransformComponent()->SetPosition({ -5.0f, 5.0f, 0.0f });
+		m_SceneObjects.push_back(SptLight);
 		//m_SceneObjects.push_back(MakeRef<Camera>());
 
 		return true;
@@ -39,6 +42,8 @@ namespace Denix
 		Ref<GLShader> program = ResourceSubsystem::GetShader("DefaultShader");
 		program->Bind();
 		glUniform1i(program->GetUniform("u_PointLightCount"), (int)m_PointLights.size());
+		glUniform1i(program->GetUniform("u_SpotLightCount"), (int)m_SpotLights.size());
+
 
 		for (int i = 0; i < (int)m_PointLights.size(); i++)
 		{
@@ -54,11 +59,28 @@ namespace Denix
 			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Exponent"), m_PointLights[i]->GetExponent());
 		}
 
+		for (int i = 0; i < (int)m_SpotLights.size(); i++)
+		{
+			const glm::vec3& lightCol = m_SpotLights[i]->GetLightColor();
+			glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Base.Color"), lightCol.r, lightCol.g, lightCol.b);
+			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Base.AmbientIntensity"), m_SpotLights[i]->GetAmbientIntensity());
+			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Base.DiffuseIntensity"), m_SpotLights[i]->GetDiffuseIntensity());
+
+			const glm::vec3& pos = m_SpotLights[i]->GetTransformComponent()->GetPosition();
+			glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Position"), pos.x, pos.y, pos.z);
+			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Constant"), m_SpotLights[i]->GetConstant());
+			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Linear"), m_SpotLights[i]->GetLinear());
+			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Exponent"), m_SpotLights[i]->GetExponent());
+
+			const glm::vec3& dir = m_SpotLights[i]->GetDirection();
+			glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Direction"), dir.x, dir.y, dir.z);
+			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Edge"), m_SpotLights[i]->GetProcessedEdge());
+		}
 		GLShader::Unbind();
 
 		ImGui::SetNextWindowPos(ImVec2(1000, 50));
 		ImGui::Begin("Playground Tools");
-
+		
 		ImGui::SeparatorText("Scene Info");
 		ImGui::Text("Point Lights: %d", m_PointLights.size());
 
