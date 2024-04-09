@@ -35,15 +35,16 @@ namespace Denix
 			// Create Debug Shader
 			{
 				std::vector<ShaderSource> shaders;
-				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugVertex.glsl)");
-				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugFragment.glsl)");
+				shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugVertex.glsl)");
+				shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugFragment.glsl)");
+				LoadShader(shaders, "DebugShader");
 			}
 
 			// Create Texture Shader
 			{
 				std::vector<ShaderSource> shaders;
-				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::GetEngineRoot() + R"(res\shaders\Vertex.glsl)");
-				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::GetEngineRoot() + R"(res\shaders\Fragment.glsl)");
+				shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Vertex.glsl)");
+				shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Fragment.glsl)");
 				LoadShader(shaders, "DefaultShader");
 			}
 			m_Initialized = true;
@@ -54,15 +55,19 @@ namespace Denix
 			DE_LOG(Log, Trace, "GLShader Subsystem Initialized")
 			m_Initialized = false;
 		}
-
-		bool LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
+		
+		void AddShader(const Ref<GLShader>& _shader)
 		{
-			if (ShaderExists(_name))
+			if (ShaderExists(_shader->GetFriendlyName()))
 			{
-				DE_LOG(LogShader, Error, "GLShader already exists: {}", _name)
-				return false;
+				DE_LOG(LogShader, Error, "GLShader already exists: {}", _shader->GetFriendlyName())
+				return;
 			}
 
+			m_ShaderPrograms[_shader->GetFriendlyName()] = _shader;
+		}
+		bool LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
+		{
 			if (const Ref<GLShader> program = MakeRef<GLShader>(ObjectInitializer(_name)))
 			{
 				if (!program->GetGL_ID()) return false;
@@ -71,10 +76,11 @@ namespace Denix
 
 				if (!program->CompileProgram()) return false;
 
-				m_ShaderPrograms[_name] = program;
+				AddShader(program);
+
 				return true;
 			}
-
+			
 			return false;
 		}
 

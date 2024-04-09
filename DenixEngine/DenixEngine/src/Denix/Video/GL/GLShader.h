@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+#include <map>
 #include <GL/glew.h>
 
 #include "Denix/Core.h"
@@ -9,11 +11,32 @@ namespace Denix
 {
 	struct ShaderSource
 	{
-		GLenum Type = 0;
 		std::string Path;
 		std::string Source;
+		GLenum Type = 0;
 		bool IsCompiled = false;
 	};
+
+	/*struct ShaderTypePair
+	{
+		std::string StringType;
+		GLenum EnumType;
+	};*/
+
+	// Keyword to find the shader type in the shader file
+	const std::string g_SHADER_KEYWORD{ "DE_SHADER" };
+	const int g_SHADER_KEYWORD_OFFSET = 1 + g_SHADER_KEYWORD.length();
+
+	const std::tuple<std::string, GLenum> g_SHADER_TYPES[] =
+	{
+		{ "vertex", GL_VERTEX_SHADER },
+		{ "fragment", GL_FRAGMENT_SHADER },
+		{ "geometry", GL_GEOMETRY_SHADER },
+		{ "tess_control", GL_TESS_CONTROL_SHADER },
+		{ "tess_evaluation", GL_TESS_EVALUATION_SHADER },
+		{ "compute", GL_COMPUTE_SHADER }
+	};
+
 
 	class GLShader: public Object
 	{
@@ -72,11 +95,31 @@ namespace Denix
 			return true;
 		}
 
-		GLuint CompileShader(ShaderSource& _sourceObj) const
+		bool CompileShader(ShaderSource& _sourceObj) const
 		{
-			// We should error check this in the future
-			_sourceObj.Source = FileSubsystem::Read(_sourceObj.Path, true);
+			// Check Shader Source
+			if (const std::string& source = FileSubsystem::Read(_sourceObj.Path, true); !source.empty())
+			{
+				_sourceObj.Source = source;
+			}
+			else
+			{
+				DE_LOG(LogShader, Error, "Failed to read shader file: {}", _sourceObj.Path)
+				return false;
+			}
 
+			// Get Shader Type
+			if (const GLenum type = GetShaderType(_sourceObj.Source); type != GL_FALSE)
+			{
+				_sourceObj.Type = type;
+			}
+			else
+			{
+				DE_LOG(LogShader, Error, "Failed to get shader type")
+				return false;
+			}
+
+			// Compile Shader
 			if (const GLuint shader = glCreateShader(_sourceObj.Type))
 			{
 				const char* src = _sourceObj.Source.c_str();
@@ -91,15 +134,41 @@ namespace Denix
 					GLchar infoLog[512];
 					glGetShaderInfoLog(shader, 512, NULL, infoLog);
 					DE_LOG(LogShader, Error, "GLShader Error: {}", infoLog)
-					return 0;
+					return false;
 				}
 
 				glAttachShader(m_GL_ID, shader);
-				return shader;
+				glDeleteShader(shader);
+				return true;
 			}
 
 			DE_LOG(LogShader, Error, "Failed to create shader\n")
-			return 0;
+			return false;
+		}
+
+		GLenum GetShaderType(const std::string& _source) const
+		{
+			if (const auto keywordIt = _source.find_first_of(g_SHADER_KEYWORD))
+			{
+				std::string type;
+
+				for (auto typeIt = keywordIt + g_SHADER_KEYWORD_OFFSET;
+					_source[typeIt] != ' ' && _source[typeIt] != '\n'; typeIt++)
+				{
+					type += _source[typeIt];
+				}
+
+				DE_LOG(LogShader, Trace, "Shader Type: {}", type)
+				
+				// Return the type if we find it
+				for (const auto& [StringType, EnumType] : g_SHADER_TYPES)
+					if (type == StringType) return EnumType;
+
+			}
+
+			DE_LOG(LogShader, Error, "Shader Keyword DE_SHADER not found or invalid type")
+
+			return GL_FALSE;
 		}
 
 		bool CompileProgram()
@@ -109,12 +178,10 @@ namespace Denix
 				if (const GLuint shader = CompileShader(source))
 				{
 					source.IsCompiled = true;
-					DE_LOG(LogShader, Trace, "Shader compiled successfully")
 				}
 				else
 				{
 					source.IsCompiled = false;
-					DE_LOG(LogShader, Error, "Shader compilation failed")
 					return false;
 				}
 			}
