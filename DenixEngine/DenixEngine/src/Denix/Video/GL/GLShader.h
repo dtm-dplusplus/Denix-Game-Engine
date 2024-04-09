@@ -2,37 +2,84 @@
 #include <GL/glew.h>
 
 #include "Denix/Core.h"
+#include "Denix/Scene/Object.h"
+#include "Denix/System/FileSubsystem.h"
 
 namespace Denix
 {
-	class GLShader final
+	struct ShaderSource
+	{
+		GLenum Type = 0;
+		std::string Path;
+		std::string Source;
+		bool IsCompiled = false;
+	};
+
+	class GLShader: public Object
 	{
 	public:
-		GLShader() = default;
-
-		~GLShader() = default;
-
-		/*static Ref<GLShader> Create()
+		GLShader(const ObjectInitializer& _objInit): Object(_objInit)
 		{
-			return MakeRef<GLShader>();
-		}*/
+			CreateProgram();
+		}
+
+		~GLShader() override
+		{
+			DeleteProgram();
+		}
 
 		void Bind() const { glUseProgram(m_GL_ID); }
 		static void Unbind() { glUseProgram(0); }
 
-		GLuint CreateProgram();
-		bool LinkProgram() const;
+		GLuint CreateProgram()
+		{
+			if (const GLuint program = glCreateProgram())
+			{
+				m_GL_ID = program;
+				DE_LOG(LogShader, Trace, "Created shader program ID: {}", program)
+				return program;
+			}
+
+			DE_LOG(LogShader, Error, "Failed to create shader program")
+			return 0;
+		}
 
 		void DeleteProgram() const
 		{
-			glDeleteProgram(m_GL_ID);
+			if (m_GL_ID)
+			{
+				DE_LOG(LogShader, Trace, "Deleted shader program ID: {}", m_GL_ID)
+				glDeleteProgram(m_GL_ID);
+			}
 		}
 
-		GLuint CompileShader(GLenum _type, const std::string& _source)
+		bool LinkProgram() const
 		{
-			if (const GLuint shader = glCreateShader(_type))
+			glLinkProgram(m_GL_ID);
+
+			GLint result;
+			glGetProgramiv(m_GL_ID, GL_LINK_STATUS, &result);
+			if (!result)
 			{
-				const char* src = _source.c_str();
+				GLchar infoLog[512];
+				glGetProgramInfoLog(m_GL_ID, 512, NULL, infoLog);
+				DE_LOG(LogShader, Error, "GLShader Program Link Fail: {}", infoLog)
+					return false;
+			}
+
+			DE_LOG(LogShader, Trace, "GLShader Program Link Success")
+
+			return true;
+		}
+
+		GLuint CompileShader(ShaderSource& _sourceObj) const
+		{
+			// We should error check this in the future
+			_sourceObj.Source = FileSubsystem::Read(_sourceObj.Path, true);
+
+			if (const GLuint shader = glCreateShader(_sourceObj.Type))
+			{
+				const char* src = _sourceObj.Source.c_str();
 				glShaderSource(shader, 1, &src, NULL);
 
 				glCompileShader(shader);
@@ -47,6 +94,7 @@ namespace Denix
 					return 0;
 				}
 
+				glAttachShader(m_GL_ID, shader);
 				return shader;
 			}
 
@@ -54,30 +102,30 @@ namespace Denix
 			return 0;
 		}
 
-		void AttachShader(const GLuint _shaderID) const
+		bool CompileProgram()
 		{
-			glAttachShader(m_GL_ID, _shaderID);
-		}
+			for (ShaderSource& source : m_ShaderSources)
+			{
+				if (const GLuint shader = CompileShader(source))
+				{
+					source.IsCompiled = true;
+					DE_LOG(LogShader, Trace, "Shader compiled successfully")
+				}
+				else
+				{
+					source.IsCompiled = false;
+					DE_LOG(LogShader, Error, "Shader compilation failed")
+					return false;
+				}
+			}
 
+			if (!LinkProgram())
+			{
+				DeleteProgram();
+				return false;
+			}
 
-		void DetachShader(const GLuint _shaderID) const
-		{
-			glDetachShader(m_GL_ID, _shaderID);
-		}
-
-		GLuint CreateShader(const GLenum _type) const
-		{
-			return glCreateShader(_type);
-		}
-
-		void DeleteShader(const GLuint _shaderID) const
-		{
-			glDeleteShader(_shaderID);
-		}
-
-		void BindAttrib(const GLuint _index, const std::string& _name) const
-		{
-			glBindAttribLocation(m_GL_ID, _index, _name.data());
+			return true;
 		}
 
 		GLint GetUniform(const std::string& _uniform)
@@ -95,21 +143,17 @@ namespace Denix
 			}
 		}
 
-		/** TEMP */
-		// Color
-		GLint ColorUniformId;
+		GLuint GetGL_ID() const { return m_GL_ID; }
 
-		//// Matrix
-		//GLint ModelUniformId;
-		//GLint ViewUniformId;
-		//GLint ProjectionUniformId;
-
-	private:
-	
+		void SetShaderSources(const std::vector<ShaderSource>& _sources)
+		{
+			m_ShaderSources = _sources;
+		}
 
 	private:
 		GLuint m_GL_ID;
 
+		std::vector<ShaderSource> m_ShaderSources;
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
 	};
 }

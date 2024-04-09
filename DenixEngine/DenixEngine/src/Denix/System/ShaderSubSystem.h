@@ -34,55 +34,17 @@ namespace Denix
 
 			// Create Debug Shader
 			{
-				std::vector<std::pair<GLenum, std::string>> shaders;
-				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::Read(R"(res\shaders\DebugVertex.glsl)"));
-				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::Read(R"(res\shaders\DebugFragment.glsl)"));
-				LoadShader(shaders, "DebugShader");
-
-				const Ref<GLShader> program = GetShader("DebugShader");
-
-				// Check Uniforms
-				program->GetUniform("u_Model");
-				program->GetUniform("u_Projection");
-				program->GetUniform("u_Color");
-				program->GetUniform("u_View");
+				std::vector<ShaderSource> shaders;
+				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugVertex.glsl)");
+				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugFragment.glsl)");
 			}
 
 			// Create Texture Shader
 			{
-				std::vector<std::pair<GLenum, std::string>> shaders;
-				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::Read(R"(res\shaders\Vertex.glsl)"));
-				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::Read(R"(res\shaders\Fragment.glsl)"));
+				std::vector<ShaderSource> shaders;
+				shaders.emplace_back(GL_VERTEX_SHADER, FileSubsystem::GetEngineRoot() + R"(res\shaders\Vertex.glsl)");
+				shaders.emplace_back(GL_FRAGMENT_SHADER, FileSubsystem::GetEngineRoot() + R"(res\shaders\Fragment.glsl)");
 				LoadShader(shaders, "DefaultShader");
-
-				const Ref<GLShader> program = GetShader("DefaultShader");
-
-				// Check Uniforms
-				program->GetUniform("u_Model");
-				program->GetUniform("u_Projection");
-				program->GetUniform("u_View");
-
-				program->GetUniform("u_Texture");
-				program->GetUniform("u_AffectsLighting");
-
-				program->GetUniform("u_DirLight.Direction");
-				program->GetUniform("u_DirLight.Base.Color");
-				program->GetUniform("u_DirLight.Base.DiffuseIntensity");
-				program->GetUniform("u_DirLight.Base.AmbientIntensity");
-
-				program->GetUniform("u_PointLightCount");
-
-				for (size_t i = 0; i < MAX_POINT_LIGHTS; i++)
-				{
-					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Color");
-					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.AmbientIntensity");
-					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.DiffuseIntensity");
-
-					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Position");
-					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Constant");
-					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Linear");
-					program->GetUniform("u_PointLight[" + std::to_string(i) + "].Exponent");
-				}
 			}
 			m_Initialized = true;
 		}
@@ -93,31 +55,21 @@ namespace Denix
 			m_Initialized = false;
 		}
 
-		bool LoadShader(const std::vector<std::pair<GLenum, std::string>>& _sources, const std::string& _name)
+		bool LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
 		{
-			if(const Ref<GLShader> program = MakeRef<GLShader>())
+			if (ShaderExists(_name))
 			{
-				program->CreateProgram();
+				DE_LOG(LogShader, Error, "GLShader already exists: {}", _name)
+				return false;
+			}
 
-				for(const auto& [type, source] : _sources)
-				{
-					if (const GLuint shader = program->CompileShader(type, source))
-					{
-						program->AttachShader(shader);
-						program->DeleteShader(shader);
-					}
-					else
-					{
-						program->DeleteProgram();
-						return false;
-					}
-				}
+			if (const Ref<GLShader> program = MakeRef<GLShader>(ObjectInitializer(_name)))
+			{
+				if (!program->GetGL_ID()) return false;
 
-				if (!program->LinkProgram())
-				{
-					program->DeleteProgram();
-					return false;
-				}
+				program->SetShaderSources(_shaders);
+
+				if (!program->CompileProgram()) return false;
 
 				m_ShaderPrograms[_name] = program;
 				return true;
@@ -128,13 +80,18 @@ namespace Denix
 
 		Ref<GLShader> GetShader(const std::string& _name)
 		{
-			if(m_ShaderPrograms.contains(_name))
+			if(ShaderExists(_name))
 			{
 				return m_ShaderPrograms[_name];
 			}
 
 			DE_LOG(LogShader, Error, "GLShader not found: {}", _name)
 			return nullptr;
+		}
+
+		bool ShaderExists(const std::string& _name) const
+		{
+			return m_ShaderPrograms.contains(_name);
 		}
 	private:
 		static ShaderSubsystem* s_ShaderSubSystem;
