@@ -5,6 +5,8 @@
 
 namespace Denix
 {
+	class Camera;
+	class GameObject;
 	class Scene;
 
 	class EditorSubsystem : public Subsystem
@@ -38,7 +40,7 @@ namespace Denix
 		Ref<Scene> m_ActiveScene;
 
 		// TEMP ImGui
-		int ObjectSelection = 0;
+		int m_ObjectSelection = 0;
 		bool ScenePanelOpen = true;
 		bool ShowDemoWindow = false;
 		float WinX = 0.0f;
@@ -61,5 +63,17 @@ namespace Denix
 		void MenuBar();
 		float MenuBarHeight = 15.f;
 		float ViewportBarHeight = 15.f;
+
+		// Scene Viewer
+		void ScenePropertiesWidget() const;
+		void SceneAddObjectWidget();
+		void SceneOrganizerWidget();
+		void LightWidget(const Ref<GameObject>& _selectedObject) const;
+		void PhysicsWidget(const Ref<GameObject>& _selectedObject) const;
+		void RenderWidget(const Ref<GameObject>& _selectedObject);
+		void ColliderWidget(const Ref<GameObject>& _selectedObject);
+		void MeshWidget(const Ref<GameObject>& _selectedObject);
+		void TransformWidget(const Ref<GameObject>& _object) const;
+		void CameraWidget(const Ref<GameObject>& _camera) const;
 	};
 }
