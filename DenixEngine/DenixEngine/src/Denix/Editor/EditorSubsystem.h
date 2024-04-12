@@ -1,10 +1,15 @@
 #pragma once
 
+#include "imgui.h"
+#include "misc/cpp/imgui_stdlib.h"
+
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
+#include "Denix/Video/GL/GLShader.h"
 
 namespace Denix
 {
+	struct ShaderSource;
 	class Camera;
 	class GameObject;
 	class Scene;
@@ -24,6 +29,38 @@ namespace Denix
 
 		void SetActiveScene(const Ref<Scene>& _scene);
 
+		struct ShaderEditorWidget
+		{
+			Ref<GLShader> Shader;
+			bool IsOpen;
+			void WidgetEditor()
+			{
+				ImGui::SetNextWindowSize(ImVec2(1000, 500), ImGuiCond_FirstUseEver);
+				ImGui::SetNextWindowFocus();
+				ImGui::Begin("Shader Editor", &IsOpen);
+				ImGui::BeginTabBar("Shader Editor Tabs");
+				if (Shader)
+				{
+					for (auto& shaderSources = Shader->GetShaderSources(); auto& shaderSource : shaderSources)
+					{
+						if (ImGui::BeginTabItem(shaderSource.FileName.c_str()))
+						{
+							ImGui::BeginChild(shaderSource.FileName.c_str(), ImVec2(0, 0), true);
+							//ImGui::InputTextMultiline(shaderSource.FileName.c_str(), &shaderSource.Source);
+							ImGui::EndChild();
+							ImGui::EndTabItem();
+						}
+					}
+				}
+				else
+				{
+					ImGui::Text("No shader selected");
+				}
+				ImGui::EndTabBar();
+				ImGui::End();
+			}
+		};
+
 	public:
 		static EditorSubsystem* Get() { return s_EditorSubsystem; }
 		void Update(float _deltaTime) override;
@@ -39,6 +76,7 @@ namespace Denix
 
 		Ref<Scene> m_ActiveScene;
 
+		Ref<ShaderEditorWidget> m_ShaderEditorWidget;
 		// TEMP ImGui
 		int m_ObjectSelection = 0;
 		bool ScenePanelOpen = true;

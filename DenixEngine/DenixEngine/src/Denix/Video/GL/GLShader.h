@@ -11,7 +11,19 @@ namespace Denix
 {
 	struct ShaderSource
 	{
+	public:
+		ShaderSource(const std::string& _path)
+		{
+			Path = _path;
+
+			std::string n;
+
+			auto it = Path.find_last_of('\\');
+			FileName = Path.substr(it + 1);
+		}
+
 		std::string Path;
+		std::string FileName;
 		std::string Source;
 		GLenum Type = 0;
 		bool IsCompiled = false;
@@ -212,6 +224,7 @@ namespace Denix
 
 		GLuint GetGL_ID() const { return m_GL_ID; }
 
+		std::vector<ShaderSource>& GetShaderSources() { return m_ShaderSources; }
 		void SetShaderSources(const std::vector<ShaderSource>& _sources)
 		{
 			m_ShaderSources = _sources;

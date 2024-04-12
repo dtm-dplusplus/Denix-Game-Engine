@@ -90,4 +90,9 @@ namespace Denix
 
 		return nullptr;
 	}
+
+	std::unordered_map<std::string, Ref<GLShader>> ResourceSubsystem::GetShaderStore()
+	{
+		return ShaderSubsystem::Get()->GetShaders();
+	}
 }

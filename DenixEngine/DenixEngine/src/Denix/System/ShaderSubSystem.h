@@ -99,6 +99,8 @@ namespace Denix
 		{
 			return m_ShaderPrograms.contains(_name);
 		}
+
+		std::unordered_map<std::string, Ref<GLShader>>& GetShaders() { return m_ShaderPrograms; }
 	private:
 		static ShaderSubsystem* s_ShaderSubSystem;
 

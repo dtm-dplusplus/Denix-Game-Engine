@@ -423,6 +423,28 @@ namespace Denix
 			ImGui::Checkbox("Affects Lighting", &render->AffectsLighting());
 			ImGui::Checkbox("Base Color As Texture", &render->GetBaseColorAsTexture());
 
+			ImGui::SeparatorText("Shader");
+			if (Ref<GLShader> shader = render->GetShader())
+			{
+				if (ImGui::BeginCombo("##ShaderName", shader->GetName().c_str()))
+				{
+					for (auto& [fst, snd] : ResourceSubsystem::GetShaderStore())
+					{
+						ImGui::PushID(fst.c_str());
+						if (ImGui::Selectable(fst.c_str()))
+						{
+							render->SetShader(snd);
+							DE_LOG(LogEditor, Info, "Shader on {} set to: {}", render->GetName(), snd->GetName())
+						}
+						ImGui::PopID();
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::SameLine(); if (ImGui::Button("Edit Shader")) m_ShaderEditorWidget = MakeRef<ShaderEditorWidget>(shader);
+			}
+
+			if (m_ShaderEditorWidget) m_ShaderEditorWidget->WidgetEditor();
+
 			ImGui::SeparatorText("Material");
 			if (Ref<Material> mat = render->GetMaterial())
 			{
@@ -500,6 +522,7 @@ namespace Denix
 		}
 	}
 
+	
 	void EditorSubsystem::ColliderWidget(const Ref<GameObject>& _selectedObject)
 	{
 		if (ImGui::CollapsingHeader("Collider Component"))

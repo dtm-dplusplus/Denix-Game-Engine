@@ -41,6 +41,7 @@ namespace Denix
 
         static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_ResourceSubsystem->m_MaterialStore; }
 
+        static std::unordered_map<std::string, Ref<GLShader>> GetShaderStore();
 
     private:
         static ResourceSubsystem* s_ResourceSubsystem;
