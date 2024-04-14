@@ -1,5 +1,5 @@
 #include "TransformComponent.h"
-#include "Denix/System/SceneSubsystem.h"
+#include "Denix/Scene/SceneSubsystem.h"
 
 namespace Denix
 {

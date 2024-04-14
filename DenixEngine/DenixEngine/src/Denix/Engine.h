@@ -49,8 +49,6 @@ namespace Denix
 
 		Ref<class SceneSubsystem> m_SceneSubSystem;
 
-		Ref<class ShaderSubsystem> m_ShaderSubSystem;
-
 		Ref<class PhysicsSubsystem> m_PhysicsSubSystem;
 
 		Ref<class UISubsystem> m_UISubSytem;

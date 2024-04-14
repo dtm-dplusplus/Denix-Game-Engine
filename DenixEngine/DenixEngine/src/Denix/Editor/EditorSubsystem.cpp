@@ -3,9 +3,9 @@
 
 #include "imgui.h"
 #include "Denix/Input/InputSubsystem.h"
-#include "Denix/System/SceneSubsystem.h"
-#include "Denix/System/WindowSubsystem.h"
-#include "Denix/System/RendererSubSystem.h"
+#include "Denix/Scene/SceneSubsystem.h"
+#include "Denix/Video/WindowSubsystem.h"
+#include "Denix/Video/RendererSubSystem.h"
 #include "Denix/Scene/Scene.h"
 
 namespace Denix

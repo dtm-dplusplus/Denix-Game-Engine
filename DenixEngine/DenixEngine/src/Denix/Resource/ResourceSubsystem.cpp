@@ -1,6 +1,5 @@
 #include "ResourceSubsystem.h"
-#include "ShaderSubsystem.h"
-#include "FileSubsystem.h"
+#include "Denix/Core/FileSubsystem.h"
 #include "Denix/Scene/Component/RenderComponent.h"
 #include "Denix/Video/GL/GLShader.h"
 #include "Denix/Video/GL/Texture.h"
@@ -18,6 +17,23 @@ namespace Denix
 		DE_LOG_CREATE(LogResourceSubsystem)
 
 		// Iniatlize Default Assets
+
+			// Create Debug Shader
+		{
+			std::vector<ShaderSource> shaders;
+			shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugVertex.glsl)");
+			shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugFragment.glsl)");
+			LoadShader(shaders, "DebugShader");
+		}
+
+		// Create Texture Shader
+		{
+			std::vector<ShaderSource> shaders;
+			shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Vertex.glsl)");
+			shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Fragment.glsl)");
+			LoadShader(shaders, "DefaultShader");
+		}
+
 		LoadTexture(FileSubsystem::GetEngineRoot() + R"(res\textures\DefaultTexture.png)", "DefaultTexture");
 
 		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
@@ -76,11 +92,6 @@ namespace Denix
 		return nullptr;
 	}
 
-	Ref<GLShader> ResourceSubsystem::GetShader(const std::string& _name)
-	{
-		return ShaderSubsystem::Get()->GetShader(_name);
-	}
-
 	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _name)
 	{
 		if (s_ResourceSubsystem->m_MaterialStore.contains(_name))
@@ -93,6 +104,46 @@ namespace Denix
 
 	std::unordered_map<std::string, Ref<GLShader>> ResourceSubsystem::GetShaderStore()
 	{
-		return ShaderSubsystem::Get()->GetShaders();
+		return s_ResourceSubsystem->m_ShaderStore;
+	}
+
+	void ResourceSubsystem::AddShader(const Ref<GLShader>& _shader)
+	{
+		if (s_ResourceSubsystem->ShaderExists(_shader->GetFriendlyName()))
+		{
+			DE_LOG(LogShader, Error, "GLShader already exists: {}", _shader->GetFriendlyName())
+			return;
+		}
+
+		s_ResourceSubsystem->m_ShaderStore[_shader->GetFriendlyName()] = _shader;
+	}
+
+	bool ResourceSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
+	{
+		if (const Ref<GLShader> program = MakeRef<GLShader>(ObjectInitializer(_name)))
+		{
+			if (!program->GetGL_ID()) return false;
+
+			program->SetShaderSources(_shaders);
+
+			if (!program->CompileProgram()) return false;
+
+			AddShader(program);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	Ref<GLShader> ResourceSubsystem::GetShader(const std::string& _name)
+	{
+		if (ShaderExists(_name))
+		{
+			return s_ResourceSubsystem->m_ShaderStore[_name];
+		}
+
+		DE_LOG(LogShader, Error, "GLShader not found: {}", _name)
+		return nullptr;
 	}
 }

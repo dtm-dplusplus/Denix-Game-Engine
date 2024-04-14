@@ -48,6 +48,15 @@
     <Filter Include="src\Denix\Scene\Object">
       <UniqueIdentifier>{86044813-3ce7-4e98-8472-ccb03ce85352}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Denix\Physics">
+      <UniqueIdentifier>{ce51b7a4-a380-4120-9bfd-2a9762c1a7dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Denix\Resource">
+      <UniqueIdentifier>{59a8e6f2-09f7-4829-9c90-66468835b937}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Denix\UI">
+      <UniqueIdentifier>{ae906bc9-f472-4cc1-8f9d-fc6adee1d556}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Denix\Engine.cpp">
@@ -77,18 +86,6 @@
     <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp">
       <Filter>contrib\imgui\backends</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\System\UISubsystem.cpp">
-      <Filter>src\Denix\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Denix\System\ShaderSubsystem.cpp">
-      <Filter>src\Denix\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Denix\System\SceneSubsystem.cpp">
-      <Filter>src\Denix\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Denix\System\PhysicsSubsystem.cpp">
-      <Filter>src\Denix\System</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\depch.cpp">
       <Filter>src\Denix</Filter>
     </ClCompile>
@@ -103,9 +100,6 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\Object.cpp">
       <Filter>src\Denix\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Denix\System\WindowSubsystem.cpp">
-      <Filter>src\Denix\System</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\Video\GL\GLShader.cpp">
       <Filter>src\Denix\Video\GL</Filter>
@@ -122,9 +116,6 @@
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp">
       <Filter>src\Denix\Scene\Component</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\System\RendererSubsystem.cpp">
-      <Filter>src\Denix\System</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\Editor\EditorSubsystem.cpp">
       <Filter>src\Denix\Editor</Filter>
     </ClCompile>
@@ -133,9 +124,6 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Input\InputSubsystem.cpp">
       <Filter>src\Denix\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Denix\System\ResourceSubsystem.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\Object\Light\LightObject.cpp">
       <Filter>src\Denix\Scene\Object</Filter>
@@ -149,11 +137,26 @@
     <ClCompile Include="src\Denix\Video\GL\Model.cpp">
       <Filter>src\Denix\Video\GL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\System\FileSubsystem.cpp">
-      <Filter>src\Denix\System</Filter>
+    <ClCompile Include="src\Denix\Core\FileSubsystem.cpp">
+      <Filter>src\Denix\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\Editor\EditorWidgets.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="src\Denix\Physics\PhysicsSubsystem.cpp">
+      <Filter>src\Denix\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Video\RendererSubsystem.cpp">
+      <Filter>src\Denix\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Video\WindowSubsystem.cpp">
+      <Filter>src\Denix\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\UI\UISubsystem.cpp">
+      <Filter>src\Denix\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Resource\ResourceSubsystem.cpp">
+      <Filter>src\Denix\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Scene\SceneSubsystem.cpp">
+      <Filter>src\Denix\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,19 +200,7 @@
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h">
       <Filter>contrib\imgui\backends</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\System\UISubsystem.h">
-      <Filter>src\Denix\System</Filter>
-    </ClInclude>
     <ClInclude Include="src\Denix\System\Subsystem.h">
-      <Filter>src\Denix\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Denix\System\SceneSubsystem.h">
-      <Filter>src\Denix\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Denix\System\ShaderSubsystem.h">
-      <Filter>src\Denix\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Denix\System\PhysicsSubsystem.h">
       <Filter>src\Denix\System</Filter>
     </ClInclude>
     <ClInclude Include="src\Denix\Core\Logger.h">
@@ -230,9 +221,6 @@
     <ClInclude Include="src\Denix\Scene\Camera.h">
       <Filter>src\Denix\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\System\WindowSubsystem.h">
-      <Filter>src\Denix\System</Filter>
-    </ClInclude>
     <ClInclude Include="src\Denix\Video\GL\VertexBuffer.h">
       <Filter>src\Denix\Video\GL</Filter>
     </ClInclude>
@@ -250,9 +238,6 @@
     </ClInclude>
     <ClInclude Include="src\Denix\Scene\Component\MeshComponent.h">
       <Filter>src\Denix\Scene\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Denix\System\RendererSubsystem.h">
-      <Filter>src\Denix\System</Filter>
     </ClInclude>
     <ClInclude Include="src\Denix\Scene\MeshData.h">
       <Filter>src\Denix\Scene</Filter>
@@ -278,18 +263,32 @@
     <ClInclude Include="src\Denix\Video\GL\Model.h">
       <Filter>src\Denix\Video\GL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\System\FileSubsystem.h">
-      <Filter>src\Denix\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Denix\System\ResourceSubsystem.h">
-      <Filter>src\Denix\System</Filter>
-    </ClInclude>
     <ClInclude Include="src\Denix\Video\GL\Material.h">
       <Filter>src\Denix\Video\GL</Filter>
     </ClInclude>
     <ClInclude Include="src\Denix\Video\GL\Texture.h">
       <Filter>src\Denix\Video\GL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\Editor\EditorWidgets.h" />
+    <ClInclude Include="src\Denix\Core\FileSubsystem.h">
+      <Filter>src\Denix\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Physics\PhysicsSubsystem.h">
+      <Filter>src\Denix\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Video\RendererSubsystem.h">
+      <Filter>src\Denix\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Video\WindowSubsystem.h">
+      <Filter>src\Denix\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\UI\UISubsystem.h">
+      <Filter>src\Denix\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Resource\ResourceSubsystem.h">
+      <Filter>src\Denix\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Scene\SceneSubsystem.h">
+      <Filter>src\Denix\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

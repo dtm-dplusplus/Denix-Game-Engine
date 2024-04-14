@@ -2,16 +2,15 @@
 #include "Engine.h"
 
 
-#include "System/WindowSubsystem.h"
-#include "System/ShaderSubsystem.h"
-#include "System/UISubsystem.h"
-#include "System/PhysicsSubsystem.h"
-#include "System/SceneSubsystem.h"
-#include "System/RendererSubsystem.h"
-#include "Input/InputSubsystem.h"
-#include "Editor/EditorSubsystem.h"
-#include "System/ResourceSubsystem.h"
-#include "System/FileSubsystem.h"
+#include "Denix/Video/WindowSubsystem.h"
+#include "Denix/UI/UISubsystem.h"
+#include "Denix/Physics/PhysicsSubsystem.h"
+#include "Denix/Scene/SceneSubsystem.h"
+#include "Denix/Video/RendererSubsystem.h"
+#include "Denix/Input/InputSubsystem.h"
+#include "Denix/Editor/EditorSubsystem.h"
+#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Core/FileSubsystem.h"
 
 namespace Denix
 {
@@ -41,10 +40,6 @@ namespace Denix
 		m_WindowSubSystem = MakeRef<WindowSubsystem>();
 		m_SubsystemOrder.push_back(m_WindowSubSystem);
 		m_Subsystems["Window"] = m_WindowSubSystem;
-
-		m_ShaderSubSystem = MakeRef<ShaderSubsystem>();
-		m_SubsystemOrder.push_back(m_ShaderSubSystem);
-		m_Subsystems["Shader"] = m_ShaderSubSystem;
 
 		m_RendererSubSystem = MakeRef<RendererSubsystem>();
 		m_SubsystemOrder.push_back(m_RendererSubSystem);

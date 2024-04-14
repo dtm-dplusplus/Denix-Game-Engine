@@ -8,8 +8,8 @@
 
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Scene/Component/MeshComponent.h"
-#include "Denix/System/FileSubsystem.h"
-#include "Denix/System/ResourceSubsystem.h"
+#include "Denix/Core/FileSubsystem.h"
+#include "Denix/Resource/ResourceSubsystem.h"
 
 namespace Denix
 {

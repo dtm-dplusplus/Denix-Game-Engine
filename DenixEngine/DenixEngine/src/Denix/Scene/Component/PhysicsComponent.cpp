@@ -1,5 +1,5 @@
 #include "PhysicsComponent.h"
-#include "Denix/System/PhysicsSubsystem.h"
+#include "Denix/Physics/PhysicsSubsystem.h"
 
 namespace Denix
 {

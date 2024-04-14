@@ -4,7 +4,7 @@
 
 
 #include "Denix/Scene/Component.h"
-#include "Denix/System/ResourceSubsystem.h"
+#include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Video/GL/GLShader.h"
 #include "Denix/Video/GL/Material.h"
 #include "Denix/Video/GL/Texture.h"

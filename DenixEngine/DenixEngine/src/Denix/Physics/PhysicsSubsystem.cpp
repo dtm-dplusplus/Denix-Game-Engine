@@ -1,7 +1,7 @@
 ﻿#include "Denix/depch.h"
 #include "PhysicsSubsystem.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/System/SceneSubsystem.h"
+#include "Denix/Scene/SceneSubsystem.h"
 
 namespace Denix
 {

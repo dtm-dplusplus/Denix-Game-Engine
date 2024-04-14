@@ -5,7 +5,7 @@
 
 #include "Denix/Core.h"
 #include "Denix/Scene/Object.h"
-#include "Denix/System/FileSubsystem.h"
+#include "Denix/Core/FileSubsystem.h"
 
 namespace Denix
 {

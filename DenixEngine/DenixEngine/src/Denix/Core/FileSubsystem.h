@@ -1,5 +1,5 @@
 #pragma once
-#include "SubSystem.h"
+#include "Denix/System/SubSystem.h"
 #include "Denix/Core.h"
 
 namespace Denix
