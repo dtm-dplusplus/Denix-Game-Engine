@@ -2,7 +2,7 @@
 #include "InputSubsystem.h"
 
 #include "backends/imgui_impl_sdl2.h"
-#include "Denix/Video/WindowSubsystem.h"
+#include "Denix/Video/Window/WindowSubsystem.h"
 
 namespace Denix
 {

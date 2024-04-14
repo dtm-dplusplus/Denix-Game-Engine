@@ -5,8 +5,8 @@
 #include "Denix/Core.h"
 
 #include "Denix/Scene/Component.h"
-#include "Denix/Scene/Component/MeshComponent.h"
-#include "Denix/Scene/Component/RenderComponent.h"
+#include "Denix/Video/GL/MeshComponent.h"
+#include "Denix/Video/Renderer/RenderComponent.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Scene/MeshData.h"
 #include "Denix/Scene/GameObjectData.h"

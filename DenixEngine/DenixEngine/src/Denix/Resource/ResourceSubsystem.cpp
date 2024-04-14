@@ -1,9 +1,11 @@
 #include "ResourceSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
-#include "Denix/Scene/Component/RenderComponent.h"
+#include "Denix/Scene/MeshData.h"
+#include "Denix/Video/Renderer/RenderComponent.h"
 #include "Denix/Video/GL/GLShader.h"
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Video/GL/Material.h"
+#include "Denix/Video/GL/Mesh.h"
 
 
 namespace Denix
@@ -26,7 +28,7 @@ namespace Denix
 			LoadShader(shaders, "DebugShader");
 		}
 
-		// Create Texture Shader
+		// SHADERS
 		{
 			std::vector<ShaderSource> shaders;
 			shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Vertex.glsl)");
@@ -34,9 +36,15 @@ namespace Denix
 			LoadShader(shaders, "DefaultShader");
 		}
 
+		// TEXTURES
 		LoadTexture(FileSubsystem::GetEngineRoot() + R"(res\textures\DefaultTexture.png)", "DefaultTexture");
 
+		// MATERIALS
 		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
+
+		//MESHES
+		LoadMesh("SM_Cube", CubeData, CubeIndices, 40, 36);
+		LoadMesh("SM_Plane", PlaneData, PlaneIndices, 32, 6);
 
 	    DE_LOG(LogResourceSubsystem, Trace, "Resource Subsystem Initialized")
 	}
@@ -51,68 +59,14 @@ namespace Denix
 		DE_LOG(LogResourceSubsystem, Trace, "Resource Subsystem Deinitialized")
 	}
 
-	void ResourceSubsystem::LoadMaterial(const Ref<Material>& ref)
-	{
-		if (s_ResourceSubsystem->m_MaterialStore.contains(ref->GetFriendlyName()))
-		{
-			DE_LOG(LogResourceSubsystem, Error, "Load Material: A material name: {} is already loaded", ref->GetName())
-			return;
-		}
 
-		DE_LOG(LogResourceSubsystem, Trace, "Material Loaded: {}", ref->GetFriendlyName())
-		s_ResourceSubsystem->m_MaterialStore[ref->GetFriendlyName()] = ref;
-	}
-
-	Ref<Texture> ResourceSubsystem::LoadTexture(const std::string& _path, const std::string& _name)
-	{
-		// Check it isn't already loaded
-		if (s_ResourceSubsystem->m_TextureStore.contains(_path))
-		{
-			DE_LOG(LogResourceSubsystem, Error, "Load Texture: A texture name: {} is already loaded", _path)
-				return nullptr;
-		}
-
-		Ref<Texture> texture = MakeRef<Texture>(_path, _name);
-
-		if (!texture->LoadTexture()) return nullptr;
-
-		s_ResourceSubsystem->m_TextureStore[_name] = texture;
-		DE_LOG(LogSceneSubSystem, Trace, "Texture loaded: ", _name)
-
-		return GetTexture(_name);
-	}
-
-	Ref<Texture> ResourceSubsystem::GetTexture(const std::string& _name)
-	{
-		if (s_ResourceSubsystem->m_TextureStore.contains(_name))
-		{
-			return s_ResourceSubsystem->m_TextureStore[_name];
-		}
-
-		return nullptr;
-	}
-
-	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _name)
-	{
-		if (s_ResourceSubsystem->m_MaterialStore.contains(_name))
-		{
-			return s_ResourceSubsystem->m_MaterialStore[_name];
-		}
-
-		return nullptr;
-	}
-
-	std::unordered_map<std::string, Ref<GLShader>> ResourceSubsystem::GetShaderStore()
-	{
-		return s_ResourceSubsystem->m_ShaderStore;
-	}
-
+	////////////////////////  SHADERS ///////////////////////////////
 	void ResourceSubsystem::AddShader(const Ref<GLShader>& _shader)
 	{
 		if (s_ResourceSubsystem->ShaderExists(_shader->GetFriendlyName()))
 		{
 			DE_LOG(LogShader, Error, "GLShader already exists: {}", _shader->GetFriendlyName())
-			return;
+				return;
 		}
 
 		s_ResourceSubsystem->m_ShaderStore[_shader->GetFriendlyName()] = _shader;
@@ -144,6 +98,109 @@ namespace Denix
 		}
 
 		DE_LOG(LogShader, Error, "GLShader not found: {}", _name)
+			return nullptr;
+	}
+
+	
+
+	////////////////////////  TEXTURES ///////////////////////////////
+	void ResourceSubsystem::AddTexture(const Ref<Texture>& _texture)
+	{
+	}
+
+	Ref<Texture> ResourceSubsystem::LoadTexture(const std::string& _path, const std::string& _name)
+	{
+		// Check it isn't already loaded
+		if (s_ResourceSubsystem->m_TextureStore.contains(_path))
+		{
+			DE_LOG(LogResourceSubsystem, Error, "Load Texture: A texture name: {} is already loaded", _path)
+				return nullptr;
+		}
+
+		Ref<Texture> texture = MakeRef<Texture>(_path, _name);
+
+		if (!texture->LoadTexture()) return nullptr;
+
+		s_ResourceSubsystem->m_TextureStore[_name] = texture;
+		DE_LOG(LogSceneSubSystem, Trace, "Texture loaded: ", _name)
+
+			return GetTexture(_name);
+	}
+	
+	Ref<Texture> ResourceSubsystem::GetTexture(const std::string& _name)
+	{
+		if (s_ResourceSubsystem->m_TextureStore.contains(_name))
+		{
+			return s_ResourceSubsystem->m_TextureStore[_name];
+		}
+
 		return nullptr;
 	}
+
+	////////////////////////  MATERIALS ///////////////////////////////
+	void ResourceSubsystem::LoadMaterial(const Ref<Material>& ref)
+	{
+		if (s_ResourceSubsystem->m_MaterialStore.contains(ref->GetFriendlyName()))
+		{
+			DE_LOG(LogResourceSubsystem, Error, "Load Material: A material name: {} is already loaded", ref->GetName())
+				return;
+		}
+
+		DE_LOG(LogResourceSubsystem, Trace, "Material Loaded: {}", ref->GetFriendlyName())
+			s_ResourceSubsystem->m_MaterialStore[ref->GetFriendlyName()] = ref;
+	}
+
+	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _name)
+	{
+		if (s_ResourceSubsystem->m_MaterialStore.contains(_name))
+		{
+			return s_ResourceSubsystem->m_MaterialStore[_name];
+		}
+
+		return nullptr;
+	}
+
+	
+
+	////////////////////////  MESHES ///////////////////////////////
+	bool ResourceSubsystem::AddMesh(const Ref<Mesh>& _mesh)
+	{
+		if (s_ResourceSubsystem->m_MeshStore.contains(_mesh->GetFriendlyName()))
+		{
+			DE_LOG(LogResourceSubsystem, Error, "Load Mesh: A Mesh name: {} is already loaded", _mesh->GetName())
+				return false;
+		}
+
+		DE_LOG(LogResourceSubsystem, Trace, "Mesh Loaded: {}", _mesh->GetFriendlyName())
+			s_ResourceSubsystem->m_MeshStore[_mesh->GetFriendlyName()] = _mesh;
+
+		return true;
+	}
+
+	bool ResourceSubsystem::LoadMesh(const std::string& _name, const float* _vertices, const unsigned int* _indices,
+	                                 const unsigned int _verticesCount, const unsigned int _numOfIndices)
+	{
+		if (s_ResourceSubsystem->m_MeshStore.contains(_name))
+		{
+			DE_LOG(LogResourceSubsystem, Error, "Load Mesh: A Mesh name: {} is already loaded",_name)
+				return false;
+		}
+
+		const Ref<Mesh> mesh = MakeRef<Mesh>(_vertices, _indices, _verticesCount, _numOfIndices, ObjectInitializer(_name));
+		DE_LOG(LogResourceSubsystem, Trace, "Mesh Loaded: {}", mesh->GetFriendlyName())
+		s_ResourceSubsystem->m_MeshStore[_name] = mesh;
+
+		return true;
+	}
+
+	Ref<Mesh> ResourceSubsystem::GetMesh(const std::string& _name)
+	{
+		if (s_ResourceSubsystem->m_MeshStore.contains(_name))
+		{
+			return s_ResourceSubsystem->m_MeshStore[_name];
+		}
+
+		return nullptr;
+	}
+
 }

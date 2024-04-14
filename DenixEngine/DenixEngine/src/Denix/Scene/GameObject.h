@@ -2,14 +2,14 @@
 
 #include <ranges>
 
-#include "Object.h"
-#include "Component.h"
-#include "Component/MeshComponent.h"
-#include "Component/PhysicsComponent.h"
-#include "Component/RenderComponent.h"
-#include "Component/TransformComponent.h"
-#include "Component/ColliderComponent.h"
-#include "MeshData.h"
+#include "Denix/Scene/Object.h"
+#include "Denix/Scene/Component.h"
+#include "Denix/Video/GL/MeshComponent.h"
+#include "Denix/Physics/PhysicsComponent.h"
+#include "Denix/Video/Renderer/RenderComponent.h"
+#include "Denix/Scene/Component/TransformComponent.h"
+#include "Denix/Physics/ColliderComponent.h"
+#include "Denix/Scene/MeshData.h"
 #include "Denix/Scene/GameObjectData.h"
 #include <filesystem>
 
@@ -170,7 +170,7 @@ namespace Denix
 	public:
 		Plane(const ObjectInitializer& _objInit = { "Plane" }) : GameObject(_objInit)
 		{
-			m_MeshComponent->CreateMesh((GLfloat*)TexPlaneData, (unsigned int*)PlaneIndices, 20, 6);
+			m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Plane"));
 		}
 	};
 
@@ -179,7 +179,7 @@ namespace Denix
 	public:
 		Cube(const ObjectInitializer& _objInit = { "TestCube" }) : GameObject(_objInit)
 		{
-			m_MeshComponent->CreateMesh((GLfloat*)CubeData, (unsigned int*)CubeIndices, 40, 36);
+			m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_CUBE"));
 		}
 	};
 }

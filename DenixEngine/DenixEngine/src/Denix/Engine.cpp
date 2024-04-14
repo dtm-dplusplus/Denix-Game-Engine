@@ -2,11 +2,11 @@
 #include "Engine.h"
 
 
-#include "Denix/Video/WindowSubsystem.h"
+#include "Denix/Video/Window/WindowSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
-#include "Denix/Video/RendererSubsystem.h"
+#include "Denix/Video/Renderer/RendererSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Resource/ResourceSubsystem.h"

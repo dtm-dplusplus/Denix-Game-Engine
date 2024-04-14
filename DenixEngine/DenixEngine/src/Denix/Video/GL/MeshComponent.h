@@ -3,26 +3,32 @@
 #include "Denix/Scene/Component.h"
 #include "Denix/Video/GL/VertexArray.h"
 #include "Denix/Video/GL/VertexBuffer.h"
+#include "Denix/Video/GL/Mesh.h"
 
 namespace Denix
 {
+
 	class
 	MeshComponent final : public Component
 	{
 	public:
-		MeshComponent() : Component(ObjectInitializer("Mesh Component")) 
-		{
-			m_VBO = MakeRef<VertexBuffer>();
-			m_IBO = MakeRef<IndexBuffer>();
-			m_VAO = MakeRef<VertexArray>();
-		}
+		MeshComponent() : Component(ObjectInitializer("Mesh Component")),
+			m_Mesh{nullptr},
+			m_VAO{MakeRef<VertexArray>()},
+			m_VBO{MakeRef<VertexBuffer>()},
+			m_IBO{MakeRef<IndexBuffer>()} {}
 
-		MeshComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Mesh Component")) 
-		{
-			m_VBO = MakeRef<VertexBuffer>();
-			m_IBO = MakeRef<IndexBuffer>();
-			m_VAO = MakeRef<VertexArray>();
-		}
+		MeshComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Mesh Component")),
+			m_Mesh{nullptr},
+			m_VAO{MakeRef<VertexArray>()},
+			m_VBO{MakeRef<VertexBuffer>()},
+			m_IBO{MakeRef<IndexBuffer>()} {}
+
+		MeshComponent(const GLint _parentID, const Ref<Mesh>& _mesh) : Component(_parentID, ObjectInitializer("Mesh Component")),
+			m_Mesh{ _mesh },
+			m_VAO{ MakeRef<VertexArray>() },
+			m_VBO{ MakeRef<VertexBuffer>() },
+			m_IBO{ MakeRef<IndexBuffer>() } {}
 
 		void CreateMesh(GLfloat* _vertices, unsigned int* _indices, const unsigned int _verticesCount, const unsigned int _numOfIndices)
 		{
@@ -52,11 +58,18 @@ namespace Denix
 			glBindVertexArray(0);
 		}
 
+		Ref<Mesh> GetMesh() const { return m_Mesh; }
+		Ref<Mesh>& GetMesh() { return m_Mesh; }
+		void SetMesh(const Ref<Mesh>& _mesh) { m_Mesh = _mesh; }
+
 		Ref<VertexArray> GetVertexArray() const { return m_VAO; }
 		Ref<VertexBuffer> GetVertexBuffer() const { return m_VBO; }
 		Ref<IndexBuffer> GetIndexBuffer() const { return m_IBO; }
 
 	private:
+
+		Ref<Mesh> m_Mesh;
+
 		Ref<VertexArray> m_VAO;
 		Ref<VertexBuffer> m_VBO;
 		Ref<IndexBuffer> m_IBO;

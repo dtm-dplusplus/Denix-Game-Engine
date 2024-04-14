@@ -113,6 +113,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Denix\Video\GL\Mesh.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Model.cpp" />
     <ClCompile Include="src\Denix\Scene\Object\Light\LightObject.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Material.cpp" />
@@ -123,14 +124,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\Scene\Component\ColliderComponent.cpp" />
+    <ClCompile Include="src\Denix\Physics\ColliderComponent.cpp" />
     <ClCompile Include="src\Denix\Editor\EditorSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\Scene\Component\MeshComponent.cpp" />
-    <ClCompile Include="src\Denix\Scene\Component\PhysicsComponent.cpp" />
-    <ClCompile Include="src\Denix\Scene\Component\RenderComponent.cpp" />
+    <ClCompile Include="src\Denix\Video\GL\MeshComponent.cpp" />
+    <ClCompile Include="src\Denix\Physics\PhysicsComponent.cpp" />
+    <ClCompile Include="src\Denix\Video\Renderer\RenderComponent.cpp" />
     <ClCompile Include="src\Denix\Scene\Camera.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp" />
@@ -165,17 +166,17 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\GameObject.cpp" />
     <ClCompile Include="src\Denix\Physics\PhysicsSubsystem.cpp" />
-    <ClCompile Include="src\Denix\Video\RendererSubsystem.cpp">
+    <ClCompile Include="src\Denix\Video\Renderer\RendererSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Denix\UI\UISubsystem.cpp" />
-    <ClCompile Include="src\Denix\Video\WindowSubsystem.cpp" />
+    <ClCompile Include="src\Denix\Video\Window\WindowSubsystem.cpp" />
     <ClCompile Include="src\Denix\Video\GL\GLShader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\Video\Window.cpp">
+    <ClCompile Include="src\Denix\Video\Window\Window.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
@@ -185,6 +186,7 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Texture.cpp" />
+    <ClInclude Include="src\Denix\Video\GL\Mesh.h" />
     <ClInclude Include="src\Denix\Video\GL\Model.h" />
     <ClInclude Include="src\Denix\Scene\Object\Light\LightObject.h" />
     <ClInclude Include="src\Denix\Video\GL\Material.h" />
@@ -192,11 +194,11 @@
     <ClInclude Include="src\Denix\Resource\ResourceSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\GameObjectData.h" />
     <ClInclude Include="src\Denix\Input\InputSubsystem.h" />
-    <ClInclude Include="src\Denix\Scene\Component\ColliderComponent.h" />
+    <ClInclude Include="src\Denix\Physics\ColliderComponent.h" />
     <ClInclude Include="src\Denix\Editor\EditorSubsystem.h" />
-    <ClInclude Include="src\Denix\Scene\Component\MeshComponent.h" />
-    <ClInclude Include="src\Denix\Scene\Component\PhysicsComponent.h" />
-    <ClInclude Include="src\Denix\Scene\Component\RenderComponent.h" />
+    <ClInclude Include="src\Denix\Video\GL\MeshComponent.h" />
+    <ClInclude Include="src\Denix\Physics\PhysicsComponent.h" />
+    <ClInclude Include="src\Denix\Video\Renderer\RenderComponent.h" />
     <ClInclude Include="src\Denix\Scene\Camera.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_sdl2.h" />
@@ -211,13 +213,13 @@
     <ClInclude Include="src\Denix\EntryPoint.h" />
     <ClInclude Include="src\Denix\Scene\MeshData.h" />
     <ClInclude Include="src\Denix\Physics\PhysicsSubsystem.h" />
-    <ClInclude Include="src\Denix\Video\RendererSubsystem.h" />
+    <ClInclude Include="src\Denix\Video\Renderer\RendererSubsystem.h" />
     <ClInclude Include="src\Denix\System\Subsystem.h" />
     <ClInclude Include="src\Denix\UI\UISubsystem.h" />
-    <ClInclude Include="src\Denix\Video\WindowSubsystem.h" />
+    <ClInclude Include="src\Denix\Video\Window\WindowSubsystem.h" />
     <ClInclude Include="src\Denix\Video\GL\VertexArray.h" />
     <ClInclude Include="src\Denix\Video\GL\VertexBuffer.h" />
-    <ClInclude Include="src\Denix\Video\Window.h" />
+    <ClInclude Include="src\Denix\Video\Window\Window.h" />
     <ClInclude Include="src\Denix\Scene\Component.h" />
     <ClInclude Include="src\Denix\Scene\GameObject.h" />
     <ClInclude Include="src\Denix\Scene\Object.h" />

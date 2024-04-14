@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "SceneSubsystem.h"
-#include "Denix/Video/WindowSubsystem.h"
-#include "Denix/Video/RendererSubsystem.h"
+#include "Denix/Video/Window/WindowSubsystem.h"
+#include "Denix/Video/Renderer/RendererSubsystem.h"
 #include "Denix/Physics/PhysicsSubSystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
 

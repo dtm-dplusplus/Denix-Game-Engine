@@ -4,8 +4,8 @@
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Component/TransformComponent.h"
-#include "Denix/Scene/Component/MeshComponent.h"
-#include "Denix/Scene/Component/RenderComponent.h"
+#include "Denix/Video/GL/MeshComponent.h"
+#include "Denix/Video/Renderer/RenderComponent.h"
 
 namespace Denix
 {

@@ -2,7 +2,7 @@
 
 #include "Denix/System/Subsystem.h"
 #include "Denix/Core/Logger.h"
-#include "Denix/Scene/Component/PhysicsComponent.h"
+#include "Denix/Physics/PhysicsComponent.h"
 
 namespace Denix
 {

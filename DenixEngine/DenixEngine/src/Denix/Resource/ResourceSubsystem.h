@@ -5,7 +5,8 @@
 
 namespace Denix
 {
-	struct ShaderSource;
+    class Mesh;
+    struct ShaderSource;
 	class GLShader;
 	class Material;
 	class Texture;
@@ -26,7 +27,10 @@ namespace Denix
 
         // Shaders
 
-        static std::unordered_map<std::string, Ref<GLShader>> GetShaderStore();
+        static std::unordered_map<std::string, Ref<GLShader>> GetShaderStore() 
+        {
+            return s_ResourceSubsystem->m_ShaderStore;
+        }
 
         static void AddShader(const Ref<GLShader>& _shader);
 
@@ -47,12 +51,21 @@ namespace Denix
         static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_ResourceSubsystem->m_MaterialStore; }
 
         // Textures
+        static void AddTexture(const Ref<Texture>& _texture);
         static Ref<Texture> LoadTexture(const std::string& _path, const std::string& _name);
 
         static Ref<Texture> GetTexture(const std::string& _name);
 
         static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_ResourceSubsystem->m_TextureStore; }
 
+        // Meshes
+        static bool AddMesh(const Ref<Mesh>& _mesh);
+        //static Ref<Texture> LoadModel(const std::string& _path, const std::string& _name);
+        static bool LoadMesh(const std::string& _name, const float* _vertices, const unsigned int* _indices, unsigned int _verticesCount, unsigned int _numOfIndices);
+
+        static Ref<Mesh> GetMesh(const std::string& _name);
+
+        static std::unordered_map<std::string, Ref<Mesh>>& GetMeshStore() { return s_ResourceSubsystem->m_MeshStore; }
     public:
         void Initialize() override;
 
@@ -68,6 +81,8 @@ namespace Denix
         std::unordered_map<std::string, Ref<Texture>> m_TextureStore;
 
         std::unordered_map<std::string, Ref<Material>> m_MaterialStore;
+
+        std::unordered_map<std::string, Ref<Mesh>> m_MeshStore;
 
     };
 }

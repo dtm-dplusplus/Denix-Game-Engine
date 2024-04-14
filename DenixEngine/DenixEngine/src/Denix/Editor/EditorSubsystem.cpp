@@ -4,8 +4,8 @@
 #include "imgui.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
-#include "Denix/Video/WindowSubsystem.h"
-#include "Denix/Video/RendererSubSystem.h"
+#include "Denix/Video/Window/WindowSubsystem.h"
+#include "Denix/Video/Renderer/RendererSubSystem.h"
 #include "Denix/Scene/Scene.h"
 
 namespace Denix
@@ -539,9 +539,26 @@ namespace Denix
 	{
 		if (ImGui::CollapsingHeader("Mesh Component"))
 		{
-			const Ref<Denix::MeshComponent> mesh = _selectedObject->GetMeshComponent();
+			if (const Ref<MeshComponent> meshComp = _selectedObject->GetMeshComponent())
+			{
+				std::string preview = "Empty";
+				if (const Ref<Mesh> mesh = meshComp->GetMesh()) preview = mesh->GetFriendlyName();
 
-			ImGui::Text("Mesh: {}", mesh->GetName());
+				if (ImGui::BeginCombo("##MeshName", preview.c_str()))
+				{
+					for (auto& [fst, snd] : ResourceSubsystem::GetMeshStore())
+					{
+						ImGui::PushID(fst.c_str());
+						if (ImGui::Selectable(fst.c_str()))
+						{
+							meshComp->SetMesh(snd);
+							DE_LOG(LogEditor, Info, "Mesh on {} set to: {}", _selectedObject->GetFriendlyName(), snd->GetName())
+						}
+						ImGui::PopID();
+					}
+					ImGui::EndCombo();
+				}
+			}
 		}
 	}
 

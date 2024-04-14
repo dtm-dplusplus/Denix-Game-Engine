@@ -2,7 +2,7 @@
 
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
-#include "Denix/Video/Window.h"
+#include "Denix/Video/Window/Window.h"
 #include <SDL.h>
 #include <GL/glew.h>
 

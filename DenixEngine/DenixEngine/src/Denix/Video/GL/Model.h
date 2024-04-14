@@ -7,7 +7,7 @@
 #include <assimp/postprocess.h>
 
 #include "Denix/Video/GL/Texture.h"
-#include "Denix/Scene/Component/MeshComponent.h"
+#include "Denix/Video/GL/MeshComponent.h"
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Resource/ResourceSubsystem.h"
 
