@@ -29,9 +29,9 @@ namespace Denix
 		}
 
 		void DrawImmediate(
-			const Ref<RenderComponent>& _render, 
-			const Ref<TransformComponent>& _transform, 
-			const Ref<MeshComponent>& _mesh);
+			const Ref<RenderComponent>& _renderComp, 
+			const Ref<TransformComponent>& _transformComp, 
+			const Ref<MeshComponent>& _meshComp);
 			
 		void SetActiveScene(const Ref<Scene>& _scene);
 

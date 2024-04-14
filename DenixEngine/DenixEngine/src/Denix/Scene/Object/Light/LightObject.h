@@ -14,7 +14,7 @@ namespace Denix
 			m_AmbientIntensity(0.1f),
 			m_DiffuseIntensity(1.0f)
 		{
-			m_MeshComponent->CreateMesh((GLfloat*)CubeData, (unsigned int*)CubeIndices, 40, 36);
+			m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
 			m_TransformComponent->SetScale(glm::vec3(0.5f));
 
 			m_RenderComponent->SetAffectsLighting(false);

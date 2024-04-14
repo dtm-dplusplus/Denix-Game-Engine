@@ -166,7 +166,7 @@ namespace Denix
 	{
 		ImGui::SeparatorText("Scene Properties");
 		// Viewport Mode
-		ImGui::Combo("Viewport Mode", &s_SceneSubSystem->GetViewportMode(), "Default\0Collider\0\0");
+		ImGui::Combo("Viewport Mode", &SceneSubsystem::GetViewportMode(), "Default\0Collider\0\0");
 
 		// Subsystems
 		ImGui::Checkbox("Render Subsystem", &s_RendererSubSystem->IsActive());
@@ -312,6 +312,34 @@ namespace Denix
 			}
 		}
 		ImGui::EndChild();
+	}
+
+	void EditorSubsystem::TransformWidget(const Ref<GameObject>& _object) const
+	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
+		if (ImGui::CollapsingHeader("Transform Component"))
+		{
+			const Ref<TransformComponent> transform = _object->GetTransformComponent();
+
+			ImGui::DragFloat3("Position", &transform->GetPosition()[0], DragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left)) transform->SetPosition(glm::vec3(0.f));
+			ImGui::SetItemTooltip("Reset");
+
+			ImGui::DragFloat3("Rotation", &transform->GetRotation()[0], DragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) transform->SetRotation(glm::vec3(0.f));
+			ImGui::SetItemTooltip("Reset");
+
+			ImGui::DragFloat3("Scale", &transform->GetScale()[0], DragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetScale", ImGuiDir_Left)) transform->SetScale(glm::vec3(1.f));
+			ImGui::SetItemTooltip("Reset");
+
+			ImGui::Spacing();
+			ImGui::SeparatorText("Moveability");
+			if (ImGui::Combo("Moveability", &_object->GetMoveability(), "Static\0Dynamic\0\0"))
+			{
+				_object->SetMoveability(static_cast<Moveability>(_object->GetMoveability()));
+			}
+		}
 	}
 
 	void EditorSubsystem::LightWidget(const Ref<GameObject>& _selectedObject) const
@@ -539,56 +567,39 @@ namespace Denix
 	{
 		if (ImGui::CollapsingHeader("Mesh Component"))
 		{
-			if (const Ref<MeshComponent> meshComp = _selectedObject->GetMeshComponent())
-			{
-				std::string preview = "Empty";
-				if (const Ref<Mesh> mesh = meshComp->GetMesh()) preview = mesh->GetFriendlyName();
+			ImGui::SeparatorText("Mesh Settings");
 
-				if (ImGui::BeginCombo("##MeshName", preview.c_str()))
+			const Ref<MeshComponent> meshComp = _selectedObject->GetMeshComponent();
+			std::string preview = "Empty";
+			if (const Ref<Mesh> mesh = meshComp->GetMesh()) preview = mesh->GetFriendlyName();
+
+			if (ImGui::BeginCombo("##MeshName", preview.c_str()))
+			{
+				for (auto& [fst, snd] : ResourceSubsystem::GetMeshStore())
 				{
-					for (auto& [fst, snd] : ResourceSubsystem::GetMeshStore())
+					ImGui::PushID(fst.c_str());
+					if (ImGui::Selectable(fst.c_str()))
 					{
-						ImGui::PushID(fst.c_str());
-						if (ImGui::Selectable(fst.c_str()))
-						{
-							meshComp->SetMesh(snd);
-							DE_LOG(LogEditor, Info, "Mesh on {} set to: {}", _selectedObject->GetFriendlyName(), snd->GetName())
-						}
-						ImGui::PopID();
+						meshComp->SetMesh(snd);
+						DE_LOG(LogEditor, Info, "Mesh on {} set to: {}", _selectedObject->GetFriendlyName(), snd->GetName())
 					}
-					ImGui::EndCombo();
+					ImGui::PopID();
 				}
+				ImGui::EndCombo();
+					
 			}
-		}
-	}
 
-	void EditorSubsystem::TransformWidget(const Ref<GameObject>& _object) const
-	{
-		ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
-		if (ImGui::CollapsingHeader("Transform Component"))
-		{
-			const Ref<TransformComponent> transform = _object->GetTransformComponent();
-
-			ImGui::DragFloat3("Position", &transform->GetPosition()[0], DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left)) transform->SetPosition(glm::vec3(0.f));
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat3("Rotation", &transform->GetRotation()[0], DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) transform->SetRotation(glm::vec3(0.f));
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat3("Scale", &transform->GetScale()[0], DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetScale", ImGuiDir_Left)) transform->SetScale(glm::vec3(1.f));
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::Spacing();
-			ImGui::SeparatorText("Moveability");
-			if (ImGui::Combo("Moveability", &_object->GetMoveability(), "Static\0Dynamic\0\0"))
+			ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetMesh", ImGuiDir_Left))
 			{
-				_object->SetMoveability(static_cast<Moveability>(_object->GetMoveability()));
+				DE_LOG(LogEditor, Info, "Mesh on {} reset", _selectedObject->GetFriendlyName())
+				meshComp->SetMesh(nullptr);
 			}
+			ImGui::SetItemTooltip("Reset");
+
 		}
 	}
+
 
 	void EditorSubsystem::CameraWidget(const Ref<GameObject>& _camera) const
 	{

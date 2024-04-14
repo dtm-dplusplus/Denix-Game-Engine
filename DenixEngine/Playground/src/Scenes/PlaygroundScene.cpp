@@ -13,12 +13,6 @@ namespace Denix
 		floor->GetTransformComponent()->SetScale(glm::vec3(50.0f, 50.0f, 1.0f));
 		m_SceneObjects.push_back(floor);
 
-
-		Pyramid = MakeRef<WeirdCube>();
-		Pyramid->GetTransformComponent()->SetPosition({ 0.0f,5.0f,0.0f });
-		Pyramid->GetRenderComponent()->SetTexture(ResourceSubsystem::GetTexture("brick"));
-		m_SceneObjects.push_back(Pyramid);
-
 		PntLight = MakeRef<PointLight>();
 		PntLight->GetTransformComponent()->SetPosition({ 0.0f, 7.0f, 0.0f });
 		PntLight->SetLightColor({ 1.0f,0.0f,0.0f });
@@ -32,10 +26,10 @@ namespace Denix
 		SptLight->GetTransformComponent()->SetPosition({ -5.0f, 5.0f, 0.0f });
 		m_SceneObjects.push_back(SptLight);
 
-		TestModel = MakeRef<ModelObject>();
+		/*TestModel = MakeRef<ModelObject>();
 		TestModel->GetRenderComponent()->SetIsVisible(false);
 		TestModel->TestModel->LoadModel(FileSubsystem::GetContentRoot() + R"(Models\cube.obj)");
-		m_SceneObjects.push_back(TestModel);
+		m_SceneObjects.push_back(TestModel);*/
 
 		return true;
 	}
@@ -87,105 +81,78 @@ namespace Denix
 		}
 		
 		// Model
-		{
-			Ref<RenderComponent> render = TestModel->GetRenderComponent();
-			Ref<TransformComponent> transform = TestModel->GetTransformComponent();
-			if (render && transform)
-			{
-				
+		//{
+		//	Ref<RenderComponent> render = TestModel->GetRenderComponent();
+		//	Ref<TransformComponent> transform = TestModel->GetTransformComponent();
+		//	if (render && transform)
+		//	{
+		//		
 
-				
-
-
-				/*if (const Ref<Material> mat = render->m_Material)
-				{
-					glUniform3f(render->m_Shader->GetUniform("u_Material.BaseColor"),
-						mat->GetBaseColor().r, mat->GetBaseColor().g, mat->GetBaseColor().b);
-					glUniform1f(render->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
-					glUniform1f(render->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
-				}*/
-
-				ResourceSubsystem::GetShader("DefaultShader")->Bind();
-
-				// Draw the indexed mesh
-				for (unsigned int i = 0; i < TestModel->TestModel->m_Meshes.size(); i++)
-				{
-					unsigned int materialIndex = TestModel->TestModel->m_MeshToTex[i];
-
-					if (materialIndex < TestModel->TestModel->m_Textures.size() && TestModel->TestModel->m_Textures[materialIndex])
-					{
-						TestModel->TestModel->m_Textures[materialIndex]->Bind();
-					}
-
-					TestModel->TestModel->m_Meshes[i]->GetVertexArray()->Bind();
-					TestModel->TestModel->m_Meshes[i]->GetIndexBuffer()->Bind();
-
-					// Upload the model matrix
-					glUniformMatrix4fv(render->GetShader()->GetUniform("u_Model"), 1,
-						GL_FALSE, glm::value_ptr(transform->GetModel()));
-
-					// Upload Affects Lighting bool
-					glUniform1i(render->GetShader()->GetUniform("u_AffectsLighting"), render->AffectsLighting());
-					glUniform1i(render->GetShader()->GetUniform("u_BaseColorAsTexture"), render->GetBaseColorAsTexture());
+		//		
 
 
-					// Upload the camera matrices relative to Object
-					if (Ref<Camera> camera = m_ActiveCamera)
-					{
-						glUniformMatrix4fv(render->GetShader()->GetUniform("u_Projection"), 1,
-							GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+		//		/*if (const Ref<Material> mat = render->m_Material)
+		//		{
+		//			glUniform3f(render->m_Shader->GetUniform("u_Material.BaseColor"),
+		//				mat->GetBaseColor().r, mat->GetBaseColor().g, mat->GetBaseColor().b);
+		//			glUniform1f(render->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+		//			glUniform1f(render->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+		//		}*/
 
-						glUniformMatrix4fv(render->GetShader()->GetUniform("u_View"), 1,
-							GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+		//		//ResourceSubsystem::GetShader("DefaultShader")->Bind();
 
-						glUniform3f(render->GetShader()->GetUniform("u_CameraPosition"),
-							camera->GetTransformComponent()->GetPosition().x,
-							camera->GetTransformComponent()->GetPosition().y,
-							camera->GetTransformComponent()->GetPosition().z);
-					}
+		//		//// Draw the indexed mesh
+		//		//for (unsigned int i = 0; i < TestModel->TestModel->m_Meshes.size(); i++)
+		//		//{
+		//		//	unsigned int materialIndex = TestModel->TestModel->m_MeshToTex[i];
 
-					glDrawElements(GL_TRIANGLES, TestModel->TestModel->m_Meshes[i]->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, 0);
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-					glBindVertexArray(0);
-				}
+		//		//	if (materialIndex < TestModel->TestModel->m_Textures.size() && TestModel->TestModel->m_Textures[materialIndex])
+		//		//	{
+		//		//		TestModel->TestModel->m_Textures[materialIndex]->Bind();
+		//		//	}
 
-				IndexBuffer::Unbind();
-				VertexArray::Unbind();
-				GLShader::Unbind();
-			}
-		}
+		//		//	TestModel->TestModel->m_Meshes[i]->GetVertexArray()->Bind();
+		//		//	TestModel->TestModel->m_Meshes[i]->GetIndexBuffer()->Bind();
+
+		//		//	// Upload the model matrix
+		//		//	glUniformMatrix4fv(render->GetShader()->GetUniform("u_Model"), 1,
+		//		//		GL_FALSE, glm::value_ptr(transform->GetModel()));
+
+		//		//	// Upload Affects Lighting bool
+		//		//	glUniform1i(render->GetShader()->GetUniform("u_AffectsLighting"), render->AffectsLighting());
+		//		//	glUniform1i(render->GetShader()->GetUniform("u_BaseColorAsTexture"), render->GetBaseColorAsTexture());
+
+
+		//		//	// Upload the camera matrices relative to Object
+		//		//	if (Ref<Camera> camera = m_ActiveCamera)
+		//		//	{
+		//		//		glUniformMatrix4fv(render->GetShader()->GetUniform("u_Projection"), 1,
+		//		//			GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+
+		//		//		glUniformMatrix4fv(render->GetShader()->GetUniform("u_View"), 1,
+		//		//			GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+
+		//		//		glUniform3f(render->GetShader()->GetUniform("u_CameraPosition"),
+		//		//			camera->GetTransformComponent()->GetPosition().x,
+		//		//			camera->GetTransformComponent()->GetPosition().y,
+		//		//			camera->GetTransformComponent()->GetPosition().z);
+		//		//	}
+
+		//		//	glDrawElements(GL_TRIANGLES, TestModel->TestModel->m_Meshes[i]->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, 0);
+		//		//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		//		//	glBindVertexArray(0);
+		//		//}
+
+		//		//IndexBuffer::Unbind();
+		//		//VertexArray::Unbind();
+		//		//GLShader::Unbind();
+		//	}
+		//}
 		
 
 		ImGui::SetNextWindowPos(ImVec2(1000, 50));
 		ImGui::Begin("Playground Tools");
 		
-		ImGui::SeparatorText("Scene Info");
-		ImGui::Text("Point Lights: %d", m_PointLights.size());
-
-		
-
-		ImGui::SeparatorText("Directional Light Settings");
-		ImGui::ColorEdit4("Base Color", &m_DirLight->GetRenderComponent()->GetTexture()->m_BaseColor[0]);
-		ImGui::ColorEdit3("DirectionalLight Color", &m_DirLight->GetLightColor()[0]);
-		ImGui::SliderFloat("Ambient Intensity", &m_DirLight->GetAmbientIntensity(),
-			m_DirLight->m_AmbientConstraints.x, m_DirLight->m_AmbientConstraints.y);
-		ImGui::SliderFloat("Diffuse Intensity", &m_DirLight->GetDiffuseIntensity(),
-			m_DirLight->m_DiffuseConstraints.x, m_DirLight->m_DiffuseConstraints.y);
-		ImGui::DragFloat3("DirectionalLight Position", &m_DirLight->GetLightDirection()[0], 0.1f);
-
-
-		ImGui::PushID("defmat");
-		
-		ImGui::PopID();
-
-
-		ImGui::PushID("mat");
-		Ref<Material> mat = Pyramid->GetRenderComponent()->GetMaterial();
-		ImGui::SeparatorText("Werid Object Settings");
-		ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
-		ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
-		ImGui::PopID();
 		ImGui::End();
-
 	}
 }

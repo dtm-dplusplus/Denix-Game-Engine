@@ -43,7 +43,7 @@ namespace Denix
 		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
 
 		//MESHES
-		LoadMesh("SM_Cube", CubeData, CubeIndices, 40, 36);
+		LoadMesh("SM_Cube", CubeData, CubeIndices, 64, 36);
 		LoadMesh("SM_Plane", PlaneData, PlaneIndices, 32, 6);
 
 	    DE_LOG(LogResourceSubsystem, Trace, "Resource Subsystem Initialized")
