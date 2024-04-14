@@ -113,6 +113,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Denix\Editor\EditorWidgets.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Model.cpp" />
     <ClCompile Include="src\Denix\Scene\Object\Light\LightObject.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Material.cpp" />
@@ -186,6 +187,7 @@
     <ClCompile Include="src\Denix\System\ShaderSubsystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Texture.cpp" />
+    <ClInclude Include="src\Denix\Editor\EditorWidgets.h" />
     <ClInclude Include="src\Denix\Video\GL\Model.h" />
     <ClInclude Include="src\Denix\Scene\Object\Light\LightObject.h" />
     <ClInclude Include="src\Denix\Video\GL\Material.h" />

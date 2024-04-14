@@ -36,11 +36,14 @@ namespace Denix
 			m_DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));
 			m_SceneObjects.push_back(m_DirLight);
 
+			m_IsLoaded = true;
+
 			return true;
 		}
 
 		virtual void Unload()
 		{
+			m_IsLoaded = false;
 		}
 
 		virtual void BeginScene()
@@ -65,6 +68,8 @@ namespace Denix
 					m_SpotLights.push_back(std::static_pointer_cast<SpotLight>(obj));
 				}
 			}
+
+			m_IsOpen = true;
 		}
 
 
@@ -75,8 +80,7 @@ namespace Denix
 				obj->EndScene();
 			}
 
-			// Give camera back to viewport camera
-			m_ActiveCamera = m_ViewportCamera;
+			m_IsOpen = false;
 		}
 
 		virtual void BeginPlay()
@@ -97,14 +101,83 @@ namespace Denix
 			{
 				obj->EndPlay();
 			}
+
+			// Give camera back to viewport camera
+			m_ActiveCamera = m_ViewportCamera;
 		}
 		virtual void Update(float _deltaTime) {}
 
+		bool IsLoaded() const { return m_IsLoaded; }
+		bool IsOpen() const { return m_IsOpen; }
 		bool IsPlaying() const { return m_IsPlaying; }
+
+		void SpawnSceneObject(const Ref<GameObject>& _object)
+		{
+			// An object can be spawned as long as the level is loaded. It doesn't have to be open
+			if (!m_IsLoaded) 
+			{
+				DE_LOG(LogScene, Error, "Scene is not loaded. Failed To Spawn Object: {}", _object->GetName())
+				return;
+			}
+
+			if (m_IsOpen)
+			{
+				_object->BeginScene();
+
+				if (m_IsPlaying)
+				{
+					_object->BeginPlay();
+				}
+			}
+
+			// Type Checking for lights
+			if (typeid(PointLight) == typeid(*_object))
+			{
+				if (m_PointLights.size() < MAX_POINT_LIGHTS)
+				{
+					m_PointLights.push_back(std::dynamic_pointer_cast<PointLight>(_object));
+				}
+				else
+				{
+					DE_LOG(LogScene, Warn, "Max Point Lights Reached")
+				}
+			}
+			else if (typeid(SpotLight) == typeid(*_object))
+			{
+				if (m_SpotLights.size() < MAX_SPOT_LIGHTS)
+				{
+					m_SpotLights.push_back(std::dynamic_pointer_cast<SpotLight>(_object));
+				}
+				else
+				{
+					DE_LOG(LogScene, Warn, "Max Spot Lights Reached")
+				}
+			}
+			else if (typeid(DirectionalLight) == typeid(*_object))
+			{
+				// Check if the scene already has a directional light
+				if (m_DirLight)
+				{
+					DE_LOG(LogEditor, Warn, "Scene already has a directional light")
+					return;
+				}
+				m_DirLight = std::dynamic_pointer_cast<DirectionalLight>(_object);
+			}
+		
+			m_SceneObjects.push_back(_object);
+		}
+
+		void RemoveSceneObject(const Ref<GameObject>& _object)
+		{
+			if (const auto it = std::ranges::find(m_SceneObjects, _object); it != m_SceneObjects.end())
+			{
+				m_SceneObjects.erase(it);
+			}
+		}
 
 		glm::vec3 GetGravity() const { return m_SceneGravity; }
 
-		Ref<Camera> GetViewportCamera() { return m_ViewportCamera; }
+		Ref<ViewportCamera> GetViewportCamera() { return m_ViewportCamera; }
 
 		Ref<Camera> GetActiveCamera() { return m_ActiveCamera; }
 
@@ -122,6 +195,10 @@ namespace Denix
 		}
 
 		Ref<DirectionalLight> GetDirectionalLight() { return m_DirLight; }
+		void SetDirectionalLight(const Ref<DirectionalLight>& _dirLight) { m_DirLight = _dirLight; }
+
+		std::vector<Ref<GameObject>> GetSceneObjects()const { return m_SceneObjects; }
+
 	protected:
 
 		/** Name of the scene. Must be uniqiue */
@@ -131,6 +208,10 @@ namespace Denix
 		 * True if the scene is being played. False if in editor mode.
 		 */
 		bool m_IsPlaying = false;
+
+		bool m_IsLoaded = false;
+
+		bool m_IsOpen = false;
 
 		/** Gravity of the scene */
 		glm::vec3 m_SceneGravity = glm::vec3(0.0f, -9.81f, 0.0f);

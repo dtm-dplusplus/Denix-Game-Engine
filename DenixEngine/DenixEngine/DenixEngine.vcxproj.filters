@@ -152,6 +152,9 @@
     <ClCompile Include="src\Denix\System\FileSubsystem.cpp">
       <Filter>src\Denix\System</Filter>
     </ClCompile>
+    <ClCompile Include="src\Denix\Editor\EditorWidgets.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Denix.h" />
@@ -287,5 +290,6 @@
     <ClInclude Include="src\Denix\Video\GL\Texture.h">
       <Filter>src\Denix\Video\GL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Denix\Editor\EditorWidgets.h" />
   </ItemGroup>
 </Project>
