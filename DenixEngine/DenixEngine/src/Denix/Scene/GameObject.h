@@ -9,9 +9,7 @@
 #include "Denix/Video/Renderer/RenderComponent.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Physics/ColliderComponent.h"
-#include "Denix/Scene/MeshData.h"
 #include "Denix/Scene/GameObjectData.h"
-#include <filesystem>
 
 namespace Denix
 {
@@ -24,18 +22,18 @@ namespace Denix
 		// Constructors
 		GameObject(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : Object(_object_init)
 		{
-			m_TransformComponent = MakeRef<TransformComponent>(m_ID);
+			m_TransformComponent = MakeRef<TransformComponent>(GetName());
 			m_Components["Transform"] = m_TransformComponent;
 
-			m_PhysicsComponent = MakeRef<PhysicsComponent>(m_ID);
+			m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
 			m_PhysicsComponent->m_ActorTransform = m_TransformComponent;
 			m_PhysicsComponent->m_ColliderComponent->m_ActorTransformComponent = m_TransformComponent;
 			m_Components["Physics"] = m_PhysicsComponent;
 
-			m_MeshComponent = MakeRef<MeshComponent>(m_ID);
+			m_MeshComponent = MakeRef<MeshComponent>(GetName());
 			m_Components["Mesh"] = m_MeshComponent;
 
-			m_RenderComponent = MakeRef<RenderComponent>(m_ID);
+			m_RenderComponent = MakeRef<RenderComponent>(GetName());
 			m_Components["Render"] = m_RenderComponent;
 		}
 
@@ -71,7 +69,10 @@ namespace Denix
 
 		// Physics Component
 		virtual void OnCollide() {} //const Ref<GameObject>& _other
-		virtual void OnTrigger() {} // const Ref<GameObject>& _other
+
+		virtual void OnTriggerEnter() {}
+		virtual void OnTriggerStay() {}
+		virtual void OnTriggerExit() {}
 
 		Moveability GetMoveability() const { return static_cast<Moveability>(m_Moveability); }
 		int& GetMoveability() { return m_Moveability; }

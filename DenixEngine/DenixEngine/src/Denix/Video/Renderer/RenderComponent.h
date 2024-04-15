@@ -22,7 +22,7 @@ namespace Denix
 			m_Material = ResourceSubsystem::GetMaterial("MAT_Default");
 		}
 
-		RenderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Render Component"))
+		RenderComponent(const std::string& _parentName) : Component(_parentName, ObjectInitializer("Render Component"))
 		{
 			m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");

@@ -18,13 +18,13 @@ namespace Denix
 			m_VBO{MakeRef<VertexBuffer>()},
 			m_IBO{MakeRef<IndexBuffer>()} {}
 
-		MeshComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Mesh Component")),
+		MeshComponent(const std::string& _parentName) : Component(_parentName, ObjectInitializer("Mesh Component")),
 			m_Mesh{nullptr},
 			m_VAO{MakeRef<VertexArray>()},
 			m_VBO{MakeRef<VertexBuffer>()},
 			m_IBO{MakeRef<IndexBuffer>()} {}
 
-		MeshComponent(const GLint _parentID, const Ref<Mesh>& _mesh) : Component(_parentID, ObjectInitializer("Mesh Component")),
+		MeshComponent(const std::string& _parentName, const Ref<Mesh>& _mesh) : Component(_parentName, ObjectInitializer("Mesh Component")),
 			m_Mesh{ _mesh },
 			m_VAO{ MakeRef<VertexArray>() },
 			m_VBO{ MakeRef<VertexBuffer>() },

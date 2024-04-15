@@ -16,12 +16,13 @@ namespace Denix
 		virtual void LateUpdate(float _deltaTime) {}
 		bool IsInitialized() const { return m_Initialized; }
 
-		bool IsActive() const { return m_Active; }
-		bool& IsActive() { return m_Active; }
+		bool IsEnabled() const { return m_Enabled; }
+		bool& IsEnabled() { return m_Enabled; }
+		void SetEnabled(const bool _enabled) { m_Enabled = _enabled; }
 
 	protected:
 		bool m_Initialized = false;
-		bool m_Active = true;
+		bool m_Enabled = true;
 
 		friend class Engine;
 	};

@@ -31,6 +31,10 @@ namespace Denix
 		CubeModel->TestModel->LoadModel(FileSubsystem::GetContentRoot() + R"(Models\cube.obj)");
 		m_SceneObjects.push_back(CubeModel);
 
+		TestPhysObject = MakeRef<PhysObject>();
+		TestPhysObject->GetTransformComponent()->SetPosition({ 0.0f, 7.0f, 0.0f });
+		TestPhysObject->GetMeshComponent()->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
+		m_SceneObjects.push_back(TestPhysObject);
 		return true;
 	}
 

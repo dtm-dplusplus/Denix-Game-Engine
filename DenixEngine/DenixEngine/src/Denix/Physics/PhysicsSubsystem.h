@@ -31,8 +31,6 @@ namespace Denix
 		void Update(float _deltaTime) override;
 		void LateUpdate(float _deltaTime) override;
 
-		void SetIsSimulating(const bool _isSimulating) { m_IsSimulating = _isSimulating; }
-	public: 
 		static PhysicsSubsystem* Get() { return s_PhysicsSubSystem; }
 
 		void Initialize() override
@@ -55,7 +53,7 @@ namespace Denix
 
 		Ref<Scene> m_ActiveScene;
 
-		/** Set to true by scene subsytem when game is playing, and false when its stopped */
-		bool m_IsSimulating = false;
+		/** Determines if collisions should be queried when editing the scene */
+		bool m_PreviewCollisions = true;
 	};
 }

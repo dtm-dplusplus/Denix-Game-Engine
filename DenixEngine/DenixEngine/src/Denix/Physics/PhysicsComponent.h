@@ -9,6 +9,14 @@
 
 namespace Denix
 {
+	enum class TriggerState
+	{
+		Null,
+		Enter,
+		Exit,
+		Stay
+	};
+
 	class PhysicsComponent : public Component, public std::enable_shared_from_this<PhysicsComponent>
 	{
 	public:
@@ -16,9 +24,9 @@ namespace Denix
 		{
 			m_ColliderComponent = MakeRef<ColliderComponent>();
 		}
-		PhysicsComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Physics Component")) 
+		PhysicsComponent(const std::string& _parentName) : Component(_parentName, ObjectInitializer("Physics Component"))
 		{
-			m_ColliderComponent = MakeRef<ColliderComponent>(m_ID);
+			m_ColliderComponent = MakeRef<ColliderComponent>(_parentName);
 		}
 
 		enum class StepMethod
@@ -137,6 +145,12 @@ namespace Denix
 				m_RequestSceneGravity = true;
 			}
 		}
+
+		void ToggleTrigger()
+		{
+			DE_LOG(LogPhysics, Trace, "Collider {} trigger {}", m_ColliderComponent->GetName(), m_IsTrigger? "Enabled" : "Disabled")
+		}
+
 		// Getters
 		bool IsSimulated() const { return m_IsSimulated; }
 		bool& IsSimulated() { return m_IsSimulated; }
@@ -157,6 +171,35 @@ namespace Denix
 
 		bool IsCustomGravity() const { return m_IsCustomGravity; }
 		bool& IsCustomGravity() { return m_IsCustomGravity; }
+
+		bool IsTrigger() const { return m_IsTrigger; }
+		bool& IsTrigger() { return m_IsTrigger; }
+		void SetTrigger(const bool _isTrigger)
+		{
+			m_IsTrigger = _isTrigger;
+
+			if (m_IsTrigger)
+			{
+				DE_LOG(LogPhysics, Trace, "Physics component set to trigger collider")
+			}
+			else
+			{
+				DE_LOG(LogPhysics, Trace, "Physics component set to collision collider")
+			}
+		}
+
+		TriggerState GetTriggerState() const { return m_TriggerState; }
+		TriggerState& GetTriggerState() { return m_TriggerState; }
+
+		std::string GetTriggerStateS()
+		{
+			const static std::string s[]{ "Null", "Enter", "Exit", "Stay" };
+			return s[static_cast<int>(m_TriggerState)];
+		}
+		void SetTriggerState(const TriggerState _triggerState)
+		{
+			m_TriggerState = _triggerState;
+		}
 
 		glm::vec3 GetVelocity() const { return m_Velocity; }
 		glm::vec3& GetVelocity() { return m_Velocity; }
@@ -198,6 +241,12 @@ namespace Denix
 	private:
 		/** Set to decide if the physics component should update simulation */
 		bool m_IsSimulated = true;
+
+		/** Set to decide if the physics component should be a trigger collider 
+		 * If true, the physics component will not respond to collisions, but will still trigger events
+		*/
+		bool m_IsTrigger = false;
+		TriggerState m_TriggerState = TriggerState::Null;
 
 		/** Set to decide if the physics component should use custom gravity
 		 * If false, the physics component will use the scene gravity

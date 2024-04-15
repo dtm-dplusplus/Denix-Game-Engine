@@ -118,7 +118,6 @@ namespace Denix
 			m_ActiveScene->BeginPlay();
 
 			
-			s_PhysicsSubsystem->SetIsSimulating(true);
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Playing")
 		}
 	}
@@ -127,9 +126,6 @@ namespace Denix
 	{
 		if (m_ActiveScene)
 		{
-			// TEMP Will move to a better solution later
-			s_PhysicsSubsystem->SetIsSimulating(false);
-
 			m_ActiveScene->EndPlay();
 			m_ActiveScene->EndScene();
 

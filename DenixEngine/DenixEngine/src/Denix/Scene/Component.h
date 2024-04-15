@@ -9,11 +9,11 @@ namespace Denix
 	{
 	public:
 		// Constructors
-		Component(const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectID{ 0 }
+		Component(const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer)
 		{
 		}
 
-		Component(const GLint _parentID, const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectID{ _parentID }
+		Component(const std::string& _parentName, const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectName{ _parentName }
 		{
 		}
 
@@ -25,10 +25,10 @@ namespace Denix
 
 	public: // Component Interface
 		/** Get the parent object id */
-		GLint GetParentObjectID() const { return m_ParentObjectID; }
+		std::string GetParentObjectName() const { return m_ParentObjectName; }
 
 		/** Set the parent object id */
-		void SetParentObjectID(const GLint _id) { m_ParentObjectID = _id; }
+		void SetParentObjectName(const std::string& _name) { m_ParentObjectName = _name; }
 
 	public: // Object Interface
 		virtual void Initialize() {}
@@ -40,6 +40,6 @@ namespace Denix
 
 	protected:
 		/* Object this component is attacthed to */
-		GLint m_ParentObjectID;
+		std::string m_ParentObjectName;
 	};
 }

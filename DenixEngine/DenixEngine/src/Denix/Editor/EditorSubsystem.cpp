@@ -169,7 +169,7 @@ namespace Denix
 		ImGui::Combo("Viewport Mode", &SceneSubsystem::GetViewportMode(), "Default\0Collider\0\0");
 
 		// Subsystems
-		ImGui::Checkbox("Render Subsystem", &s_RendererSubSystem->IsActive());
+		ImGui::Checkbox("Render Subsystem", &s_RendererSubSystem->IsEnabled());
 
 		// Scene gravity
 		ImGui::DragFloat3("Scene Gravity", &s_SceneSubSystem->m_ActiveScene->GetGravity()[0], DragSpeedDelta, -FLT_MAX, FLT_MAX);
@@ -385,7 +385,6 @@ namespace Denix
 		{
 			const Ref<PhysicsComponent> physics = _selectedObject->GetPhysicsComponent();
 
-			bool isSimulated = physics->IsSimulated();
 			bool isCustomGravity = physics->IsCustomGravity();
 			const glm::vec3& vel = physics->GetVelocity();
 			const glm::vec3& avel = physics->GetAngularVelocity();
@@ -396,7 +395,9 @@ namespace Denix
 			glm::vec3& gravity = physics->GetGravity();
 
 			// Physics Simulation
-			if (ImGui::Checkbox("Simulate Physics", &isSimulated)) physics->ToggleSimulation();
+			if (ImGui::Checkbox("Simulate Physics", &physics->IsSimulated())) physics->ToggleSimulation();
+			if (ImGui::Checkbox("Is Trigger", &physics->IsTrigger())) physics->ToggleTrigger();
+			ImGui::SameLine(); ImGui::Text(" State: %s", physics->GetTriggerStateS().c_str());
 
 			// Step Simulation 
 			const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };

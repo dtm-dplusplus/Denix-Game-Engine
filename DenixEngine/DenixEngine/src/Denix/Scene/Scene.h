@@ -199,6 +199,18 @@ namespace Denix
 
 		std::vector<Ref<GameObject>> GetSceneObjects()const { return m_SceneObjects; }
 
+		Ref<GameObject> GetGameObject(const std::string& _name) const
+		{
+			for (const auto& obj : m_SceneObjects)
+			{
+				if (obj->GetName() == _name)
+				{
+					return obj;
+				}
+			}
+
+			return nullptr;
+		}
 	protected:
 
 		/** Name of the scene. Must be uniqiue */
@@ -218,6 +230,7 @@ namespace Denix
 
 		/** List of Objects in the scene */
 		std::vector<Ref<GameObject>> m_SceneObjects;
+		//std::unordered_map<std::string, Ref<GameObject>> m_SceneObjects;
 
 		Ref<ViewportCamera> m_ViewportCamera;
 

@@ -16,7 +16,7 @@ namespace Denix
 	void RendererSubsystem::DrawImmediate(const Ref<RenderComponent>& _renderComp, const Ref<TransformComponent>& _transformComp, const Ref<MeshComponent>& _meshComp)
 	{
 		// Global check to see if the renderer is active - Useful for debugging
-		if(!m_Active) return;
+		if(!m_Enabled) return;
 
 		// Check if the components are valid
 		if (!_renderComp)

@@ -27,38 +27,23 @@ namespace Denix
 	public:
 		ColliderComponent() : Component(ObjectInitializer("Collider Component"))
 		{
-			m_RenderComponent = MakeRef<RenderComponent>(m_ID);
-			m_RenderComponent->SetIsVisible(false);
-			m_Components["Render"] = m_RenderComponent;
-
-			m_MeshComponent = MakeRef<MeshComponent>(m_ID);
-			m_Components["Mesh"] = m_MeshComponent;
-
-			const Ref<VertexBuffer> vbo = m_MeshComponent->GetVertexBuffer();
-			vbo->Bind();
-			vbo->VertexBufferData(sizeof(CubeData), CubeData, 3, 36, GL_FLOAT);
-
-			const Ref<VertexArray> vao = m_MeshComponent->GetVertexArray();
-
-			vao->Bind();
-			vbo->Bind();
-
-			// Bind Attribute at Location 0
-			vao->AttribPtr(vbo->GetPerPrimitive(), vbo->GetType());
-
-			//// Reset the state
-			VertexBuffer::Unbind();
-			VertexArray::Unbind();
-		}
-
-		ColliderComponent(const GLint _parentID) : Component(_parentID, ObjectInitializer("Collider Component"))
-		{
-			m_RenderComponent = MakeRef<RenderComponent>(m_ID);
+			m_RenderComponent = MakeRef<RenderComponent>();
 			m_RenderComponent->SetDebugColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 			m_RenderComponent->SetIsVisible(false);
 			m_Components["Render"] = m_RenderComponent;
 
-			m_MeshComponent = MakeRef<MeshComponent>(m_ID);
+			m_MeshComponent = MakeRef<MeshComponent>();
+			m_Components["Mesh"] = m_MeshComponent;
+		}
+
+		ColliderComponent(const std::string& _parentName) : Component(_parentName, ObjectInitializer("Collider Component"))
+		{
+			m_RenderComponent = MakeRef<RenderComponent>(_parentName);
+			m_RenderComponent->SetDebugColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+			m_RenderComponent->SetIsVisible(false);
+			m_Components["Render"] = m_RenderComponent;
+
+			m_MeshComponent = MakeRef<MeshComponent>(_parentName);
 			m_Components["Mesh"] = m_MeshComponent;
 		}
 
@@ -109,6 +94,8 @@ namespace Denix
 
 		/** Render component that is used to draw the collider */
 		Ref<RenderComponent> m_RenderComponent;
+		const static glm::vec4 m_NoCollisionColor;
+		const static glm::vec4 m_CollisionColor;
 
 		/** Transform component which is attached to this components game object */
 		Ref<TransformComponent> m_ActorTransformComponent;

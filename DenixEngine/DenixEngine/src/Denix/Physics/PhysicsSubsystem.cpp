@@ -26,64 +26,115 @@ namespace Denix
 
 	void PhysicsSubsystem::UpdateCollisionDetection(float _deltaTime)
 	{
-		for (const auto& component : m_PhysicsComponents)
+		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			// Skip if not simulated or level is not playing
-			if (!component->m_IsSimulated || !m_IsSimulating) continue;
+			const auto& colliderComp = physicsComp->m_ColliderComponent;
+
+			bool collisionDetected{ false };
 
 			// If static object no need to compute next step or sweep
 			// Most objects are like wall are static so we check this first
-			if (component->m_Moveability == Moveability::Static)
+			if (physicsComp->m_Moveability == Moveability::Static)
 			{
 				// If we detect a collision. Call collision event on game object
 
-				continue;
+				
 			}
 
-			// If dynamic object compute next step or sweep
+			// Fake collision check for now
+			if (physicsComp->m_ActorTransform->GetPosition().y <= 0.f)
+			{
+				collisionDetected = true;
+			}
 
+			// If Collider is trigger
+			if (physicsComp->IsTrigger())
+			{
+				// Check Trigger State
+				if (collisionDetected)
+				{
+					// Call OnTriggerStay
+					if (colliderComp->m_IsColliding)
+					{
+						physicsComp->m_TriggerState = TriggerState::Stay;
+					}
+					// Call OnTriggerEnter
+					else
+					{
+						physicsComp->m_TriggerState = TriggerState::Enter;
+						//colliderComp->m_IsColliding = true;
+					}
+				}
+				else
+				{
+					// Call OnTriggerExit
+					if (colliderComp->m_IsColliding)
+					{
+						
+						physicsComp->m_TriggerState = TriggerState::Exit;
+						//colliderComp->m_IsColliding = false;
+					}
+					// Call OnTriggerNone
+					else
+					{
+						physicsComp->m_TriggerState = TriggerState::Null;
+					}
+				}
+
+				if (const Ref<GameObject> parentObj = m_ActiveScene->GetGameObject(physicsComp->m_ParentObjectName))
+				{
+					switch (physicsComp->m_TriggerState)
+					{
+					case TriggerState::Stay:
+					{
+						parentObj->OnTriggerStay();
+					} break;
+
+					case TriggerState::Enter:
+					{
+						parentObj->OnTriggerEnter();
+					} break;
+
+					case TriggerState::Exit:
+					{
+						parentObj->OnTriggerExit();
+					} break;
+					default: ;
+					}
+				}
+			}
+
+			colliderComp->m_RenderComponent->SetDebugColor(
+				colliderComp->m_IsColliding ? colliderComp->m_CollisionColor : colliderComp->m_NoCollisionColor);
+
+			colliderComp->m_IsColliding = collisionDetected;
+			// If dynamic object compute next step or sweep
 		}
 	}
 
 	void PhysicsSubsystem::Update(float _deltaTime)
 	{
-		// Update collision detection
-		UpdateCollisionDetection(_deltaTime);
+		// Return if system is not enabled
+		if (!m_Enabled) return;
 
-		// Update physics component
+		// Update collisions
+		 if(m_PreviewCollisions || m_ActiveScene->IsPlaying()) UpdateCollisionDetection(_deltaTime);
+
+		 // Skip if the scene is not simulating physics
+		 if (!m_ActiveScene->IsPlaying()) return;
+
+		// Update physics components
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			const Ref<ColliderComponent> colliderComp = physicsComp->m_ColliderComponent;
-
-			// Skip if the scene is not simulating physics
-			if (!m_IsSimulating) continue;
-
-			// Skip if static object.  Only dynamic objects are simulated
-			if(physicsComp->m_Moveability == Moveability::Static) continue;
-
 			// Skip if not simulated
 			if (!physicsComp->m_IsSimulated) continue;
 
-			// From this point we assume the object is dynamic
+			const Ref<ColliderComponent> colliderComp = physicsComp->m_ColliderComponent;
+
 			// Clear force & Compute mg
 			physicsComp->m_Force = physicsComp->m_Mass * physicsComp->m_Gravity;
-
+			
 			// Compute collision response - Null effect for now
-			if (physicsComp->m_ActorTransform->GetPosition().y <= 0.f) // Temp 
-			{
-				physicsComp->m_ActorTransform->GetPosition().y = 0.f;
-				physicsComp->m_Velocity.y = 0.f;
-
-				colliderComp->m_IsColliding = true;
-				glm::vec4& color = colliderComp->m_RenderComponent->GetDebugColor();
-				color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-			}
-			else
-			{
-				colliderComp->m_IsColliding = false;
-				glm::vec4& color = colliderComp->m_RenderComponent->GetDebugColor();
-				color = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-			}
 
 			// Step Intergration
 			physicsComp->Step(_deltaTime);
@@ -104,6 +155,4 @@ namespace Denix
 			}
 		}
 	}
-
-	
 }

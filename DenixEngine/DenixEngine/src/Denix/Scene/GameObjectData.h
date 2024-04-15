@@ -8,6 +8,6 @@ namespace Denix
 	enum class Moveability
 	{
 		Static,
-		Dynamic
+		Dynamic,
 	};
 }
