@@ -27,6 +27,7 @@ namespace Denix
 		m_SceneObjects.push_back(SptLight);
 
 		CubeModel = MakeRef<ModelObject>();
+		CubeModel->GetMeshComponent()->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
 		CubeModel->GetRenderComponent()->SetIsVisible(false);
 		CubeModel->TestModel->LoadModel(FileSubsystem::GetContentRoot() + R"(Models\cube.obj)");
 		m_SceneObjects.push_back(CubeModel);

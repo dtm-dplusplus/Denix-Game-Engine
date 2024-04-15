@@ -32,7 +32,11 @@ namespace Denix
 			const Ref<RenderComponent>& _renderComp, 
 			const Ref<TransformComponent>& _transformComp, 
 			const Ref<MeshComponent>& _meshComp);
-			
+		
+		static bool ValidateForDrawing(const Ref<RenderComponent>& _renderComp,
+		                               const Ref<TransformComponent>& _transformComp,
+		                               const Ref<MeshComponent>& _meshComp);
+
 		void SetActiveScene(const Ref<Scene>& _scene);
 
 	public:

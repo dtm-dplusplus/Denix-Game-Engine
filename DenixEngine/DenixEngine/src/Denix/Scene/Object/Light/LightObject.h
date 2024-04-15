@@ -8,18 +8,7 @@ namespace Denix
 	class Light : public GameObject
 	{
 	public:
-		Light(const ObjectInitializer& _objInit = {"Light"}):
-			GameObject(_objInit),
-			m_LightColor(1.0f, 1.0f, 1.0f),
-			m_AmbientIntensity(0.1f),
-			m_DiffuseIntensity(1.0f)
-		{
-			m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
-			m_TransformComponent->SetScale(glm::vec3(0.5f));
-
-			m_RenderComponent->SetAffectsLighting(false);
-			m_RenderComponent->GetTexture()->m_BaseColor = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-		}
+		explicit Light(const ObjectInitializer& _objInit = {"Light"});
 
 		glm::vec3 GetLightColor() const { return m_LightColor; }
 		glm::vec3& GetLightColor() { return m_LightColor; }

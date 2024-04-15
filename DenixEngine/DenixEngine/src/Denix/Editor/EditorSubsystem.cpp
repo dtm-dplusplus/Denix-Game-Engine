@@ -3,6 +3,8 @@
 
 #include "imgui.h"
 #include "Denix/Input/InputSubsystem.h"
+#include "Denix/Physics/Collider.h"
+#include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
 #include "Denix/Video/Renderer/RendererSubSystem.h"
@@ -154,7 +156,6 @@ namespace Denix
 				LightWidget(selectedObject);
 				PhysicsWidget(selectedObject);
 				RenderWidget(selectedObject);
-				ColliderWidget(selectedObject);
 				MeshWidget(selectedObject);
 			}
 			ImGui::End();
@@ -166,7 +167,7 @@ namespace Denix
 	{
 		ImGui::SeparatorText("Scene Properties");
 		// Viewport Mode
-		ImGui::Combo("Viewport Mode", &SceneSubsystem::GetViewportMode(), "Default0\Lit\0Unlit\0Wireframe\0Collider\0\0");)
+		ImGui::Combo("Viewport Mode", &SceneSubsystem::GetViewportMode(), "Default0\Lit\0Unlit\0Wireframe\0Collider\0\0");
 		// Subsystems
 		ImGui::Checkbox("Render Subsystem", &s_RendererSubSystem->IsEnabled());
 
@@ -398,7 +399,6 @@ namespace Denix
 			if (ImGui::Checkbox("Is Trigger", &physics->IsTrigger())) physics->ToggleTrigger();
 			ImGui::SameLine(); ImGui::Text(" State: %s", physics->GetTriggerStateS().c_str());
 
-			//
 			ImGui::Checkbox("Show Collider", &physics->GetCollider()->GetRenderComponent()->IsVisible());
 
 			// Step Simulation 
@@ -550,19 +550,6 @@ namespace Denix
 				}
 
 			}
-		}
-	}
-
-	
-	void EditorSubsystem::ColliderWidget(const Ref<GameObject>& _selectedObject)
-	{
-		if (ImGui::CollapsingHeader("Collider Component"))
-		{
-			const Ref<ColliderComponent> collider = _selectedObject->GetColliderComponent();
-			const Ref<RenderComponent> render = collider->GetRenderComponent();
-
-			
-			if (ImGui::Button("Is Colliding")) collider->ToggleColliding();
 		}
 	}
 

@@ -4,12 +4,11 @@
 
 #include "Denix/Scene/Object.h"
 #include "Denix/Scene/Component.h"
-#include "Denix/Video/GL/MeshComponent.h"
-#include "Denix/Physics/PhysicsComponent.h"
-#include "Denix/Video/Renderer/RenderComponent.h"
 #include "Denix/Scene/Component/TransformComponent.h"
-#include "Denix/Physics/ColliderComponent.h"
+#include "Denix/Physics/PhysicsComponent.h"
+#include "Denix/Video/GL/MeshComponent.h"
 #include "Denix/Scene/GameObjectData.h"
+#include "Denix/Video/Renderer/RenderComponent.h"
 
 namespace Denix
 {
@@ -20,21 +19,7 @@ namespace Denix
 	{
 	public:
 		// Constructors
-		GameObject(const ObjectInitializer& _object_init = ObjectInitializer::Get()) : Object(_object_init)
-		{
-			m_TransformComponent = MakeRef<TransformComponent>(GetName());
-			m_Components["Transform"] = m_TransformComponent;
-
-			m_MeshComponent = MakeRef<MeshComponent>(GetName());
-			m_Components["Mesh"] = m_MeshComponent;
-
-			m_RenderComponent = MakeRef<RenderComponent>(GetName());
-			m_Components["Render"] = m_RenderComponent;
-		
-			m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
-			m_PhysicsComponent->m_ActorTransform = m_TransformComponent;
-			m_Components["Physics"] = m_PhysicsComponent;
-		}
+		GameObject(const ObjectInitializer& _object_init = ObjectInitializer::Get());
 
 		// Destructors
 		~GameObject() override = default;
@@ -59,8 +44,7 @@ namespace Denix
 		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
-
-		Ref<Collider> GetCollider() const { return m_PhysicsComponent->m_Collider; }
+		Ref<Collider> GetCollider() { return m_PhysicsComponent->GetCollider(); }
 
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
 
@@ -128,17 +112,8 @@ namespace Denix
 			Object::Update(_deltaTime);
 		}
 
-		void LateUpdate(float _deltaTime) override
-		{
-			Object::LateUpdate(_deltaTime);
+		void LateUpdate(float _deltaTime) override;
 
-			if (m_MoveabilityChanged)
-			{
-				// Propogate update to physics systems
-				m_PhysicsComponent->SetMoveability(static_cast<Moveability>(m_Moveability));
-				m_MoveabilityChanged = false;
-			}
-		}
 	protected:
 		/** Moveability Defines many behaviours of the game objects components
 		*	@Physics
@@ -168,18 +143,12 @@ namespace Denix
 	class Plane : public GameObject
 	{
 	public:
-		Plane(const ObjectInitializer& _objInit = { "Plane" }) : GameObject(_objInit)
-		{
-			m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Plane"));
-		}
+		Plane(const ObjectInitializer& _objInit = { "Plane" });
 	};
 
 	class Cube : public GameObject
 	{
 	public:
-		Cube(const ObjectInitializer& _objInit = { "TestCube" }) : GameObject(_objInit)
-		{
-			m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_CUBE"));
-		}
+		Cube(const ObjectInitializer& _objInit = { "TestCube" });
 	};
 }

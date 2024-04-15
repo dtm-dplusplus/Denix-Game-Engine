@@ -3,12 +3,13 @@
 #include "Denix/Core.h"
 #include <glm/vec3.hpp>
 
-#include "ColliderComponent.h"
 #include "Denix/Scene/Component.h"
 #include "Denix/Scene/GameObjectData.h"
 
 namespace Denix
 {
+	class Collider;
+
 	enum class TriggerState
 	{
 		Null,
@@ -20,14 +21,9 @@ namespace Denix
 	class PhysicsComponent : public Component, public std::enable_shared_from_this<PhysicsComponent>
 	{
 	public:
-		PhysicsComponent() : Component(ObjectInitializer("Physics Component"))
-		{
-			m_ColliderComponent = MakeRef<ColliderComponent>();
-		}
-		PhysicsComponent(const std::string& _parentName) : Component(_parentName, ObjectInitializer("Physics Component"))
-		{
-			m_ColliderComponent = MakeRef<ColliderComponent>(_parentName);
-		}
+		PhysicsComponent();
+
+		PhysicsComponent(const std::string& _parentName);
 
 		enum class StepMethod
 		{
@@ -43,71 +39,15 @@ namespace Denix
 		void SetMoveability(const Moveability _moveability)
 		{
 			m_Moveability = _moveability;
-			m_ColliderComponent->m_Moveability = _moveability;
 		}
 	public:
 
-		void ComputeCenterOfMass()
-		{
-			// Compute the center of mass of the object
-			// For now, we will assume the center of mass is at the center of the object
-			m_CenterOfMass = m_ActorTransform->GetPosition();
-		}
-		void Step(float _deltaTime)
-		{
-			// Step integration
-			switch (m_StepMethod)
-			{
-			case StepMethod::Euler:
-				StepEuler(_deltaTime);
-				break;
+		void ComputeCenterOfMass();
+		void Step(float _deltaTime);
 
-			case StepMethod::RK2:
-				StepRK2(_deltaTime);
-				break;
+		void StepEuler(float _deltaTime);
 
-			case StepMethod::RK4:
-				StepRK4(_deltaTime);
-				break;
-
-			case StepMethod::Verlet:
-				StepVerlet(_deltaTime);
-				break;
-			}
-		}
-		void StepEuler(float _deltaTime)
-		{
-			// Calculate the net force - Null effect if Drag = 0
-			m_Force -= m_Drag * m_Velocity;
-
-			// Calculate new velocity at time t + dt
-			m_Velocity += m_Force / m_Mass * _deltaTime;
-
-			// Calculate new displacement at time t + dt
-			m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;
-		}
-
-		void StepRK2(float _deltaTime)
-		{
-			glm::vec3 netF;
-			glm::vec3 accel;
-
-			// Calculate k1
-			netF = m_Force - m_Drag * m_Velocity;
-			accel = netF / m_Mass;
-			const glm::vec3 k1 = accel * _deltaTime;
-
-			// Calculate k2
-			netF = m_Force - m_Drag * (m_Velocity + k1);
-			accel = netF / m_Mass;
-			const glm::vec3 k2 = accel * _deltaTime;
-
-			// Calculate new velocity at time t + dt
-			m_Velocity += (k1 + k2) / 2.f;
-
-			// Calculate new displacement at time t + dt
-			m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;
-		}
+		void StepRK2(float _deltaTime);
 
 		void StepRK4(float _deltaTime)
 		{
@@ -133,8 +73,6 @@ namespace Denix
 
 		void ToggleGravity()
 		{
-			m_IsCustomGravity = !m_IsCustomGravity;
-
 			if (m_IsCustomGravity)
 			{
 				DE_LOG(LogPhysics, Trace, "Custom Gravity enabled")
@@ -145,12 +83,17 @@ namespace Denix
 				m_RequestSceneGravity = true;
 			}
 		}
-
 		void ToggleTrigger()
 		{
-			DE_LOG(LogPhysics, Trace, "Collider {} trigger {}", m_ColliderComponent->GetName(), m_IsTrigger? "Enabled" : "Disabled")
+			if (m_IsTrigger)
+			{
+				DE_LOG(LogPhysics, Trace, "Physics component set to trigger collider")
+			}
+			else
+			{
+				DE_LOG(LogPhysics, Trace, "Physics component set to collision collider")
+			}
 		}
-
 		// Getters
 		bool IsSimulated() const { return m_IsSimulated; }
 		bool& IsSimulated() { return m_IsSimulated; }
@@ -237,6 +180,7 @@ namespace Denix
 		void RegisterComponent() override;
 
 		void UnregisterComponent() override;
+		
 
 	private:
 		/** Set to decide if the physics component should update simulation */
@@ -261,6 +205,7 @@ namespace Denix
 		/** Method used to step the physics simulation */
 		StepMethod m_StepMethod = StepMethod::Euler;
 
+		bool m_IsColliding = false;
 	private:
 		/** Moveability of the object */
 		Moveability m_Moveability = Moveability::Static;
@@ -296,7 +241,7 @@ namespace Denix
 		Ref<Collider> m_Collider;
 
 		/** Transform component which is attached to this components game object */
-		Ref<TransformComponent> m_ActorTransform;
+		Ref<class TransformComponent> m_ActorTransform;
 
 		friend class SceneSubsystem;
 		friend class PhysicsSubsystem;

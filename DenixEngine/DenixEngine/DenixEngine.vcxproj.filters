@@ -140,7 +140,7 @@
     <ClCompile Include="src\Denix\Video\GL\MeshComponent.cpp">
       <Filter>src\Denix\Video\GL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\Physics\ColliderComponent.cpp">
+    <ClCompile Include="src\Denix\Physics\Collider.cpp">
       <Filter>src\Denix\Physics</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\Physics\PhysicsComponent.cpp">
@@ -266,7 +266,7 @@
     <ClInclude Include="src\Denix\Video\GL\MeshComponent.h">
       <Filter>src\Denix\Video\GL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\Physics\ColliderComponent.h">
+    <ClInclude Include="src\Denix\Physics\Collider.h">
       <Filter>src\Denix\Physics</Filter>
     </ClInclude>
     <ClInclude Include="src\Denix\Physics\PhysicsComponent.h">

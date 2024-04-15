@@ -2,7 +2,8 @@
 #include "PhysicsSubsystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/SceneSubsystem.h"
-
+#include "Denix/Physics/PhysicsComponent.h"
+#include "Denix/Physics/Collider.h"
 namespace Denix
 {
 	PhysicsSubsystem* PhysicsSubsystem::s_PhysicsSubSystem{ nullptr };
@@ -28,8 +29,7 @@ namespace Denix
 	{
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			const auto& colliderComp = physicsComp->m_ColliderComponent;
-
+			Ref<Collider> colliderComp = physicsComp->m_Collider;
 			bool collisionDetected{ false };
 
 			// If static object no need to compute next step or sweep
@@ -54,7 +54,7 @@ namespace Denix
 				if (collisionDetected)
 				{
 					// Call OnTriggerStay
-					if (colliderComp->m_IsColliding)
+					if (physicsComp->m_IsColliding)
 					{
 						physicsComp->m_TriggerState = TriggerState::Stay;
 					}
@@ -68,7 +68,7 @@ namespace Denix
 				else
 				{
 					// Call OnTriggerExit
-					if (colliderComp->m_IsColliding)
+					if (physicsComp->m_IsColliding)
 					{
 						
 						physicsComp->m_TriggerState = TriggerState::Exit;
@@ -104,11 +104,14 @@ namespace Denix
 				}
 			}
 
-			colliderComp->m_RenderComponent->SetDebugColor(
-				colliderComp->m_IsColliding ? colliderComp->m_CollisionColor : colliderComp->m_NoCollisionColor);
+			colliderComp->m_RenderComponent->GetMaterial()->SetBaseColor(
+				physicsComp->m_IsColliding ? colliderComp->m_CollisionColor : colliderComp->m_NoCollisionColor);
 
-			colliderComp->m_IsColliding = collisionDetected;
+			physicsComp->m_IsColliding = collisionDetected;
+
 			// If dynamic object compute next step or sweep
+		
+		
 		}
 	}
 
@@ -128,8 +131,6 @@ namespace Denix
 		{
 			// Skip if not simulated
 			if (!physicsComp->m_IsSimulated) continue;
-
-			const Ref<ColliderComponent> colliderComp = physicsComp->m_ColliderComponent;
 
 			// Clear force & Compute mg
 			physicsComp->m_Force = physicsComp->m_Mass * physicsComp->m_Gravity;

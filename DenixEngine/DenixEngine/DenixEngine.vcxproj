@@ -124,7 +124,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Denix\Physics\ColliderComponent.cpp" />
+    <ClCompile Include="src\Denix\Physics\Collider.cpp" />
     <ClCompile Include="src\Denix\Editor\EditorSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -194,7 +194,7 @@
     <ClInclude Include="src\Denix\Resource\ResourceSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\GameObjectData.h" />
     <ClInclude Include="src\Denix\Input\InputSubsystem.h" />
-    <ClInclude Include="src\Denix\Physics\ColliderComponent.h" />
+    <ClInclude Include="src\Denix\Physics\Collider.h" />
     <ClInclude Include="src\Denix\Editor\EditorSubsystem.h" />
     <ClInclude Include="src\Denix\Video\GL\MeshComponent.h" />
     <ClInclude Include="src\Denix\Physics\PhysicsComponent.h" />

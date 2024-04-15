@@ -8,6 +8,8 @@
 #include "Denix/Engine.h"
 #include "imgui.h"
 #include "Denix/Input/InputSubsystem.h"
+#include "Denix/Physics/Collider.h"
+#include "Denix/Resource/ResourceSubsystem.h"
 
 namespace Denix
 {
@@ -258,24 +260,34 @@ namespace Denix
 				{
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-					// Draw the GameObject
-					if (gameObject->GetRenderComponent()->IsVisible())
+					if (RendererSubsystem::ValidateForDrawing(
+						gameObject->GetRenderComponent(),
+						gameObject->GetTransformComponent(),
+						gameObject->GetMeshComponent()))
 					{
-						s_RendererSubsystem->DrawImmediate(
-							gameObject->GetRenderComponent(),
-							gameObject->GetTransformComponent(),
-							gameObject->GetMeshComponent());
+						if (gameObject->GetRenderComponent()->IsVisible())
+						{
+							{
+								s_RendererSubsystem->DrawImmediate(
+									gameObject->GetRenderComponent(),
+									gameObject->GetTransformComponent(),
+									gameObject->GetMeshComponent());
+							}
+						}
 					}
 
 					// Draw Collider over gameobject if set to visible
-					if (const Ref<ColliderComponent> collider = gameObject->GetColliderComponent())
+					if (const Ref<Collider> collider = gameObject->GetCollider(); collider->GetRenderComponent()->IsVisible())
 					{
-						if (const Ref<RenderComponent> render = collider->GetRenderComponent(); render->IsVisible())
-						{
-							glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+						if (RendererSubsystem::ValidateForDrawing(
+							collider->GetRenderComponent(),
+							gameObject->GetTransformComponent(),
+							collider->GetMeshComponent()))
+						{
 							s_RendererSubsystem->DrawImmediate(
-								render,
+								collider->GetRenderComponent(),
 								gameObject->GetTransformComponent(),
 								collider->GetMeshComponent());
 						}
@@ -300,12 +312,13 @@ namespace Denix
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 					// Draw the GameObject
-						Ref<ColliderComponent> collider = gameObject->GetColliderComponent();
-						
+					if (const Ref<Collider> collider = gameObject->GetCollider())
+					{
 						s_RendererSubsystem->DrawImmediate(
 							collider->GetRenderComponent(),
 							gameObject->GetTransformComponent(),
 							gameObject->GetMeshComponent());
+					}
 				}
 					break;
 

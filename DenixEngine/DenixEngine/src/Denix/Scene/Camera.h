@@ -4,6 +4,8 @@
 #include <glm/ext.hpp>
 
 #include "GameObject.h"
+#include "Component/TransformComponent.h"
+#include "Denix/Video/Renderer/RenderComponent.h"
 
 namespace Denix
 {

@@ -4,7 +4,6 @@
 
 
 #include "Denix/Scene/Component.h"
-#include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Video/GL/GLShader.h"
 #include "Denix/Video/GL/Material.h"
 #include "Denix/Video/GL/Texture.h"
@@ -15,19 +14,9 @@ namespace Denix
 	class RenderComponent : public Component
 	{
 	public:
-		RenderComponent() : Component(ObjectInitializer("Render Component"))
-		{
-			m_Shader = ResourceSubsystem::GetShader("DefaultShader");
-			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-			m_Material = ResourceSubsystem::GetMaterial("MAT_Default");
-		}
+		RenderComponent();
 
-		RenderComponent(const std::string& _parentName) : Component(_parentName, ObjectInitializer("Render Component"))
-		{
-			m_Shader = ResourceSubsystem::GetShader("DefaultShader");
-			m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-			m_Material = ResourceSubsystem::GetMaterial("MAT_Default");
-		}
+		RenderComponent(const std::string& _parentName);
 
 		~RenderComponent() override = default;
 
