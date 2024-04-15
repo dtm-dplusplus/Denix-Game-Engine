@@ -32,7 +32,10 @@ namespace Denix
 
 		enum class ViewportMode
 		{
-			Render,
+			Default,
+			Lit,
+			Unlit,
+			Wireframe,
 			Collider
 		};
 		void CleanRubbish();
@@ -116,7 +119,7 @@ namespace Denix
 		
 		std::vector< Ref<class TransformComponent>> m_TransformComponents;
 		
-		int m_ViewportMode = static_cast<int>(ViewportMode::Render);
+		int m_ViewportMode = static_cast<int>(ViewportMode::Default);
 
 		friend class Engine;
 		friend class EditorSubsystem;

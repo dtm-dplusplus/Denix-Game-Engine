@@ -227,7 +227,7 @@ namespace Denix
 		glm::vec3 GetGravity() const { return m_Gravity; }
 		glm::vec3& GetGravity() { return m_Gravity; }
 
-		Ref<ColliderComponent> GetColliderComponent() { return m_ColliderComponent; }
+		Ref<Collider> GetCollider() { return m_Collider; }
 
 	public:
 		void BeginScene() override;
@@ -293,7 +293,7 @@ namespace Denix
 		glm::vec3 m_Force = glm::vec3(0.f);
 
 		/** Collider used to compute collision responses. Belongs to the physics component */
-		Ref<ColliderComponent> m_ColliderComponent;
+		Ref<Collider> m_Collider;
 
 		/** Transform component which is attached to this components game object */
 		Ref<TransformComponent> m_ActorTransform;

@@ -25,16 +25,15 @@ namespace Denix
 			m_TransformComponent = MakeRef<TransformComponent>(GetName());
 			m_Components["Transform"] = m_TransformComponent;
 
-			m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
-			m_PhysicsComponent->m_ActorTransform = m_TransformComponent;
-			m_PhysicsComponent->m_ColliderComponent->m_ActorTransformComponent = m_TransformComponent;
-			m_Components["Physics"] = m_PhysicsComponent;
-
 			m_MeshComponent = MakeRef<MeshComponent>(GetName());
 			m_Components["Mesh"] = m_MeshComponent;
 
 			m_RenderComponent = MakeRef<RenderComponent>(GetName());
 			m_Components["Render"] = m_RenderComponent;
+		
+			m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
+			m_PhysicsComponent->m_ActorTransform = m_TransformComponent;
+			m_Components["Physics"] = m_PhysicsComponent;
 		}
 
 		// Destructors
@@ -61,7 +60,7 @@ namespace Denix
 
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
 
-		Ref<ColliderComponent> GetColliderComponent() const { return m_PhysicsComponent->m_ColliderComponent; }
+		Ref<Collider> GetCollider() const { return m_PhysicsComponent->m_Collider; }
 
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
 

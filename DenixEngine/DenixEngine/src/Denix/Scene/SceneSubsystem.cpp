@@ -192,28 +192,21 @@ namespace Denix
 			}
 		}
 
-
-		// Upload the Directional Light
-		if (const Ref<DirectionalLight> dirLight = m_ActiveScene->m_DirLight)
-		{
-			if(Ref<GLShader> defShader = ResourceSubsystem::GetShader("DefaultShader"))
-			{
-				defShader->Bind();
-				const glm::vec3& lightDir = dirLight->GetLightDirection();
-				const glm::vec3& lightColor = dirLight->GetLightColor();
-				glUniform3f(defShader->GetUniform("u_DirLight.Base.Color"), lightColor.r, lightColor.g, lightColor.b);
-				glUniform1f(defShader->GetUniform("u_DirLight.Base.AmbientIntensity"), dirLight->GetAmbientIntensity());
-				glUniform1f(defShader->GetUniform("u_DirLight.Base.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
-				glUniform3f(defShader->GetUniform("u_DirLight.Direction"), lightDir.x, lightDir.y, lightDir.z);
-				
-				GLShader::Unbind();
-			}
-		}
-
 		// Lighting
 		{
 			Ref<GLShader> program = ResourceSubsystem::GetShader("DefaultShader");
 			program->Bind();
+
+			if (const Ref<DirectionalLight> dirLight = m_ActiveScene->m_DirLight)
+			{
+				const glm::vec3& lightDir = dirLight->GetLightDirection();
+				const glm::vec3& lightColor = dirLight->GetLightColor();
+				glUniform3f(program->GetUniform("u_DirLight.Base.Color"), lightColor.r, lightColor.g, lightColor.b);
+				glUniform1f(program->GetUniform("u_DirLight.Base.AmbientIntensity"), dirLight->GetAmbientIntensity());
+				glUniform1f(program->GetUniform("u_DirLight.Base.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
+				glUniform3f(program->GetUniform("u_DirLight.Direction"), lightDir.x, lightDir.y, lightDir.z);
+			}
+
 			glUniform1i(program->GetUniform("u_PointLightCount"), (int)m_ActiveScene->m_PointLights.size());
 			glUniform1i(program->GetUniform("u_SpotLightCount"), (int)m_ActiveScene->m_SpotLights.size());
 
@@ -257,14 +250,11 @@ namespace Denix
 		{
 			// Update the GameObject -  This will always be here
 			gameObject->Update(_deltaTime);
-
-			// Skip Camera for rendering
-			if(typeid(Camera) == typeid(*gameObject)) continue;
 			
 			// TEMP Immediate Mode Rendering
 			switch (static_cast<ViewportMode>(m_ViewportMode))
 			{
-				case ViewportMode::Render:
+				case ViewportMode::Default:
 				{
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -293,12 +283,25 @@ namespace Denix
 				}
 					break;
 
+				case ViewportMode::Wireframe:
+				{
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+					// Draw the GameObject
+					s_RendererSubsystem->DrawImmediate(
+						gameObject->GetRenderComponent(),
+						gameObject->GetTransformComponent(),
+						gameObject->GetMeshComponent());
+				}
+					break;
+
 				case ViewportMode::Collider:
 				{
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 					// Draw the GameObject
 						Ref<ColliderComponent> collider = gameObject->GetColliderComponent();
+						
 						s_RendererSubsystem->DrawImmediate(
 							collider->GetRenderComponent(),
 							gameObject->GetTransformComponent(),

@@ -166,8 +166,7 @@ namespace Denix
 	{
 		ImGui::SeparatorText("Scene Properties");
 		// Viewport Mode
-		ImGui::Combo("Viewport Mode", &SceneSubsystem::GetViewportMode(), "Default\0Collider\0\0");
-
+		ImGui::Combo("Viewport Mode", &SceneSubsystem::GetViewportMode(), "Default0\Lit\0Unlit\0Wireframe\0Collider\0\0");)
 		// Subsystems
 		ImGui::Checkbox("Render Subsystem", &s_RendererSubSystem->IsEnabled());
 
@@ -399,6 +398,9 @@ namespace Denix
 			if (ImGui::Checkbox("Is Trigger", &physics->IsTrigger())) physics->ToggleTrigger();
 			ImGui::SameLine(); ImGui::Text(" State: %s", physics->GetTriggerStateS().c_str());
 
+			//
+			ImGui::Checkbox("Show Collider", &physics->GetCollider()->GetRenderComponent()->IsVisible());
+
 			// Step Simulation 
 			const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };
 			static int itemCurrent = 0; // Here we store our selection data as an index.
@@ -559,7 +561,7 @@ namespace Denix
 			const Ref<ColliderComponent> collider = _selectedObject->GetColliderComponent();
 			const Ref<RenderComponent> render = collider->GetRenderComponent();
 
-			ImGui::Checkbox("Show Collider", &render->IsVisible());
+			
 			if (ImGui::Button("Is Colliding")) collider->ToggleColliding();
 		}
 	}

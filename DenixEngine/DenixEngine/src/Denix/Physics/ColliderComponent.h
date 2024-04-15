@@ -5,10 +5,11 @@
 #include "Denix/Core.h"
 
 #include "Denix/Scene/Component.h"
+#include "Denix/Scene/GameObject.h"
+
 #include "Denix/Video/GL/MeshComponent.h"
 #include "Denix/Video/Renderer/RenderComponent.h"
 #include "Denix/Scene/Component/TransformComponent.h"
-#include "Denix/Scene/MeshData.h"
 #include "Denix/Scene/GameObjectData.h"
 
 namespace Denix
@@ -20,6 +21,55 @@ namespace Denix
 
 		glm::vec3 Normal;
 		glm::vec3 ContactPoint;
+	};
+
+	enum class ColliderType
+	{
+		Plane,
+		Cube,
+		Sphere
+	};
+
+	/** Colliders act as basic volumes which can be scaled about their origin */
+	class Collider : public GameObject
+	{
+	public:
+		Collider() : GameObject(ObjectInitializer("Collider"))
+		{
+		}
+
+		Collider(const ObjectInitializer& _objInit = { "Collider" }) : GameObject(ObjectInitializer("Collider"))
+		{
+		}
+
+		~Collider() override
+		{
+		}
+
+		bool IsColliding() const { return m_IsColliding; }
+		void ToggleColliding()
+		{
+			m_IsColliding = !m_IsColliding;
+			glm::vec4& color = m_RenderComponent->GetDebugColor();
+			color = m_IsColliding ? glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		}
+
+	private:
+		Moveability m_ParentMoveability = Moveability::Static;
+
+		bool m_IsColliding = false;
+
+		/** Mesh object that defines the collider collision space */
+		Ref<Mesh> m_Mesh;
+
+		/** Render component that is used to draw the collider */
+		const static glm::vec4 m_NoCollisionColor;
+		const static glm::vec4 m_CollisionColor;
+
+		friend class SceneSubsystem;
+		friend class PhysicsSubsystem;
+		friend class GameObject;
+		friend class PhysicsComponent;
 	};
 
 	class ColliderComponent : public Component
