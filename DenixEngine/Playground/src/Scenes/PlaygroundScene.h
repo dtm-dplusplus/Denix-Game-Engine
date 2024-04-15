@@ -24,7 +24,7 @@ namespace Denix
 		void Update(float _deltaTime) override;
 
 		Ref<Cube> TestCube;
-		Ref<ModelObject> TestModel;
+		Ref<ModelObject> CubeModel;
 		Ref<PointLight> PntLight;
 		Ref<SpotLight> SptLight;
 	};

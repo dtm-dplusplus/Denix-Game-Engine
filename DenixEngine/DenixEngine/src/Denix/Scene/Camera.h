@@ -14,6 +14,7 @@ namespace Denix
 		{
 			m_TransformComponent->SetPosition(glm::vec3(0.0f, 0.0f, 5));
 			m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
+			m_RenderComponent->SetIsVisible(false);
 		}
 
 		~Camera() override = default;

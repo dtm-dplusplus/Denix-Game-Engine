@@ -600,7 +600,6 @@ namespace Denix
 		}
 	}
 
-
 	void EditorSubsystem::CameraWidget(const Ref<GameObject>& _camera) const
 	{
 		if (const Ref<Camera> camera = std::dynamic_pointer_cast<Camera>(_camera))

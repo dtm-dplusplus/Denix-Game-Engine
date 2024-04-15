@@ -7,7 +7,7 @@
 #include <assimp/postprocess.h>
 
 #include "Denix/Video/GL/Texture.h"
-#include "Denix/Video/GL/MeshComponent.h"
+#include "Denix/Video/GL/Mesh.h"
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Resource/ResourceSubsystem.h"
 
@@ -109,7 +109,7 @@ namespace Denix
 				}
 			}
 
-			Ref<MeshComponent> mesh = MakeRef<MeshComponent>();
+			Ref<Mesh> mesh = MakeRef<Mesh>();
 			mesh->CreateMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
 			m_Meshes.push_back(mesh);
 			m_MeshToTex.push_back(_mesh->mMaterialIndex);
@@ -152,7 +152,7 @@ namespace Denix
 			}	
 		}
 
-		std::vector<Ref<MeshComponent>> m_Meshes;
+		std::vector<Ref<Mesh>> m_Meshes;
 		std::vector<Ref<Texture>> m_Textures;
 		std::vector<unsigned int> m_MeshToTex;
 	};

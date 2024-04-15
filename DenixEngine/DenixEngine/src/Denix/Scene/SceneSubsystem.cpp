@@ -214,6 +214,48 @@ namespace Denix
 			}
 		}
 
+		// Lighting
+		{
+			Ref<GLShader> program = ResourceSubsystem::GetShader("DefaultShader");
+			program->Bind();
+			glUniform1i(program->GetUniform("u_PointLightCount"), (int)m_ActiveScene->m_PointLights.size());
+			glUniform1i(program->GetUniform("u_SpotLightCount"), (int)m_ActiveScene->m_SpotLights.size());
+
+
+			for (int i = 0; i < (int)m_ActiveScene->m_PointLights.size(); i++)
+			{
+				const glm::vec3& lightCol = m_ActiveScene->m_PointLights[i]->GetLightColor();
+				glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Color"), lightCol.r, lightCol.g, lightCol.b);
+				glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.AmbientIntensity"), m_ActiveScene->m_PointLights[i]->GetAmbientIntensity());
+				glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.DiffuseIntensity"), m_ActiveScene->m_PointLights[i]->GetDiffuseIntensity());
+
+				const glm::vec3& pos = m_ActiveScene->m_PointLights[i]->GetTransformComponent()->GetPosition();
+				glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Position"), pos.x, pos.y, pos.z);
+				glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Constant"), m_ActiveScene->m_PointLights[i]->GetConstant());
+				glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Linear"), m_ActiveScene->m_PointLights[i]->GetLinear());
+				glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Exponent"), m_ActiveScene->m_PointLights[i]->GetExponent());
+			}
+
+			for (int i = 0; i < (int)m_ActiveScene->m_SpotLights.size(); i++)
+			{
+				const glm::vec3& lightCol = m_ActiveScene->m_SpotLights[i]->GetLightColor();
+				glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Base.Color"), lightCol.r, lightCol.g, lightCol.b);
+				glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Base.AmbientIntensity"),m_ActiveScene-> m_SpotLights[i]->GetAmbientIntensity());
+				glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Base.DiffuseIntensity"),m_ActiveScene-> m_SpotLights[i]->GetDiffuseIntensity());
+
+				const glm::vec3& pos = m_ActiveScene->m_SpotLights[i]->GetTransformComponent()->GetPosition();
+				glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Position"), pos.x, pos.y, pos.z);
+				glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Constant"),m_ActiveScene-> m_SpotLights[i]->GetConstant());
+				glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Linear"), m_ActiveScene->m_SpotLights[i]->GetLinear());
+				glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Exponent"),m_ActiveScene-> m_SpotLights[i]->GetExponent());
+
+				const glm::vec3& dir = m_ActiveScene->m_SpotLights[i]->GetDirection();
+				glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Direction"), dir.x, dir.y, dir.z);
+				glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Edge"), m_ActiveScene->m_SpotLights[i]->GetProcessedEdge());
+			}
+			GLShader::Unbind();
+		}
+
 		// Update the GameObjects
 		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
 		{
