@@ -72,6 +72,7 @@
     </Link>
     <PostBuildEvent>
       <Command>XCOPY /y "$(SolutionDir)DenixEngine\contrib\glew\lib\x64\glew32.dll" "$(OutDir)"
+XCOPY /y "$(SolutionDir)DenixEngine\contrib\sdl\lib\x64\SDL2.dll" "$(OutDir)"
 XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -98,11 +99,11 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
       <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;assimp-vc143-mt.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY /y "$(SolutionDir)DenixEngine\contrib\glew\lib\x64\glew32.dll" "$(OutDir)"
-XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(OutDir)"</Command>
+      <Command>XCOPY /y "$(SolutionDir)DenixEngine\contrib\glew\lib\x64\glew32.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\PlatformerScene.cpp" />
     <ClCompile Include="src\Scenes\PlaygroundScene.cpp" />
     <ClCompile Include="src\PlayGround.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -115,6 +116,7 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\PlatformerScene.h" />
     <ClInclude Include="src\Scenes\PlaygroundScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

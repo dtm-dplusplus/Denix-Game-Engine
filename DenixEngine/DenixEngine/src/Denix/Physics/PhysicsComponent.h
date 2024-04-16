@@ -184,7 +184,7 @@ namespace Denix
 
 	private:
 		/** Set to decide if the physics component should update simulation */
-		bool m_IsSimulated = true;
+		bool m_IsSimulated = false;
 
 		/** Set to decide if the physics component should be a trigger collider 
 		 * If true, the physics component will not respond to collisions, but will still trigger events
