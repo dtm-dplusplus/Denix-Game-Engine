@@ -46,7 +46,7 @@ namespace Denix
 						if (ImGui::BeginTabItem(shaderSource.FileName.c_str()))
 						{
 							ImGui::BeginChild(shaderSource.FileName.c_str(), ImVec2(0, 0), true);
-							//ImGui::InputTextMultiline(shaderSource.FileName.c_str(), &shaderSource.Source);
+							ImGui::Text(shaderSource.Source.c_str());
 							ImGui::EndChild();
 							ImGui::EndTabItem();
 						}
