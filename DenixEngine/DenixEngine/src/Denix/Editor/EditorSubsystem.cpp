@@ -2,6 +2,7 @@
 #include "EditorSubsystem.h"
 
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/Physics/Collider.h"
 #include "Denix/Resource/ResourceSubsystem.h"
@@ -41,7 +42,6 @@ namespace Denix
 		WinY = winSize.y;
 
 		MenuBar();
-
 		if (!m_ActiveScene) return;
 		if(m_IsScenePanelOpen) ScenePanel();
 		if (m_IsDetailsPanelOpen) DetailsPanel();

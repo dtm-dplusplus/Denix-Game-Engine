@@ -194,6 +194,8 @@ namespace Denix
 			}
 		}
 
+		// m_ActiveScene->m_ActiveCamera->m_RenderTexture->bind();
+
 		// Lighting
 		{
 			Ref<GLShader> program = ResourceSubsystem::GetShader("DefaultShader");
@@ -325,5 +327,7 @@ namespace Denix
 				default: DE_LOG(LogScene, Error, "Invalid Viewport") break;
 			}
 		}
+
+		// m_ActiveScene->m_ActiveCamera->m_RenderTexture->unbind();
 	}
 }
