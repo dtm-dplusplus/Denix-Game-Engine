@@ -74,30 +74,7 @@ namespace Denix
 
 		void PauseScene();
 
-		static void RegisterTransformComponent(const Ref<TransformComponent>& _transformComponent)
-		{
-			DE_LOG(LogSceneSubSystem, Trace, "TransformComponent Registered: #{} {}", _transformComponent->GetID(), _transformComponent->GetName())
-			s_SceneSubsystem->m_TransformComponents.push_back(_transformComponent);
-		}
-
-		static void UnregisterTransformComponent(const Ref<TransformComponent>& _transformComponent)
-		{
-			DE_LOG(LogSceneSubSystem, Trace, "TransformComponent Unregistered: #{} {}", _transformComponent->GetID(), _transformComponent->GetName())
-
-			std::erase(s_SceneSubsystem->m_TransformComponents, _transformComponent);
-		}	
-
-		static void UnregisterTransformComponent(const int _transformComponentID)
-		{
-			for (const auto& transformComponent : s_SceneSubsystem->m_TransformComponents)
-			{
-				if (transformComponent->GetID() == _transformComponentID)
-				{
-					DE_LOG(LogSceneSubSystem, Trace, "TransformComponent Unregistered: #{} {}", transformComponent->GetID(), transformComponent->GetName())
-					std::erase(s_SceneSubsystem->m_TransformComponents, transformComponent);
-				}
-			}
-		}
+		void SceneLighting();
 
 		static void SetViewportMode(int _mode)
 		{
@@ -109,15 +86,12 @@ namespace Denix
 	private:
 		static SceneSubsystem* s_SceneSubsystem;
 
-		class InputSubsystem* s_InputSubsystem;
 		class WindowSubsystem* s_WindowSubsystem;
 		class RendererSubsystem* s_RendererSubsystem;
 		class PhysicsSubsystem* s_PhysicsSubsystem;
 		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
 
 		Ref<Scene> m_ActiveScene;
-		
-		std::vector< Ref<class TransformComponent>> m_TransformComponents;
 		
 		int m_ViewportMode = static_cast<int>(ViewportMode::Default);
 

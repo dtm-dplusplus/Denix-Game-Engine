@@ -18,10 +18,8 @@ namespace Denix
 	{
 		// There's no gurauntees all components will be valid, so we need to check them all to prevent crashes
 		// Global check to see if the renderer is active - Useful for debugging
-		if(!m_Enabled) return;
+		if(!s_RendererSubSystem->m_Enabled) return;
 
-		
-		
 		_renderComp->m_Shader->Bind();
 		_meshComp->m_Mesh->m_VAO->Bind();
 		_meshComp->m_Mesh->m_IBO->Bind();
@@ -37,7 +35,7 @@ namespace Denix
 
 
 		// Upload the camera matrices relative to Object
-		if (const Ref<Camera> camera = m_ActiveScene->m_ActiveCamera)
+		if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
 		{
 			glUniformMatrix4fv(_renderComp->m_Shader->GetUniform("u_Projection"), 1, 
 				GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
@@ -51,8 +49,6 @@ namespace Denix
 				camera->GetTransformComponent()->GetPosition().z);
 		}
 
-		// TODO This is slow, but as the same texture can be applied to multiple objects, it may have different settigns
-		// So we override the settings here
 		if (_renderComp->m_Texture)
 		{
 			_renderComp->m_Texture->Bind();
@@ -80,48 +76,9 @@ namespace Denix
 		GLShader::Unbind();
 	}
 
-	bool RendererSubsystem::ValidateForDrawing(const Ref<RenderComponent>& _renderComp,
-	                                           const Ref<TransformComponent>& _transformComp,
-	                                           const Ref<MeshComponent>& _meshComp)
-	{
-		// Check if the components are valid
-		if (!_renderComp)
-		{
-			DE_LOG(LogRenderer, Error, "No Render Component Attached to Entity")
-			return false;
-		}
-		if (!_renderComp->m_Shader)
-		{
-			// We'll replace this with a error shader
-			_renderComp->SetShader(ResourceSubsystem::GetShader("DebugShader"));
-			DE_LOG(LogRenderer, Error, "Invalid Shader")
-		}
-
-		// Check Other Components
-		if (!_transformComp)
-		{
-			DE_LOG(LogRenderer, Error, "Invalid Transform Component")
-			return false;
-		}
-
-		if (!_meshComp)
-		{
-			DE_LOG(LogRenderer, Error, "Invalid Mesh Component")
-			return false;
-		}
-
-		if (!_meshComp->m_Mesh)
-		{
-			DE_LOG(LogRenderer, Error, "Invalid Mesh Attached to Mesh Component")
-			return false;
-		}
-
-		return true;
-	}
-
-
 	void RendererSubsystem::SetActiveScene(const Ref<Scene>& _scene)
 	{
 		m_ActiveScene = _scene;
 	}
+
 }

@@ -103,7 +103,7 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\PlatformerScene.cpp" />
+    <ClCompile Include="src\Scenes\PlatformerScene.cpp" />
     <ClCompile Include="src\Scenes\PlaygroundScene.cpp" />
     <ClCompile Include="src\PlayGround.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -116,7 +116,7 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\PlatformerScene.h" />
+    <ClInclude Include="src\Scenes\PlatformerScene.h" />
     <ClInclude Include="src\Scenes\PlaygroundScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

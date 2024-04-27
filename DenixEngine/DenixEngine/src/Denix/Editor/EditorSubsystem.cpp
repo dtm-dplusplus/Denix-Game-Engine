@@ -178,6 +178,14 @@ namespace Denix
 		{
 			ImGui::SeparatorText("Camera Properties");
 
+			ImGui::DragFloat3("Viewport Position", &m_ActiveScene->m_ViewportCamera->GetTransformComponent()->GetPosition()[0], DragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->GetTransformComponent()->SetPosition(glm::vec3(0.f));
+			ImGui::SetItemTooltip("Reset");
+
+			ImGui::DragFloat3("Viewport Rotation", &m_ActiveScene->m_ViewportCamera->GetTransformComponent()->GetRotation()[0], DragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->GetTransformComponent()->SetRotation(glm::vec3(0.f));
+			ImGui::SetItemTooltip("Reset");
+
 			ImGui::DragFloat("m_MoveSpeed", &m_ActiveScene->m_ViewportCamera->GetMoveSpeed(), DragSpeedDelta, 1.f, 10.f); ImGui::SameLine();
 			if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetMoveSpeed(0.5f);
 			ImGui::SetItemTooltip("Reset");

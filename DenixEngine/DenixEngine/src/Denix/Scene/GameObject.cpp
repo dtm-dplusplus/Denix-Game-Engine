@@ -19,11 +19,12 @@ namespace Denix
     Plane::Plane(const ObjectInitializer& _objInit) : GameObject(_objInit)
     {
         m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Plane"));
+        m_TransformComponent->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
     }
 
     Cube::Cube(const ObjectInitializer& _objInit): GameObject(_objInit)
     {
-        m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_CUBE"));
+        m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
     }
 
     GameObject::GameObject(const ObjectInitializer& _object_init) : Object(_object_init)

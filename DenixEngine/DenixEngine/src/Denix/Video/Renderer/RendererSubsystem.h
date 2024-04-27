@@ -28,17 +28,11 @@ namespace Denix
 			s_RendererSubSystem = nullptr;
 		}
 
-		void DrawImmediate(
+		static void DrawImmediate(
 			const Ref<RenderComponent>& _renderComp, 
 			const Ref<TransformComponent>& _transformComp, 
 			const Ref<MeshComponent>& _meshComp);
 		
-		static bool ValidateForDrawing(const Ref<RenderComponent>& _renderComp,
-		                               const Ref<TransformComponent>& _transformComp,
-		                               const Ref<MeshComponent>& _meshComp);
-
-		void SetActiveScene(const Ref<Scene>& _scene);
-
 	public:
 		static RendererSubsystem* Get() { return s_RendererSubSystem; }
 
@@ -57,6 +51,9 @@ namespace Denix
 
 
 	private:
+
+		void SetActiveScene(const Ref<Scene>& _scene);
+
 		static RendererSubsystem* s_RendererSubSystem;
 		
 		std::vector<std::tuple<
@@ -65,6 +62,8 @@ namespace Denix
 			Ref<MeshComponent>>> m_RendererComponents;
 
 		Ref<Scene> m_ActiveScene;
+
+		friend class SceneSubsystem;
 	};
 }
 

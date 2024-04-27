@@ -21,18 +21,18 @@ namespace Denix
     {
         Component::RegisterComponent();
 
-        if (SceneSubsystem* sceneSystem = SceneSubsystem::Get())
+        /*if (SceneSubsystem* sceneSystem = SceneSubsystem::Get())
         {
             sceneSystem->RegisterTransformComponent(shared_from_this());
-        }
+        }*/
     }
 
     void TransformComponent::UnregisterComponent()
     {
-        if (SceneSubsystem* sceneSystem = SceneSubsystem::Get())
+        /*if (SceneSubsystem* sceneSystem = SceneSubsystem::Get())
         {
             sceneSystem->UnregisterTransformComponent(shared_from_this());
-        }
+        }*/
     }
 
 }

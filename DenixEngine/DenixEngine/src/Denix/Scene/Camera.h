@@ -275,7 +275,6 @@ namespace Denix
 		glm::vec3 m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	};
 
-
 	class ViewportCamera: public Camera
 	{
 	public:

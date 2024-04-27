@@ -40,6 +40,11 @@ namespace Denix
 		{
 			m_Moveability = _moveability;
 		}
+
+		void AddForce(const glm::vec3& _force)
+		{
+			m_Force += _force;
+		}
 	public:
 
 		void ComputeCenterOfMass();
