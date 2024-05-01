@@ -69,7 +69,7 @@ namespace Denix
 		m_SubsystemOrder.push_back(m_ResourceSubSystem);
 		m_Subsystems["Resource"] = m_ResourceSubSystem;
 
-	    // Order of initialization is defined above - NO ITS NOT
+	    // Order of initialization is defined above
 		for(const auto& subsystem : m_SubsystemOrder)
 			subsystem->Initialize();
 
@@ -101,6 +101,8 @@ namespace Denix
 			m_WindowSubSystem->m_Window->ClearBuffer();
 
 			m_EditorSubSystem->Update(deltaTime);
+
+			m_PhysicsSubSystem->BeginUpdate(deltaTime);
 
 			m_SceneSubSystem->Update(deltaTime);
 			

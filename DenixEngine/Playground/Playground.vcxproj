@@ -103,6 +103,7 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Scenes\PhysicsScene.cpp" />
     <ClCompile Include="src\Scenes\PlatformerScene.cpp" />
     <ClCompile Include="src\Scenes\PlaygroundScene.cpp" />
     <ClCompile Include="src\PlayGround.cpp">
@@ -116,6 +117,8 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Scenes.h" />
+    <ClInclude Include="src\Scenes\PhysicsScene.h" />
     <ClInclude Include="src\Scenes\PlatformerScene.h" />
     <ClInclude Include="src\Scenes\PlaygroundScene.h" />
   </ItemGroup>

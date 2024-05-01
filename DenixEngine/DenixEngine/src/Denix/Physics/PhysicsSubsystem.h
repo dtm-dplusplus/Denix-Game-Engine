@@ -28,7 +28,14 @@ namespace Denix
 		void RegisterComponent(const Ref<PhysicsComponent>& _component);
 		void UnregisterComponent(const Ref<PhysicsComponent>& _component);
 		void UpdateCollisionDetection(float _deltaTime);
+		void UpdatePhysicsComponents(float _deltaTime);
+
+		// Prepare physics components for post scene logic like AddForce() operations & update() calls
+		void BeginUpdate(float _deltaTime);
+
+		// Updates physics components after scene logic
 		void Update(float _deltaTime) override;
+
 		void LateUpdate(float _deltaTime) override;
 
 		static PhysicsSubsystem* Get() { return s_PhysicsSubSystem; }
@@ -52,8 +59,5 @@ namespace Denix
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
 
 		Ref<Scene> m_ActiveScene;
-
-		/** Determines if collisions should be queried when editing the scene */
-		bool m_PreviewCollisions = true;
 	};
 }

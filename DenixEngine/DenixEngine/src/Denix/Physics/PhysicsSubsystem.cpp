@@ -34,12 +34,12 @@ namespace Denix
 
 			// If static object no need to compute next step or sweep
 			// Most objects are like wall are static so we check this first
-			if (physicsComp->m_Moveability == Moveability::Static)
+			if (physicsComp->m_ParentMoveability == Moveability::Static)
 			{
 				// If we detect a collision. Call collision event on game object
-
-				
+				continue;
 			}
+
 
 			// Fake collision check for now
 			if (physicsComp->m_ActorTransform->GetPosition().y <= 0.f)
@@ -109,33 +109,26 @@ namespace Denix
 
 			physicsComp->m_IsColliding = collisionDetected;
 
-			// If dynamic object compute next step or sweep
+
+
 		
 		
 		}
 	}
 
-	void PhysicsSubsystem::Update(float _deltaTime)
+	void PhysicsSubsystem::UpdatePhysicsComponents(float _deltaTime)
 	{
-		// Return if system is not enabled
-		if (!m_Enabled) return;
-
-		// Update collisions
-		 if(m_PreviewCollisions || m_ActiveScene->IsPlaying()) UpdateCollisionDetection(_deltaTime);
-
-		 // Skip if the scene is not simulating physics
-		 if (!m_ActiveScene->IsPlaying()) return;
-
-		// Update physics components
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
 			// Skip if not simulated
 			if (!physicsComp->m_IsSimulated) continue;
 
-			// Clear force & Compute mg
-			physicsComp->m_Force = physicsComp->m_Mass * physicsComp->m_Gravity;
+
+			// Dynamic objects only
+			//if (physicsComp->m_ParentMoveability == Moveability::Static) continue;
 			
 			// Compute collision response - Null effect for now
+
 
 			// Step Intergration
 			physicsComp->Step(_deltaTime);
@@ -143,6 +136,28 @@ namespace Denix
 			// Apply Constraints
 		}
 	}
+
+	void PhysicsSubsystem::BeginUpdate(float _deltaTime)
+	{
+		for (const auto& physicsComp : m_PhysicsComponents)
+		{
+			// Skip if not simulated
+			if (!physicsComp->m_IsSimulated) continue;
+
+			// Clear force & Compute mg
+			physicsComp->m_Force = physicsComp->m_Mass * physicsComp->m_Gravity;
+		}
+	}
+
+	void PhysicsSubsystem::Update(float _deltaTime)
+	{
+		if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
+
+		UpdateCollisionDetection(_deltaTime);
+		
+		UpdatePhysicsComponents(_deltaTime);
+	}
+
 
 	void PhysicsSubsystem::LateUpdate(float _deltaTime)
 	{

@@ -16,28 +16,6 @@ namespace Denix
 		Ref<Model> TestModel;
 	};
 
-	class PhysObject : public GameObject
-	{
-		public:
-		PhysObject() : GameObject({ "PhysObject" })
-		{
-		}
-
-		void OnTriggerEnter() override
-		{
-			DE_LOG(Log, Info, "PhysObject OnTriggerEnter")
-		}
-
-		void OnTriggerExit() override
-		{
-			DE_LOG(Log, Info, "PhysObject OnTriggerExit")
-		}
-
-		void OnTriggerStay() override
-		{
-		}
-	};
-
 	class PlaygroundScene final : public Scene
 	{
 	public:
@@ -46,7 +24,6 @@ namespace Denix
 		bool Load() override;
 		void Update(float _deltaTime) override;
 
-		Ref<PhysObject> TestPhysObject;
 		Ref<Cube> TestCube;
 		Ref<ModelObject> CubeModel;
 		Ref<PointLight> PntLight;

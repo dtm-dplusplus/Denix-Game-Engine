@@ -393,7 +393,7 @@ namespace Denix
 		{
 			const Ref<PhysicsComponent> physics = _selectedObject->GetPhysicsComponent();
 
-			bool isCustomGravity = physics->IsCustomGravity();
+			bool& isCustomGravity = physics->IsCustomGravity();
 			const glm::vec3& vel = physics->GetVelocity();
 			const glm::vec3& avel = physics->GetAngularVelocity();
 			const glm::vec3& acc = physics->GetAcceleration();
@@ -432,11 +432,12 @@ namespace Denix
 			}
 
 			// Gravity
+			if (ImGui::Checkbox("##CustomGravity", &isCustomGravity)) physics->ToggleGravity();
+			ImGui::SameLine();
 			if (!isCustomGravity) ImGui::BeginDisabled();
 			ImGui::DragFloat3("Gravity", &gravity[0], DragSpeedDelta, -FLT_MAX, FLT_MAX);
 			if (!isCustomGravity) ImGui::EndDisabled();
-			ImGui::SameLine();
-			if (ImGui::Checkbox("##", &isCustomGravity)) physics->ToggleGravity();
+			
 
 			// Mass
 			ImGui::DragFloat("Mass", &mass, DragSpeedDelta, FLT_MIN, FLT_MAX);

@@ -38,7 +38,7 @@ namespace Denix
 
 		void SetMoveability(const Moveability _moveability)
 		{
-			m_Moveability = _moveability;
+			m_ParentMoveability = _moveability;
 		}
 
 		void AddForce(const glm::vec3& _force)
@@ -64,8 +64,6 @@ namespace Denix
 
 		void ToggleSimulation()
 		{
-			m_IsSimulated = !m_IsSimulated;
-
 			if (m_IsSimulated)
 			{
 				DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
@@ -212,8 +210,11 @@ namespace Denix
 
 		bool m_IsColliding = false;
 	private:
-		/** Moveability of the object */
-		Moveability m_Moveability = Moveability::Static;
+		/** 
+		* 
+		* 
+		*/
+		Moveability m_ParentMoveability = Moveability::Static;
 		
 		/** Mass of the object */
 		float m_Mass = 1.0f;

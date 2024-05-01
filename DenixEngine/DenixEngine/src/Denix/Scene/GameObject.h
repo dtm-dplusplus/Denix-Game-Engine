@@ -115,11 +115,17 @@ namespace Denix
 		void LateUpdate(float _deltaTime) override;
 
 	protected:
-		/** Moveability Defines many behaviours of the game objects components
+		/** Moveability defines the complexity of logic performed on object data. It does not explicity determine the object's ability to move.
+		* Static is the default value for all objects and uses the least amount of resources.
+		* Dynamic is the most complex and uses the most resources.
+		* 
 		*	@Physics
-		*	Static: The object is a stationary collidable and is not affected by external forces
-		*	Dynamic: The object is a collidable and is affected by external forces
-		*
+		*	Static: The object is a stationary collidable. There is no need to sweep or check for collisions
+		*	Dynamic: The object is a collidable, affected by external forces and can move. It requires collision detection and resolution.
+		* 
+		*	@Lighting - (Currently all light sources are dynamic in nature. Static lighting will be supported shortly)
+		*	Static: The object is a stationary light source. It does not need to be updated every frame.
+		*	Dynamic: The object is a light source that can move. It requires updating every frame.
 		*/
 		int m_Moveability = static_cast<int>(Moveability::Static);
 

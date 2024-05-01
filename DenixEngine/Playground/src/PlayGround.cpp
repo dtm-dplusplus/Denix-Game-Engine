@@ -1,6 +1,5 @@
 #include "Denix.h"
-#include "Scenes/PlaygroundScene.h"
-#include "Scenes/PlatformerScene.h"
+#include "Scenes.h"
 
 using namespace Denix;
 
@@ -53,7 +52,7 @@ public:
 	{
 		if (SceneSubsystem* sceneSys = SceneSubsystem::Get())
 		{
-			if (const auto scene = MakeRef<PlatformerScene>())
+			if (const auto scene = MakeRef<PhysicsScene>())
 			{
 				sceneSys->LoadScene(scene);
 				sceneSys->OpenScene(scene->GetSceneName());
