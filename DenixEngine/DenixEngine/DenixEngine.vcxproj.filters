@@ -161,6 +161,9 @@
     <ClCompile Include="src\Denix\Video\Renderer\RenderComponent.cpp">
       <Filter>src\Denix\Video</Filter>
     </ClCompile>
+    <ClCompile Include="src\Denix\Core\TimerSubsystem.cpp">
+      <Filter>src\Denix\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Denix.h" />
@@ -295,6 +298,9 @@
     </ClInclude>
     <ClInclude Include="src\Denix\Scene\MeshData.h">
       <Filter>src\Denix\Scene\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Core\TimerSubsystem.h">
+      <Filter>src\Denix\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

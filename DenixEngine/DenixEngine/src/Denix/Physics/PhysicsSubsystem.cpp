@@ -1,9 +1,8 @@
-﻿#include "Denix/depch.h"
-#include "PhysicsSubsystem.h"
+﻿#include "PhysicsSubsystem.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Physics/PhysicsComponent.h"
 #include "Denix/Physics/Collider.h"
+
 namespace Denix
 {
 	PhysicsSubsystem* PhysicsSubsystem::s_PhysicsSubSystem{ nullptr };

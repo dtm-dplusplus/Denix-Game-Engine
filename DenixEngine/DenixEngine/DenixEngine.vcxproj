@@ -113,6 +113,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Denix\Core\TimerSubsystem.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Mesh.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Model.cpp" />
     <ClCompile Include="src\Denix\Scene\Object\Light\LightObject.cpp" />
@@ -165,7 +166,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\GameObject.cpp" />
-    <ClCompile Include="src\Denix\Physics\PhysicsSubsystem.cpp" />
+    <ClCompile Include="src\Denix\Physics\PhysicsSubsystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Denix\Video\Renderer\RendererSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -186,6 +189,7 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Texture.cpp" />
+    <ClInclude Include="src\Denix\Core\TimerSubsystem.h" />
     <ClInclude Include="src\Denix\Video\GL\Mesh.h" />
     <ClInclude Include="src\Denix\Video\GL\Model.h" />
     <ClInclude Include="src\Denix\Scene\Object\Light\LightObject.h" />
