@@ -264,7 +264,7 @@ namespace Denix
 		glm::vec2 m_Aspect = glm::vec2(800.f, 600.f);
 
 		// Factor used to represent the speed of the rotation within respectable limits
-		float m_RotationFactor = 0.5f;
+		float m_RotationFactor = 100.0f;
 		float m_PitchRotationRate = 1.0f;
 		float m_YawRotationRate = 1.0f;
 
@@ -299,6 +299,6 @@ namespace Denix
 		void Update(float _deltaTime) override;
 
 	protected:
-		float m_MoveSpeed = 0.05f;
+		float m_MoveSpeed = 100.0f;
 	};
 }

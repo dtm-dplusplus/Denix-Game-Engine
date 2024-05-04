@@ -2,41 +2,41 @@
 
 #include "Denix/System/Subsystem.h"
 #include "Denix/Core/Logger.h"
+#include <chrono>
 
 namespace Denix
 {
 	class TimerSubsystem : public Subsystem
 	{
 	public:
-		TimerSubsystem()
-		{
-			s_TimerSubsystem = this;
+		TimerSubsystem();
 
-			DE_LOG_CREATE(LogTimer)
-		}
-
-		~TimerSubsystem() override
-		{
-			s_TimerSubsystem = nullptr;
-		}
+		~TimerSubsystem();
 
 		static TimerSubsystem* Get() { return s_TimerSubsystem; }
 
-		void Initialize() override
-		{
-			DE_LOG(LogTimer, Trace, "TimerSubsystem Initialized")
+		void Initialize();
 
-			m_Initialized = true;
-		}
+		void Deinitialize();
 
-		void Deinitialize() override
-		{
-			DE_LOG(LogTimer, Trace, "TimerSubsystem Deinitialized")
-			m_Initialized = false;
-		}
+		void BeginFrame();
 
+		void EndFrame();
+
+		static int GetFPS();
+		static float GetFrameTime();
+		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
 	private:
 		static TimerSubsystem* s_TimerSubsystem;
 
+		std::chrono::time_point<std::chrono::system_clock> start, end;
+
+		int m_FramesPerSecond;
+		float m_FrameTime;
+		float m_DeltaTime;
+		float m_GameTimeSpeed;
+
+
+		friend class Engine;
 	};
 }

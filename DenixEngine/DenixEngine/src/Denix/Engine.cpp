@@ -11,6 +11,7 @@
 #include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
+#include "Denix/Core/TimerSubsystem.h"
 
 namespace Denix
 {
@@ -31,6 +32,10 @@ namespace Denix
 		DE_LOG(LogEngine, Trace, "Engine Starting up")
 
 		PreInitialize();
+
+		m_TimerSubSystem = MakeRef<TimerSubsystem>();
+		m_SubsystemOrder.push_back(m_TimerSubSystem);
+		m_Subsystems["Timer"] = m_TimerSubSystem;
 
 		m_FileSubSystem = MakeRef<FileSubsystem>();
 		m_FileSubSystem->m_ProjectName = m_ProjectName;
@@ -95,7 +100,10 @@ namespace Denix
 
 		while(m_WindowSubSystem->m_Window->IsOpen())
 		{
-			const float deltaTime = 0.3f;
+			float deltaTime = m_TimerSubSystem->m_DeltaTime;
+
+			m_TimerSubSystem->BeginFrame();
+
 			m_InputSubsystem->Poll();
 
 			m_WindowSubSystem->m_Window->ClearBuffer();
@@ -112,6 +120,8 @@ namespace Denix
 
 			m_PhysicsSubSystem->LateUpdate(deltaTime);
 			m_SceneSubSystem->CleanRubbish();
+
+			m_TimerSubSystem->EndFrame();
 		}
 
 		Deinitialize();

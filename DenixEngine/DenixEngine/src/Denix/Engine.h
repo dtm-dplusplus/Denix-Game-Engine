@@ -41,6 +41,8 @@ namespace Denix
 		std::vector< Ref<Subsystem>> m_SubsystemOrder;
 		std::unordered_map<std::string, Ref<Subsystem>>  m_Subsystems;
 
+		Ref<class TimerSubsystem> m_TimerSubSystem;
+
 		Ref<class WindowSubsystem> m_WindowSubSystem;
 
 		Ref<class FileSubsystem> m_FileSubSystem;

@@ -186,6 +186,18 @@ namespace Denix
 			if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->GetTransformComponent()->SetRotation(glm::vec3(0.f));
 			ImGui::SetItemTooltip("Reset");
 
+			ImGui::DragFloat("Rotation Factor", &m_ActiveScene->m_ViewportCamera->GetRotationFactor(), DragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetRotationFactor", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetRotationFactor(0.01f);
+			ImGui::SetItemTooltip("Reset");
+
+			ImGui::DragFloat("Pitch Rotation Rate", &m_ActiveScene->m_ViewportCamera->GetPitchRotationRate(), DragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetPitchRotationRate", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetPitchRotationRate(0.1f);
+			ImGui::SetItemTooltip("Reset");
+
+			ImGui::DragFloat("Yaw Rotation Rate", &m_ActiveScene->m_ViewportCamera->GetYawRotationRate(), DragSpeedDelta); ImGui::SameLine();
+			if (ImGui::ArrowButton("##ResetYawRotationRate", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetYawRotationRate(0.1f);
+			ImGui::SetItemTooltip("Reset");
+
 			ImGui::DragFloat("m_MoveSpeed", &m_ActiveScene->m_ViewportCamera->GetMoveSpeed(), DragSpeedDelta, 1.f, 10.f); ImGui::SameLine();
 			if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetMoveSpeed(0.5f);
 			ImGui::SetItemTooltip("Reset");
