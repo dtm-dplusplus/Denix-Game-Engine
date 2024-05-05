@@ -10,6 +10,7 @@
 #include "Denix/Video/Window/WindowSubsystem.h"
 #include "Denix/Video/Renderer/RendererSubSystem.h"
 #include "Denix/Scene/Scene.h"
+#include "Denix/Scene/Object/Shapes/Shapes.h"
 
 namespace Denix
 {
@@ -355,9 +356,9 @@ namespace Denix
 
 			ImGui::Spacing();
 			ImGui::SeparatorText("Moveability");
-			if (ImGui::Combo("Moveability", &_object->GetMoveability(), "Static\0Dynamic\0\0"))
+			if (ImGui::Combo("Moveability", &transform->GetMoveability(), "Static\0Dynamic\0\0"))
 			{
-				_object->SetMoveability(static_cast<Moveability>(_object->GetMoveability()));
+				transform->SetMoveability(static_cast<Moveability>(transform->GetMoveability()));
 			}
 		}
 	}

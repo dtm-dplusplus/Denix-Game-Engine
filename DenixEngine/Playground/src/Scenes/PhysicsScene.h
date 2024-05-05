@@ -10,7 +10,6 @@ namespace Denix
 	public:
 		PhysObject() : GameObject({ "PhysObject" })
 		{
-			m_Moveability = (int)Moveability::Dynamic;
 			m_PhysicsComponent->IsSimulated() = true;
 		}
 
@@ -38,7 +37,7 @@ namespace Denix
 		void Update(float _deltaTime) override;
 
 		Ref<PhysObject> PhysicsObject;
-		Ref<Cube> TestCube;
+		Ref<class Cube> TestCube;
 		Ref<PointLight> PntLight;
 		Ref<SpotLight> SptLight;
 	};

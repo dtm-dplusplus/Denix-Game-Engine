@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include <glm/vec3.hpp>
+#include "Denix/Core/Math.h"
 
 #include "Denix/Scene/Component.h"
-#include "Denix/Scene/GameObjectData.h"
 
 namespace Denix
 {
@@ -25,6 +24,8 @@ namespace Denix
 
 		PhysicsComponent(const std::string& _parentName);
 
+		~PhysicsComponent() override = default;
+
 		enum class StepMethod
 		{
 			Euler,
@@ -33,21 +34,24 @@ namespace Denix
 			Verlet
 		};
 
-		// Destructors
-		~PhysicsComponent() override = default;
-
-		void SetMoveability(const Moveability _moveability)
-		{
-			m_ParentMoveability = _moveability;
-		}
 
 		void AddForce(const glm::vec3& _force)
 		{
 			m_Force += _force;
 		}
+
+		void AddTorque(const glm::vec3& _torque)
+		{
+			m_Torque += _torque;
+		}
 	public:
 
 		void ComputeCenterOfMass();
+		void ComputeInverseInertiaTensor()
+		{
+			m_ObjectInteriaTensorInverse = m_RotationMatrix * m_BodyInteriaTensorInverse * glm::transpose(m_RotationMatrix);
+
+		}
 		void Step(float _deltaTime);
 
 		void StepEuler(float _deltaTime);
@@ -62,6 +66,7 @@ namespace Denix
 		{
 		}
 
+		
 		void ToggleSimulation()
 		{
 			if (m_IsSimulated)
@@ -209,13 +214,16 @@ namespace Denix
 		StepMethod m_StepMethod = StepMethod::Euler;
 
 		bool m_IsColliding = false;
+
+		/** Collider used to compute collision responses. Belongs to the physics component */
+		Ref<Collider> m_Collider;
+
+		/** Transform component which is attached to this components game object */
+		Ref<class TransformComponent> m_ActorTransform;
+
 	private:
-		/** 
-		* 
-		* 
-		*/
-		Moveability m_ParentMoveability = Moveability::Static;
-		
+		glm::vec3 m_PreviousPosition = glm::vec3(0.f);
+
 		/** Mass of the object */
 		float m_Mass = 1.0f;
 
@@ -243,11 +251,25 @@ namespace Denix
 		/** Force acting on the object */
 		glm::vec3 m_Force = glm::vec3(0.f);
 
-		/** Collider used to compute collision responses. Belongs to the physics component */
-		Ref<Collider> m_Collider;
+		float m_Radius = 1.0f; // Radius only applies to sphere colliders
 
-		/** Transform component which is attached to this components game object */
-		Ref<class TransformComponent> m_ActorTransform;
+		// Net Torque
+		glm::vec3 m_Torque = glm::vec3(0.f);
+
+		// Angular Velocity
+		glm::vec3 m_AngularVelocity = glm::vec3(0.f);
+
+		// Angular Momentum
+		glm::vec3 m_AngularMomentum = glm::vec3(0.f);
+
+		// Object Inverse Intertia Tensor
+		glm::mat3 m_ObjectInteriaTensorInverse = glm::mat3(1.0f);
+
+		// Body Inertia Tensor Inverse
+		glm::mat3 m_BodyInteriaTensorInverse = glm::mat3(1.0f);
+
+		// Rotation Matrix
+		glm::mat3 m_RotationMatrix = glm::mat3(1.0f);
 
 		friend class SceneSubsystem;
 		friend class PhysicsSubsystem;

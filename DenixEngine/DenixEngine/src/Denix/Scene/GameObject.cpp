@@ -2,31 +2,9 @@
 
 #include "Denix/Resource/ResourceSubsystem.h"
 
+
 namespace Denix
 {
-    void GameObject::LateUpdate(float _deltaTime)
-    {
-        Object::LateUpdate(_deltaTime);
-
-        if (m_MoveabilityChanged)
-        {
-            // Propogate update to physics systems
-            m_PhysicsComponent->SetMoveability(static_cast<Moveability>(m_Moveability));
-            m_MoveabilityChanged = false;
-        }
-    }
-
-    Plane::Plane(const ObjectInitializer& _objInit) : GameObject(_objInit)
-    {
-        m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Plane"));
-        m_TransformComponent->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
-    }
-
-    Cube::Cube(const ObjectInitializer& _objInit): GameObject(_objInit)
-    {
-        m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
-    }
-
     GameObject::GameObject(const ObjectInitializer& _object_init) : Object(_object_init)
     {
         m_TransformComponent = MakeRef<TransformComponent>(GetName());
@@ -41,6 +19,11 @@ namespace Denix
         m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
         m_PhysicsComponent->m_ActorTransform = m_TransformComponent;
         m_Components["Physics"] = m_PhysicsComponent;
+    }
+
+    void GameObject::LateUpdate(float _deltaTime)
+    {
+        Object::LateUpdate(_deltaTime);
     }
 }
 

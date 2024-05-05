@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include <Denix/Core/TimerSubsystem.h>
 
+#include "Denix/Scene/Object/Shapes/Shapes.h"
 
 namespace Denix
 {

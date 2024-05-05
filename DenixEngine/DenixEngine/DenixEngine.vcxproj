@@ -114,6 +114,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Denix\Core\TimerSubsystem.cpp" />
+    <ClCompile Include="src\Denix\Scene\Object\Shapes\Shapes.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Mesh.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Model.cpp" />
     <ClCompile Include="src\Denix\Scene\Object\Light\LightObject.cpp" />
@@ -189,7 +190,9 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Texture.cpp" />
+    <ClInclude Include="src\Denix\Core\Math.h" />
     <ClInclude Include="src\Denix\Core\TimerSubsystem.h" />
+    <ClInclude Include="src\Denix\Scene\Object\Shapes\Shapes.h" />
     <ClInclude Include="src\Denix\Video\GL\Mesh.h" />
     <ClInclude Include="src\Denix\Video\GL\Model.h" />
     <ClInclude Include="src\Denix\Scene\Object\Light\LightObject.h" />

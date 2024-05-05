@@ -33,7 +33,7 @@ namespace Denix
 
 			// If static object no need to compute next step or sweep
 			// Most objects are like wall are static so we check this first
-			if (physicsComp->m_ParentMoveability == Moveability::Static)
+			if (physicsComp->m_ActorTransform->m_Moveability == static_cast<int>(Moveability::Static))
 			{
 				// If we detect a collision. Call collision event on game object
 				continue;
@@ -133,6 +133,17 @@ namespace Denix
 			physicsComp->Step(_deltaTime);
 
 			// Apply Constraints
+
+
+
+			// Simulation loop :
+			// 	9) compute the net force F(t);
+			// 10) compute the net torque t(t) = sum of torque arm(x, (t)− x(t)) cross_product(f.) 11) Use Euler integration to :
+			// update the velocity of COM : v(t + 1) = v(t) + F / m * dt; update the position of COM : x(t + 1) = x(t) + v(t + 1) * dt; update the angular momentum : L(t + 1) = L(t) + T * dt; compute the inverse inertia tensor I1 = R Ibody 1RT; update the angular velocity wt + 1 = | -1 Lt + 1
+			// 	reconstruct the skew matrix w(*) (refer to my lecture note)
+			// 	update the rotation matrix R of the rigid body : R(t + 1) = R(t) + dt w(*)R(t);
+			// 12) apply the rotation to the rigid body using glm matrix for visualisation;
+			// End of the simulation loop :
 		}
 	}
 

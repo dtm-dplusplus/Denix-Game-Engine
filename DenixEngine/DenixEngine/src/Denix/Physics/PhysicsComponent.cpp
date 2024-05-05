@@ -88,6 +88,26 @@ namespace Denix
         Component::BeginScene();
 
         RegisterComponent();
+
+        const float tensor = (2.0f, 5.0f)  * m_Mass* pow(m_Radius, 2);
+        glm::mat3 bodyInertiaTensor = {
+            tensor, 0.0f, 0.0f,
+			0.0f, tensor, 0.0f,
+			0.0f, 0.0f, tensor
+		};
+
+        m_BodyInteriaTensorInverse = glm::inverse(bodyInertiaTensor);
+		ComputeInverseInertiaTensor();
+
+    /*    1) Initialize rigid body mass m;
+        2) Compute the position of COM x(0);
+        3) Set force F(0) to a zero vector;
+        4) Set m_Torque(0) to a zero vector;
+        5) Pre - compute the body inertia tensor at rest body,
+        and pre - compute the inverse of the body inertia tensor Ibody1;
+        6) Initialize the position and velocity of the com, x and v, initialize the rigid body's rotation matrix
+        R as the identity matrix and the angular momentum L = (0, 0, 0);
+        7) Compute the inverse inertia tensor at the start : I1 = R Ibody" 8) Compute the angular velocity at the start: w(0) = 1-1 L ; */
     }
 
     void PhysicsComponent::EndScene()

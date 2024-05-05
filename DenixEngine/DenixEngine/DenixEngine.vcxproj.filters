@@ -164,6 +164,9 @@
     <ClCompile Include="src\Denix\Core\TimerSubsystem.cpp">
       <Filter>src\Denix\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Denix\Scene\Object\Shapes\Shapes.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Denix.h" />
@@ -302,5 +305,7 @@
     <ClInclude Include="src\Denix\Core\TimerSubsystem.h">
       <Filter>src\Denix\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Denix\Core\Math.h" />
+    <ClInclude Include="src\Denix\Scene\Object\Shapes\Shapes.h" />
   </ItemGroup>
 </Project>

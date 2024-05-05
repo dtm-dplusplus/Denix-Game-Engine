@@ -24,7 +24,7 @@ namespace Denix
 		bool Load() override;
 		void Update(float _deltaTime) override;
 
-		Ref<Cube> TestCube;
+		Ref<class Cube> TestCube;
 		Ref<ModelObject> CubeModel;
 		Ref<PointLight> PntLight;
 		Ref<SpotLight> SptLight;

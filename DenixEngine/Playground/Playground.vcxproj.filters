@@ -23,23 +23,11 @@
     <ClCompile Include="src\PlayGround.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scenes\PlaygroundScene.cpp">
-      <Filter>src\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scenes\PlatformerScene.cpp">
-      <Filter>src\Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="src\Scenes\PhysicsScene.cpp">
       <Filter>src\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Scenes\PlaygroundScene.h">
-      <Filter>src\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scenes\PlatformerScene.h">
-      <Filter>src\Scenes</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scenes.h">
       <Filter>src</Filter>
     </ClInclude>

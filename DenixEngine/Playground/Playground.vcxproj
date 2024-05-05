@@ -104,8 +104,6 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Scenes\PhysicsScene.cpp" />
-    <ClCompile Include="src\Scenes\PlatformerScene.cpp" />
-    <ClCompile Include="src\Scenes\PlaygroundScene.cpp" />
     <ClCompile Include="src\PlayGround.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -119,8 +117,6 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
   <ItemGroup>
     <ClInclude Include="src\Scenes.h" />
     <ClInclude Include="src\Scenes\PhysicsScene.h" />
-    <ClInclude Include="src\Scenes\PlatformerScene.h" />
-    <ClInclude Include="src\Scenes\PlaygroundScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
