@@ -84,7 +84,7 @@ namespace Denix
 		float WinX = 0.0f;
 		float WinY = 0.0f;
 
-		float DragSpeed = 1.0f;
+		float DragSpeed = 10.0f;
 		float DragSpeedDelta;
 
 		// UI

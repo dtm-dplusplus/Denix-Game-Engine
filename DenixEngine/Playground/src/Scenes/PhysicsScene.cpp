@@ -30,6 +30,9 @@ namespace Denix
 
 		PhysicsObject = MakeRef<PhysObject>();
 		PhysicsObject->GetTransformComponent()->SetPosition({ 0.0f, 65.0f, 0.0f });
+		PhysicsObject->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
+		PhysicsObject->GetPhysicsComponent()->IsSimulated() = true;
+
 		PhysicsObject->GetMeshComponent()->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
 		m_SceneObjects.push_back(PhysicsObject);
 
@@ -44,7 +47,6 @@ namespace Denix
 	{
 		Scene::Update(_deltaTime);
 		
-
 		ImGui::SetNextWindowPos(ImVec2(1000, 50));
 		ImGui::Begin("Physics Scene Tools");
 		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);

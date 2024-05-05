@@ -11,10 +11,11 @@ namespace Denix
 
 		virtual void Initialize() {}
 		virtual void Deinitialize() {}
+		bool IsInitialized() const { return m_Initialized; }
 
 		virtual void Update(float _deltaTime){}
-		virtual void LateUpdate(float _deltaTime) {}
-		bool IsInitialized() const { return m_Initialized; }
+		virtual void PreUpdate(float _deltaTime) {}
+		virtual void PostUpdate(float _deltaTime) {}
 
 		bool IsEnabled() const { return m_Enabled; }
 		bool& IsEnabled() { return m_Enabled; }

@@ -10,20 +10,26 @@ namespace Denix
 	public:
 		PhysObject() : GameObject({ "PhysObject" })
 		{
-			m_PhysicsComponent->IsSimulated() = true;
 		}
 
-		void OnTriggerEnter() override
+		void OnCollision(Ref<GameObject> _other, const CollisionDetection& _collison) override
+		{
+			if (m_PhysicsComponent->GetVelocity().length() > 0.2f) DE_LOG(Log, Info, "PhysObject OnCollision")
+			
+		}
+
+
+		void OnTriggerEnter(Ref<GameObject> _other) override
 		{
 			DE_LOG(Log, Info, "PhysObject OnTriggerEnter")
 		}
 
-		void OnTriggerExit() override
+		void OnTriggerExit(Ref<GameObject> _other) override
 		{
 			DE_LOG(Log, Info, "PhysObject OnTriggerExit")
 		}
 
-		void OnTriggerStay() override
+		void OnTriggerStay(Ref<GameObject> _other) override
 		{
 		}
 	};

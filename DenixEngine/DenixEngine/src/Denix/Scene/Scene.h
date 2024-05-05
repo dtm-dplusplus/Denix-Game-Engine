@@ -174,7 +174,8 @@ namespace Denix
 			}
 		}
 
-		glm::vec3 GetGravity() const { return m_SceneGravity; }
+		float GetGravity() const { return m_SceneGravity; }
+		float& GetGravity() { return m_SceneGravity; }
 
 		Ref<ViewportCamera> GetViewportCamera() { return m_ViewportCamera; }
 
@@ -225,7 +226,7 @@ namespace Denix
 		bool m_IsOpen = false;
 
 		/** Gravity of the scene */
-		glm::vec3 m_SceneGravity = glm::vec3(0.0f, -9.81f, 0.0f);
+		float m_SceneGravity = 9.81f;
 
 		/** List of Objects in the scene */
 		std::vector<Ref<GameObject>> m_SceneObjects;

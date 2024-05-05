@@ -110,7 +110,7 @@ namespace Denix
 
 			m_EditorSubSystem->Update(deltaTime);
 
-			m_PhysicsSubSystem->BeginUpdate(deltaTime);
+			m_PhysicsSubSystem->PreUpdate(deltaTime);
 
 			m_SceneSubSystem->Update(deltaTime);
 			
@@ -118,7 +118,7 @@ namespace Denix
 			
 			m_WindowSubSystem->m_Window->SwapBuffers();
 
-			m_PhysicsSubSystem->LateUpdate(deltaTime);
+			m_PhysicsSubSystem->PostUpdate(deltaTime);
 			m_SceneSubSystem->CleanRubbish();
 
 			m_TimerSubSystem->EndFrame();

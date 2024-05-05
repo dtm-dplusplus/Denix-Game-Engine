@@ -12,6 +12,8 @@
 
 namespace Denix
 {
+	
+
 	/*	Base class for all game objects
 	*
 	*/
@@ -51,11 +53,11 @@ namespace Denix
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 		// Physics Component
-		virtual void OnCollide() {} //const Ref<GameObject>& _other
+		virtual void OnCollision(Ref<GameObject> _other, const CollisionDetection& _collision) {} //const Ref<GameObject>& _other
 
-		virtual void OnTriggerEnter() {}
-		virtual void OnTriggerStay() {}
-		virtual void OnTriggerExit() {}
+		virtual void OnTriggerEnter(Ref<GameObject> _other) {}
+		virtual void OnTriggerStay(Ref<GameObject> _other) {}
+		virtual void OnTriggerExit(Ref<GameObject> _other) {}
 
 		
 

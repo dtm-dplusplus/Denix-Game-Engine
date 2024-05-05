@@ -173,7 +173,7 @@ namespace Denix
 		ImGui::Checkbox("Render Subsystem", &s_RendererSubSystem->IsEnabled());
 
 		// Scene gravity
-		ImGui::DragFloat3("Scene Gravity", &s_SceneSubSystem->m_ActiveScene->GetGravity()[0], DragSpeedDelta, -FLT_MAX, FLT_MAX);
+		ImGui::DragFloat("Scene Gravity", &s_SceneSubSystem->m_ActiveScene->GetGravity(), DragSpeedDelta, -FLT_MAX, FLT_MAX);
 
 		// Camera Properties
 		{
@@ -412,8 +412,9 @@ namespace Denix
 			const glm::vec3& acc = physics->GetAcceleration();
 			const glm::vec3 force = physics->GetForce();
 			float& mass = physics->GetMass();
+			float& elasticity = physics->GetElasticity();
 			glm::vec3& drag = physics->GetDrag();
-			glm::vec3& gravity = physics->GetGravity();
+			float& gravity = physics->GetGravity();
 
 			// Physics Simulation
 			if (ImGui::Checkbox("Simulate Physics", &physics->IsSimulated())) physics->ToggleSimulation();
@@ -434,7 +435,7 @@ namespace Denix
 					if (ImGui::Selectable(stepMethods[n], is_selected))
 					{
 						itemCurrent = n;
-						physics->SetStepMethod(static_cast<PhysicsComponent::StepMethod>(n));
+						physics->SetStepMethod(static_cast<StepMethod>(n));
 					}
 
 					// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -448,15 +449,20 @@ namespace Denix
 			if (ImGui::Checkbox("##CustomGravity", &isCustomGravity)) physics->ToggleGravity();
 			ImGui::SameLine();
 			if (!isCustomGravity) ImGui::BeginDisabled();
-			ImGui::DragFloat3("Gravity", &gravity[0], DragSpeedDelta, -FLT_MAX, FLT_MAX);
+			ImGui::DragFloat("Gravity", &gravity, DragSpeedDelta, -FLT_MAX, FLT_MAX);
 			if (!isCustomGravity) ImGui::EndDisabled();
 			
-
 			// Mass
 			ImGui::DragFloat("Mass", &mass, DragSpeedDelta, FLT_MIN, FLT_MAX);
 
 			// Drag
 			ImGui::DragFloat3("Drag", &drag[0], DragSpeedDelta);
+
+			// Elasticity
+			ImGui::DragFloat("Elasticity", &elasticity, DragSpeedDelta, FLT_MIN, FLT_MAX);
+
+			// Minimum Velocity
+			ImGui::DragFloat("Minimum Velocity", &physics->GetMinimumVelocity(), DragSpeedDelta);
 
 			// Viewable Properties
 			ImGui::Text("Velocity			x: %.3f y: %.3f z: %.3f", vel.x, vel.y, vel.z);

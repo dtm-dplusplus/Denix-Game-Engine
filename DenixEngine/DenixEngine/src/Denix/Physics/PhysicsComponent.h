@@ -9,12 +9,31 @@ namespace Denix
 {
 	class Collider;
 
+	struct CollisionDetection
+	{
+		glm::vec3 Normal;
+	};
+
 	enum class TriggerState
 	{
 		Null,
 		Enter,
 		Exit,
 		Stay
+	};
+
+	struct TriggerDetection
+	{
+		TriggerState State;
+	};
+	
+
+	enum class StepMethod
+	{
+		Euler,
+		RK2,
+		RK4,
+		Verlet
 	};
 
 	class PhysicsComponent : public Component, public std::enable_shared_from_this<PhysicsComponent>
@@ -26,13 +45,7 @@ namespace Denix
 
 		~PhysicsComponent() override = default;
 
-		enum class StepMethod
-		{
-			Euler,
-			RK2,
-			RK4,
-			Verlet
-		};
+		
 
 
 		void AddForce(const glm::vec3& _force)
@@ -52,7 +65,6 @@ namespace Denix
 			m_ObjectInteriaTensorInverse = m_RotationMatrix * m_BodyInteriaTensorInverse * glm::transpose(m_RotationMatrix);
 
 		}
-		void Step(float _deltaTime);
 
 		void StepEuler(float _deltaTime);
 
@@ -155,6 +167,9 @@ namespace Denix
 		glm::vec3 GetVelocity() const { return m_Velocity; }
 		glm::vec3& GetVelocity() { return m_Velocity; }
 
+		float GetMinimumVelocity() const { return m_MinimumVelocity; }	
+		float& GetMinimumVelocity() { return m_MinimumVelocity; }
+
 		glm::vec3 GetAngularVelocity() const { return m_AngularVelocity; }
 		glm::vec3& GetAngularVelocity() { return m_AngularVelocity; }
 
@@ -167,6 +182,13 @@ namespace Denix
 		float GetMass() const { return m_Mass; }
 		float& GetMass() { return m_Mass; }
 
+		float GetElasticity() const { return m_Elasticity; }
+		float& GetElasticity() { return m_Elasticity; }
+		void SetElasticity(const float _elasticity)
+		{
+			m_Elasticity = _elasticity;
+		}
+
 		glm::vec3 GetCenterOfMass() const { return m_CenterOfMass; }
 		glm::vec3& GetCenterOfMass() { return m_CenterOfMass; }
 
@@ -175,8 +197,8 @@ namespace Denix
 		glm::vec3 GetDrag() const { return m_Drag; }
 		glm::vec3& GetDrag() { return m_Drag; }
 
-		glm::vec3 GetGravity() const { return m_Gravity; }
-		glm::vec3& GetGravity() { return m_Gravity; }
+		float GetGravity() const { return m_Gravity; }
+		float& GetGravity() { return m_Gravity; }
 
 		Ref<Collider> GetCollider() { return m_Collider; }
 
@@ -200,6 +222,9 @@ namespace Denix
 		bool m_IsTrigger = false;
 		TriggerState m_TriggerState = TriggerState::Null;
 
+		/** List of triggers detected by the physics component */
+		std::vector<TriggerDetection> m_Triggers;
+
 		/** Set to decide if the physics component should use custom gravity
 		 * If false, the physics component will use the scene gravity
 		 */
@@ -218,10 +243,16 @@ namespace Denix
 		/** Collider used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
 
+		/** List of collisions detected by the physics component */
+		std::vector<CollisionDetection> m_Collisions;
+
 		/** Transform component which is attached to this components game object */
 		Ref<class TransformComponent> m_ActorTransform;
 
 	private:
+		bool m_SteppedThisFrame = false;
+		bool m_SteppedNextFrame = false;
+
 		glm::vec3 m_PreviousPosition = glm::vec3(0.f);
 
 		/** Mass of the object */
@@ -234,16 +265,25 @@ namespace Denix
 		glm::vec3 m_MomentOfInertia = glm::vec3(0.f);
 
 		/** Gravitational force acting on the object */
-		glm::vec3 m_Gravity = glm::vec3(0.f, -9.81, 0.f);
+		float m_Gravity = 9.81;
 
 		/** Drag force acting on the object */
 		glm::vec3 m_Drag = glm::vec3(0.f);
 
+		/** Elasticity used for impulse response (Bounciness) */
+		float m_Elasticity = 0.5f;
+
 		/** Velocity of the object */
 		glm::vec3 m_Velocity = glm::vec3(0.f);
 
+		/** Minimum velocity of the object. Used to stop negligble bouncing */
+		float m_MinimumVelocity = 0.05f;
+
 		/** Angular velocity of the object */
 		glm::vec3 m_AngularVelocity = glm::vec3(0.f);
+
+		/** Angular Momentum */
+		glm::vec3 m_AngularMomentum = glm::vec3(0.f);
 
 		/** Acceleration of the object */
 		glm::vec3 m_Acceleration = glm::vec3(0.f);
@@ -255,12 +295,6 @@ namespace Denix
 
 		// Net Torque
 		glm::vec3 m_Torque = glm::vec3(0.f);
-
-		// Angular Velocity
-		glm::vec3 m_AngularVelocity = glm::vec3(0.f);
-
-		// Angular Momentum
-		glm::vec3 m_AngularMomentum = glm::vec3(0.f);
 
 		// Object Inverse Intertia Tensor
 		glm::mat3 m_ObjectInteriaTensorInverse = glm::mat3(1.0f);

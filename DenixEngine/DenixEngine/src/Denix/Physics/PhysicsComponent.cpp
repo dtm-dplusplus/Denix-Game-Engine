@@ -26,28 +26,6 @@ namespace Denix
         m_CenterOfMass = m_ActorTransform->GetPosition();
     }
 
-    void PhysicsComponent::Step(float _deltaTime)
-    {
-        // Step integration
-        switch (m_StepMethod)
-        {
-        case StepMethod::Euler:
-            StepEuler(_deltaTime);
-            break;
-
-        case StepMethod::RK2:
-            StepRK2(_deltaTime);
-            break;
-
-        case StepMethod::RK4:
-            StepRK4(_deltaTime);
-            break;
-
-        case StepMethod::Verlet:
-            StepVerlet(_deltaTime);
-            break;
-        }
-    }
 
     void PhysicsComponent::StepEuler(float _deltaTime)
     {
@@ -56,6 +34,8 @@ namespace Denix
 
         // Calculate new velocity at time t + dt
         m_Velocity += m_Force / m_Mass * _deltaTime;
+
+		m_Velocity = m_Velocity.length() > m_MinimumVelocity ? m_Velocity : glm::vec3(0.0f);
 
         // Calculate new displacement at time t + dt
         m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;
@@ -78,6 +58,8 @@ namespace Denix
 
         // Calculate new velocity at time t + dt
         m_Velocity += (k1 + k2) / 2.f;
+
+        m_Velocity = m_Velocity.length() > m_MinimumVelocity ? m_Velocity : glm::vec3(0.0f);
 
         // Calculate new displacement at time t + dt
         m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;
