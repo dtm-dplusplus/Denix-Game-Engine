@@ -29,16 +29,16 @@ namespace Denix
 		m_SceneObjects.push_back(SptLight);
 
 		PhysicsObject = MakeRef<PhysObject>();
-		PhysicsObject->GetTransformComponent()->SetPosition({ 0.0f, 65.0f, 0.0f });
+		PhysicsObject->GetTransformComponent()->SetPosition({ 0.0f, 10.0f, 0.0f });
 		PhysicsObject->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
-		PhysicsObject->GetPhysicsComponent()->IsSimulated() = true;
+		PhysicsObject->GetPhysicsComponent()->SimulatePhysics() = true;
 
 		PhysicsObject->GetMeshComponent()->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
 		m_SceneObjects.push_back(PhysicsObject);
 
 		m_DirLight->SetAmbientIntensity(0.7f);
 		m_ViewportCamera->SetFov(100.0f);
-		m_ViewportCamera->GetTransformComponent()->SetPosition({ 0.0f,5.0f, 55.0f });
+		m_ViewportCamera->GetTransformComponent()->SetPosition({ 0.0f,5.0f, 10.0f });
 
 		return true;
 	}

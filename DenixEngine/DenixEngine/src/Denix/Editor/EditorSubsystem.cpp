@@ -404,24 +404,15 @@ namespace Denix
 	{
 		if (ImGui::CollapsingHeader("Physics Component"))
 		{
-			const Ref<PhysicsComponent> physics = _selectedObject->GetPhysicsComponent();
-
-			bool& isCustomGravity = physics->IsCustomGravity();
-			const glm::vec3& vel = physics->GetVelocity();
-			const glm::vec3& avel = physics->GetAngularVelocity();
-			const glm::vec3& acc = physics->GetAcceleration();
-			const glm::vec3 force = physics->GetForce();
-			float& mass = physics->GetMass();
-			float& elasticity = physics->GetElasticity();
-			glm::vec3& drag = physics->GetDrag();
-			float& gravity = physics->GetGravity();
+			const Ref<PhysicsComponent> pComp = _selectedObject->GetPhysicsComponent();
 
 			// Physics Simulation
-			if (ImGui::Checkbox("Simulate Physics", &physics->IsSimulated())) physics->ToggleSimulation();
-			if (ImGui::Checkbox("Is Trigger", &physics->IsTrigger())) physics->ToggleTrigger();
-			ImGui::SameLine(); ImGui::Text(" State: %s", physics->GetTriggerStateS().c_str());
+			if (ImGui::Checkbox("Simulate Physics", &pComp->SimulatePhysics())) pComp->ToggleSimulation();
+			if (ImGui::Checkbox("Is Trigger", &pComp->IsTrigger())) pComp->ToggleTrigger();
+			ImGui::SameLine(); ImGui::Text(" State: %s", pComp->GetTriggerStateS().c_str());
 
-			ImGui::Checkbox("Show Collider", &physics->GetCollider()->GetRenderComponent()->IsVisible());
+			// Collider
+			ImGui::Checkbox("Show Collider", &pComp->GetCollider()->GetRenderComponent()->IsVisible());
 
 			// Step Simulation 
 			const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };
@@ -435,7 +426,7 @@ namespace Denix
 					if (ImGui::Selectable(stepMethods[n], is_selected))
 					{
 						itemCurrent = n;
-						physics->SetStepMethod(static_cast<StepMethod>(n));
+						pComp->SetStepMethod(static_cast<StepMethod>(n));
 					}
 
 					// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -445,26 +436,31 @@ namespace Denix
 				ImGui::EndCombo();
 			}
 
-			// Gravity
-			if (ImGui::Checkbox("##CustomGravity", &isCustomGravity)) physics->ToggleGravity();
-			ImGui::SameLine();
-			if (!isCustomGravity) ImGui::BeginDisabled();
-			ImGui::DragFloat("Gravity", &gravity, DragSpeedDelta, -FLT_MAX, FLT_MAX);
-			if (!isCustomGravity) ImGui::EndDisabled();
+			// Simulate Gravity
+			if (ImGui::Checkbox("CustomGravity", &pComp->GetSimulateGravity())) pComp->ToggleGravity();
 			
 			// Mass
-			ImGui::DragFloat("Mass", &mass, DragSpeedDelta, FLT_MIN, FLT_MAX);
+			ImGui::DragFloat("Mass", &pComp->GetMass(), DragSpeedDelta, FLT_MIN, FLT_MAX);
 
-			// Drag
-			ImGui::DragFloat3("Drag", &drag[0], DragSpeedDelta);
+			// Linear Drag
+			ImGui::DragFloat("Linear Drag", &pComp->GetLinearDrag(), DragSpeedDelta);
+
+			// Angular Drag
+			ImGui::DragFloat("Angular Drag", &pComp->GetAngularDrag(), DragSpeedDelta);
 
 			// Elasticity
-			ImGui::DragFloat("Elasticity", &elasticity, DragSpeedDelta, FLT_MIN, FLT_MAX);
+			ImGui::DragFloat("Elasticity", &pComp->GetElasticity(), DragSpeedDelta, FLT_MIN, FLT_MAX);
 
 			// Minimum Velocity
-			ImGui::DragFloat("Minimum Velocity", &physics->GetMinimumVelocity(), DragSpeedDelta);
+			ImGui::DragFloat("Minimum Velocity", &pComp->GetMinimumVelocity(), DragSpeedDelta);
 
 			// Viewable Properties
+			const glm::vec3 force = pComp->GetForce();
+			const glm::vec3& vel = pComp->GetVelocity();
+			const glm::vec3& avel = pComp->GetAngularVelocity();
+
+			const glm::vec3& acc = pComp->GetAcceleration();
+
 			ImGui::Text("Velocity			x: %.3f y: %.3f z: %.3f", vel.x, vel.y, vel.z);
 			ImGui::Text("Acceleration		x: %.3f y: %.3f z: %.3f", acc.x, acc.y, acc.z);
 			ImGui::Text("Force				x: %.3f y: %.3f z: %.3f", force.x, force.y, force.z);

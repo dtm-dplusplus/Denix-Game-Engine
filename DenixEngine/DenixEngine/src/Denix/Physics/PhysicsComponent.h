@@ -4,6 +4,7 @@
 #include "Denix/Core/Math.h"
 
 #include "Denix/Scene/Component.h"
+#include "Denix/Scene/Component/TransformComponent.h"
 
 namespace Denix
 {
@@ -57,31 +58,40 @@ namespace Denix
 		{
 			m_Torque += _torque;
 		}
+
+		Ref<Collider> GetCollider() { return m_Collider; }
+
+
 	public:
 
-		void ComputeCenterOfMass();
+		void ComputeCenterOfMass()
+		{
+			// Compute the center of mass of the object
+			// For now, we will assume the center of mass is at the center of the object
+			m_CenterOfMass = m_ActorTransform->GetPosition();
+		}
+
 		void ComputeInverseInertiaTensor()
 		{
 			m_ObjectInteriaTensorInverse = m_RotationMatrix * m_BodyInteriaTensorInverse * glm::transpose(m_RotationMatrix);
-
 		}
 
-		void StepEuler(float _deltaTime);
+		void ComputeStepEuler(float _deltaTime);
 
-		void StepRK2(float _deltaTime);
+		void ComputeStepRK2(float _deltaTime);
 
-		void StepRK4(float _deltaTime)
+		void ComputeStepRK4(float _deltaTime)
 		{
 		}
 
-		void StepVerlet(float _deltaTime)
+		void ComputeStepVerlet(float _deltaTime)
 		{
 		}
 
 		
 		void ToggleSimulation()
 		{
-			if (m_IsSimulated)
+			if (m_SimulatePhysics)
 			{
 				DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
 			}
@@ -93,16 +103,16 @@ namespace Denix
 
 		void ToggleGravity()
 		{
-			if (m_IsCustomGravity)
+			if (m_SimulateGravity)
 			{
 				DE_LOG(LogPhysics, Trace, "Custom Gravity enabled")
 			}
 			else
 			{
 				DE_LOG(LogPhysics, Trace, "Custom Gravity disabled")
-				m_RequestSceneGravity = true;
 			}
 		}
+
 		void ToggleTrigger()
 		{
 			if (m_IsTrigger)
@@ -114,9 +124,10 @@ namespace Denix
 				DE_LOG(LogPhysics, Trace, "Physics component set to collision collider")
 			}
 		}
+
 		// Getters
-		bool IsSimulated() const { return m_IsSimulated; }
-		bool& IsSimulated() { return m_IsSimulated; }
+		bool SimulatePhysics() const { return m_SimulatePhysics; }
+		bool& SimulatePhysics() { return m_SimulatePhysics; }
 
 		void SetStepMethod(const StepMethod _method)
 		{
@@ -131,9 +142,6 @@ namespace Denix
 			const static std::string s[]{ "Euler", "k2", "k4", "Verlet" };
 			return s[static_cast<int>(m_StepMethod)];
 		}
-
-		bool IsCustomGravity() const { return m_IsCustomGravity; }
-		bool& IsCustomGravity() { return m_IsCustomGravity; }
 
 		bool IsTrigger() const { return m_IsTrigger; }
 		bool& IsTrigger() { return m_IsTrigger; }
@@ -194,13 +202,17 @@ namespace Denix
 
 		glm::vec3 GetMomentOfInertia() const { return m_MomentOfInertia; }
 		glm::vec3& GetMomentOfInertia() { return m_MomentOfInertia; }
-		glm::vec3 GetDrag() const { return m_Drag; }
-		glm::vec3& GetDrag() { return m_Drag; }
+		
+		float GetLinearDrag() const { return m_LinearDrag; }
+		float& GetLinearDrag() { return m_LinearDrag; }
 
-		float GetGravity() const { return m_Gravity; }
-		float& GetGravity() { return m_Gravity; }
+		float GetAngularDrag() const { return m_AngularDrag; }
+		float& GetAngularDrag() { return m_AngularDrag; }
 
-		Ref<Collider> GetCollider() { return m_Collider; }
+		bool GetSimulateGravity() const { return m_SimulateGravity; }
+		bool& GetSimulateGravity() { return m_SimulateGravity; }
+		void SetSimulateGravity(const bool _simulateGravity) { m_SimulateGravity = _simulateGravity; }
+		
 
 	public:
 		void BeginScene() override;
@@ -214,7 +226,7 @@ namespace Denix
 
 	private:
 		/** Set to decide if the physics component should update simulation */
-		bool m_IsSimulated = false;
+		bool m_SimulatePhysics = false;
 
 		/** Set to decide if the physics component should be a trigger collider 
 		 * If true, the physics component will not respond to collisions, but will still trigger events
@@ -225,15 +237,8 @@ namespace Denix
 		/** List of triggers detected by the physics component */
 		std::vector<TriggerDetection> m_Triggers;
 
-		/** Set to decide if the physics component should use custom gravity
-		 * If false, the physics component will use the scene gravity
-		 */
-		bool m_IsCustomGravity = false;
-
-		/** Set to request the scene gravity from the physics subsystem
-		* Used to update the gravity of the physics component if custom gravity is disabled
-		*/
-		bool m_RequestSceneGravity = false;
+		/** Apply gravitaional force to this object */
+		bool m_SimulateGravity = true;
 
 		/** Method used to step the physics simulation */
 		StepMethod m_StepMethod = StepMethod::Euler;
@@ -264,11 +269,11 @@ namespace Denix
 		/** Mass Moment of inertia of the object */
 		glm::vec3 m_MomentOfInertia = glm::vec3(0.f);
 
-		/** Gravitational force acting on the object */
-		float m_Gravity = 9.81;
+		/** Linear Drag force acting on the object */
+		float m_LinearDrag = 0.01f;
 
-		/** Drag force acting on the object */
-		glm::vec3 m_Drag = glm::vec3(0.f);
+		/** Angular Drag force acting on the object */
+		float m_AngularDrag = 0.5f;
 
 		/** Elasticity used for impulse response (Bounciness) */
 		float m_Elasticity = 0.5f;

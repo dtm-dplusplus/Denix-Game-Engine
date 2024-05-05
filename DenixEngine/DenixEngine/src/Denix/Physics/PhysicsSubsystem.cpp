@@ -10,18 +10,13 @@ namespace Denix
 	void PhysicsSubsystem::RegisterComponent(const Ref<PhysicsComponent>& _component)
 	{
 		DE_LOG(LogPhysics, Trace, "PhysicsComponent Registered: #{} {}", _component->GetID(), _component->GetName())
-
-			// Check if the physicsComp wants the scene gravity value
-			if (!_component->m_IsCustomGravity) _component->m_Gravity = m_ActiveScene->GetGravity();
-
 		m_PhysicsComponents.push_back(_component);
 	}
 
 	void PhysicsSubsystem::UnregisterComponent(const Ref<PhysicsComponent>& _component)
 	{
 		DE_LOG(LogPhysics, Trace, "PhysicsComponent Unregistered: #{} {}", _component->GetID(), _component->GetName())
-
-			std::erase(m_PhysicsComponents, _component);
+		std::erase(m_PhysicsComponents, _component);
 	}
 
 	void PhysicsSubsystem::PreUpdate(float _deltaTime)
@@ -30,7 +25,18 @@ namespace Denix
 
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -physicsComp->m_Gravity, 0.0f);
+			// Clean collision data
+			physicsComp->m_Collisions.clear();
+			physicsComp->m_Triggers.clear();
+
+			// Set step status
+			physicsComp->m_SteppedThisFrame = physicsComp->m_SteppedNextFrame;
+			physicsComp->m_SteppedNextFrame = false;
+
+			physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
+			physicsComp->m_Velocity = glm::vec3(0.0f);
+
+			physicsComp->m_Torque = glm::vec3(0.0f);
 
 			physicsComp->m_PreviousPosition = physicsComp->m_ActorTransform->GetPosition();
 
@@ -47,29 +53,6 @@ namespace Denix
 		UpdatePhysicsComponents(_deltaTime);
 	}
  
-	void PhysicsSubsystem::PostUpdate(float _deltaTime)
-	{
-		Subsystem::PostUpdate(_deltaTime);
-
-		for (const auto& physicsComp : m_PhysicsComponents)
-		{
-			// Clean collision data
-			physicsComp->m_Collisions.clear();
-			physicsComp->m_Triggers.clear();
-
-			// Set step status
-			physicsComp->m_SteppedThisFrame = physicsComp->m_SteppedNextFrame;
-			physicsComp->m_SteppedNextFrame = false;
-
-			// Check if the physicsComp wants the scene gravity value
-			if (physicsComp->m_RequestSceneGravity)
-			{
-				physicsComp->m_Gravity = m_ActiveScene->GetGravity();
-				physicsComp->m_RequestSceneGravity = false;
-			}
-		}
-	}
-
 	void PhysicsSubsystem::UpdateCollisionDetection(float _deltaTime)
 	{
 		for (const auto& physicsComp : m_PhysicsComponents)
@@ -131,20 +114,20 @@ namespace Denix
 			// Compute Collision Detection
 			for (const CollisionDetection& collision : physicsComp->m_Collisions)
 			{
+
 				// Impulse response
 				glm::vec3 planeVelocity = glm::vec3(0.0f);
 
-				float impulseMag = -(1.0f + physicsComp->m_Elasticity) * 
+				glm::vec3 contactForce = glm::vec3(0.f, physicsComp->m_Mass * m_ActiveScene->GetGravity(), 0.f);
+
+				float impulseEnergy = -(1.0f + physicsComp->m_Elasticity) * 
 					glm::dot(physicsComp->m_Velocity - planeVelocity, collision.Normal) / (1.0f / physicsComp->m_Mass);
 
-				glm::vec3 impulseVector = impulseMag * collision.Normal;
+				glm::vec3 impulseVector = impulseEnergy * collision.Normal;
 
-				physicsComp->m_Velocity += impulseVector / physicsComp->m_Mass;
+				contactForce += impulseVector / physicsComp->m_Mass;
 
-				////Contact normal force
-				glm::vec3 contactForce = glm::vec3(0.f, -physicsComp->m_Gravity * physicsComp->m_Mass, 0.f);
 				physicsComp->AddForce(contactForce);
-
 				// Call client side function
 				if (const Ref<GameObject> parentObj = m_ActiveScene->GetGameObject(physicsComp->m_ParentObjectName))
 				{
@@ -179,7 +162,7 @@ namespace Denix
 			}
 			
 			// Skip if not simulated
-			if (!physicsComp->m_IsSimulated) continue;
+			if (!physicsComp->m_SimulatePhysics) continue;
 
 			// Compute Torque
 			physicsComp->m_Torque = physicsComp->m_Force * physicsComp->m_Radius;
@@ -210,19 +193,19 @@ namespace Denix
 		switch (_component->m_StepMethod)
 		{
 		case StepMethod::Euler:
-			_component->StepEuler(_deltaTime);
+			_component->ComputeStepEuler(_deltaTime);
 			break;
 
 		case StepMethod::RK2:
-			_component->StepRK2(_deltaTime);
+			_component->ComputeStepRK2(_deltaTime);
 			break;
 
 		case StepMethod::RK4:
-			_component->StepRK4(_deltaTime);
+			_component->ComputeStepRK4(_deltaTime);
 			break;
 
 		case StepMethod::Verlet:
-			_component->StepVerlet(_deltaTime);
+			_component->ComputeStepVerlet(_deltaTime);
 			break;
 
 		default:; // assert here

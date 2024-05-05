@@ -19,40 +19,32 @@ namespace Denix
         m_Collider->m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
     }
 
-    void PhysicsComponent::ComputeCenterOfMass()
-    {
-        // Compute the center of mass of the object
-        // For now, we will assume the center of mass is at the center of the object
-        m_CenterOfMass = m_ActorTransform->GetPosition();
-    }
-
-
-    void PhysicsComponent::StepEuler(float _deltaTime)
+    void PhysicsComponent::ComputeStepEuler(float _deltaTime)
     {
         // Calculate the net force - Null effect if Drag = 0
-        m_Force -= m_Drag * m_Velocity;
+        m_Force -= m_LinearDrag * m_Velocity;
 
         // Calculate new velocity at time t + dt
         m_Velocity += m_Force / m_Mass * _deltaTime;
 
-		m_Velocity = m_Velocity.length() > m_MinimumVelocity ? m_Velocity : glm::vec3(0.0f);
+		m_Velocity = m_Velocity.length() < m_MinimumVelocity? glm::vec3(0.0f) : m_Velocity;
 
         // Calculate new displacement at time t + dt
         m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;
     }
 
-    void PhysicsComponent::StepRK2(float _deltaTime)
+    void PhysicsComponent::ComputeStepRK2(float _deltaTime)
     {
         glm::vec3 netF;
         glm::vec3 accel;
 
         // Calculate k1
-        netF = m_Force - m_Drag * m_Velocity;
+        netF = m_Force - m_LinearDrag * m_Velocity;
         accel = netF / m_Mass;
         const glm::vec3 k1 = accel * _deltaTime;
 
         // Calculate k2
-        netF = m_Force - m_Drag * (m_Velocity + k1);
+        netF = m_Force - m_LinearDrag * (m_Velocity + k1);
         accel = netF / m_Mass;
         const glm::vec3 k2 = accel * _deltaTime;
 
@@ -81,10 +73,7 @@ namespace Denix
         m_BodyInteriaTensorInverse = glm::inverse(bodyInertiaTensor);
 		ComputeInverseInertiaTensor();
 
-    /*    1) Initialize rigid body mass m;
-        2) Compute the position of COM x(0);
-        3) Set force F(0) to a zero vector;
-        4) Set m_Torque(0) to a zero vector;
+    /*   
         5) Pre - compute the body inertia tensor at rest body,
         and pre - compute the inverse of the body inertia tensor Ibody1;
         6) Initialize the position and velocity of the com, x and v, initialize the rigid body's rotation matrix

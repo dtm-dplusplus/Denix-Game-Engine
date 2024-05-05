@@ -174,8 +174,8 @@ namespace Denix
 			}
 		}
 
-		float GetGravity() const { return m_SceneGravity; }
-		float& GetGravity() { return m_SceneGravity; }
+		float GetGravity() const { return m_Gravity; }
+		float& GetGravity() { return m_Gravity; }
 
 		Ref<ViewportCamera> GetViewportCamera() { return m_ViewportCamera; }
 
@@ -226,7 +226,7 @@ namespace Denix
 		bool m_IsOpen = false;
 
 		/** Gravity of the scene */
-		float m_SceneGravity = 9.81f;
+		float m_Gravity = 9.81f;
 
 		/** List of Objects in the scene */
 		std::vector<Ref<GameObject>> m_SceneObjects;
