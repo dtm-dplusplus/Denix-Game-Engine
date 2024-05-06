@@ -9,13 +9,13 @@ namespace Denix
 {
     PhysicsComponent::PhysicsComponent(): Component(ObjectInitializer("Physics Component"))
     {
-        m_Collider = MakeRef<Collider>();
+        m_Collider = MakeRef<CubeCollider>();
         m_Collider->m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
     }
 
     PhysicsComponent::PhysicsComponent(const std::string& _parentName): Component(_parentName, ObjectInitializer("Physics Component"))
     {
-        m_Collider = MakeRef<Collider>();
+        m_Collider = MakeRef<CubeCollider>();
         m_Collider->m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
     }
 

@@ -11,7 +11,6 @@ namespace Denix
 {
 	enum class ColliderType
 	{
-		Plane,
 		Cube,
 		Sphere
 	};
@@ -34,9 +33,14 @@ namespace Denix
 
 		~Collider() override = default;
 
+		ColliderType GetColliderType() { return (ColliderType)m_ColliderType; }
+		ColliderType& GetColliderTypeRef() { return (ColliderType&)m_ColliderType; }
+		void SetColliderType(ColliderType _type) { m_ColliderType = (int)_type; }
+		
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
+	protected:
 		Ref<MeshComponent> m_MeshComponent;
 
 		Ref<RenderComponent> m_RenderComponent;
@@ -45,8 +49,33 @@ namespace Denix
 		const static glm::vec4 m_NoCollisionColor;
 		const static glm::vec4 m_CollisionColor;
 
+
+		int m_ColliderType;
 		friend class PhysicsSubsystem;
 		friend class GameObject;
 		friend class PhysicsComponent;
+	};
+
+	class CubeCollider : public Collider
+	{
+	public:
+		CubeCollider();
+		
+
+		~CubeCollider() override = default;
+
+	private:
+
+	};
+
+	class SphereCollider : public Collider
+	{
+	public:
+		SphereCollider();
+
+		~SphereCollider() override = default;
+
+	private:
+		float m_Radius;
 	};
 }

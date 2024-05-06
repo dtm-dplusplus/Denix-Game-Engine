@@ -66,37 +66,53 @@ namespace Denix
 			glm::vec3 normal = glm::vec3(0.f, 1.f, 0.f);
 			glm::vec3 planePos = glm::vec3(0.f);
 
-			// Checks against ground plane for now
-			if (float distance = DistanceToPlane(normal, physicsComp->m_ActorTransform->GetPosition(), planePos); distance <= physicsComp->m_Radius)
+			switch (collider->GetColliderType())
 			{
-				collisionDetected = true;
-
-				CollisionDetection collision;
-				collision.Normal = normal;
-
-				// If Collider is trigger compute the trigger state
-				if (physicsComp->IsTrigger())
+			case ColliderType::Cube:
+			{
+				if (float distance = DistanceToPlane(normal, physicsComp->m_ActorTransform->GetPosition(), planePos); distance <= physicsComp->m_Radius)
 				{
-					TriggerDetection trigger;
+					collisionDetected = true;
 
-					// Check Trigger State
-					if (collisionDetected)
-					{
-						trigger.State = physicsComp->m_IsColliding ? TriggerState::Stay : TriggerState::Enter;
-					}
-					else
-					{
-						trigger.State = physicsComp->m_IsColliding ? TriggerState::Exit : TriggerState::Null;
-					}
+					CollisionDetection collision;
+					collision.Normal = normal;
 
-					physicsComp->m_TriggerState = trigger.State;
-
-					if (trigger.State != TriggerState::Null)
-					{
-						physicsComp->m_Triggers.push_back(trigger);
-					}
+					// If Collider is trigger compute the trigger state
+					
+					physicsComp->m_Collisions.push_back(collision);
 				}
-				physicsComp->m_Collisions.push_back(collision);
+			} break;
+
+			case ColliderType::Sphere:
+			{
+				// Check against sphere collider
+				if (MovingSphereToPlaneCollision(normal, physicsComp->m_PreviousPosition, physicsComp->m_ActorTransform->GetPosition(), planePos, physicsComp->m_Radius, physicsComp->m_ActorTransform->GetPosition()))
+				{
+					collisionDetected = true;
+				}
+			} break;
+			}
+			
+			if (physicsComp->IsTrigger())
+			{
+				TriggerDetection trigger;
+
+				// Check Trigger State
+				if (collisionDetected)
+				{
+					trigger.State = physicsComp->m_IsColliding ? TriggerState::Stay : TriggerState::Enter;
+				}
+				else
+				{
+					trigger.State = physicsComp->m_IsColliding ? TriggerState::Exit : TriggerState::Null;
+				}
+
+				physicsComp->m_TriggerState = trigger.State;
+
+				if (trigger.State != TriggerState::Null)
+				{
+					physicsComp->m_Triggers.push_back(trigger);
+				}
 			}
 
 			collider->m_RenderComponent->GetMaterial()->SetBaseColor(
@@ -128,6 +144,7 @@ namespace Denix
 				contactForce += impulseVector / physicsComp->m_Mass;
 
 				physicsComp->AddForce(contactForce);
+
 				// Call client side function
 				if (const Ref<GameObject> parentObj = m_ActiveScene->GetGameObject(physicsComp->m_ParentObjectName))
 				{

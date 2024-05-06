@@ -63,6 +63,10 @@ namespace Denix
 
 
 	public:
+		void ComputeTrigger()
+		{
+
+		}
 
 		void ComputeCenterOfMass()
 		{
