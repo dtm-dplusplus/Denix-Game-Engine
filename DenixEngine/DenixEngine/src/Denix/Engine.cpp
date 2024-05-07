@@ -118,6 +118,8 @@ namespace Denix
 			
 			m_PhysicsSubSystem->Update(deltaTime);
 			
+			m_RendererSubSystem->RenderScene();
+
 			m_WindowSubSystem->m_Window->SwapBuffers();
 
 			m_PhysicsSubSystem->PostUpdate(deltaTime);

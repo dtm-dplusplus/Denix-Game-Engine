@@ -1,4 +1,5 @@
-﻿#include "PhysicsSubsystem.h"
+﻿#include "depch.h"
+#include "PhysicsSubsystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Physics/PhysicsComponent.h"
 #include "Denix/Physics/Collider.h"
@@ -30,10 +31,10 @@ namespace Denix
 			// Clean collision colData
 			m_CollisionEvents.clear();
 
-			// Set step status
+			// Set  status
 			physicsComp->m_SteppedThisFrame = physicsComp->m_SteppedNextFrame;
 			physicsComp->m_SteppedNextFrame = false;
-
+			physicsComp->m_IsColliding = false;
 			physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
 
 			//actor->m_Torque = glm::vec3(0.0f);

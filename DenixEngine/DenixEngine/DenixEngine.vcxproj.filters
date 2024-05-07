@@ -86,7 +86,7 @@
     <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp">
       <Filter>contrib\imgui\backends</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\depch.cpp">
+    <ClCompile Include="src\depch.cpp">
       <Filter>src\Denix</Filter>
     </ClCompile>
     <ClCompile Include="src\Denix\Core\Logger.cpp">
@@ -203,7 +203,7 @@
     <ClInclude Include="contrib\imgui\imstb_textedit.h">
       <Filter>contrib\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\depch.h">
+    <ClInclude Include="src\depch.h">
       <Filter>src\Denix</Filter>
     </ClInclude>
     <ClInclude Include="contrib\imgui\backends\imgui_impl_sdl2.h">

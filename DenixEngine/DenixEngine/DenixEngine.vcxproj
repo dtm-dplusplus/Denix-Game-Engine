@@ -159,7 +159,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Denix\Core\Logger.cpp" />
-    <ClCompile Include="src\Denix\depch.cpp">
+    <ClCompile Include="src\depch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
@@ -169,7 +169,8 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\GameObject.cpp" />
     <ClCompile Include="src\Denix\Physics\PhysicsSubsystem.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">depch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="src\Denix\Video\Renderer\RendererSubsystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -218,7 +219,7 @@
     <ClInclude Include="contrib\imgui\imstb_textedit.h" />
     <ClInclude Include="contrib\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Denix\Core\Logger.h" />
-    <ClInclude Include="src\Denix\depch.h" />
+    <ClInclude Include="src\depch.h" />
     <ClInclude Include="src\Denix\EntryPoint.h" />
     <ClInclude Include="src\Denix\Scene\MeshData.h" />
     <ClInclude Include="src\Denix\Physics\PhysicsSubsystem.h" />

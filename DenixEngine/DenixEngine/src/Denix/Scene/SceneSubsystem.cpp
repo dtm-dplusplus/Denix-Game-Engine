@@ -1,15 +1,12 @@
 #include "depch.h"
 #include "SceneSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
-#include "Denix/Video/Renderer/RendererSubsystem.h"
-#include "Denix/Physics/PhysicsSubSystem.h"
-#include "Denix/Editor/EditorSubsystem.h"
-
-#include "Denix/Engine.h"
-#include "imgui.h"
-#include "Denix/Input/InputSubsystem.h"
-#include "Denix/Physics/Collider.h"
 #include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Video/Renderer/RendererSubsystem.h"
+#include "Denix/Physics/PhysicsSubsystem.h"
+#include "Denix/Editor/EditorSubsystem.h"
+#include "Denix/Input/InputSubsystem.h"
+#include "Denix/Engine.h" // TEMP
 
 namespace Denix
 {
@@ -17,15 +14,6 @@ namespace Denix
 
 	void SceneSubsystem::Initialize()
 	{
-		s_WindowSubsystem = WindowSubsystem::Get();
-		s_RendererSubsystem = RendererSubsystem::Get();
-		s_PhysicsSubsystem = PhysicsSubsystem::Get();
-
-		m_WireframeRenderComponent = MakeRef<RenderComponent>("Wireframe Render component");
-		m_WireframeRenderComponent->SetShader(ResourceSubsystem::GetShader("WireframeShader"));
-		m_WireframeRenderComponent->SetBaseColorAsTexture(true);
-		m_WireframeRenderComponent->GetMaterial()->SetBaseColor(glm::vec3(1.0f, 1.0f, 1.0f));
-
 		DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Initialized")
 
 		m_Initialized = true;
@@ -92,8 +80,8 @@ namespace Denix
 			m_ActiveScene = scene;
 
 			// Set dependencies with new scene pointer
-			s_RendererSubsystem->SetActiveScene(m_ActiveScene);
-			s_PhysicsSubsystem->SetActiveScene(m_ActiveScene);
+			RendererSubsystem::SetActiveScene(m_ActiveScene);
+			PhysicsSubsystem::SetActiveScene(m_ActiveScene);
 			EditorSubsystem::Get()->SetActiveScene(m_ActiveScene);
 
 			// Begin new scene
@@ -142,8 +130,7 @@ namespace Denix
 			
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
 
-			Engine& engine = Engine::Get();
-			engine.RestartScene();
+			Engine::Get().RestartScene();
 		}
 	}
 
@@ -166,78 +153,19 @@ namespace Denix
 		}
 	}
 
-	void SceneSubsystem::SceneLighting()
-	{
-		Ref<GLShader> program = ResourceSubsystem::GetShader("DefaultShader");
-		program->Bind();
-
-		if (const Ref<DirectionalLight> dirLight = m_ActiveScene->m_DirLight)
-		{
-			const glm::vec3& lightDir = dirLight->GetLightDirection();
-			const glm::vec3& lightColor = dirLight->GetLightColor();
-			glUniform3f(program->GetUniform("u_DirLight.Base.Color"), lightColor.r, lightColor.g, lightColor.b);
-			glUniform1f(program->GetUniform("u_DirLight.Base.AmbientIntensity"), dirLight->GetAmbientIntensity());
-			glUniform1f(program->GetUniform("u_DirLight.Base.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
-			glUniform3f(program->GetUniform("u_DirLight.Direction"), lightDir.x, lightDir.y, lightDir.z);
-		}
-
-		glUniform1i(program->GetUniform("u_PointLightCount"), (int)m_ActiveScene->m_PointLights.size());
-		glUniform1i(program->GetUniform("u_SpotLightCount"), (int)m_ActiveScene->m_SpotLights.size());
-
-
-		for (int i = 0; i < (int)m_ActiveScene->m_PointLights.size(); i++)
-		{
-			const glm::vec3& lightCol = m_ActiveScene->m_PointLights[i]->GetLightColor();
-			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Color"), lightCol.r, lightCol.g, lightCol.b);
-			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.AmbientIntensity"), m_ActiveScene->m_PointLights[i]->GetAmbientIntensity());
-			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.DiffuseIntensity"), m_ActiveScene->m_PointLights[i]->GetDiffuseIntensity());
-
-			const glm::vec3& pos = m_ActiveScene->m_PointLights[i]->GetTransformComponent()->GetPosition();
-			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Position"), pos.x, pos.y, pos.z);
-			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Constant"), m_ActiveScene->m_PointLights[i]->GetConstant());
-			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Linear"), m_ActiveScene->m_PointLights[i]->GetLinear());
-			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Exponent"), m_ActiveScene->m_PointLights[i]->GetExponent());
-		}
-
-		for (int i = 0; i < (int)m_ActiveScene->m_SpotLights.size(); i++)
-		{
-			const glm::vec3& lightCol = m_ActiveScene->m_SpotLights[i]->GetLightColor();
-			glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Base.Color"), lightCol.r, lightCol.g, lightCol.b);
-			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Base.AmbientIntensity"),m_ActiveScene-> m_SpotLights[i]->GetAmbientIntensity());
-			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Base.DiffuseIntensity"),m_ActiveScene-> m_SpotLights[i]->GetDiffuseIntensity());
-
-			const glm::vec3& pos = m_ActiveScene->m_SpotLights[i]->GetTransformComponent()->GetPosition();
-			glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Position"), pos.x, pos.y, pos.z);
-			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Constant"),m_ActiveScene-> m_SpotLights[i]->GetConstant());
-			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Linear"), m_ActiveScene->m_SpotLights[i]->GetLinear());
-			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Exponent"),m_ActiveScene-> m_SpotLights[i]->GetExponent());
-
-			const glm::vec3& dir = m_ActiveScene->m_SpotLights[i]->GetDirection();
-			glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Direction"), dir.x, dir.y, dir.z);
-			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Edge"), m_ActiveScene->m_SpotLights[i]->GetProcessedEdge());
-		}
-		GLShader::Unbind();
-	}
-
 	void SceneSubsystem::Update(float _deltaTime)
 	{
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
-			cam->SetAspect(s_WindowSubsystem->GetWindow()->GetWindowSize());
+			cam->SetAspect(WindowSubsystem::GetWindow()->GetWindowSize());
 			cam->Update(_deltaTime);
 		}
 
 		// Scene update implementation 
 		m_ActiveScene->Update(_deltaTime);
 
-		// m_ActiveScene->m_ActiveCamera->m_RenderTexture->bind();
-
 		GameObjectsUpdate(_deltaTime);
-
-		SceneLighting();
-
-		// m_ActiveScene->m_ActiveCamera->m_RenderTexture->unbind();
 	}
 
 	void SceneSubsystem::GameObjectsUpdate(float _deltaTime)
@@ -262,83 +190,6 @@ namespace Denix
 
 			// Update the GameObject -  This will always be here
 			gameObject->Update(_deltaTime);
-
-			if (!gameObject->GetRenderComponent()->GetShader())
-			{
-				// We'll replace this with a error shader - A shader must always be bound
-				gameObject->GetRenderComponent()->SetShader(ResourceSubsystem::GetShader("DebugShader"));
-				DE_LOG(LogSceneSubsystem, Error, "Invalid Shader on {}. Reset to debug shader", gameObject->GetName())
-			}
-
-			if (!gameObject->GetMeshComponent()->GetMesh())
-			{
-				continue;
-			}
-
-			ViewportRendering(gameObject);
-		}
-	}
-
-	void SceneSubsystem::ViewportRendering(const Ref<GameObject>& _gameObject)
-	{
-		// TEMP Immediate Mode Rendering
-		switch (static_cast<ViewportMode>(RendererSubsystem::GetViewportMode()))
-		{
-		case ViewportMode::Default:
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-			if (_gameObject->GetRenderComponent()->IsVisible())
-			{
-				{
-					s_RendererSubsystem->DrawImmediate(
-						_gameObject->GetRenderComponent(),
-						_gameObject->GetTransformComponent(),
-						_gameObject->GetMeshComponent());
-				}
-			}
-
-			// Draw Collider over gameobject if set to visible
-			if (const Ref<Collider> collider = _gameObject->GetCollider(); collider->GetRenderComponent()->IsVisible())
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-				s_RendererSubsystem->DrawImmediate(
-					collider->GetRenderComponent(),
-					_gameObject->GetTransformComponent(),
-					collider->GetMeshComponent());
-			}
-		}
-		break;
-
-		case ViewportMode::Wireframe:
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-			// Draw the GameObject
-			s_RendererSubsystem->DrawImmediate(
-				_gameObject->GetRenderComponent(),
-				_gameObject->GetTransformComponent(),
-				_gameObject->GetMeshComponent());
-		}
-		break;
-
-		case ViewportMode::Collider:
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-			// Draw the GameObject
-			if (const Ref<Collider> collider = _gameObject->GetCollider())
-			{
-				s_RendererSubsystem->DrawImmediate(
-					collider->GetRenderComponent(),
-					_gameObject->GetTransformComponent(),
-					collider->GetMeshComponent());
-			}
-		}
-		break;
-
-		default: DE_LOG(LogScene, Error, "Invalid Viewport") break;
 		}
 	}
 }

@@ -27,11 +27,6 @@ namespace Denix
 			s_RendererSubSystem = nullptr;
 		}
 
-		static void DrawImmediate(
-			const Ref<RenderComponent>& _renderComp, 
-			const Ref<TransformComponent>& _transformComp, 
-			const Ref<MeshComponent>& _meshComp);
-		
 		static int& GetViewportMode() { return s_RendererSubSystem->m_ViewportMode; }
 
 
@@ -53,8 +48,15 @@ namespace Denix
 
 
 	private:
+		void RenderScene();
+		void RenderDefaultViewport();
+		void RenderUnlitViewport();
+		void RenderWireframeViewport();
+		void RenderCollisionViewport();
 
-		void SetActiveScene(const Ref<Scene>& _scene);
+		void RenderLighting();
+
+		static void SetActiveScene(const Ref<Scene>& _scene);
 
 		static RendererSubsystem* s_RendererSubSystem;
 		
@@ -65,9 +67,15 @@ namespace Denix
 
 		Ref<Scene> m_ActiveScene;
 
+		glm::vec3 m_WireframeColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 m_StaticColliderColor = glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec3 m_DynamicColliderColor = glm::vec3(1.000, 0.078, 0.576);
+
+		float m_ColliderAmbientIntensity = 0.7f;
 		int m_ViewportMode = static_cast<int>(ViewportMode::Default);
 
 		friend class SceneSubsystem;
+		friend class Engine;
 	};
 }
 

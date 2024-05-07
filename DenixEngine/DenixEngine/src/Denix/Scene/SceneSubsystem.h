@@ -3,7 +3,6 @@
 #include "Denix/Core.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/System/SubSystem.h"
-#include "Denix/Video/Renderer/RenderComponent.h"
 
 namespace Denix
 {
@@ -25,8 +24,6 @@ namespace Denix
 		~SceneSubsystem() override
 		{
 			m_ActiveScene = nullptr;
-			s_RendererSubsystem = nullptr;
-			s_PhysicsSubsystem = nullptr;
 
 			s_SceneSubsystem = nullptr;
 		}
@@ -43,7 +40,6 @@ namespace Denix
 
 		void GameObjectsUpdate(float _deltaTime);
 
-		void ViewportRendering(const Denix::Ref<Denix::GameObject>& gameObject);
 
 		static SceneSubsystem* Get() { return s_SceneSubsystem; }
 
@@ -72,22 +68,15 @@ namespace Denix
 
 		void PauseScene();
 
-		void SceneLighting();
 
 
 	private:
 		static SceneSubsystem* s_SceneSubsystem;
 
-		class WindowSubsystem* s_WindowSubsystem;
-		class RendererSubsystem* s_RendererSubsystem;
-		class PhysicsSubsystem* s_PhysicsSubsystem;
 		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
 
 		Ref<Scene> m_ActiveScene;
-		
-		
 
-		Ref<RenderComponent> m_WireframeRenderComponent;
 		friend class Engine;
 		friend class EditorSubsystem;
 	};

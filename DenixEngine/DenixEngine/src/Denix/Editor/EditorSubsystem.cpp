@@ -48,6 +48,7 @@ namespace Denix
 		if(m_IsScenePanelOpen) ScenePanel();
 		if (m_IsDetailsPanelOpen) DetailsPanel();
 		if(m_IsInputPanelOpen) s_InputSubsystem->InputPanel();
+		if (m_IsPhysicsSettingsOpen) PhysicsSettings();
 	}
 
 	void EditorSubsystem::SetActiveScene(const Ref<Scene>& _scene)
@@ -87,8 +88,8 @@ namespace Denix
 				ImGui::SeparatorText("Panels");
 				ImGui::Checkbox("Scene Panel", &m_IsScenePanelOpen);
 				ImGui::Checkbox("Details Panel", &m_IsDetailsPanelOpen);
-				ImGui::Checkbox("Input Panel", &m_IsInputPanelOpen);
-				ImGui::Checkbox("Input Panel", &m_IsPhysicsSettingsOpen);
+				ImGui::Checkbox("Input Debugger", &m_IsInputPanelOpen);
+				ImGui::Checkbox("Physics Settings", &m_IsPhysicsSettingsOpen);
 				ImGui::EndMenu();
 			}
 
@@ -184,7 +185,7 @@ namespace Denix
 		ImGui::SeparatorText("Scene Properties");
 
 		// Viewport Mode
-		if (ImGui::Combo("Viewport Mode", &RendererSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collider\0\0"))
+		if (ImGui::Combo("Viewport Mode", &RendererSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collision\0\0"))
 		{
 
 		}
@@ -503,10 +504,10 @@ namespace Denix
 			if (ImGui::Checkbox("Is Trigger", &pComp->IsTrigger())) pComp->ToggleTrigger();
 			ImGui::SameLine(); ImGui::Text(" State: %s", pComp->GetTriggerStateS().c_str());
 
-			// Collider
+			// Collision
 			ImGui::Checkbox("Show Collider", &pComp->GetCollider()->GetRenderComponent()->IsVisible());
 
-			// Collider Type
+			// Collision Type
 			static const char* colliderTypes[] = { "Plane", "Cube", "Sphere" };
 			static int itemCurrent = (int)pComp->GetCollider()->GetColliderType();
 			const char* previewItem = colliderTypes[itemCurrent];
@@ -546,7 +547,7 @@ namespace Denix
 				ImGui::EndCombo();
 			}
 
-			// Collider Specifics
+			// Collision Specifics
 			switch (pComp->GetCollider()->GetColliderType())
 			{
 			case ColliderType::Plane:

@@ -16,7 +16,7 @@ namespace Denix
 		Default,
 		Unlit,
 		Wireframe,
-		Collider
+		Collision
 	};
 
 	class RenderComponent : public Component

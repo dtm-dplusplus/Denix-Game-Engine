@@ -56,7 +56,7 @@ namespace Denix
 			m_Initialized = false;
 		}   
 
-		Ref<SDL_GLWindow> GetWindow() const { return m_Window; }
+		static Ref<SDL_GLWindow> GetWindow() { return s_WindowSubSystem->m_Window; }
 
 	private:
 		Ref<SDL_GLWindow> m_Window;

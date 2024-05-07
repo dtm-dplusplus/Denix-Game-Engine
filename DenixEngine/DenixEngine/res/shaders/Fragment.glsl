@@ -146,7 +146,9 @@ vec4 CalcSpotLights()
 
 void main()
 {
-	// This is slow. Will swap shaders instead later.
+	vec4 totalColor;
+
+	// Usa
 	if (!u_AffectsLighting)
 	{
 		Color = texture(u_Texture, TexCoord) * vec4(u_Material.BaseColor, 1.0f);
@@ -154,7 +156,7 @@ void main()
 	}
 
 	// Get color from lighting
-	vec4 totalColor = CalcDirLight() + CalcPointLights() + CalcSpotLights();
+	totalColor = CalcDirLight() + CalcPointLights() + CalcSpotLights();
 
 	// Get base from color or texture
 	if(!u_BaseColorAsTexture)

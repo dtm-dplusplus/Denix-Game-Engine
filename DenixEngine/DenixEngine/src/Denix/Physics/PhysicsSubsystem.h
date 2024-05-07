@@ -39,7 +39,6 @@ namespace Denix
 
 		
 	public:
-		void SetActiveScene(const Ref<Scene>& _scene) { m_ActiveScene = _scene; }
 
 		void PreUpdate(float _deltaTime) override;
 
@@ -66,6 +65,8 @@ namespace Denix
 	private:
 		static PhysicsSubsystem* s_PhysicsSubSystem;
 
+		static void SetActiveScene(const Ref<Scene>& _scene) { s_PhysicsSubSystem->m_ActiveScene = _scene; }
+
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
 
 		std::vector<CollisionEvent> m_CollisionEvents;
@@ -74,5 +75,7 @@ namespace Denix
 
 		bool m_CollisionDetectionEnabled = true;
 		bool m_CollisionResponseEnabled = true;
+
+		friend class SceneSubsystem;
 	};
 }

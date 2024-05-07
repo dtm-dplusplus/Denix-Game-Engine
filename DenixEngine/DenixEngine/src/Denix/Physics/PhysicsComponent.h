@@ -199,6 +199,8 @@ namespace Denix
 			}
 		}
 
+		bool IsColliding() const { return m_IsColliding; }
+
 		void SetStepMethod(const StepMethod _method)
 		{
 			m_StepMethod = _method;
@@ -326,7 +328,7 @@ namespace Denix
 
 		TriggerState m_TriggerState = TriggerState::Null;
 
-		/** Collider used to compute collision responses. Belongs to the physics component */
+		/** Collision used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
 
 		/** Transform component which is attached to this components game object */
@@ -335,6 +337,7 @@ namespace Denix
 	private:
 		bool m_SteppedThisFrame = false;
 		bool m_SteppedNextFrame = false;
+		bool m_IsColliding = false;
 
 		glm::vec3 m_PreviousPosition = glm::vec3(0.f);
 
