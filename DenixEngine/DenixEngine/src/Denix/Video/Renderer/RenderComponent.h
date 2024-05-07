@@ -11,6 +11,14 @@
 
 namespace Denix
 {
+	enum class ViewportMode
+	{
+		Default,
+		Unlit,
+		Wireframe,
+		Collider
+	};
+
 	class RenderComponent : public Component
 	{
 	public:

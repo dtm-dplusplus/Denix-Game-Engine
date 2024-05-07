@@ -2,15 +2,14 @@
 
 #include "Denix/System/Subsystem.h"
 #include "Denix/Core.h"
-#include "Denix/Core/Logger.h"
 
+#include "Denix/Video/Renderer/RenderComponent.h"
 
 namespace Denix
 {
 	class Scene;
 	class MeshComponent;
 	class TransformComponent;
-	class RenderComponent;
 	class Camera;
 
 	/** Manages Rendering of objects. Will move to component based submission instead of passing game object soon */
@@ -33,6 +32,9 @@ namespace Denix
 			const Ref<TransformComponent>& _transformComp, 
 			const Ref<MeshComponent>& _meshComp);
 		
+		static int& GetViewportMode() { return s_RendererSubSystem->m_ViewportMode; }
+
+
 	public:
 		static RendererSubsystem* Get() { return s_RendererSubSystem; }
 
@@ -62,6 +64,8 @@ namespace Denix
 			Ref<MeshComponent>>> m_RendererComponents;
 
 		Ref<Scene> m_ActiveScene;
+
+		int m_ViewportMode = static_cast<int>(ViewportMode::Default);
 
 		friend class SceneSubsystem;
 	};

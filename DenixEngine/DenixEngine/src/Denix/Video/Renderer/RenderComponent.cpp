@@ -5,6 +5,7 @@
 
 namespace Denix
 {
+
 	RenderComponent::RenderComponent(): Component(ObjectInitializer("Render Component"))
 	{
 		m_Shader = ResourceSubsystem::GetShader("DefaultShader");

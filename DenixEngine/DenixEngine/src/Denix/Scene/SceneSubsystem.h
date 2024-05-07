@@ -3,6 +3,7 @@
 #include "Denix/Core.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/System/SubSystem.h"
+#include "Denix/Video/Renderer/RenderComponent.h"
 
 namespace Denix
 {
@@ -30,13 +31,7 @@ namespace Denix
 			s_SceneSubsystem = nullptr;
 		}
 
-		enum class ViewportMode
-		{
-			Default,
-			Unlit,
-			Wireframe,
-			Collider
-		};
+		
 		void CleanRubbish();
 
 	public:
@@ -79,12 +74,6 @@ namespace Denix
 
 		void SceneLighting();
 
-		static void SetViewportMode(int _mode)
-		{
-			if(_mode >= 0 && _mode <= static_cast<int>(ViewportMode::Collider))
-				s_SceneSubsystem->m_ViewportMode = _mode;
-		}
-		static int& GetViewportMode() { return s_SceneSubsystem->m_ViewportMode; }
 
 	private:
 		static SceneSubsystem* s_SceneSubsystem;
@@ -96,7 +85,7 @@ namespace Denix
 
 		Ref<Scene> m_ActiveScene;
 		
-		int m_ViewportMode = static_cast<int>(ViewportMode::Default);
+		
 
 		Ref<RenderComponent> m_WireframeRenderComponent;
 		friend class Engine;

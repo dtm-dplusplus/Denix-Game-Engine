@@ -282,7 +282,7 @@ namespace Denix
 	void SceneSubsystem::ViewportRendering(const Ref<GameObject>& _gameObject)
 	{
 		// TEMP Immediate Mode Rendering
-		switch (static_cast<ViewportMode>(m_ViewportMode))
+		switch (static_cast<ViewportMode>(RendererSubsystem::GetViewportMode()))
 		{
 		case ViewportMode::Default:
 		{
@@ -317,7 +317,7 @@ namespace Denix
 
 			// Draw the GameObject
 			s_RendererSubsystem->DrawImmediate(
-				m_WireframeRenderComponent,
+				_gameObject->GetRenderComponent(),
 				_gameObject->GetTransformComponent(),
 				_gameObject->GetMeshComponent());
 		}
@@ -325,7 +325,7 @@ namespace Denix
 
 		case ViewportMode::Collider:
 		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 			// Draw the GameObject
 			if (const Ref<Collider> collider = _gameObject->GetCollider())
@@ -333,7 +333,7 @@ namespace Denix
 				s_RendererSubsystem->DrawImmediate(
 					collider->GetRenderComponent(),
 					_gameObject->GetTransformComponent(),
-					_gameObject->GetMeshComponent());
+					collider->GetMeshComponent());
 			}
 		}
 		break;

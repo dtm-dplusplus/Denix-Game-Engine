@@ -184,7 +184,7 @@ namespace Denix
 		ImGui::SeparatorText("Scene Properties");
 
 		// Viewport Mode
-		if (ImGui::Combo("Viewport Mode", &SceneSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collider\0\0"))
+		if (ImGui::Combo("Viewport Mode", &RendererSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collider\0\0"))
 		{
 
 		}
