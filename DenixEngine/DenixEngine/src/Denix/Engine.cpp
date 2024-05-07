@@ -50,6 +50,10 @@ namespace Denix
 		m_SubsystemOrder.push_back(m_RendererSubSystem);
 		m_Subsystems["Renderer"] = m_RendererSubSystem;
 
+		m_ResourceSubSystem = MakeRef<ResourceSubsystem>();
+		m_SubsystemOrder.push_back(m_ResourceSubSystem);
+		m_Subsystems["Resource"] = m_ResourceSubSystem;
+
 		m_UISubSytem = MakeRef<UISubsystem>();
 		m_SubsystemOrder.push_back(m_UISubSytem);
 		m_Subsystems["UI"] = m_UISubSytem;
@@ -70,9 +74,7 @@ namespace Denix
 		m_SubsystemOrder.push_back(m_InputSubsystem);
 		m_Subsystems["Input"] = m_InputSubsystem;
 
-		m_ResourceSubSystem = MakeRef<ResourceSubsystem>();
-		m_SubsystemOrder.push_back(m_ResourceSubSystem);
-		m_Subsystems["Resource"] = m_ResourceSubSystem;
+		
 
 	    // Order of initialization is defined above
 		for(const auto& subsystem : m_SubsystemOrder)

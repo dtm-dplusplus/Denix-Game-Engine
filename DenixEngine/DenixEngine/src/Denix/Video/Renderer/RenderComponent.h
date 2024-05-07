@@ -16,6 +16,8 @@ namespace Denix
 	public:
 		RenderComponent();
 
+		RenderComponent(Ref<RenderComponent> _other);
+
 		RenderComponent(const std::string& _parentName);
 
 		~RenderComponent() override = default;

@@ -182,8 +182,13 @@ namespace Denix
 	void EditorSubsystem::ScenePropertiesWidget() const
 	{
 		ImGui::SeparatorText("Scene Properties");
+
 		// Viewport Mode
-		ImGui::Combo("Viewport Mode", &SceneSubsystem::GetViewportMode(), "Default0\Lit\0Unlit\0Wireframe\0Collider\0\0");
+		if (ImGui::Combo("Viewport Mode", &SceneSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collider\0\0"))
+		{
+
+		}
+
 		// Subsystems
 		ImGui::Checkbox("Render Subsystem", &s_RendererSubSystem->IsEnabled());
 
@@ -503,7 +508,7 @@ namespace Denix
 
 			// Collider Type
 			static const char* colliderTypes[] = { "Plane", "Cube", "Sphere" };
-			static int itemCurrent = 0;
+			static int itemCurrent = (int)pComp->GetCollider()->GetColliderType();
 			const char* previewItem = colliderTypes[itemCurrent];
 			if (ImGui::BeginCombo("Collider Type", previewItem))
 			{
@@ -517,19 +522,19 @@ namespace Denix
 						{
 						case 0:
 						{
-							pComp->SetCollider(MakeRef<PlaneCollider>());
+							pComp->m_Collider = MakeRef<PlaneCollider>(pComp->m_Collider->GetRenderComponent());
 							DE_LOG(LogEditor, Warn, "Set collider type to plane on {}", _selectedObject->GetName())
 						} break;
 
 						case 1:
 						{
-							pComp->SetCollider(MakeRef<CubeCollider>());
+							pComp->m_Collider = MakeRef<CubeCollider>(pComp->m_Collider->GetRenderComponent());
 							DE_LOG(LogEditor, Warn, "Set collider type to cube on {}", _selectedObject->GetName())
 						} break;
 
 						case 2:
 						{
-							pComp->SetCollider(MakeRef<SphereCollider>());
+							pComp->m_Collider = MakeRef<SphereCollider>();
 							DE_LOG(LogEditor, Warn, "Set collider type to sphere on {}", _selectedObject->GetName())
 						} break;
 						}

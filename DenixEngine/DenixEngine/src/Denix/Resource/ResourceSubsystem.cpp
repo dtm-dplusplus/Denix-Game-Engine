@@ -20,20 +20,28 @@ namespace Denix
 
 		// Iniatlize Default Assets
 
-			// Create Debug Shader
-		{
-			std::vector<ShaderSource> shaders;
-			shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugVertex.glsl)");
-			shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugFragment.glsl)");
-			LoadShader(shaders, "DebugShader");
-		}
+		
 
 		// SHADERS
 		{
-			std::vector<ShaderSource> shaders;
-			shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Vertex.glsl)");
-			shaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Fragment.glsl)");
-			LoadShader(shaders, "DefaultShader");
+			std::vector<ShaderSource> debugShaders;
+			debugShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugVertex.glsl)");
+			debugShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugFragment.glsl)");
+			LoadShader(debugShaders, "DebugShader");
+		}
+
+		{
+			std::vector<ShaderSource> defaultShaders;
+			defaultShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Vertex.glsl)");
+			defaultShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Fragment.glsl)");
+			LoadShader(defaultShaders, "DefaultShader");
+		}
+
+		{
+			std::vector<ShaderSource> wireframeShaders;
+			wireframeShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\WireframeVertex.glsl)");
+			wireframeShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\WireframeFragment.glsl)");
+			LoadShader(wireframeShaders, "WireframeShader");
 		}
 
 		// TEXTURES

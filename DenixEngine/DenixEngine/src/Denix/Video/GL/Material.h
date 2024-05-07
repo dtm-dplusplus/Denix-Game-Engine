@@ -13,7 +13,7 @@ namespace Denix
 
 		glm::vec3 GetBaseColor() const { return m_BaseColor; }
 		glm::vec3& GetBaseColor() { return m_BaseColor; }
-		void SetBaseColor(const glm::vec3 _color) { m_BaseColor = _color; }
+		void SetBaseColor(const glm::vec3& _color) { m_BaseColor = _color; }
 
 		float GetSpecularPower() const { return m_SpecularPower; }
 		float& GetSpecularPower() { return m_SpecularPower; }

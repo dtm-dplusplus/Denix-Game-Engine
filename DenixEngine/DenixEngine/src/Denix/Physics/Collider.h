@@ -64,6 +64,7 @@ namespace Denix
 	{
 	public:
 		PlaneCollider();
+		PlaneCollider(Ref<RenderComponent> _renderComponent);
 
 		~PlaneCollider() override = default;
 
@@ -81,7 +82,7 @@ namespace Denix
 	{
 	public:
 		CubeCollider();
-		
+		CubeCollider(Ref<RenderComponent> _renderComponent);
 
 		~CubeCollider() override = default;
 

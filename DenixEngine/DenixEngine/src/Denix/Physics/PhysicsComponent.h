@@ -84,8 +84,9 @@ namespace Denix
 			m_Torque += _torque;
 		}
 
-		Ref<Collider> GetCollider() { return m_Collider; }
-		void SetCollider(Ref<Collider> _collider) { m_Collider = _collider; }
+		Ref<Collider> GetCollider() const { return m_Collider; }
+		Ref<Collider>& GetCollider() { return m_Collider; }
+		void SetCollider(const Ref<Collider>& _collider) { m_Collider = _collider; }
 
 	public:
 		/**/
@@ -387,6 +388,7 @@ namespace Denix
 		// Rotation Matrix
 		glm::mat3 m_RotationMatrix = glm::mat3(1.0f);
 
+		friend class EditorSubsystem;
 		friend class SceneSubsystem;
 		friend class PhysicsSubsystem;
 		friend class CollisionDetection;

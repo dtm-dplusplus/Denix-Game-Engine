@@ -20,6 +20,12 @@ namespace Denix
 		s_WindowSubsystem = WindowSubsystem::Get();
 		s_RendererSubsystem = RendererSubsystem::Get();
 		s_PhysicsSubsystem = PhysicsSubsystem::Get();
+
+		m_WireframeRenderComponent = MakeRef<RenderComponent>("Wireframe Render component");
+		m_WireframeRenderComponent->SetShader(ResourceSubsystem::GetShader("WireframeShader"));
+		m_WireframeRenderComponent->SetBaseColorAsTexture(true);
+		m_WireframeRenderComponent->GetMaterial()->SetBaseColor(glm::vec3(1.0f, 1.0f, 1.0f));
+
 		DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Initialized")
 
 		m_Initialized = true;
@@ -311,7 +317,7 @@ namespace Denix
 
 			// Draw the GameObject
 			s_RendererSubsystem->DrawImmediate(
-				_gameObject->GetRenderComponent(),
+				m_WireframeRenderComponent,
 				_gameObject->GetTransformComponent(),
 				_gameObject->GetMeshComponent());
 		}

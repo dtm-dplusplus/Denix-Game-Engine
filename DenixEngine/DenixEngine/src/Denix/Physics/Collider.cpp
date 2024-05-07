@@ -12,14 +12,31 @@ PlaneCollider::PlaneCollider()
 	m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Plane"));
 }
 
+PlaneCollider::PlaneCollider(Ref<RenderComponent> _renderComponent)
+{
+	m_ColliderType = (int)ColliderType::Plane;
+	m_RenderComponent = _renderComponent;
+	m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Plane"));
+
+}
+
 CubeCollider::CubeCollider()
 {
 	m_ColliderType = (int)ColliderType::Cube;
 	m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
+
+}
+
+CubeCollider::CubeCollider(Ref<RenderComponent> _renderComponent)
+{
+	m_ColliderType = (int)ColliderType::Cube;
+	m_RenderComponent = _renderComponent;
+	m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
+
 }
 
 SphereCollider::SphereCollider()
 {
 	m_ColliderType = (int)ColliderType::Sphere;
-	m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube")); // Will change to sphere
+	m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));// Will change to sphere
 }

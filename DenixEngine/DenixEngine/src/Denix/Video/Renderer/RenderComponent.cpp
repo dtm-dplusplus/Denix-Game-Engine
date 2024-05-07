@@ -12,6 +12,18 @@ namespace Denix
 		m_Material = ResourceSubsystem::GetMaterial("MAT_Default");
 	}
 
+	RenderComponent::RenderComponent(Ref<RenderComponent> _other)
+	{
+		m_Shader = _other->m_Shader;
+		m_Texture = _other->m_Texture;
+		m_Material = _other->m_Material;
+		m_TextureSettings = _other->m_TextureSettings;
+		m_DebugColor = _other->m_DebugColor;
+		m_IsVisible = _other->m_IsVisible;
+		m_AffectsLighting = _other->m_AffectsLighting;
+		m_BaseColorAsTexture = _other->m_BaseColorAsTexture;
+	}
+
 	RenderComponent::RenderComponent(const std::string& _parentName): Component(_parentName, ObjectInitializer("Render Component"))
 	{
 		m_Shader = ResourceSubsystem::GetShader("DefaultShader");

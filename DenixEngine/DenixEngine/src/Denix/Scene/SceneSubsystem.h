@@ -33,7 +33,6 @@ namespace Denix
 		enum class ViewportMode
 		{
 			Default,
-			Lit,
 			Unlit,
 			Wireframe,
 			Collider
@@ -99,6 +98,7 @@ namespace Denix
 		
 		int m_ViewportMode = static_cast<int>(ViewportMode::Default);
 
+		Ref<RenderComponent> m_WireframeRenderComponent;
 		friend class Engine;
 		friend class EditorSubsystem;
 	};
