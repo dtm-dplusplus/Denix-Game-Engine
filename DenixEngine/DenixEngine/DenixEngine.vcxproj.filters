@@ -167,6 +167,9 @@
     <ClCompile Include="src\Denix\Scene\Object\Shapes\Shapes.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Denix\Physics\CollisionDetection.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Denix.h" />
@@ -307,5 +310,6 @@
     </ClInclude>
     <ClInclude Include="src\Denix\Core\Math.h" />
     <ClInclude Include="src\Denix\Scene\Object\Shapes\Shapes.h" />
+    <ClInclude Include="src\Denix\Physics\CollisionDetection.h" />
   </ItemGroup>
 </Project>

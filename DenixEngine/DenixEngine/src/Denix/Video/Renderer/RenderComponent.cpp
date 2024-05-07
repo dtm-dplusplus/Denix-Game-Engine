@@ -35,11 +35,11 @@ namespace Denix
 
 	void RenderComponent::RegisterComponent()
 	{
-		Component::RegisterComponent();
+		// Component::RegisterComponent();
 	}
 
 	void RenderComponent::UnregisterComponent()
 	{
-		Component::UnregisterComponent();
+		// Component::UnregisterComponent();
 	}
 }

@@ -12,10 +12,9 @@ namespace Denix
 		{
 		}
 
-		void OnCollision(Ref<GameObject> _other, const CollisionData& _collison) override
+		void OnCollision(Ref<GameObject> _other, CollisionData& _collison) override
 		{
-			if (m_PhysicsComponent->GetVelocity().length() > 0.2f) DE_LOG(Log, Info, "PhysObject OnCollision")
-			
+			DE_LOG(Log, Info, "PhysObject OnCollision")
 		}
 
 

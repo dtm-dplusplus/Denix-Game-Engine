@@ -17,7 +17,7 @@ namespace Denix
         m_Components["Render"] = m_RenderComponent;
 
         m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
-        m_PhysicsComponent->m_ActorTransform = m_TransformComponent;
+        m_PhysicsComponent->m_ParentTransform = m_TransformComponent;
         m_Components["Physics"] = m_PhysicsComponent;
     }
 

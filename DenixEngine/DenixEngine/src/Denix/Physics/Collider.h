@@ -12,6 +12,7 @@ namespace Denix
 {
 	enum class ColliderType
 	{
+		Plane,
 		Cube,
 		Sphere
 	};
@@ -59,6 +60,23 @@ namespace Denix
 		friend class PhysicsComponent;
 	};
 
+	class PlaneCollider : public Collider
+	{
+	public:
+		PlaneCollider();
+
+		~PlaneCollider() override = default;
+
+		glm::vec3 GetNormal() const { return m_Normal; }
+		glm::vec3& GetNormal() { return m_Normal; }
+
+		float GetDistance() const { return m_Distance; }
+		float& GetDistance() { return m_Distance; }
+
+	private:
+		glm::vec3 m_Normal = { 0.0f, 1.0f, 0.0f };
+		float m_Distance = 0.0f;
+	};
 	class CubeCollider : public Collider
 	{
 	public:

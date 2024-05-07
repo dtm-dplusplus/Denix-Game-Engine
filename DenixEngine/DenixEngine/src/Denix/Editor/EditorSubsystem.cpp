@@ -419,32 +419,36 @@ namespace Denix
 	{
 		if (ImGui::CollapsingHeader("Physics", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			const Ref<PhysicsComponent> pComp = _selectedObject->GetPhysicsComponent();
+			const Ref<PhysicsComponent> comp = _selectedObject->GetPhysicsComponent();
 
 			// Physics Simulation
-			if (ImGui::Checkbox("Simulate Physics", &pComp->SimulatePhysics())) pComp->ToggleSimulation();
+			if (ImGui::Checkbox("Simulate Physics", &comp->SimulatePhysics())) comp->ToggleSimulation();
 
 			// Simulate Gravity
-			if (ImGui::Checkbox("Simulate Gravity", &pComp->GetSimulateGravity())) pComp->ToggleGravity();
+			if (ImGui::Checkbox("Simulate Gravity", &comp->GetSimulateGravity())) comp->ToggleGravity();
 			
-			
+			// Collision Detection
+			if (ImGui::Checkbox("Collision Detection", &comp->CollisionDetectionEnabled())) comp->ToggleCollisionDetection();
+
 			// Mass
-			ImGui::DragFloat("Mass", &pComp->GetMass(), DragSpeedDelta, FLT_MIN, FLT_MAX);
+			ImGui::DragFloat("Mass", &comp->GetMass(), DragSpeedDelta, FLT_MIN, FLT_MAX);
 
 			// Linear Drag
-			ImGui::DragFloat("Linear Drag", &pComp->GetLinearDrag(), DragSpeedDelta);
+			ImGui::DragFloat("Linear Drag", &comp->GetLinearDrag(), DragSpeedDelta);
 
 			// Angular Drag
-			ImGui::DragFloat("Angular Drag", &pComp->GetAngularDrag(), DragSpeedDelta);
+			ImGui::DragFloat("Angular Drag", &comp->GetAngularDrag(), DragSpeedDelta);
 
 			// Elasticity
-			ImGui::DragFloat("Elasticity", &pComp->GetElasticity(), DragSpeedDelta, 0.0f, 1.0f);
+			ImGui::DragFloat("Elasticity", &comp->GetElasticity(), DragSpeedDelta, 0.0f, 1.0f);
 
-			// Impulse
-			ImGui::Checkbox("Impulse Resonses", &pComp->GetImpulseEnabled());
+			
 
 			if (ImGui::TreeNode("Advanced Settings"))
 			{
+				// Impulse Response
+				ImGui::Checkbox("Impulse Resonses", &comp->GetImpulseEnabled());
+
 				// Step Simulation Method
 				static const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };
 				static int itemCurrent = 0; // Here we store our selection data as an index.
@@ -457,7 +461,7 @@ namespace Denix
 						if (ImGui::Selectable(stepMethods[n], is_selected))
 						{
 							itemCurrent = n;
-							pComp->SetStepMethod(static_cast<StepMethod>(n));
+							comp->SetStepMethod(static_cast<StepMethod>(n));
 						}
 
 						// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -468,20 +472,20 @@ namespace Denix
 				}
 
 				// Minimum Velocity
-				ImGui::DragFloat("Minimum Velocity", &pComp->GetMinimumVelocity(), DragSpeedDelta);
+				ImGui::DragFloat("Minimum Velocity", &comp->GetMinimumVelocity(), DragSpeedDelta);
 			}
 
 			// Viewable Properties
-			const glm::vec3 force = pComp->GetForce();
-			const glm::vec3& vel = pComp->GetVelocity();
-			const glm::vec3& avel = pComp->GetAngularVelocity();
-
-			const glm::vec3& acc = pComp->GetAcceleration();
-
-			ImGui::Text("Velocity			x: %.3f y: %.3f z: %.3f", vel.x, vel.y, vel.z);
-			ImGui::Text("Acceleration		x: %.3f y: %.3f z: %.3f", acc.x, acc.y, acc.z);
-			ImGui::Text("Force				x: %.3f y: %.3f z: %.3f", force.x, force.y, force.z);
-			ImGui::Text("Angular Velocity	x: %.3f y: %.3f z: %.3f", avel.x, avel.y, avel.z);
+			const glm::vec3 force = comp->GetForce();
+			const glm::vec3& vel = comp->GetVelocity();
+			const glm::vec3& avel = comp->GetAngularVelocity();
+			const glm::vec3& acc = comp->GetAcceleration();
+			
+			ImGui::Text("Force				x: %.2f y: %.2f z: %.2f", force.x, force.y, force.z);
+			ImGui::Text("Velocity			x: %.2f y: %.2f z: %.2f", vel.x, vel.y, vel.z);
+			ImGui::Text("Acceleration		x: %.2f y: %.2f z: %.2f", acc.x, acc.y, acc.z);
+			ImGui::Text("Angular Velocity	x: %.2f y: %.2f z: %.2f", avel.x, avel.y, avel.z);
+		
 		}
 	}
 
@@ -498,7 +502,7 @@ namespace Denix
 			ImGui::Checkbox("Show Collider", &pComp->GetCollider()->GetRenderComponent()->IsVisible());
 
 			// Collider Type
-			static const char* colliderTypes[] = { "Cube", "Sphere" };
+			static const char* colliderTypes[] = { "Plane", "Cube", "Sphere" };
 			static int itemCurrent = 0;
 			const char* previewItem = colliderTypes[itemCurrent];
 			if (ImGui::BeginCombo("Collider Type", previewItem))
@@ -513,11 +517,17 @@ namespace Denix
 						{
 						case 0:
 						{
+							pComp->SetCollider(MakeRef<PlaneCollider>());
+							DE_LOG(LogEditor, Warn, "Set collider type to plane on {}", _selectedObject->GetName())
+						} break;
+
+						case 1:
+						{
 							pComp->SetCollider(MakeRef<CubeCollider>());
 							DE_LOG(LogEditor, Warn, "Set collider type to cube on {}", _selectedObject->GetName())
 						} break;
 
-						case 1:
+						case 2:
 						{
 							pComp->SetCollider(MakeRef<SphereCollider>());
 							DE_LOG(LogEditor, Warn, "Set collider type to sphere on {}", _selectedObject->GetName())
@@ -534,6 +544,15 @@ namespace Denix
 			// Collider Specifics
 			switch (pComp->GetCollider()->GetColliderType())
 			{
+			case ColliderType::Plane:
+			{
+				if (Ref<PlaneCollider> sCol = std::dynamic_pointer_cast<PlaneCollider>(pComp->GetCollider()))
+				{
+					ImGui::DragFloat3("Normal", &sCol->GetNormal()[0], DragSpeedDelta);
+					ImGui::DragFloat("Distance", &sCol->GetDistance(), DragSpeedDelta);
+				}
+			} break;
+
 			case ColliderType::Cube:
 			{
 				if (Ref<CubeCollider> sCol = std::dynamic_pointer_cast<CubeCollider>(pComp->GetCollider()))

@@ -113,6 +113,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Denix\Physics\CollisionDetection.cpp" />
     <ClCompile Include="src\Denix\Core\TimerSubsystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Object\Shapes\Shapes.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Mesh.cpp" />
@@ -190,6 +191,7 @@
     </ClCompile>
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Texture.cpp" />
+    <ClInclude Include="src\Denix\Physics\CollisionDetection.h" />
     <ClInclude Include="src\Denix\Core\Math.h" />
     <ClInclude Include="src\Denix\Core\TimerSubsystem.h" />
     <ClInclude Include="src\Denix\Scene\Object\Shapes\Shapes.h" />

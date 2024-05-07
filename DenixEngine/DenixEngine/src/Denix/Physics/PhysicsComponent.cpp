@@ -34,7 +34,7 @@ namespace Denix
 		//m_Velocity = m_Velocity.length() < m_MinimumVelocity? glm::vec3(0.0f) : m_Velocity;
 
         // Calculate new displacement at time t + dt
-        m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;
+        m_ParentTransform->GetPosition() += m_Velocity * _deltaTime;
     }
 
     void PhysicsComponent::ComputeStepRK2(float _deltaTime)
@@ -58,7 +58,7 @@ namespace Denix
         m_Velocity = m_Velocity.length() > m_MinimumVelocity ? m_Velocity : glm::vec3(0.0f);
 
         // Calculate new displacement at time t + dt
-        m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;
+        m_ParentTransform->GetPosition() += m_Velocity * _deltaTime;
     }
 
     void PhysicsComponent::BeginScene()

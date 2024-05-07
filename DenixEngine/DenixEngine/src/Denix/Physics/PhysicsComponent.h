@@ -10,9 +10,12 @@ namespace Denix
 {
 	class Collider;
 
+	
 	struct CollisionData
 	{
 		glm::vec3 Normal;
+		glm::vec3 ContactPoint;
+		float Penetration;
 	};
 
 	enum class TriggerState
@@ -23,11 +26,7 @@ namespace Denix
 		Stay
 	};
 
-	struct TriggerData
-	{
-		TriggerState OldState;
-		TriggerState NewState;
-	};
+	
 	
 
 	enum class StepMethod
@@ -47,7 +46,32 @@ namespace Denix
 
 		~PhysicsComponent() override = default;
 
-		
+		void StepSimulation(float _deltaTime, bool _nextFrame = false)
+		{
+			switch (m_StepMethod)
+			{
+			case StepMethod::Euler:
+				ComputeStepEuler(_deltaTime);
+				break;
+
+			case StepMethod::RK2:
+				ComputeStepRK2(_deltaTime);
+				break;
+
+			case StepMethod::RK4:
+				ComputeStepRK4(_deltaTime);
+				break;
+
+			case StepMethod::Verlet:
+				ComputeStepVerlet(_deltaTime);
+				break;
+
+			default:; // assert here
+			}
+
+			m_SteppedThisFrame = true;
+			m_SteppedNextFrame = _nextFrame;
+		}
 
 
 		void AddForce(const glm::vec3& _force)
@@ -64,16 +88,28 @@ namespace Denix
 		void SetCollider(Ref<Collider> _collider) { m_Collider = _collider; }
 
 	public:
-		void ComputeTrigger()
+		/**/
+		void ComputeTriggerState()
 		{
+			/*if (collisionDetected)
+			{
+				trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Stay : TriggerState::Enter;
+			}
+			else
+			{
+				trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Exit : TriggerState::Null;
+			}
 
+
+
+			if (trigger.TrigData.NewState != TriggerState::Null) m_TriggerEvents.push_back(trigger);*/
 		}
 
 		void ComputeCenterOfMass()
 		{
 			// Compute the center of mass of the object
 			// For now, we will assume the center of mass is at the center of the object
-			m_CenterOfMass = m_ActorTransform->GetPosition();
+			m_CenterOfMass = m_ParentTransform->GetPosition();
 		}
 
 		void ComputeInverseInertiaTensor()
@@ -127,6 +163,18 @@ namespace Denix
 			else
 			{
 				DE_LOG(LogPhysics, Trace, "Physics component set to collision collider")
+			}
+		}
+
+		void ToggleCollisionDetection()
+		{
+			if (m_CollisionDetectionEnabled)
+			{
+				DE_LOG(LogPhysics, Trace, "Collision detection enabled")
+			}
+			else
+			{
+				DE_LOG(LogPhysics, Trace, "Collision detection disabled")
 			}
 		}
 
@@ -238,6 +286,7 @@ namespace Denix
 		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
 		void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
 
+		Ref<TransformComponent> GetParentTransform() { return m_ParentTransform; }
 	public:
 		void BeginScene() override;
 
@@ -255,6 +304,12 @@ namespace Denix
 		/** Set to decide if the physics component should perform collision detection */
 		bool m_CollisionDetectionEnabled = true;
 
+		/** Set to decide if the physics component should override collision tolereance used by collision system */
+		bool m_CustomCollisonTolerance = false;
+
+		/** Custom collision tolerance value which overrides the value used by the collision system */
+		float m_CollisionTolerance = 0.5f;
+
 		/** Set to decide if the physics component should be a trigger collider 
 		 * If true, the physics component will not respond to collisions, but will still trigger events
 		*/
@@ -270,15 +325,11 @@ namespace Denix
 
 		TriggerState m_TriggerState = TriggerState::Null;
 
-		bool m_IsColliding = false;
-
 		/** Collider used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
 
-
-
 		/** Transform component which is attached to this components game object */
-		Ref<class TransformComponent> m_ActorTransform;
+		Ref<class TransformComponent> m_ParentTransform;
 
 	private:
 		bool m_SteppedThisFrame = false;
@@ -338,6 +389,7 @@ namespace Denix
 
 		friend class SceneSubsystem;
 		friend class PhysicsSubsystem;
+		friend class CollisionDetection;
 		friend class GameObject;
 	};
 }

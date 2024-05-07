@@ -13,6 +13,12 @@ namespace Denix
 	class Cube : public GameObject
 	{
 	public:
-		Cube(const ObjectInitializer& _objInit = { "TestCube" });
+		Cube(const ObjectInitializer& _objInit = { "Cube" });
+	};
+
+	class Sphere : public GameObject
+	{
+	public:
+		Sphere(const ObjectInitializer& _objInit = { "Sphere" });
 	};
 }
