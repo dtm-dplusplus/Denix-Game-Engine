@@ -2144,7 +2144,7 @@ static void ShowDemoWindowWidgets()
         const float   f32_zero = 0.f, f32_one = 1.f, f32_lo_a = -10000000000.0f, f32_hi_a = +10000000000.0f;
         const double  f64_zero = 0.,  f64_one = 1.,  f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
-        // State
+        // NewState
         static char   s8_v  = 127;
         static ImU8   u8_v  = 255;
         static short  s16_v = 32767;

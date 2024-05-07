@@ -41,7 +41,7 @@ namespace Denix
 		void UnregisterComponent() override;
 
 		Moveability GetMoveability() const { return static_cast<Moveability>(m_Moveability); }
-		int& GetMoveability() { return m_Moveability; }
+		int& GetMoveabilityI() { return m_Moveability; }
 		void SetMoveability(const Moveability _moveability)
 		{
 			m_Moveability = static_cast<int>(_moveability);

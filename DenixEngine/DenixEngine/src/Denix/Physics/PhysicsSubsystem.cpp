@@ -25,18 +25,17 @@ namespace Denix
 
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			// Clean collision data
-			physicsComp->m_Collisions.clear();
-			physicsComp->m_Triggers.clear();
+			// Clean collision colData
+			m_CollisionEvents.clear();
+			m_TriggerEvents.clear();
 
 			// Set step status
 			physicsComp->m_SteppedThisFrame = physicsComp->m_SteppedNextFrame;
 			physicsComp->m_SteppedNextFrame = false;
 
 			physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
-			//physicsComp->m_Velocity = glm::vec3(0.0f);
 
-			physicsComp->m_Torque = glm::vec3(0.0f);
+			//thisComp->m_Torque = glm::vec3(0.0f);
 
 			physicsComp->m_PreviousPosition = physicsComp->m_ActorTransform->GetPosition();
 
@@ -48,17 +47,83 @@ namespace Denix
 	{
 		if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
 
-		UpdateCollisionDetection(_deltaTime);
+		if(m_CollisionDetectionEnabled) CollisionDetection(_deltaTime);
 
-		UpdatePhysicsComponents(_deltaTime);
+		PhysicsSimulation(_deltaTime);
 	}
  
-	void PhysicsSubsystem::UpdateCollisionDetection(float _deltaTime)
+	void PhysicsSubsystem::CollisionDetection(float _deltaTime)
 	{
+		// Create a list of static objects and a list of dynamic objects
+		std::vector<Ref<PhysicsComponent>> staticObjects;
+		std::vector<Ref<PhysicsComponent>> dynamicObjects;
+
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			if (physicsComp->m_ActorTransform->GetMoveability() == (int)Moveability::Static && !physicsComp->m_IsTrigger) continue;
+			if (physicsComp->m_ActorTransform->GetMoveability() == Moveability::Static)
+			{
+				staticObjects.push_back(physicsComp);
+			}
+			else
+			{
+				dynamicObjects.push_back(physicsComp);
+			}
+		}
 
+		// Check collision detection for dynamic objects
+		for (const auto& physicsComp : dynamicObjects)
+		{
+			// Check collision detection enabled for this component
+			if (!physicsComp->CollisionDetectionEnabled()) continue;
+
+			for (const auto& staticComp : staticObjects)
+			{
+				// Broad Phase Collision Detection
+				BroadCollisionDetection(physicsComp, staticComp);
+
+				// Narrow Phase Collision Detection
+				NarrowCollisionDetection(physicsComp, staticComp);
+				NarrowTriggerDetection(physicsComp, staticComp);
+
+				if (!physicsComp->IsTrigger())
+				{
+					
+				}
+				else
+				{
+					if (!staticComp->IsTrigger())
+					{
+						// Trigger - Collision Detection
+					}
+					else
+					{
+						// Trigger - Trigger Detection
+					}
+					// Trigger - Collision Detection
+
+				}
+			}
+			// Broad Phase Collision Detection
+
+			// Create a bounding sphere for the physics component
+
+			// check against all other physics components
+
+			// If collision detected, perform Narrow Phase Collision Detection
+			if (!physicsComp->IsTrigger())
+			{
+				// Narrow Collision Detection
+
+
+
+			}
+			else
+			{
+				// Narrow Trigger Detection
+			}
+			
+			
+			
 			Ref<Collider> collider = physicsComp->m_Collider;
 			bool collisionDetected{ false };
 
@@ -74,9 +139,13 @@ namespace Denix
 				{
 					collisionDetected = true;
 
-					CollisionDetection collision;
-					collision.Normal = normal;
+					CollisionEvent collision;
+					collision.ColData.Normal = normal;
 
+					if (const Ref<GameObject> thisParent = m_ActiveScene->GetGameObject(physicsComp->m_ParentObjectName))
+					{
+
+					}
 					// If Collider is trigger compute the trigger state
 					
 					physicsComp->m_Collisions.push_back(collision);
@@ -95,21 +164,21 @@ namespace Denix
 			
 			if (physicsComp->IsTrigger())
 			{
-				TriggerDetection trigger;
+				TriggerData trigger;
 
-				// Check Trigger State
+				// Check Trigger NewState
 				if (collisionDetected)
 				{
-					trigger.State = physicsComp->m_IsColliding ? TriggerState::Stay : TriggerState::Enter;
+					trigger.NewState = physicsComp->m_IsColliding ? TriggerState::Stay : TriggerState::Enter;
 				}
 				else
 				{
-					trigger.State = physicsComp->m_IsColliding ? TriggerState::Exit : TriggerState::Null;
+					trigger.NewState = physicsComp->m_IsColliding ? TriggerState::Exit : TriggerState::Null;
 				}
 
-				physicsComp->m_TriggerState = trigger.State;
+				physicsComp->m_TriggerState = trigger.NewState;
 
-				if (trigger.State != TriggerState::Null)
+				if (trigger.NewState != TriggerState::Null)
 				{
 					physicsComp->m_Triggers.push_back(trigger);
 				}
@@ -123,85 +192,105 @@ namespace Denix
 		}
 	}
 
-	void PhysicsSubsystem::UpdatePhysicsComponents(float _deltaTime)
+	void PhysicsSubsystem::PhysicsSimulation(float _deltaTime)
 	{
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			// Compute Collision Detection
-			for (const CollisionDetection& collision : physicsComp->m_Collisions)
-			{
-
-				// Impulse response
-				glm::vec3 planeVelocity = glm::vec3(0.0f);
-
-				glm::vec3 contactForce = glm::vec3(0.f, physicsComp->m_Mass * m_ActiveScene->GetGravity(), 0.f);
-
-				float impulseEnergy = -(1.0f + physicsComp->m_Elasticity) * 
-					glm::dot(physicsComp->m_Velocity - planeVelocity, collision.Normal) / (1.0f / physicsComp->m_Mass);
-
-				glm::vec3 impulseVector = impulseEnergy * collision.Normal;
-
-				contactForce += impulseVector / physicsComp->m_Mass;
-
-				physicsComp->AddForce(contactForce);
-
-				// Call client side function
-				if (const Ref<GameObject> parentObj = m_ActiveScene->GetGameObject(physicsComp->m_ParentObjectName))
-				{
-					parentObj->OnCollision(nullptr, collision);
-				}
-			}
-
-			// Compute Trigger Detection
-			for (const TriggerDetection& trigger: physicsComp->m_Triggers)
-			{
-				// Call client side function
-				if (const Ref<GameObject> parentObj = m_ActiveScene->GetGameObject(physicsComp->m_ParentObjectName))
-				{
-					switch (physicsComp->m_TriggerState)
-					{
-					case TriggerState::Stay:
-					{
-						parentObj->OnTriggerStay(nullptr);
-					} break;
-
-					case TriggerState::Enter:
-					{
-						parentObj->OnTriggerEnter(nullptr);
-					} break;
-
-					case TriggerState::Exit:
-					{
-						parentObj->OnTriggerExit(nullptr);
-					} break;
-					}
-				}
-			}
+			if(m_CollisionResponseEnabled) CollisionResonse(physicsComp);
 			
-			// Skip if not simulated
 			if (!physicsComp->m_SimulatePhysics) continue;
 
 			// Compute Torque
-			physicsComp->m_Torque = physicsComp->m_Force * physicsComp->m_Radius;
+			//thisComp->m_Torque = thisComp->m_Force * thisComp->m_Radius;
 
-			// Step Integration
-			if (!physicsComp->m_SteppedThisFrame)
-			{
-				StepPhysicsComponent(physicsComp, _deltaTime);
-			}
+			// Step Integration - Collision detection may have already stepped for dynamic objects
+			if (!physicsComp->m_SteppedThisFrame) StepPhysicsComponent(physicsComp, _deltaTime);
+
 
 			// update the angular momentum : L(t + 1) = L(t) + T * dt;
-			physicsComp->m_AngularMomentum += physicsComp->m_Radius * physicsComp->m_Mass  * physicsComp->m_Velocity * _deltaTime;
+			// thisComp->m_AngularMomentum += thisComp->m_Radius * thisComp->m_Mass  * thisComp->m_Velocity * _deltaTime;
 
 			// compute the inverse inertia tensor I1 = R Ibody 1RT; 
-			physicsComp->ComputeInverseInertiaTensor();
+			// thisComp->ComputeInverseInertiaTensor();
 
 			// update the angular velocity wt + 1 = | -1 Lt + 1
 			// 	reconstruct the skew matrix w(*) (refer to my lecture note)
 			// 	update the rotation matrix R of the rigid body : R(t + 1) = R(t) + dt w(*)R(t);
-			// 12) apply the rotation to the rigid body using glm matrix for visualisation;
+			// 12) apply the rotation to the rigid body using glm matrix for visualisation;		
+		}
+	}
 
+	void PhysicsSubsystem::BroadCollisionDetection(const Ref<PhysicsComponent>& _component, const Ref<PhysicsComponent>& _otherComponent)
+	{
+		// Create a bounding sphere for the physics component
+
+		return false;
+	}
+
+	void PhysicsSubsystem::NarrowCollisionDetection(const Ref<PhysicsComponent>& _component, const Ref<PhysicsComponent>& _otherComponent)
+	{
+	}
+
+	void PhysicsSubsystem::CollisionResonse(float _deltaTime)
+	{
+		// Compute Collision Detection
+		for (const auto& [thisComp, otherComp, colData] : m_CollisionEvents)
+		{
+
+			// Impulse response
+			glm::vec3 planeVelocity = glm::vec3(0.0f);
+
+			glm::vec3 contactForce = glm::vec3(0.f, thisComp->m_Mass * m_ActiveScene->GetGravity(), 0.f);
+
+			if (thisComp->m_ImpulseEnabled)
+			{
+				float impulseEnergy = -(1.0f + thisComp->m_Elasticity) *
+					glm::dot(thisComp->m_Velocity - planeVelocity, colData.Normal) / (1.0f / thisComp->m_Mass);
+
+				glm::vec3 impulseVector = impulseEnergy * colData.Normal;
+
+				thisComp->m_Velocity += impulseVector / thisComp->m_Mass;
+			}
 			
+
+			thisComp->AddForce(contactForce);
+
+			// Call client side implementation
+			if (const Ref<GameObject> thisParent = m_ActiveScene->GetGameObject(thisComp->m_ParentObjectName))
+			{
+				thisParent->OnCollision(otherComp, colData);
+			}
+
+			if (const Ref<GameObject> otherParent = m_ActiveScene->GetGameObject(otherComp->m_ParentObjectName))
+			{
+				otherParent->OnCollision(thisComp, colData);
+			}
+		}
+
+		// Compute Trigger Detection
+		for (const auto& [thisComp, otherComp, trigData] : m_CollisionEvents)
+		{
+			// Call client side function
+			if (const Ref<GameObject> parentObj = m_ActiveScene->GetGameObject(thisComp->m_ParentObjectName))
+			{
+				switch (thisComp->m_TriggerState)
+				{
+				case TriggerState::Stay:
+				{
+					parentObj->OnTriggerStay(nullptr);
+				} break;
+
+				case TriggerState::Enter:
+				{
+					parentObj->OnTriggerEnter(nullptr);
+				} break;
+
+				case TriggerState::Exit:
+				{
+					parentObj->OnTriggerExit(nullptr);
+				} break;
+				}
+			}
 		}
 	}
 

@@ -97,6 +97,9 @@ namespace Denix
 		// Input
 		bool m_IsInputPanelOpen = false;
 
+		// Physics
+		bool m_IsPhysicsSettingsOpen = false;
+		void PhysicsSettings();
 		// Menu Bar
 		void MenuBar();
 		float MenuBarHeight = 15.f;

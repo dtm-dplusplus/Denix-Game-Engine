@@ -24,10 +24,14 @@ namespace Denix
         // Calculate the net force - Null effect if Drag = 0
         m_Force -= m_LinearDrag * m_Velocity;
 
-        // Calculate new velocity at time t + dt
-        m_Velocity += m_Force / m_Mass * _deltaTime;
 
-		m_Velocity = m_Velocity.length() < m_MinimumVelocity? glm::vec3(0.0f) : m_Velocity;
+		// Calculate acceleration at time t
+		m_Acceleration = m_Force / m_Mass;
+
+        // Calculate new velocity at time t + dt
+        m_Velocity += m_Acceleration * _deltaTime;
+
+		//m_Velocity = m_Velocity.length() < m_MinimumVelocity? glm::vec3(0.0f) : m_Velocity;
 
         // Calculate new displacement at time t + dt
         m_ActorTransform->GetPosition() += m_Velocity * _deltaTime;

@@ -7,7 +7,7 @@ namespace Denix
 {
 	struct MouseData
 	{
-		// SDL State
+		// SDL NewState
 		Uint32 SDL_State;
 		Uint32 SDL_RelativeState;
 

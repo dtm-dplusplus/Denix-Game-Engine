@@ -2162,7 +2162,7 @@ struct ImGuiIO
 
     ImGuiContext* Ctx;                              // Parent UI context (needs to be set explicitly by parent).
 
-    // Main Input State
+    // Main Input NewState
     // (this block used to be written by backend, since 1.87 it is best to NOT write to those directly, call the AddXXX functions above instead)
     // (reading from those variables is fair game, as they are extremely unlikely to be moving anywhere)
     ImVec2      MousePos;                           // Mouse position, in pixels. Set to ImVec2(-FLT_MAX, -FLT_MAX) if mouse is unavailable (on another screen, etc.)

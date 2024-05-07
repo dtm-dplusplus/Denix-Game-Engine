@@ -10,7 +10,7 @@ namespace Denix
 {
 	class Collider;
 
-	struct CollisionDetection
+	struct CollisionData
 	{
 		glm::vec3 Normal;
 	};
@@ -23,9 +23,10 @@ namespace Denix
 		Stay
 	};
 
-	struct TriggerDetection
+	struct TriggerData
 	{
-		TriggerState State;
+		TriggerState OldState;
+		TriggerState NewState;
 	};
 	
 
@@ -133,6 +134,22 @@ namespace Denix
 		bool SimulatePhysics() const { return m_SimulatePhysics; }
 		bool& SimulatePhysics() { return m_SimulatePhysics; }
 
+		bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
+		bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }
+		void SetCollisionDetectionEnabled(const bool _collisionDetectionEnabled)
+		{
+			m_CollisionDetectionEnabled = _collisionDetectionEnabled;
+
+			if (m_CollisionDetectionEnabled)
+			{
+				DE_LOG(LogPhysics, Trace, "Collision detection enabled")
+			}
+			else
+			{
+				DE_LOG(LogPhysics, Trace, "Collision detection disabled")
+			}
+		}
+
 		void SetStepMethod(const StepMethod _method)
 		{
 			m_StepMethod = _method;
@@ -217,6 +234,9 @@ namespace Denix
 		bool& GetSimulateGravity() { return m_SimulateGravity; }
 		void SetSimulateGravity(const bool _simulateGravity) { m_SimulateGravity = _simulateGravity; }
 		
+		bool GetImpulseEnabled() const { return m_ImpulseEnabled; }
+		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
+		void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
 
 	public:
 		void BeginScene() override;
@@ -232,28 +252,30 @@ namespace Denix
 		/** Set to decide if the physics component should update simulation */
 		bool m_SimulatePhysics = false;
 
+		/** Set to decide if the physics component should perform collision detection */
+		bool m_CollisionDetectionEnabled = true;
+
 		/** Set to decide if the physics component should be a trigger collider 
 		 * If true, the physics component will not respond to collisions, but will still trigger events
 		*/
 		bool m_IsTrigger = false;
-		TriggerState m_TriggerState = TriggerState::Null;
-
-		/** List of triggers detected by the physics component */
-		std::vector<TriggerDetection> m_Triggers;
 
 		/** Apply gravitaional force to this object */
 		bool m_SimulateGravity = true;
 
+		bool m_ImpulseEnabled = true;
+
 		/** Method used to step the physics simulation */
 		StepMethod m_StepMethod = StepMethod::Euler;
+
+		TriggerState m_TriggerState = TriggerState::Null;
 
 		bool m_IsColliding = false;
 
 		/** Collider used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
 
-		/** List of collisions detected by the physics component */
-		std::vector<CollisionDetection> m_Collisions;
+
 
 		/** Transform component which is attached to this components game object */
 		Ref<class TransformComponent> m_ActorTransform;

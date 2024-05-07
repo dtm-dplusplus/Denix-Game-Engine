@@ -1822,7 +1822,7 @@ struct ImGuiStackLevelInfo
     ImGuiStackLevelInfo()   { memset(this, 0, sizeof(*this)); }
 };
 
-// State for ID Stack tool queries
+// NewState for ID Stack tool queries
 struct ImGuiIDStackTool
 {
     int                     LastActiveFrame;
@@ -2107,7 +2107,7 @@ struct ImGuiContext
     short                   TooltipOverrideCount;
     ImVector<char>          ClipboardHandlerData;               // If no custom clipboard handler is defined
     ImVector<ImGuiID>       MenusIdSubmittedThisFrame;          // A list of menu IDs that were rendered at least once
-    ImGuiTypingSelectState  TypingSelectState;                  // State for GetTypingSelectRequest()
+    ImGuiTypingSelectState  TypingSelectState;                  // NewState for GetTypingSelectRequest()
 
     // Platform support
     ImGuiPlatformImeData    PlatformImeData;                    // Data updated by current frame

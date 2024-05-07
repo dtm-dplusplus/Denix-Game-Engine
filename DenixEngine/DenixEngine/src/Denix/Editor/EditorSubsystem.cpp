@@ -11,6 +11,7 @@
 #include "Denix/Video/Renderer/RendererSubSystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Object/Shapes/Shapes.h"
+#include "Denix/Physics/PhysicsSubsystem.h"
 
 namespace Denix
 {
@@ -54,6 +55,19 @@ namespace Denix
 		m_ActiveScene = _scene;
 	}
 
+	void EditorSubsystem::PhysicsSettings()
+	{
+		ImGui::SetNextWindowSize(ImVec2((WinX / 5), WinY), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2((WinX / 2), WinY / 2), ImGuiCond_Appearing);
+
+		if (ImGui::Begin("Physics Settings", &m_IsPhysicsSettingsOpen))
+		{
+			ImGui::Checkbox("Collision Detection", &PhysicsSubsystem::CollisionDetectionEnabledRef());
+			ImGui::Checkbox("Collision Response", &PhysicsSubsystem::CollisionResponseEnabledRef());
+			ImGui::End();
+		}
+	}
+
 	void EditorSubsystem::MenuBar()
 	{
 		if (ImGui::BeginMainMenuBar())
@@ -74,7 +88,7 @@ namespace Denix
 				ImGui::Checkbox("Scene Panel", &m_IsScenePanelOpen);
 				ImGui::Checkbox("Details Panel", &m_IsDetailsPanelOpen);
 				ImGui::Checkbox("Input Panel", &m_IsInputPanelOpen);
-		
+				ImGui::Checkbox("Input Panel", &m_IsPhysicsSettingsOpen);
 				ImGui::EndMenu();
 			}
 
@@ -357,9 +371,9 @@ namespace Denix
 
 			ImGui::Spacing();
 			ImGui::SeparatorText("Moveability");
-			if (ImGui::Combo("Moveability", &transform->GetMoveability(), "Static\0Dynamic\0\0"))
+			if (ImGui::Combo("Moveability", &transform->GetMoveabilityI(), "Static\0Dynamic\0\0"))
 			{
-				transform->SetMoveability(static_cast<Moveability>(transform->GetMoveability()));
+				transform->SetMoveability(static_cast<Moveability>(transform->GetMoveabilityI()));
 			}
 		}
 	}
@@ -413,6 +427,22 @@ namespace Denix
 			// Simulate Gravity
 			if (ImGui::Checkbox("Simulate Gravity", &pComp->GetSimulateGravity())) pComp->ToggleGravity();
 			
+			
+			// Mass
+			ImGui::DragFloat("Mass", &pComp->GetMass(), DragSpeedDelta, FLT_MIN, FLT_MAX);
+
+			// Linear Drag
+			ImGui::DragFloat("Linear Drag", &pComp->GetLinearDrag(), DragSpeedDelta);
+
+			// Angular Drag
+			ImGui::DragFloat("Angular Drag", &pComp->GetAngularDrag(), DragSpeedDelta);
+
+			// Elasticity
+			ImGui::DragFloat("Elasticity", &pComp->GetElasticity(), DragSpeedDelta, 0.0f, 1.0f);
+
+			// Impulse
+			ImGui::Checkbox("Impulse Resonses", &pComp->GetImpulseEnabled());
+
 			if (ImGui::TreeNode("Advanced Settings"))
 			{
 				// Step Simulation Method
@@ -436,22 +466,10 @@ namespace Denix
 					}
 					ImGui::EndCombo();
 				}
+
+				// Minimum Velocity
+				ImGui::DragFloat("Minimum Velocity", &pComp->GetMinimumVelocity(), DragSpeedDelta);
 			}
-			
-			// Mass
-			ImGui::DragFloat("Mass", &pComp->GetMass(), DragSpeedDelta, FLT_MIN, FLT_MAX);
-
-			// Linear Drag
-			ImGui::DragFloat("Linear Drag", &pComp->GetLinearDrag(), DragSpeedDelta);
-
-			// Angular Drag
-			ImGui::DragFloat("Angular Drag", &pComp->GetAngularDrag(), DragSpeedDelta);
-
-			// Elasticity
-			ImGui::DragFloat("Elasticity", &pComp->GetElasticity(), DragSpeedDelta, FLT_MIN, FLT_MAX);
-
-			// Minimum Velocity
-			ImGui::DragFloat("Minimum Velocity", &pComp->GetMinimumVelocity(), DragSpeedDelta);
 
 			// Viewable Properties
 			const glm::vec3 force = pComp->GetForce();

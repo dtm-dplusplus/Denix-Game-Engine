@@ -8,6 +8,20 @@ namespace Denix
 {
 	class Scene;
 
+	struct CollisionEvent
+	{
+		Ref<GameObject> Actor;
+		Ref<GameObject> Other;
+		CollisionData ColData;
+	};
+
+	struct TriggerEvent
+	{
+		Ref<GameObject> Actor;
+		Ref<GameObject> Other;
+		TriggerData TrigData;
+	};
+
 	class PhysicsSubsystem : public Subsystem
 	{
 	public:
@@ -23,10 +37,19 @@ namespace Denix
 			s_PhysicsSubSystem = nullptr;
 		}
 
-	private:
-		void UpdateCollisionDetection(float _deltaTime);
-		void UpdatePhysicsComponents(float _deltaTime);
+		static bool CollisionDetectionEnabled() { return s_PhysicsSubSystem->m_CollisionDetectionEnabled; }
+		static bool& CollisionDetectionEnabledRef() { return s_PhysicsSubSystem->m_CollisionDetectionEnabled; }
 
+		static bool CollisionResponseEnabled() { return s_PhysicsSubSystem->m_CollisionResponseEnabled; }
+		static bool& CollisionResponseEnabledRef() { return s_PhysicsSubSystem->m_CollisionResponseEnabled; }
+
+	private:
+		void CollisionDetection(float _deltaTime);
+		void CollisionResonse(float _deltaTime);
+		void PhysicsSimulation(float _deltaTime);
+
+		bool BroadCollisionDetection(const Ref<PhysicsComponent>& _component, const Ref<PhysicsComponent>& _otherComponent);
+		void NarrowCollisionDetection(const Ref<PhysicsComponent>& _component, const Ref<PhysicsComponent>& _otherComponent);
 
 		void StepPhysicsComponent(const Ref<PhysicsComponent> _component, float _deltaTime);
 
@@ -50,6 +73,8 @@ namespace Denix
 		and the centre of the sphere c1. This function also finds the contact point cp on the sphere
 		*/
 		bool SphereToSphereCollision(const glm::vec3& c0, const glm::vec3 c1, float r1, float r2, glm::vec3& cp);
+
+	
 
 	public:
 		void SetActiveScene(const Ref<Scene>& _scene) { m_ActiveScene = _scene; }
@@ -81,6 +106,12 @@ namespace Denix
 
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
 
+		std::vector<CollisionEvent> m_CollisionEvents;
+		std::vector <TriggerEvent> m_TriggerEvents;
+
 		Ref<Scene> m_ActiveScene;
+
+		bool m_CollisionDetectionEnabled = true;
+		bool m_CollisionResponseEnabled = true;
 	};
 }
