@@ -15,5 +15,5 @@ CubeCollider::CubeCollider()
 SphereCollider::SphereCollider()
 {
 	m_ColliderType = (int)ColliderType::Sphere;
-	m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Sphere"));
+	m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube")); // Will change to sphere
 }

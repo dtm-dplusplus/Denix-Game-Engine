@@ -141,7 +141,7 @@ namespace Denix
 
 	void EditorSubsystem::DetailsPanel()
 	{
-		ImGui::SetNextWindowSize(ImVec2((WinX / 6), WinY), ImGuiCond_Appearing);
+		ImGui::SetNextWindowSize(ImVec2((WinX / 5), WinY), ImGuiCond_Appearing);
 		ImGui::SetNextWindowPos(ImVec2((WinX / 6), MenuBarHeight), ImGuiCond_Appearing);
 
 		if (ImGui::Begin("Details Panel", &ScenePanelOpen))
@@ -156,6 +156,7 @@ namespace Denix
 				CameraWidget(selectedObject);
 				LightWidget(selectedObject);
 				PhysicsWidget(selectedObject);
+				CollisionWidget(selectedObject);
 				RenderWidget(selectedObject);
 				MeshWidget(selectedObject);
 			}
@@ -402,42 +403,40 @@ namespace Denix
 
 	void EditorSubsystem::PhysicsWidget(const Ref<GameObject>& _selectedObject) const
 	{
-		if (ImGui::CollapsingHeader("Physics Component"))
+		if (ImGui::CollapsingHeader("Physics", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			const Ref<PhysicsComponent> pComp = _selectedObject->GetPhysicsComponent();
 
 			// Physics Simulation
 			if (ImGui::Checkbox("Simulate Physics", &pComp->SimulatePhysics())) pComp->ToggleSimulation();
-			if (ImGui::Checkbox("Is Trigger", &pComp->IsTrigger())) pComp->ToggleTrigger();
-			ImGui::SameLine(); ImGui::Text(" State: %s", pComp->GetTriggerStateS().c_str());
-
-			// Collider
-			ImGui::Checkbox("Show Collider", &pComp->GetCollider()->GetRenderComponent()->IsVisible());
-
-			// Step Simulation 
-			const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };
-			static int itemCurrent = 0; // Here we store our selection data as an index.
-			const char* comboPreview = stepMethods[itemCurrent];  // Pass in the preview value visible before opening the combo
-			if (ImGui::BeginCombo("Step Method", comboPreview))
-			{
-				for (int n = 0; n < IM_ARRAYSIZE(stepMethods); n++)
-				{
-					const bool is_selected = (itemCurrent == n);
-					if (ImGui::Selectable(stepMethods[n], is_selected))
-					{
-						itemCurrent = n;
-						pComp->SetStepMethod(static_cast<StepMethod>(n));
-					}
-
-					// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndCombo();
-			}
 
 			// Simulate Gravity
-			if (ImGui::Checkbox("CustomGravity", &pComp->GetSimulateGravity())) pComp->ToggleGravity();
+			if (ImGui::Checkbox("Simulate Gravity", &pComp->GetSimulateGravity())) pComp->ToggleGravity();
+			
+			if (ImGui::TreeNode("Advanced Settings"))
+			{
+				// Step Simulation Method
+				static const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };
+				static int itemCurrent = 0; // Here we store our selection data as an index.
+				const char* comboPreview = stepMethods[itemCurrent];  // Pass in the preview value visible before opening the combo
+				if (ImGui::BeginCombo("Step Method", comboPreview))
+				{
+					for (int n = 0; n < IM_ARRAYSIZE(stepMethods); n++)
+					{
+						const bool is_selected = (itemCurrent == n);
+						if (ImGui::Selectable(stepMethods[n], is_selected))
+						{
+							itemCurrent = n;
+							pComp->SetStepMethod(static_cast<StepMethod>(n));
+						}
+
+						// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+						if (is_selected)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
+			}
 			
 			// Mass
 			ImGui::DragFloat("Mass", &pComp->GetMass(), DragSpeedDelta, FLT_MIN, FLT_MAX);
@@ -468,9 +467,76 @@ namespace Denix
 		}
 	}
 
+	void EditorSubsystem::CollisionWidget(const Ref<GameObject>& _selectedObject) const
+	{
+		if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			const Ref<PhysicsComponent> pComp = _selectedObject->GetPhysicsComponent();
+
+			if (ImGui::Checkbox("Is Trigger", &pComp->IsTrigger())) pComp->ToggleTrigger();
+			ImGui::SameLine(); ImGui::Text(" State: %s", pComp->GetTriggerStateS().c_str());
+
+			// Collider
+			ImGui::Checkbox("Show Collider", &pComp->GetCollider()->GetRenderComponent()->IsVisible());
+
+			// Collider Type
+			static const char* colliderTypes[] = { "Cube", "Sphere" };
+			static int itemCurrent = 0;
+			const char* previewItem = colliderTypes[itemCurrent];
+			if (ImGui::BeginCombo("Collider Type", previewItem))
+			{
+				for (int n = 0; n < IM_ARRAYSIZE(colliderTypes); n++)
+				{
+					const bool is_selected = (itemCurrent == n);
+					if (ImGui::Selectable(colliderTypes[n], is_selected))
+					{
+						itemCurrent = n;
+						switch (itemCurrent)
+						{
+						case 0:
+						{
+							pComp->SetCollider(MakeRef<CubeCollider>());
+							DE_LOG(LogEditor, Warn, "Set collider type to cube on {}", _selectedObject->GetName())
+						} break;
+
+						case 1:
+						{
+							pComp->SetCollider(MakeRef<SphereCollider>());
+							DE_LOG(LogEditor, Warn, "Set collider type to sphere on {}", _selectedObject->GetName())
+						} break;
+						}
+					}
+
+					// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+					if (is_selected) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
+			// Collider Specifics
+			switch (pComp->GetCollider()->GetColliderType())
+			{
+			case ColliderType::Cube:
+			{
+				if (Ref<CubeCollider> sCol = std::dynamic_pointer_cast<CubeCollider>(pComp->GetCollider()))
+
+				ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
+			} break;
+			
+			case ColliderType::Sphere:
+			{
+				if (Ref<SphereCollider> sCol = std::dynamic_pointer_cast<SphereCollider>(pComp->GetCollider()))
+				{
+					ImGui::DragFloat("Radius", &sCol->GetRadius(), DragSpeedDelta, FLT_MIN, FLT_MAX);
+				}
+			} break;
+			}
+		}
+	}
+
 	void EditorSubsystem::RenderWidget(const Ref<GameObject>& _selectedObject)
 	{
-		if (ImGui::CollapsingHeader("Render Component", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			const Ref<RenderComponent> render = _selectedObject->GetRenderComponent();
 

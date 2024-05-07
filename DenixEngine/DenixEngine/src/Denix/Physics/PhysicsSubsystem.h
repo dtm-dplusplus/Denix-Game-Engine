@@ -23,31 +23,6 @@ namespace Denix
 			s_PhysicsSubSystem = nullptr;
 		}
 
-		void SetActiveScene(const Ref<Scene>& _scene) { m_ActiveScene = _scene; }
-		
-		void PreUpdate(float _deltaTime) override;
-
-		void Update(float _deltaTime) override;
-
-		void RegisterComponent(const Ref<PhysicsComponent>& _component);
-
-		void UnregisterComponent(const Ref<PhysicsComponent>& _component);
-
-		static PhysicsSubsystem* Get() { return s_PhysicsSubSystem; }
-
-		void Initialize() override
-		{
-			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Initialized")
-
-				m_Initialized = true;
-		}
-
-		void Deinitialize() override
-		{
-			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
-				m_Initialized = false;
-		}
-
 	private:
 		void UpdateCollisionDetection(float _deltaTime);
 		void UpdatePhysicsComponents(float _deltaTime);
@@ -76,8 +51,31 @@ namespace Denix
 		*/
 		bool SphereToSphereCollision(const glm::vec3& c0, const glm::vec3 c1, float r1, float r2, glm::vec3& cp);
 
-		
-	
+	public:
+		void SetActiveScene(const Ref<Scene>& _scene) { m_ActiveScene = _scene; }
+
+		void PreUpdate(float _deltaTime) override;
+
+		void Update(float _deltaTime) override;
+
+		void RegisterComponent(const Ref<PhysicsComponent>& _component);
+
+		void UnregisterComponent(const Ref<PhysicsComponent>& _component);
+
+		static PhysicsSubsystem* Get() { return s_PhysicsSubSystem; }
+
+		void Initialize() override
+		{
+			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Initialized")
+
+				m_Initialized = true;
+		}
+
+		void Deinitialize() override
+		{
+			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
+				m_Initialized = false;
+		}
 	private:
 		static PhysicsSubsystem* s_PhysicsSubSystem;
 

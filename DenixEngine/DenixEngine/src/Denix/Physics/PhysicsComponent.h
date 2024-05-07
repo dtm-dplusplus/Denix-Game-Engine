@@ -60,7 +60,7 @@ namespace Denix
 		}
 
 		Ref<Collider> GetCollider() { return m_Collider; }
-
+		void SetCollider(Ref<Collider> _collider) { m_Collider = _collider; }
 
 	public:
 		void ComputeTrigger()

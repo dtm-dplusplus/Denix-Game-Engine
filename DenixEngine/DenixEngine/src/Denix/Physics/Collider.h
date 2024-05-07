@@ -6,6 +6,7 @@
 #include "Denix/Scene/Object.h"
 #include "Denix/Video/GL/MeshComponent.h"
 #include "Denix/Video/Renderer/RenderComponent.h"
+//#include <Denix/Scene/Component/TransformComponent.h>
 
 namespace Denix
 {
@@ -41,16 +42,18 @@ namespace Denix
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 	protected:
+		int m_ColliderType;
+
 		Ref<MeshComponent> m_MeshComponent;
 
 		Ref<RenderComponent> m_RenderComponent;
 
+		//Ref<TransformComponent> m_TransformComponent;
 		/** Render component that is used to draw the collider */
 		const static glm::vec4 m_NoCollisionColor;
 		const static glm::vec4 m_CollisionColor;
 
 
-		int m_ColliderType;
 		friend class PhysicsSubsystem;
 		friend class GameObject;
 		friend class PhysicsComponent;
@@ -64,8 +67,20 @@ namespace Denix
 
 		~CubeCollider() override = default;
 
-	private:
+		glm::vec3 GetDimensions() const { return m_Dimensions; }
+		glm::vec3& GetDimensions() { return m_Dimensions; }
 
+		float GetWidth() const { return m_Dimensions[0]; }
+		float& GetWidth() { return m_Dimensions[0]; }
+
+		float GetHeight() const { return m_Dimensions[1]; }
+		float& GetHeight() { return m_Dimensions[1]; }
+
+		float GetDepth() const { return m_Dimensions[2]; }
+		float& GetDepth() { return m_Dimensions[2]; }
+
+	private:
+		glm::vec3 m_Dimensions = {1.0f, 1.0f, 1.0f};
 	};
 
 	class SphereCollider : public Collider
@@ -75,7 +90,10 @@ namespace Denix
 
 		~SphereCollider() override = default;
 
+		float GetRadius() const { return m_Radius; }
+		float& GetRadius() { return m_Radius; }
+
 	private:
-		float m_Radius;
+		float m_Radius = 1.0f;
 	};
 }

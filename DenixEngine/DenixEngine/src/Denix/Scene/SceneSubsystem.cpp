@@ -215,9 +215,6 @@ namespace Denix
 
 	void SceneSubsystem::Update(float _deltaTime)
 	{
-		// Opt for a data oriented approach where possible. 
-		// Components contain data & settings, the logic is implemented on the system side
-
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
@@ -230,7 +227,15 @@ namespace Denix
 
 		// m_ActiveScene->m_ActiveCamera->m_RenderTexture->bind();
 
-		// Update the GameObjects
+		GameObjectsUpdate(_deltaTime);
+
+		SceneLighting();
+
+		// m_ActiveScene->m_ActiveCamera->m_RenderTexture->unbind();
+	}
+
+	void SceneSubsystem::GameObjectsUpdate(float _deltaTime)
+	{
 		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
 		{
 			// Update Transform Components
@@ -251,7 +256,7 @@ namespace Denix
 
 			// Update the GameObject -  This will always be here
 			gameObject->Update(_deltaTime);
-			
+
 			if (!gameObject->GetRenderComponent()->GetShader())
 			{
 				// We'll replace this with a error shader - A shader must always be bound
@@ -264,70 +269,70 @@ namespace Denix
 				continue;
 			}
 
-			// TEMP Immediate Mode Rendering
-			switch (static_cast<ViewportMode>(m_ViewportMode))
+			ViewportRendering(gameObject);
+		}
+	}
+
+	void SceneSubsystem::ViewportRendering(const Ref<GameObject>& _gameObject)
+	{
+		// TEMP Immediate Mode Rendering
+		switch (static_cast<ViewportMode>(m_ViewportMode))
+		{
+		case ViewportMode::Default:
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+			if (_gameObject->GetRenderComponent()->IsVisible())
 			{
-				case ViewportMode::Default:
 				{
-					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-					if (gameObject->GetRenderComponent()->IsVisible())
-					{
-						{
-							s_RendererSubsystem->DrawImmediate(
-								gameObject->GetRenderComponent(),
-								gameObject->GetTransformComponent(),
-								gameObject->GetMeshComponent());
-						}
-					}
-
-					// Draw Collider over gameobject if set to visible
-					if (const Ref<Collider> collider = gameObject->GetCollider(); collider->GetRenderComponent()->IsVisible())
-					{
-						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-						s_RendererSubsystem->DrawImmediate(
-							collider->GetRenderComponent(),
-							gameObject->GetTransformComponent(),
-							collider->GetMeshComponent());
-					}
-				}
-					break;
-
-				case ViewportMode::Wireframe:
-				{
-					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-					// Draw the GameObject
 					s_RendererSubsystem->DrawImmediate(
-						gameObject->GetRenderComponent(),
-						gameObject->GetTransformComponent(),
-						gameObject->GetMeshComponent());
+						_gameObject->GetRenderComponent(),
+						_gameObject->GetTransformComponent(),
+						_gameObject->GetMeshComponent());
 				}
-					break;
+			}
 
-				case ViewportMode::Collider:
-				{
-					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			// Draw Collider over gameobject if set to visible
+			if (const Ref<Collider> collider = _gameObject->GetCollider(); collider->GetRenderComponent()->IsVisible())
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-					// Draw the GameObject
-					if (const Ref<Collider> collider = gameObject->GetCollider())
-					{
-						s_RendererSubsystem->DrawImmediate(
-							collider->GetRenderComponent(),
-							gameObject->GetTransformComponent(),
-							gameObject->GetMeshComponent());
-					}
-				}
-					break;
-
-				default: DE_LOG(LogScene, Error, "Invalid Viewport") break;
+				s_RendererSubsystem->DrawImmediate(
+					collider->GetRenderComponent(),
+					_gameObject->GetTransformComponent(),
+					collider->GetMeshComponent());
 			}
 		}
+		break;
 
-		// Lighting
-		SceneLighting();
+		case ViewportMode::Wireframe:
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		// m_ActiveScene->m_ActiveCamera->m_RenderTexture->unbind();
+			// Draw the GameObject
+			s_RendererSubsystem->DrawImmediate(
+				_gameObject->GetRenderComponent(),
+				_gameObject->GetTransformComponent(),
+				_gameObject->GetMeshComponent());
+		}
+		break;
+
+		case ViewportMode::Collider:
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+			// Draw the GameObject
+			if (const Ref<Collider> collider = _gameObject->GetCollider())
+			{
+				s_RendererSubsystem->DrawImmediate(
+					collider->GetRenderComponent(),
+					_gameObject->GetTransformComponent(),
+					_gameObject->GetMeshComponent());
+			}
+		}
+		break;
+
+		default: DE_LOG(LogScene, Error, "Invalid Viewport") break;
+		}
 	}
 }

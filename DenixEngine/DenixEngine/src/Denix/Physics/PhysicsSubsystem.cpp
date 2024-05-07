@@ -34,7 +34,7 @@ namespace Denix
 			physicsComp->m_SteppedNextFrame = false;
 
 			physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
-			physicsComp->m_Velocity = glm::vec3(0.0f);
+			//physicsComp->m_Velocity = glm::vec3(0.0f);
 
 			physicsComp->m_Torque = glm::vec3(0.0f);
 

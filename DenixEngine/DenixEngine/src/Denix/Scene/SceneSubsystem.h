@@ -47,6 +47,10 @@ namespace Denix
 
 		void Update(float _deltaTime) override;
 
+		void GameObjectsUpdate(float _deltaTime);
+
+		void ViewportRendering(const Denix::Ref<Denix::GameObject>& gameObject);
+
 		static SceneSubsystem* Get() { return s_SceneSubsystem; }
 
 		Ref<Scene> GetActiveScene() const { return m_ActiveScene; }
