@@ -296,9 +296,18 @@ namespace Denix
 			m_MoveSpeed = _moveSpeed;
 		}
 
+		float GetMouseScrollSpeed() const
+		{
+            return m_MouseScrollSpeed;
+        }
+		float& GetMouseScrollSpeed()
+		{
+            return m_MouseScrollSpeed;
+        }
 		void Update(float _deltaTime) override;
 
 	protected:
-		float m_MoveSpeed = 100.0f;
+		float m_MoveSpeed = 10.0f;
+		float m_MouseScrollSpeed = 0.5f;
 	};
 }

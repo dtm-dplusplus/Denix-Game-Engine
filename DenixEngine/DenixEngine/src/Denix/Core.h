@@ -15,6 +15,11 @@ namespace Denix
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 
+	template<typename T, typename Arg>
+	constexpr Ref<T> CastRef(Arg&& arg)
+	{
+		return std::dynamic_pointer_cast<T>(std::forward<Arg>(arg));
+	}
 
 	template <typename T>
 	using Scope = std::unique_ptr<T>;

@@ -104,7 +104,14 @@ namespace Denix
 			// Give camera back to viewport camera
 			m_ActiveCamera = m_ViewportCamera;
 		}
-		virtual void Update(float _deltaTime) {}
+		virtual void Update(float _deltaTime)
+		{
+			for (const auto& gameObject : m_SceneObjects)
+			{
+				// Update the GameObject -  This will always be here
+				gameObject->Update(_deltaTime);
+			}
+		}
 
 		bool IsLoaded() const { return m_IsLoaded; }
 		bool IsOpen() const { return m_IsOpen; }

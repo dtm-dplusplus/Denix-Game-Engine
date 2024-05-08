@@ -8,7 +8,7 @@ namespace Denix
 	class PhysObject : public GameObject
 	{
 	public:
-		PhysObject() : GameObject({ "PhysObject" })
+		PhysObject(const ObjectInitializer& _objInit = { "PhysObject" }) : GameObject(_objInit)
 		{
 		}
 

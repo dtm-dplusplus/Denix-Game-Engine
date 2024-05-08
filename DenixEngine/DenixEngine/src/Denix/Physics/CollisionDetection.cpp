@@ -1,6 +1,7 @@
 #include "CollisionDetection.h"
 
 #include "Denix/Physics/PhysicsComponent.h"
+#include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Physics/Collider.h"
 
 namespace Denix
@@ -26,23 +27,38 @@ namespace Denix
 		{
 		case ColliderType::Cube:
 		{
+			Ref<CubeCollider> cubeCol = std::dynamic_pointer_cast<CubeCollider>(col);
+			glm::vec3 minA = cubeCol->GetMin();
+			glm::vec3 maxA = cubeCol->GetMax();
+			
+
 			switch (otherCol->GetColliderType())
 			{
 			case ColliderType::Cube:
 			{
 				// Cube to Cube Collision Detection
-				break;
-			}
-			case ColliderType::Plane:
-			{
-				// Cube to Plane Collision Detection
-				break;
-			}
+				Ref<CubeCollider> otherCubeCol = std::dynamic_pointer_cast<CubeCollider>(otherCol);
+				glm::vec3 minB = otherCubeCol->GetMin();
+				glm::vec3 maxB = otherCubeCol->GetMax();
+
+
+				
+
+				if (minA.x < maxB.x && maxA.x > minB.x &&
+					minA.y < maxB.y && maxA.y > minB.y &&
+					minA.z < maxB.z && maxA.z > minB.z)
+				{
+					collisionEvent.IsCollision = true;
+					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
+					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_otherComponent->GetParentObjectName());
+				}
+				
+			} break;
+			
 			case ColliderType::Sphere:
 			{
 				// Cube to Sphere Collision Detection
-				break;
-			}
+			}  break;
 			}
 		} break;
 
@@ -55,40 +71,16 @@ namespace Denix
 				// Sphere to Cube Collision Detection
 				break;
 			}
-			case ColliderType::Plane:
-			{
-				// Sphere to Plane Collision Detection
-				break;
-			}
+			
 			case ColliderType::Sphere:
 			{
 				// Sphere to Sphere Collision Detection
 				break;
 			}
+
+			default: break;
 			}
 
-		} break;
-
-		case ColliderType::Plane:
-		{
-			switch (otherCol->GetColliderType())
-			{
-			case ColliderType::Cube:
-			{
-				// Plane to Cube Collision Detection
-				break;
-			}
-			case ColliderType::Plane:
-			{
-				// Plane to Plane Collision Detection
-				break;
-			}
-			case ColliderType::Sphere:
-			{
-				// Plane to Sphere Collision Detection
-				break;
-			}
-			}
 		} break;
 		}
 

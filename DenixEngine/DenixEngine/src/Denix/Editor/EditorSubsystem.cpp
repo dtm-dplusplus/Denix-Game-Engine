@@ -224,6 +224,8 @@ namespace Denix
 			if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetMoveSpeed(0.5f);
 			ImGui::SetItemTooltip("Reset");
 
+			ImGui::DragFloat("Scoll Wheel Speed", &m_ActiveScene->m_ViewportCamera->GetMouseScrollSpeed(), DragSpeedDelta, 0.1f, 10.f);
+
 			ImGui::Checkbox("Perspective Projection", &m_ActiveScene->m_ViewportCamera->IsPerspective());
 
 			ImGui::DragFloat("m_Fov", &m_ActiveScene->m_ViewportCamera->GetFov(), DragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
@@ -371,7 +373,7 @@ namespace Denix
 			if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) transform->SetRotation(glm::vec3(0.f));
 			ImGui::SetItemTooltip("Reset");
 
-			ImGui::DragFloat3("Scale", &transform->GetScale()[0], DragSpeedDelta); ImGui::SameLine();
+			ImGui::DragFloat3("Scale", &transform->GetScale()[0], DragSpeedDelta, FLT_MIN); ImGui::SameLine();
 			if (ImGui::ArrowButton("##ResetScale", ImGuiDir_Left)) transform->SetScale(glm::vec3(1.f));
 			ImGui::SetItemTooltip("Reset");
 
@@ -386,20 +388,20 @@ namespace Denix
 
 	void EditorSubsystem::LightWidget(const Ref<GameObject>& _selectedObject) const
 	{
-		if (const Ref<Light> light = std::dynamic_pointer_cast<Light>(_selectedObject))
+		if (const Ref<Light> light = CastRef<Light>(_selectedObject))
 		{
 			ImGui::CollapsingHeader("Light Settings", ImGuiTreeNodeFlags_DefaultOpen);
 			ImGui::ColorEdit3("Light Color", &light->GetLightColor()[0]);
 			ImGui::DragFloat("Ambient Intensity", &light->GetAmbientIntensity(), DragSpeedDelta);
 			ImGui::DragFloat("Diffuse Intensity", &light->GetDiffuseIntensity(), DragSpeedDelta);
 
-			if (const Ref<DirectionalLight> dirLight = std::dynamic_pointer_cast<DirectionalLight>(_selectedObject))
+			if (const Ref<DirectionalLight> dirLight = CastRef<DirectionalLight>(_selectedObject))
 			{
 				ImGui::SeparatorText("Directional Light Settings");
 				ImGui::DragFloat3("Light Direction", &dirLight->GetLightDirection()[0], DragSpeedDelta);
 			}
 
-			else if (const Ref<SpotLight> spotLight = std::dynamic_pointer_cast<SpotLight>(_selectedObject))
+			else if (const Ref<SpotLight> spotLight = CastRef<SpotLight>(_selectedObject))
 			{
 				ImGui::SeparatorText("Spot Light Settings");
 				ImGui::DragFloat("Edge", &spotLight->GetEdge(), DragSpeedDelta);
@@ -410,7 +412,7 @@ namespace Denix
 				ImGui::DragFloat("Linear", &spotLight->GetLinear(), DragSpeedDelta);
 				ImGui::DragFloat("Exponent", &spotLight->GetExponent(), DragSpeedDelta);
 			}
-			else if (const Ref<PointLight> pointLight = std::dynamic_pointer_cast<PointLight>(_selectedObject))
+			else if (const Ref<PointLight> pointLight = CastRef<PointLight>(_selectedObject))
 			{
 				ImGui::SeparatorText("Point Light Settings");
 				ImGui::SeparatorText("Attenuation");
@@ -435,8 +437,10 @@ namespace Denix
 			
 			// Collision Detection
 			if (ImGui::Checkbox("Collision Detection", &comp->CollisionDetectionEnabled())) comp->ToggleCollisionDetection();
+			ImGui::SameLine(); const std::string state = comp->IsColliding() ? "Colliding" : "Not Colliding";
+		    ImGui::Text(" State: %s", state.c_str());
 
-			// Mass
+			    // Mass
 			ImGui::DragFloat("Mass", &comp->GetMass(), DragSpeedDelta, FLT_MIN, FLT_MAX);
 
 			// Linear Drag
@@ -508,7 +512,7 @@ namespace Denix
 			ImGui::Checkbox("Show Collider", &pComp->GetCollider()->GetRenderComponent()->IsVisible());
 
 			// Collision Type
-			static const char* colliderTypes[] = { "Plane", "Cube", "Sphere" };
+			static const char* colliderTypes[] = { "Cube", "Sphere" };
 			static int itemCurrent = (int)pComp->GetCollider()->GetColliderType();
 			const char* previewItem = colliderTypes[itemCurrent];
 			if (ImGui::BeginCombo("Collider Type", previewItem))
@@ -523,17 +527,11 @@ namespace Denix
 						{
 						case 0:
 						{
-							pComp->m_Collider = MakeRef<PlaneCollider>(pComp->m_Collider->GetRenderComponent());
-							DE_LOG(LogEditor, Warn, "Set collider type to plane on {}", _selectedObject->GetName())
-						} break;
-
-						case 1:
-						{
 							pComp->m_Collider = MakeRef<CubeCollider>(pComp->m_Collider->GetRenderComponent());
 							DE_LOG(LogEditor, Warn, "Set collider type to cube on {}", _selectedObject->GetName())
 						} break;
 
-						case 2:
+						case 1:
 						{
 							pComp->m_Collider = MakeRef<SphereCollider>();
 							DE_LOG(LogEditor, Warn, "Set collider type to sphere on {}", _selectedObject->GetName())
@@ -550,25 +548,20 @@ namespace Denix
 			// Collision Specifics
 			switch (pComp->GetCollider()->GetColliderType())
 			{
-			case ColliderType::Plane:
-			{
-				if (Ref<PlaneCollider> sCol = std::dynamic_pointer_cast<PlaneCollider>(pComp->GetCollider()))
-				{
-					ImGui::DragFloat3("Normal", &sCol->GetNormal()[0], DragSpeedDelta);
-					ImGui::DragFloat("Distance", &sCol->GetDistance(), DragSpeedDelta);
-				}
-			} break;
-
 			case ColliderType::Cube:
 			{
-				if (Ref<CubeCollider> sCol = std::dynamic_pointer_cast<CubeCollider>(pComp->GetCollider()))
-
-				ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
+				if (Ref<CubeCollider> sCol = CastRef<CubeCollider>(pComp->GetCollider()))
+				{
+					if (!pComp->CollisionDimensionOverride()) ImGui::BeginDisabled();
+					ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
+					if (!pComp->CollisionDimensionOverride()) ImGui::EndDisabled();
+					ImGui::SameLine(); ImGui::Checkbox("## Dimesnion Override", &pComp->CollisionDimensionOverride());
+				}
 			} break;
 			
 			case ColliderType::Sphere:
 			{
-				if (Ref<SphereCollider> sCol = std::dynamic_pointer_cast<SphereCollider>(pComp->GetCollider()))
+				if (Ref<SphereCollider> sCol = CastRef<SphereCollider>(pComp->GetCollider()))
 				{
 					ImGui::DragFloat("Radius", &sCol->GetRadius(), DragSpeedDelta, FLT_MIN, FLT_MAX);
 				}
@@ -725,7 +718,7 @@ namespace Denix
 
 	void EditorSubsystem::CameraWidget(const Ref<GameObject>& _camera) const
 	{
-		if (const Ref<Camera> camera = std::dynamic_pointer_cast<Camera>(_camera))
+		if (const Ref<Camera> camera = CastRef<Camera>(_camera))
 		{
 			ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
 			if (ImGui::CollapsingHeader("Camera Component"))

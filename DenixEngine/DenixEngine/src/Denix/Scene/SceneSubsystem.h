@@ -43,7 +43,7 @@ namespace Denix
 
 		static SceneSubsystem* Get() { return s_SceneSubsystem; }
 
-		Ref<Scene> GetActiveScene() const { return m_ActiveScene; }
+		static Ref<Scene> GetActiveScene() { return s_SceneSubsystem->m_ActiveScene; }
 
 		Ref<Camera> GetActiveCamera() const
 		{

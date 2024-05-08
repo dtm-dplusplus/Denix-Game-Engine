@@ -46,7 +46,7 @@ void Denix::ViewportCamera::Update(float _deltaTime)
 		// Change move speed if mouse wheel is scrolled
 		if (mouse.WheelY != 0)
 		{
-			m_MoveSpeed += mouse.WheelY * _deltaTime;
+			m_MoveSpeed += mouse.WheelY * m_MouseScrollSpeed;
 		}
 	}
 }

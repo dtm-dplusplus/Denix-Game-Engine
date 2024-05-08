@@ -6,13 +6,13 @@
 #include "Denix/Scene/Object.h"
 #include "Denix/Video/GL/MeshComponent.h"
 #include "Denix/Video/Renderer/RenderComponent.h"
-//#include <Denix/Scene/Component/TransformComponent.h>
+#include <Denix/Scene/Component/TransformComponent.h>
 
 namespace Denix
 {
 	enum class ColliderType
 	{
-		Plane,
+		// Plane,
 		Cube,
 		Sphere
 	};
@@ -24,8 +24,11 @@ namespace Denix
 
 		Collider() : Object({ "Collider" }) 
 		{
-			m_MeshComponent = MakeRef<MeshComponent>();
-			m_RenderComponent = MakeRef<RenderComponent>();
+			m_TransformComponent = MakeRef<TransformComponent>();
+
+		    m_MeshComponent = MakeRef<MeshComponent>();
+
+		    m_RenderComponent = MakeRef<RenderComponent>();
 			m_RenderComponent->SetIsVisible(false);
 			m_RenderComponent->SetAffectsLighting(false);
 			m_RenderComponent->SetBaseColorAsTexture(true);
@@ -38,7 +41,8 @@ namespace Denix
 		ColliderType GetColliderType() { return (ColliderType)m_ColliderType; }
 		ColliderType& GetColliderTypeRef() { return (ColliderType&)m_ColliderType; }
 		void SetColliderType(ColliderType _type) { m_ColliderType = (int)_type; }
-		
+
+		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
@@ -49,35 +53,18 @@ namespace Denix
 
 		Ref<RenderComponent> m_RenderComponent;
 
+		Ref<TransformComponent> m_TransformComponent;
+
 		//Ref<TransformComponent> m_TransformComponent;
 		/** Render component that is used to draw the collider */
 		const static glm::vec4 m_NoCollisionColor;
 		const static glm::vec4 m_CollisionColor;
-
 
 		friend class PhysicsSubsystem;
 		friend class GameObject;
 		friend class PhysicsComponent;
 	};
 
-	class PlaneCollider : public Collider
-	{
-	public:
-		PlaneCollider();
-		PlaneCollider(Ref<RenderComponent> _renderComponent);
-
-		~PlaneCollider() override = default;
-
-		glm::vec3 GetNormal() const { return m_Normal; }
-		glm::vec3& GetNormal() { return m_Normal; }
-
-		float GetDistance() const { return m_Distance; }
-		float& GetDistance() { return m_Distance; }
-
-	private:
-		glm::vec3 m_Normal = { 0.0f, 1.0f, 0.0f };
-		float m_Distance = 0.0f;
-	};
 	class CubeCollider : public Collider
 	{
 	public:
@@ -98,8 +85,28 @@ namespace Denix
 		float GetDepth() const { return m_Dimensions[2]; }
 		float& GetDepth() { return m_Dimensions[2]; }
 
+		glm::vec3 GetMin() const { return m_Min; }
+		glm::vec3 GetMax() const { return m_Max; }
+
+
+		void Update(float _deltaTime) override
+		{
+			m_Min = m_TransformComponent->GetPosition() - m_Dimensions / 2.0f;
+			m_Max = m_TransformComponent->GetPosition() + m_Dimensions / 2.0f;
+			m_TransformComponent->SetScale(m_Dimensions);
+
+			m_TransformComponent->Update(_deltaTime);
+			m_MeshComponent->Update(_deltaTime);
+			m_RenderComponent->Update(_deltaTime);
+		}
+
 	private:
 		glm::vec3 m_Dimensions = {1.0f, 1.0f, 1.0f};
+
+		glm::vec3 m_Min = { -0.5f, -0.5f, -0.5f };
+		glm::vec3 m_Max = { 0.5f, 0.5f, 0.5f };
+
+		friend class PhysicsComponent;
 	};
 
 	class SphereCollider : public Collider

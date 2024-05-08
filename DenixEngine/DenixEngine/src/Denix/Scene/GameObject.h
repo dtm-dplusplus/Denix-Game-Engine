@@ -106,12 +106,12 @@ namespace Denix
 		void Update(float _deltaTime) override
 		{
 			Object::Update(_deltaTime);
+
+			for(const auto& component : m_Components | std::views::values)
+			{
+			    component->Update(_deltaTime);
+            }
 		}
-
-		void LateUpdate(float _deltaTime) override;
-
-	protected:
-		
 
 	protected:
 		std::unordered_map<std::string, Ref<Component>> m_Components;

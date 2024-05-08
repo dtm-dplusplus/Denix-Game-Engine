@@ -21,9 +21,5 @@ namespace Denix
         m_Components["Physics"] = m_PhysicsComponent;
     }
 
-    void GameObject::LateUpdate(float _deltaTime)
-    {
-        Object::LateUpdate(_deltaTime);
-    }
 }
 

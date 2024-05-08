@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Collider.h"
 #include "Denix/Core.h"
 #include "Denix/Core/Math.h"
 
@@ -45,6 +46,33 @@ namespace Denix
 		PhysicsComponent(const std::string& _parentName);
 
 		~PhysicsComponent() override = default;
+
+		void Update(float _deltaTime) override
+		{
+			Component::Update(_deltaTime);
+
+			switch (m_Collider->GetColliderType())
+			{
+			case ColliderType::Cube:
+			{
+				if (!m_CollisonDimesionOverride)
+				{
+					CastRef<CubeCollider>(m_Collider)->GetDimensions() = m_ParentTransform->GetScale();
+				}
+			} break;
+
+			case ColliderType::Sphere:
+			{
+				if (!m_CollisonDimesionOverride)
+				{
+					CastRef<CubeCollider>(m_Collider)->GetDimensions() = m_ParentTransform->GetScale();
+				}
+			} break;
+			}
+
+			m_Collider->m_TransformComponent->SetPosition(m_ParentTransform->GetPosition());
+			m_Collider->Update(_deltaTime);
+		}
 
 		void StepSimulation(float _deltaTime, bool _nextFrame = false)
 		{
@@ -201,6 +229,9 @@ namespace Denix
 
 		bool IsColliding() const { return m_IsColliding; }
 
+		bool CollisionDimensionOverride() const { return m_CollisonDimesionOverride; }
+		bool & CollisionDimensionOverride() { return m_CollisonDimesionOverride; }
+
 		void SetStepMethod(const StepMethod _method)
 		{
 			m_StepMethod = _method;
@@ -306,6 +337,8 @@ namespace Denix
 
 		/** Set to decide if the physics component should perform collision detection */
 		bool m_CollisionDetectionEnabled = true;
+
+		bool m_CollisonDimesionOverride = false;
 
 		/** Set to decide if the physics component should override collision tolereance used by collision system */
 		bool m_CustomCollisonTolerance = false;

@@ -102,41 +102,43 @@ namespace Denix
 			}
 
 			// Draw Collision over gameobject if set to visible
-			if (const Ref<Collider> collider = object->GetCollider(); collider->GetRenderComponent()->IsVisible())
+			if (const Ref<Collider> collider = object->GetCollider())
 			{
-				Ref<RenderComponent> colRenderComp = collider->GetRenderComponent();
-				if (object->GetRenderComponent()->IsVisible())
+				if(const Ref<RenderComponent> rendComp = collider->GetRenderComponent(); 
+					collider->GetRenderComponent()->IsVisible())
 				{
-					colRenderComp->m_Shader->Bind();
-					meshComp->m_Mesh->m_VAO->Bind();
-					meshComp->m_Mesh->m_IBO->Bind();
+					rendComp->m_Shader->Bind();
+					collider->GetMeshComponent()->m_Mesh->m_VAO->Bind();
+					collider->GetMeshComponent()->m_Mesh->m_IBO->Bind();
 
 
 					// Upload the model matrix
-					glUniformMatrix4fv(colRenderComp->m_Shader->GetUniform("u_Model"), 1,
-						GL_FALSE, glm::value_ptr(transformComp->GetModel()));
+						glUniformMatrix4fv(rendComp->m_Shader->GetUniform("u_Model"), 1,
+							GL_FALSE, glm::value_ptr(collider->GetTransformComponent()->GetModel()));
 
-					// Upload Affects Lighting bool
-					glUniform1i(colRenderComp->m_Shader->GetUniform("u_AffectsLighting"), false);
-					glUniform1i(colRenderComp->m_Shader->GetUniform("u_BaseColorAsTexture"), true);
+							// Upload Affects Lighting bool
+						glUniform1i(rendComp->m_Shader->GetUniform("u_AffectsLighting"), false);
+					glUniform1i(rendComp->m_Shader->GetUniform("u_BaseColorAsTexture"), true);
 
-					if (const Ref<Material> mat = colRenderComp->m_Material)
+					if (const Ref<Material> mat = rendComp->m_Material)
 					{
-						if (Ref<PhysicsComponent> physComp = object->GetPhysicsComponent())
+						if (const Ref<PhysicsComponent> physComp = object->GetPhysicsComponent())
 						{
-							if (!physComp->IsColliding())
+							if (physComp->IsColliding())
 							{
-								glUniform3f(colRenderComp->m_Shader->GetUniform("u_Material.BaseColor"), 0.0f, 1.0f, 0.0f);
+								glUniform3f(rendComp->m_Shader->GetUniform("u_Material.BaseColor"), 1.0f, 0.0f, 0.0f);
+
 							}
 							else
 							{
-								glUniform3f(colRenderComp->m_Shader->GetUniform("u_Material.BaseColor"), 1.0f, 0.0f, 0.0f);
+								glUniform3f(rendComp->m_Shader->GetUniform("u_Material.BaseColor"), 0.0f, 1.0f, 0.0f);
+
 							}
 						}
 					}
 
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-					glDrawElements(GL_TRIANGLES, meshComp->m_Mesh->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
+					glDrawElements(GL_TRIANGLES, collider->GetMeshComponent()->m_Mesh->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 				}
 			}

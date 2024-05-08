@@ -40,6 +40,17 @@ namespace Denix
 		void RegisterComponent() override;
 		void UnregisterComponent() override;
 
+
+		void Update(float _deltaTime) override
+		{
+			// Update the m_Model matrix
+			m_Model = glm::translate(glm::mat4(1.0f), m_Position);
+			m_Model = glm::rotate(m_Model, glm::radians(m_Rotation.x), glm::vec3(1, 0, 0));
+			m_Model = glm::rotate(m_Model, glm::radians(m_Rotation.y), glm::vec3(0, 1, 0));
+			m_Model = glm::rotate(m_Model, glm::radians(m_Rotation.z), glm::vec3(0, 0, 1));
+			m_Model = glm::scale(m_Model, m_Scale);
+		}
+
 		Moveability GetMoveability() const { return static_cast<Moveability>(m_Moveability); }
 		int& GetMoveabilityI() { return m_Moveability; }
 		void SetMoveability(const Moveability _moveability)
@@ -48,8 +59,8 @@ namespace Denix
 			m_MoveabilityChanged = true;
 		}
 
-		glm::mat4 GetModel() const { return Model; }
-		glm::mat4& GetModel() { return Model; }
+		glm::mat4 GetModel() const { return m_Model; }
+		glm::mat4& GetModel() { return m_Model; }
 
 		glm::vec3 GetPosition() const { return m_Position; }
 		glm::vec3& GetPosition() { return m_Position; }
@@ -76,7 +87,7 @@ namespace Denix
 		glm::vec3 m_Rotation = glm::vec3(0.f);
 		glm::vec3 m_Scale = glm::vec3(1.f);
 
-		glm::mat4 Model = glm::mat4(1.f);
+		glm::mat4 m_Model = glm::mat4(1.f);
 
 		friend class GameObject;
 		friend class PhysicsComponent;

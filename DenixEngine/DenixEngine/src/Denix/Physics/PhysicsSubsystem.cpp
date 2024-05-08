@@ -10,13 +10,13 @@ namespace Denix
 
 	void PhysicsSubsystem::RegisterComponent(const Ref<PhysicsComponent>& _component)
 	{
-		DE_LOG(LogPhysics, Trace, "PhysicsComponent Registered: #{} {}", _component->GetID(), _component->GetName())
+		// DE_LOG(LogPhysics, Trace, "PhysicsComponent Registered: #{} {}", _component->GetID(), _component->GetName())
 		m_PhysicsComponents.push_back(_component);
 	}
 
 	void PhysicsSubsystem::UnregisterComponent(const Ref<PhysicsComponent>& _component)
 	{
-		DE_LOG(LogPhysics, Trace, "PhysicsComponent Unregistered: #{} {}", _component->GetID(), _component->GetName())
+		// (LogPhysics, Trace, "PhysicsComponent Unregistered: #{} {}", _component->GetID(), _component->GetName())
 		std::erase(m_PhysicsComponents, _component);
 	}
 
@@ -35,6 +35,7 @@ namespace Denix
 			physicsComp->m_SteppedThisFrame = physicsComp->m_SteppedNextFrame;
 			physicsComp->m_SteppedNextFrame = false;
 			physicsComp->m_IsColliding = false;
+
 			physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
 
 			//actor->m_Torque = glm::vec3(0.0f);
@@ -47,14 +48,15 @@ namespace Denix
 
 	void PhysicsSubsystem::Update(float _deltaTime)
 	{
-		if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
+		if (!m_Enabled) return;
 
 		if(m_CollisionDetectionEnabled) CollisionDetection(_deltaTime);
+
+		if (m_CollisionResponseEnabled && m_ActiveScene->IsPlaying()) CollisionResonse(_deltaTime);
 
 		PhysicsSimulation(_deltaTime);
 	}
  
-
 	void PhysicsSubsystem::CollisionDetection(float _deltaTime)
 	{
 		// Sort physics components into static and dynamic objects - Check they have collision detection enabled
@@ -73,13 +75,13 @@ namespace Denix
 			}
 		}
 
-		// Compute collision detection
+		// Compute collision detection - Skip Broad phase for now
 		for (const auto& dynamicComp : dynamicObjects)
 		{
 			// Check for collision with static objects
 			for (const auto& staticComp : staticObjects)
 			{
-				if (CollisionDetection::BroadCollisionDetection(dynamicComp, staticComp))
+				if (CollisionDetection::BroadCollisionDetection(dynamicComp, staticComp); true)
 				{
 					if (CollisionEvent collision = CollisionDetection::NarrowCollisionDetection(dynamicComp, staticComp); collision.IsCollision)
 					{
@@ -93,7 +95,7 @@ namespace Denix
 			{
 				if (dynamicComp == otherDynamicComp) continue;
 
-				if (CollisionDetection::BroadCollisionDetection(dynamicComp, otherDynamicComp))
+				if (CollisionDetection::BroadCollisionDetection(dynamicComp, otherDynamicComp); true)
 				{
 					if (CollisionEvent collision = CollisionDetection::NarrowCollisionDetection(dynamicComp, otherDynamicComp); collision.IsCollision)
 					{
@@ -109,7 +111,9 @@ namespace Denix
 	{
 		for (auto& [isCollison, actor, other, colData] : m_CollisionEvents)
 		{
-			if (!actor) continue;
+			if (!actor || !other) continue;
+
+			
 
 			if (Ref<PhysicsComponent> comp = actor->GetPhysicsComponent())
 			{
@@ -131,6 +135,9 @@ namespace Denix
 				comp->AddForce(contactForce);
 
 				// Call client side implementation
+				actor->GetPhysicsComponent()->m_IsColliding = true;
+				other->GetPhysicsComponent()->m_IsColliding = true;
+
 				actor->OnCollision(other, colData);
 				if (other) other->OnCollision(actor, colData);
 			}
@@ -141,7 +148,7 @@ namespace Denix
 	{
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			if(m_CollisionResponseEnabled) CollisionResonse(_deltaTime);
+			
 			
 			if (!physicsComp->m_SimulatePhysics) continue;
 

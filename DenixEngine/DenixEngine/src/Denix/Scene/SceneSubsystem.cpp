@@ -165,31 +165,11 @@ namespace Denix
 		// Scene update implementation 
 		m_ActiveScene->Update(_deltaTime);
 
-		GameObjectsUpdate(_deltaTime);
+		
 	}
 
 	void SceneSubsystem::GameObjectsUpdate(float _deltaTime)
 	{
-		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
-		{
-			// Update Transform Components
-			{
-				const auto transform = gameObject->GetTransformComponent();
-				glm::mat4& model = transform->GetModel();
-				glm::vec3& scale = transform->GetScale();
-				glm::vec3& position = transform->GetPosition();
-				const glm::vec3& rotation = transform->GetRotation();
-
-				// Update the Model matrix
-				model = glm::translate(glm::mat4(1.0f), position);
-				model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1, 0, 0));
-				model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0, 1, 0));
-				model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0, 0, 1));
-				model = glm::scale(model, scale);
-			}
-
-			// Update the GameObject -  This will always be here
-			gameObject->Update(_deltaTime);
-		}
+		
 	}
 }
