@@ -12,7 +12,7 @@ namespace Denix
 	{
 		ModelObj = MakeRef<Model>();
 		//ModelObj->LoadModel(FileSubsystem::GetContentRoot() + "Models/Cube.obj");
-		ModelObj->LoadModel(FileSubsystem::GetContentRoot() + "Models/Sphere.obj");
+		ModelObj->LoadModel(FileSubsystem::GetContentRoot() + "Models/Sphere.fbx");
 
 		m_RenderComponent->SetIsVisible(false);
 		m_RenderComponent->GetBaseColorAsTexture() = true;
@@ -144,7 +144,5 @@ namespace Denix
 				glDrawElements(GL_TRIANGLES, TestModel->ModelObj->m_Meshes[i]->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, 0);
 			}
 		}
-		
-		
 	}
 }

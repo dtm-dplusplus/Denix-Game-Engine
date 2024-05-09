@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Denix/Core.h"
+#include "Denix/Core/Math.h"
 #include <string>
 #include <GL/glew.h>
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
+
 
 namespace Denix
 {

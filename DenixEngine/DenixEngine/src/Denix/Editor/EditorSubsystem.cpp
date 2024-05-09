@@ -495,7 +495,6 @@ namespace Denix
 			ImGui::Text("Velocity			x: %.2f y: %.2f z: %.2f", vel.x, vel.y, vel.z);
 			ImGui::Text("Acceleration		x: %.2f y: %.2f z: %.2f", acc.x, acc.y, acc.z);
 			ImGui::Text("Angular Velocity	x: %.2f y: %.2f z: %.2f", avel.x, avel.y, avel.z);
-		
 		}
 	}
 
