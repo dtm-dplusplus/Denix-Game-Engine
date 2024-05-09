@@ -1,11 +1,24 @@
 #include "PhysicsScene.h"
 #include "imgui.h"
-#include <Denix/Core/TimerSubsystem.h>
+#include "Denix/Core/TimerSubsystem.h"
 
 #include "Denix/Scene/Object/Shapes/Shapes.h"
+#include "Denix/Video/Renderer/RendererSubsystem.h"
+#include "Denix/Core/Math.h"
 
 namespace Denix
 {
+	ModelObject::ModelObject(const ObjectInitializer& _objInit) : GameObject(_objInit)
+	{
+		ModelObj = MakeRef<Model>();
+		//ModelObj->LoadModel(FileSubsystem::GetContentRoot() + "Models/Cube.obj");
+		ModelObj->LoadModel(FileSubsystem::GetContentRoot() + "Models/Sphere.obj");
+
+		m_RenderComponent->SetIsVisible(false);
+		m_RenderComponent->GetBaseColorAsTexture() = true;
+		m_RenderComponent->SetMaterial(ResourceSubsystem::GetMaterial("MAT_Red"));
+	}
+
 	bool PhysicsScene::Load()
 	{
 		Scene::Load();
@@ -52,6 +65,10 @@ namespace Denix
 		m_ViewportCamera->SetFov(100.0f);
 		m_ViewportCamera->GetTransformComponent()->SetPosition({ 0.0f,5.0f, 10.0f });
 
+
+		TestModel = MakeRef<ModelObject>();
+		m_SceneObjects.push_back(TestModel);
+
 		return true;
 	}
 
@@ -65,5 +82,69 @@ namespace Denix
 		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTime());
 		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
 		ImGui::End();
+
+		//TestModel->RenderModel();
+		if (Ref<RenderComponent> rendComp = TestModel->GetRenderComponent())
+		{
+			Ref<GLShader> shader = rendComp->GetShader();
+			shader->Bind();
+
+			for (unsigned int i = 0; i < TestModel->ModelObj->m_Meshes.size(); i++)
+			{
+				unsigned int materialIndex = TestModel->ModelObj->m_MeshToTex[i];
+
+				/*if (materialIndex < m_Textures.size() && m_Textures[materialIndex])
+				{
+				m_Textures[materialIndex]->Bind();
+				}*/
+
+				/*m_Meshes[i]->GetVertexArray()->Bind();
+				m_Meshes[i]->GetIndexBuffer()->Bind();
+				glDrawElements(GL_TRIANGLES, m_Meshes[i]->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, 0);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+				glBindVertexArray(0);*/
+
+				TestModel->ModelObj->m_Meshes[i]->GetVertexArray()->Bind();
+				TestModel->ModelObj->m_Meshes[i]->GetIndexBuffer()->Bind();
+
+
+				glUniformMatrix4fv(shader->GetUniform("u_Model"), 1,
+					GL_FALSE, glm::value_ptr(TestModel->GetTransformComponent()->GetModel()));
+
+				// Upload Affects Lighting bool
+				glUniform1i(shader->GetUniform("u_AffectsLighting"), rendComp->AffectsLighting());
+				glUniform1i(shader->GetUniform("u_BaseColorAsTexture"), rendComp->GetBaseColorAsTexture());
+
+				// Upload the texture
+				/*if (!renderComp->GetBaseColorAsTexture() && renderComp->m_Texture)
+				{
+					renderComp->m_Texture->Bind();
+
+					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
+					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
+				}*/
+
+				// Upload the material
+				if (const Ref<Material> mat = TestModel->GetRenderComponent()->GetMaterial())
+				{
+					if (TestModel->GetRenderComponent()->GetBaseColorAsTexture())
+					{
+						const glm::vec3& baseColor = mat->GetBaseColor();
+						glUniform3f(shader->GetUniform("u_Material.BaseColor"),
+							baseColor.r, baseColor.g, baseColor.b);
+					}
+
+					glUniform1f(shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+					glUniform1f(shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+				}
+
+				// Draw Call
+				glDrawElements(GL_TRIANGLES, TestModel->ModelObj->m_Meshes[i]->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, 0);
+			}
+		}
+		
+		
 	}
 }

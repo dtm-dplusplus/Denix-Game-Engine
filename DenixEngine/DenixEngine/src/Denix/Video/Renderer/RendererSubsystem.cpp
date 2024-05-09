@@ -367,6 +367,68 @@ namespace Denix
 		}
 	}
 
+	void RendererSubsystem::DrawImmediate(Ref<RenderComponent> _renderComp, Ref<TransformComponent> _transformComp, Ref<MeshComponent> _meshComp)
+	{
+		if (!_renderComp || !_transformComp || !_meshComp) return;
+
+		if (_renderComp->IsVisible())
+		{
+			_renderComp->m_Shader->Bind();
+			_meshComp->m_Mesh->m_VAO->Bind();
+			_meshComp->m_Mesh->m_IBO->Bind();
+
+			// Upload the camera matrices relative to Object
+			if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
+			{
+				glUniformMatrix4fv(_renderComp->m_Shader->GetUniform("u_Projection"), 1,
+					GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+
+				glUniformMatrix4fv(_renderComp->m_Shader->GetUniform("u_View"), 1,
+					GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+
+				glUniform3f(_renderComp->m_Shader->GetUniform("u_CameraPosition"),
+					camera->GetTransformComponent()->GetPosition().x,
+					camera->GetTransformComponent()->GetPosition().y,
+					camera->GetTransformComponent()->GetPosition().z);
+			}
+
+			// Upload the model matrix
+			glUniformMatrix4fv(_renderComp->m_Shader->GetUniform("u_Model"), 1,
+				GL_FALSE, glm::value_ptr(_transformComp->GetModel()));
+
+			// Upload Affects Lighting bool
+			glUniform1i(_renderComp->m_Shader->GetUniform("u_AffectsLighting"), _renderComp->m_AffectsLighting);
+			glUniform1i(_renderComp->m_Shader->GetUniform("u_BaseColorAsTexture"), _renderComp->GetBaseColorAsTexture());
+
+			// Upload the texture
+			if (!_renderComp->GetBaseColorAsTexture() && _renderComp->m_Texture)
+			{
+				_renderComp->m_Texture->Bind();
+
+				glTexParameteri(_renderComp->m_Texture->GetTarget(), GL_TEXTURE_WRAP_S, _renderComp->m_TextureSettings.WrapMode);
+				glTexParameteri(_renderComp->m_Texture->GetTarget(), GL_TEXTURE_WRAP_T, _renderComp->m_TextureSettings.WrapMode);
+				glTexParameteri(_renderComp->m_Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, _renderComp->m_TextureSettings.FilterMode);
+				glTexParameteri(_renderComp->m_Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, _renderComp->m_TextureSettings.FilterMode);
+			}
+
+			// Upload the material
+			if (const Ref<Material> mat = _renderComp->m_Material)
+			{
+				if (_renderComp->GetBaseColorAsTexture())
+				{
+					const glm::vec3& baseColor = mat->GetBaseColor();
+					glUniform3f(_renderComp->m_Shader->GetUniform("u_Material.BaseColor"),
+						baseColor.r, baseColor.g, baseColor.b);
+				}
+
+				glUniform1f(_renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+				glUniform1f(_renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+			}
+
+			glDrawElements(GL_TRIANGLES, _meshComp->m_Mesh->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
+		}
+	}
+
 	void RendererSubsystem::RenderLighting()
 	{
 		if (((ViewportMode)m_ViewportMode != ViewportMode::Default)) return;

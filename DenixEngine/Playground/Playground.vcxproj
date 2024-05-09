@@ -115,7 +115,6 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Scenes.h" />
     <ClInclude Include="src\Scenes\PhysicsScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

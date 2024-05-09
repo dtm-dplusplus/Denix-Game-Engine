@@ -29,6 +29,7 @@ namespace Denix
 
 		static int& GetViewportMode() { return s_RendererSubSystem->m_ViewportMode; }
 
+		static void DrawImmediate(Ref<RenderComponent> _renderComp, Ref<TransformComponent> _transformComp, Ref<MeshComponent> _meshComp);
 
 	public:
 		static RendererSubsystem* Get() { return s_RendererSubSystem; }

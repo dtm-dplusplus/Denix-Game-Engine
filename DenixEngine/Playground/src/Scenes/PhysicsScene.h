@@ -5,6 +5,13 @@
 
 namespace Denix
 {
+	class ModelObject : public GameObject
+	{
+	public:
+		ModelObject(const ObjectInitializer& _objInit = { "ModelObject" });
+
+		Ref<Model> ModelObj;
+	};
 	class PhysObject : public GameObject
 	{
 	public:
@@ -41,6 +48,7 @@ namespace Denix
 		bool Load() override;
 		void Update(float _deltaTime) override;
 
+		Ref<ModelObject> TestModel;
 		Ref<PhysObject> PhysicsObject;
 		Ref<class Cube> TestCube;
 		Ref<PointLight> PntLight;

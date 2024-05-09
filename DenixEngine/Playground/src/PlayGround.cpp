@@ -1,5 +1,5 @@
 #include "Denix.h"
-#include "Scenes.h"
+#include "Scenes/PhysicsScene.h"
 
 using namespace Denix;
 
@@ -34,16 +34,7 @@ public:
 
 		Ref<Material> red = MakeRef<Material>("MAT_Red");
 		red->SetBaseColor({ 1.0f,0.0f,0.0f });
-
-		Ref<Material> green = MakeRef<Material>("MAT_Green");
-		red->SetBaseColor({ 0.0f,1.0f,0.0f });
-
-		Ref<Material> blue = MakeRef<Material>("MAT_Blue");
-		red->SetBaseColor({ 0.0f,0.0f,1.0f });
-
 		ResourceSubsystem::LoadMaterial(red);
-		ResourceSubsystem::LoadMaterial(green);
-		ResourceSubsystem::LoadMaterial(blue);
 
 		RestartScene();
 	}

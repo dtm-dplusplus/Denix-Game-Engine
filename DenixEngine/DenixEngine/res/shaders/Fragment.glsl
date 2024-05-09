@@ -151,7 +151,7 @@ void main()
 	// Usa
 	if (!u_AffectsLighting)
 	{
-		Color = texture(u_Texture, TexCoord) * vec4(u_Material.BaseColor, 1.0f);
+		Color = u_BaseColorAsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.BaseColor, 1.0f);
 		return;
 	}
 
@@ -159,14 +159,7 @@ void main()
 	totalColor = CalcDirLight() + CalcPointLights() + CalcSpotLights();
 
 	// Get base from color or texture
-	if(!u_BaseColorAsTexture)
-	{
-		totalColor *= texture(u_Texture, TexCoord);
-	}
-	else
-	{
-		totalColor *= vec4(u_Material.BaseColor, 1.0f);
-	}
+	totalColor *= u_BaseColorAsTexture ? vec4(u_Material.BaseColor, 1.0f) : texture(u_Texture, TexCoord);
 
 	// Output Color
 	Color = totalColor;

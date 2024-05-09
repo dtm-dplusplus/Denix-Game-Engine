@@ -28,9 +28,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Scenes.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scenes\PhysicsScene.h">
       <Filter>src\Scenes</Filter>
     </ClInclude>
