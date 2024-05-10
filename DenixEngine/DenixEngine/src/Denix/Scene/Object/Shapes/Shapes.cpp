@@ -13,7 +13,6 @@ namespace Denix
     void Plane::Update(float _deltaTime)
     {
         GameObject::Update(_deltaTime);
-
         
     }
 
@@ -30,7 +29,7 @@ namespace Denix
 
 	Sphere::Sphere(const ObjectInitializer& _objInit) : GameObject(_objInit)
 	{
-		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Sphere")); // Will change to sphere
+		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Sphere"));
 		m_PhysicsComponent->SetCollider(MakeRef<SphereCollider>());
 	}
     void Sphere::Update(float _deltaTime)

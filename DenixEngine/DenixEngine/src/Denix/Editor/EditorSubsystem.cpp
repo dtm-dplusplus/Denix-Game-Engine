@@ -511,71 +511,78 @@ namespace Denix
 	{
 		if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			const Ref<PhysicsComponent> pComp = _selectedObject->GetPhysicsComponent();
-
-			if (ImGui::Checkbox("Is Trigger", &pComp->IsTrigger())) pComp->ToggleTrigger();
-			ImGui::SameLine(); ImGui::Text(" State: %s", pComp->GetTriggerStateS().c_str());
-
-			// Collision
-			ImGui::Checkbox("Show Collider", &pComp->IsColliderVisible());
-
-			// Collision Type
-			static const char* colliderTypes[] = { "Cube", "Sphere" };
-			static int itemCurrent = pComp->GetCollider()? (int)pComp->GetCollider()->GetColliderType(): 0;
-			const char* previewItem = colliderTypes[itemCurrent];
-			if (ImGui::BeginCombo("Collider Type", previewItem))
+			if (const Ref<PhysicsComponent> pComp = _selectedObject->GetPhysicsComponent())
 			{
-				for (int n = 0; n < IM_ARRAYSIZE(colliderTypes); n++)
+				// Collider Type
+				static const char* colliderTypes[] = { "None", "Cube", "Sphere" };
+				int itemCurrent = pComp->GetCollider() ? ((int)pComp->GetCollider()->GetColliderType() + 1) : 0;
+				const char* previewItem = colliderTypes[itemCurrent];
+				if (ImGui::BeginCombo("Collider Type", previewItem))
 				{
-					const bool is_selected = (itemCurrent == n);
-					if (ImGui::Selectable(colliderTypes[n], is_selected))
+					for (int n = 0; n < IM_ARRAYSIZE(colliderTypes); n++)
 					{
-						itemCurrent = n;
-						switch (itemCurrent)
+						const bool is_selected = (itemCurrent == n);
+						if (ImGui::Selectable(colliderTypes[n], is_selected))
 						{
-						case 0:
-						{
-							pComp->m_Collider = MakeRef<CubeCollider>();
-							DE_LOG(LogEditor, Warn, "Set collider type to cube on {}", _selectedObject->GetName())
-						} break;
+							itemCurrent = n;
+							switch (itemCurrent)
+							{
+							case 0:
+							{
+								pComp->m_Collider = nullptr;
+								DE_LOG(LogEditor, Warn, "Set collider type to none on {}", _selectedObject->GetName())
+							} break;
 
-						case 1:
-						{
-							pComp->m_Collider = MakeRef<SphereCollider>();
-							DE_LOG(LogEditor, Warn, "Set collider type to sphere on {}", _selectedObject->GetName())
-						} break;
+							case 1:
+							{
+								pComp->m_Collider = MakeRef<CubeCollider>();
+								DE_LOG(LogEditor, Warn, "Set collider type to cube on {}", _selectedObject->GetName())
+							} break;
+
+							case 2:
+							{
+								pComp->m_Collider = MakeRef<SphereCollider>();
+								DE_LOG(LogEditor, Warn, "Set collider type to sphere on {}", _selectedObject->GetName())
+							} break;
+							}
 						}
-					}
 
-					// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-					if (is_selected) ImGui::SetItemDefaultFocus();
+						// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+						if (is_selected) ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
 				}
-				ImGui::EndCombo();
-			}
 
-			// Collision Specifics
-			if (pComp->GetCollider())
-			{
-				switch (pComp->GetCollider()->GetColliderType())
-				{
-				case ColliderType::Cube:
-				{
-					if (Ref<CubeCollider> sCol = CastRef<CubeCollider>(pComp->GetCollider()))
-					{
-						if (!pComp->CollisionDimensionOverride()) ImGui::BeginDisabled();
-						ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
-						if (!pComp->CollisionDimensionOverride()) ImGui::EndDisabled();
-						ImGui::SameLine(); ImGui::Checkbox("## Dimesnion Override", &pComp->CollisionDimensionOverride());
-					}
-				} break;
+				if (ImGui::Checkbox("Is Trigger", &pComp->IsTrigger())) pComp->ToggleTrigger();
+				ImGui::SameLine(); ImGui::Text(" State: %s", pComp->GetTriggerStateS().c_str());
 
-				case ColliderType::Sphere:
+				// Collider Visualiser
+				ImGui::Checkbox("Show Collider", &pComp->IsColliderVisible());
+
+				// Collider settings
+				if (pComp->GetCollider())
 				{
-					if (Ref<SphereCollider> sCol = CastRef<SphereCollider>(pComp->GetCollider()))
+					switch (pComp->GetCollider()->GetColliderType())
 					{
-						ImGui::DragFloat("Radius", &sCol->GetRadius(), DragSpeedDelta, FLT_MIN, FLT_MAX);
+					case ColliderType::Cube:
+					{
+						if (Ref<CubeCollider> sCol = CastRef<CubeCollider>(pComp->GetCollider()))
+						{
+							if (!pComp->CollisionDimensionOverride()) ImGui::BeginDisabled();
+							ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
+							if (!pComp->CollisionDimensionOverride()) ImGui::EndDisabled();
+							ImGui::SameLine(); ImGui::Checkbox("## Dimesnion Override", &pComp->CollisionDimensionOverride());
+						}
+					} break;
+
+					case ColliderType::Sphere:
+					{
+						if (Ref<SphereCollider> sCol = CastRef<SphereCollider>(pComp->GetCollider()))
+						{
+							ImGui::DragFloat("Radius", &sCol->GetRadius(), DragSpeedDelta, FLT_MIN, FLT_MAX);
+						}
+					} break;
 					}
-				} break;
 				}
 			}
 		}

@@ -8,6 +8,13 @@
 
 namespace Denix
 {
+	PhysObject::PhysObject(const ObjectInitializer& _objInit) : GameObject(_objInit)
+	{
+		m_TransformComponent->SetMoveability(Moveability::Dynamic);
+		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
+		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Cube"));
+	}
+
 	bool PhysicsScene::Load()
 	{
 		Scene::Load();
@@ -31,19 +38,10 @@ namespace Denix
 
 		PhysicsObject = MakeRef<PhysObject>(ObjectInitializer("Cube 1"));
 		PhysicsObject->GetTransformComponent()->SetPosition({ 0.0f, 10.0f, 0.0f });
-		PhysicsObject->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
-		PhysicsObject->GetPhysicsComponent()->SimulatePhysics() = true;
-		PhysicsObject->GetCollider() = MakeRef<CubeCollider>();
-		PhysicsObject->GetMeshComponent()->SetModel(ResourceSubsystem::GetModel("SM_Cube"));
 		m_SceneObjects.push_back(PhysicsObject);
 
 		Ref<PhysObject> other = MakeRef<PhysObject>(ObjectInitializer("Cube 2"));
 		other->GetTransformComponent()->SetPosition({ 5.0f, 10.0f, 0.0f });
-		other->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
-		other->GetPhysicsComponent()->SimulatePhysics() = false;
-		other->GetMeshComponent()->SetModel(ResourceSubsystem::GetModel("SM_Cube"));
-		other->GetCollider() = MakeRef<CubeCollider>();
-
 		m_SceneObjects.push_back(other);
 
 		m_DirLight->SetAmbientIntensity(0.7f);
@@ -69,4 +67,5 @@ namespace Denix
 		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
 		ImGui::End();
 	}
+	
 }

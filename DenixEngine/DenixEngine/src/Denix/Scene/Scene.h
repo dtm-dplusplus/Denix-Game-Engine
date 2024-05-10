@@ -237,7 +237,6 @@ namespace Denix
 
 		/** List of Objects in the scene */
 		std::vector<Ref<GameObject>> m_SceneObjects;
-		//std::unordered_map<std::string, Ref<GameObject>> m_SceneObjects;
 
 		Ref<ViewportCamera> m_ViewportCamera;
 

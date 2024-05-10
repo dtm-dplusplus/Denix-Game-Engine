@@ -8,9 +8,7 @@ namespace Denix
 	class PhysObject : public GameObject
 	{
 	public:
-		PhysObject(const ObjectInitializer& _objInit = { "PhysObject" }) : GameObject(_objInit)
-		{
-		}
+		PhysObject(const ObjectInitializer& _objInit = { "PhysObject" });
 
 		void OnCollision(Ref<GameObject> _other, CollisionData& _collison) override
 		{

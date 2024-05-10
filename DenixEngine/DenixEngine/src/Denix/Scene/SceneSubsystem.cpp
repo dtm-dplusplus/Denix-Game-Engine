@@ -146,8 +146,31 @@ namespace Denix
 		{
 			if (gameObject->IsRubbish())
 			{
-				// This will removec registered Components & other neccessary cleanups
+				// This will remove registered Components & other neccessary cleanups
+				if (m_ActiveScene->IsPlaying()) gameObject->EndPlay();
 				gameObject->EndScene();
+
+				// Check for scene types and remove from member lists
+				if (Ref<Light> light = CastRef<Light>(gameObject))
+				{
+					switch ((LightType)light->GetLightType())
+					{ 
+						case LightType::Directional:
+						{
+							m_ActiveScene->m_DirLight = nullptr;
+						} break;
+						
+						case LightType::Point:
+						{
+							m_ActiveScene->m_PointLights.erase(std::find(m_ActiveScene->m_PointLights.begin(), m_ActiveScene->m_PointLights.end(), light));
+						} break;
+
+						case LightType::Spot:
+						{
+							m_ActiveScene->m_SpotLights.erase(std::find(m_ActiveScene->m_SpotLights.begin(), m_ActiveScene->m_SpotLights.end(), light));
+						} break;
+					}
+				}
 				std::erase(m_ActiveScene->m_SceneObjects, gameObject);
 			}
 		}

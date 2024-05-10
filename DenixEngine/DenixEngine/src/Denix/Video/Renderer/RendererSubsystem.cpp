@@ -256,7 +256,7 @@ namespace Denix
 		shader->Bind();
 
 		// Upload the camera matrices relative to Object
-		if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
+		if (const Ref<Camera> camera = m_ActiveScene->m_ActiveCamera)
 		{
 			glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1,
 				GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
@@ -270,7 +270,7 @@ namespace Denix
 				camera->GetTransformComponent()->GetPosition().z);
 		}
 
-		for (const Ref<GameObject>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
+		for (const Ref<GameObject>& object : m_ActiveScene->m_SceneObjects)
 		{
 			if (!object->GetPhysicsComponent()->GetCollider()) continue;
 
@@ -286,7 +286,12 @@ namespace Denix
 			glUniform1i(shader->GetUniform("u_AffectsLighting"), true);
 			glUniform1i(shader->GetUniform("u_BaseColorAsTexture"), true);
 
-			if (!physComp->IsColliding())
+			if (physComp->IsColliding())
+			{
+				glUniform3f(shader->GetUniform("u_Material.BaseColor"), 1.0f, 0.0f, 0.0f);
+				
+			}
+			else
 			{
 				switch (object->GetTransformComponent()->GetMoveability())
 				{
@@ -301,13 +306,7 @@ namespace Denix
 					glUniform3f(shader->GetUniform("u_Material.BaseColor"),
 						m_DynamicColliderColor.r, m_DynamicColliderColor.g, m_DynamicColliderColor.b);
 				} break;
-
-				default: DE_LOG(LogScene, Error, "Invalid Moveability") break;
 				}
-			}
-			else
-			{
-				glUniform3f(shader->GetUniform("u_Material.BaseColor"), 1.0f, 0.0f, 0.0f);
 			}
 
 			// Draw Call

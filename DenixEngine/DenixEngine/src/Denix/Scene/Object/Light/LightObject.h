@@ -5,10 +5,20 @@
 
 namespace Denix
 {
+	enum class LightType
+	{
+		Directional,
+		Point,
+		Spot
+	};
+
 	class Light : public GameObject
 	{
 	public:
 		explicit Light(const ObjectInitializer& _objInit = {"Light"});
+
+		LightType GetLightType() const { return (LightType)m_LightType; }
+		int& GetLightType() { return m_LightType; }
 
 		glm::vec3 GetLightColor() const { return m_LightColor; }
 		glm::vec3& GetLightColor() { return m_LightColor; }
@@ -27,6 +37,8 @@ namespace Denix
 		glm::vec2 m_DiffuseConstraints = { 0.0f, 3.0f };
 
 	protected:
+		int m_LightType;
+
 		glm::vec3 m_LightColor;
 
 		float m_AmbientIntensity;
@@ -41,6 +53,7 @@ namespace Denix
 		DirectionalLight() : Light({ "DirectionalLight" }),
 			m_LightDirection(0.0f, 1.0f, 0.0f) 
 		{
+			m_LightType = (int)LightType::Directional;
 			m_AmbientIntensity = 0.1f;
 			m_DiffuseIntensity = 0.5f;
 		}
@@ -59,6 +72,7 @@ namespace Denix
 	public:
 		PointLight() : Light({"PointLight"}), constant(0.3f), linear(0.2f), exponent(0.1f)
 		{
+			m_LightType = (int)LightType::Point;
 			m_AmbientIntensity = 0.0f;
 			m_DiffuseIntensity = 1.0f;
 		}
@@ -93,6 +107,7 @@ namespace Denix
 	public:
 		SpotLight() : PointLight({"SpotLight"}), m_Direction(0.0f, -1.0f,0.0f), m_Edge(5), m_ProcessedEdge(0)
 		{
+			m_LightType = (int)LightType::Spot;
 			m_AmbientIntensity = 0.5f;
 			m_DiffuseIntensity = 1.0f;
 			m_ProcessedEdge = cosf(glm::radians(m_Edge));
@@ -114,7 +129,8 @@ namespace Denix
 
 		float GetProcessedEdge() const { return m_ProcessedEdge; }
 		float& GetProcessedEdge() { return m_ProcessedEdge; }
-		private:
+
+	private:
 		glm::vec3 m_Direction;
 		float m_Edge;
 		float m_ProcessedEdge;
