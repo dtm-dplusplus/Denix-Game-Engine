@@ -32,9 +32,9 @@ public:
 
 		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\brick.png)", "brick");
 
-		Ref<Material> red = MakeRef<Material>("MAT_Red");
-		red->SetBaseColor({ 1.0f,0.0f,0.0f });
-		ResourceSubsystem::LoadMaterial(red);
+		Ref<Material> red = MakeRef<Material>(ObjectInitializer("MAT_Red"));
+		red->GetBaseParam().Color = {1.0f,0.0f,0.0f};
+		ResourceSubsystem::AddMaterial(red);
 
 		RestartScene();
 	}

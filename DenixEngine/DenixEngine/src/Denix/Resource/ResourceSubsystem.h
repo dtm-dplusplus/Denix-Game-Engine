@@ -45,7 +45,7 @@ namespace Denix
         }
        
         // Materials
-        static void LoadMaterial(const Ref<Material>& ref);
+        static void AddMaterial(const Ref<Material>& _ref);
 
         static Ref<Material> GetMaterial(const std::string& _name);
 

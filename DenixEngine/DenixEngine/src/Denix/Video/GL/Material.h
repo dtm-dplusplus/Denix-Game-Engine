@@ -2,27 +2,43 @@
 
 #include "Denix/Scene/Object.h"
 #include "Denix/Video/GL/Texture.h"
+#include "Denix/Video/GL/GLShader.h"
 
 namespace Denix
 {
-	struct BaseColor
+	struct BaseMatParam
 	{
-		BaseColor() : Color(glm::vec3(1.0f)), IsTexture(false), Texture(nullptr) {}
-		BaseColor(const glm::vec3& _color) : Color(_color), IsTexture(false), Texture(nullptr) {}
-		BaseColor(const Ref<Texture>& _texture) : Color(glm::vec3(1.0f)), IsTexture(true), Texture(_texture) {}
+		BaseMatParam() : Color(glm::vec3(1.0f)), IsTexture(false), Texture(nullptr) {}
+		BaseMatParam(const glm::vec3& _color) : Color(_color), IsTexture(false), Texture(nullptr) {}
+		BaseMatParam(const Ref<Texture>& _texture) : Color(glm::vec3(1.0f)), IsTexture(true), Texture(_texture) {}
 
 		glm::vec3 Color;
 		bool IsTexture;
 		Ref<Texture> Texture;
 	};
+
+	struct NormalMatParam
+	{
+		NormalMatParam() : IsTexture(false), Texture(nullptr) {}
+		NormalMatParam(const Ref<Texture>& _texture) : IsTexture(true), Texture(_texture) {}
+
+		bool IsTexture;
+		Ref<Texture> Texture;
+	};
+
 	class Material: public Object
 	{
 	public:
-		Material(const std::string& _name = "Material") : Object({ _name }) {}
+		Material(const ObjectInitializer& _objInit = { "Material" });
+		Material(Ref<Material> _other);
 
-		//glm::vec3 GetBaseColor() const { return m_BaseColor.Color; }
-		glm::vec3& GetBaseColor() { return m_BaseColor.Color; }
-		void SetBaseColor(const glm::vec3& _color) { m_BaseColor.Color = _color; }
+		Ref<GLShader> GetShader() const { return m_Shader; }
+		void SetShader(const Ref<GLShader>& _shader) { m_Shader = _shader; }
+
+		BaseMatParam GetBaseParam() const { return m_BaseParam; }
+		BaseMatParam& GetBaseParam() { return m_BaseParam; }
+		void SetBaseParam(const BaseMatParam& _param) { m_BaseParam = _param; }
+
 
 		float GetSpecularPower() const { return m_SpecularPower; }
 		float& GetSpecularPower() { return m_SpecularPower; }
@@ -33,9 +49,16 @@ namespace Denix
 		void SetSpecularIntensity(const float _intensity) { m_SpecularIntensity = _intensity; }
 
 	private:
-		BaseColor m_BaseColor;
+		BaseMatParam m_BaseParam;
+
+		NormalMatParam m_NormalParam;
+
+		Ref<GLShader> m_Shader;
+
 		float m_SpecularIntensity = 0.5f;
 		float m_SpecularPower = 4.0f;
+
+		friend class RendererSubsystem;
 	};
 
 

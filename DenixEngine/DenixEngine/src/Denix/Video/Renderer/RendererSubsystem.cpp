@@ -43,11 +43,35 @@ namespace Denix
 			const Ref<MeshComponent> meshComp = object->GetMeshComponent();
 
 			if (!renderComp || !transformComp || !meshComp) continue;
+			//if (!renderComp->m_Material) continue;
+			//if (!renderComp->m_Material->GetShader()) continue;
 
-			if (renderComp->IsVisible())
+			if (const Ref<Material> mat = renderComp->m_Material; renderComp->IsVisible())
 			{
-				renderComp->m_Shader->Bind();
-				
+				mat->m_Shader->Bind();
+
+				// Upload the material
+				const BaseMatParam& base = mat->GetBaseParam();
+
+				glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
+					base.Color.r, base.Color.g, base.Color.b);
+
+				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
+
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+
+				if (base.IsTexture && base.Texture)
+				{
+					base.Texture->Bind();
+
+					// Texture Settings need to move to the material/texture
+					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
+					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
+				}
+
 				// Upload the camera matrices relative to Object
 				if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
 				{
@@ -69,32 +93,6 @@ namespace Denix
 
 				// Upload Affects Lighting bool
 				glUniform1i(renderComp->m_Shader->GetUniform("u_AffectsLighting"), renderComp->m_AffectsLighting);
-				glUniform1i(renderComp->m_Shader->GetUniform("u_BaseColorAsTexture"), renderComp->GetBaseColorAsTexture());
-
-				// Upload the texture
-				if (!renderComp->GetBaseColorAsTexture() && renderComp->m_Texture)
-				{
-					renderComp->m_Texture->Bind();
-
-					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
-					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
-				}
-
-				// Upload the material
-				if (const Ref<Material> mat = renderComp->m_Material)
-				{
-					if (renderComp->GetBaseColorAsTexture())
-					{
-						const glm::vec3& baseColor = mat->GetBaseColor();
-						glUniform3f(renderComp->m_Shader->GetUniform("u_Material.BaseColor"),
-							baseColor.r, baseColor.g, baseColor.b);
-					}
-
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
-				}
 
 				// Draw Call
 				if (const Ref<Model> model = meshComp->GetModel())

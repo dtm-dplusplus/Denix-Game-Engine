@@ -14,6 +14,7 @@ namespace Denix
         m_Components["Mesh"] = m_MeshComponent;
 
         m_RenderComponent = MakeRef<RenderComponent>(GetName());
+        m_RenderComponent->SetMaterial(ResourceSubsystem::GetMaterial("MAT_Default"));
         m_Components["Render"] = m_RenderComponent;
 
         m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());

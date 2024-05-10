@@ -39,9 +39,15 @@ struct SpotLight
 	float Edge;
 };
 
+struct BaseMatParam
+{
+	vec3 Color;
+	bool IsTexture;
+};
+
 struct Material
 {
-	vec3 BaseColor;
+	BaseMatParam Base;
 	float SpecularIntensity;
 	float SpecularPower;
 };
@@ -151,7 +157,7 @@ void main()
 	// Usa
 	if (!u_AffectsLighting)
 	{
-		Color = u_BaseColorAsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.BaseColor, 1.0f);
+		Color = u_Material.Base.IsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.Base.Color, 1.0f);
 		return;
 	}
 
@@ -159,7 +165,7 @@ void main()
 	totalColor = CalcDirLight() + CalcPointLights() + CalcSpotLights();
 
 	// Get base from color or texture
-	totalColor *= u_BaseColorAsTexture ? vec4(u_Material.BaseColor, 1.0f) : texture(u_Texture, TexCoord);
+	totalColor *= u_Material.Base.IsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.Base.Color, 1.0f);
 
 	// Output Color
 	Color = totalColor;

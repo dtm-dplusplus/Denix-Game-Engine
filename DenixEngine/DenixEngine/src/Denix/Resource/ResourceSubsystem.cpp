@@ -20,9 +20,6 @@ namespace Denix
 		DE_LOG_CREATE(LogResource)
 
 		// Iniatlize Default Assets
-
-		
-
 		// SHADERS
 		{
 			std::vector<ShaderSource> debugShaders;
@@ -55,6 +52,17 @@ namespace Denix
 		LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)", "DefaultTexture");
 
 		// MATERIALS
+		{
+			Ref<Material> defaultMaterial = MakeRef<Material>(ObjectInitializer("MAT_Default"));
+			defaultMaterial->SetShader(GetShader("DefaultShader"));
+			defaultMaterial->GetBaseParam().IsTexture = true;
+			defaultMaterial->GetBaseParam().Texture = GetTexture("DefaultTexture");
+			AddMaterial(defaultMaterial);
+
+			Ref<Material> unlitMaterial = MakeRef<Material>(ObjectInitializer("MAT_Unlit"));
+			unlitMaterial->SetShader(GetShader("UnlitShader"));
+			AddMaterial(unlitMaterial);
+		}
 		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
 
 		// Models
@@ -154,16 +162,16 @@ namespace Denix
 	}
 
 	////////////////////////  MATERIALS ///////////////////////////////
-	void ResourceSubsystem::LoadMaterial(const Ref<Material>& ref)
+	void ResourceSubsystem::AddMaterial(const Ref<Material>& _ref)
 	{
-		if (s_ResourceSubsystem->m_MaterialStore.contains(ref->GetFriendlyName()))
+		if (s_ResourceSubsystem->m_MaterialStore.contains(_ref->GetFriendlyName()))
 		{
-			DE_LOG(LogResource, Error, "Load Material: A material name: {} is already loaded", ref->GetName())
-				return;
+			DE_LOG(LogResource, Error, "Add Material: A material name: {} is already loaded", _ref->GetName())
+			return;
 		}
 
-		DE_LOG(LogResource, Trace, "Material Loaded: {}", ref->GetFriendlyName())
-			s_ResourceSubsystem->m_MaterialStore[ref->GetFriendlyName()] = ref;
+		s_ResourceSubsystem->m_MaterialStore[_ref->GetFriendlyName()] = _ref;
+		DE_LOG(LogResource, Trace, "Material Loaded: {}", _ref->GetFriendlyName())
 	}
 
 	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _name)

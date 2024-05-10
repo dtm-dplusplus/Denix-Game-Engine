@@ -113,6 +113,7 @@ namespace Denix
 		void PhysicsWidget(const Ref<GameObject>& _selectedObject) const;
 		void CollisionWidget(const Ref<GameObject>& _selectedObject) const;
 		void RenderWidget(const Ref<GameObject>& _selectedObject);
+		void MaterialWidget(const Ref<GameObject>& _selectedObject);
 		void MeshWidget(const Ref<GameObject>& _selectedObject);
 		void TransformWidget(const Ref<GameObject>& _object) const;
 		void CameraWidget(const Ref<GameObject>& _camera) const;

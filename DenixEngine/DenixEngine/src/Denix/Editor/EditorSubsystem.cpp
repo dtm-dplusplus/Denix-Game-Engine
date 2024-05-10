@@ -471,7 +471,7 @@ namespace Denix
 				// Step Simulation Method
 				static const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };
 				static int itemCurrent = 0; // Here we store our selection data as an index.
-				const char* comboPreview = stepMethods[itemCurrent];  // Pass in the preview value visible before opening the combo
+				const char* comboPreview = stepMethods[itemCurrent];  // Pass in the previewMatName value visible before opening the combo
 				if (ImGui::BeginCombo("Step Method", comboPreview))
 				{
 					for (int n = 0; n < IM_ARRAYSIZE(stepMethods); n++)
@@ -598,8 +598,63 @@ namespace Denix
 			ImGui::Checkbox("Affects Lighting", &render->AffectsLighting());
 			ImGui::Checkbox("Base Color As Texture", &render->GetBaseColorAsTexture());
 
-			ImGui::SeparatorText("Shader");
-			if (Ref<GLShader> shader = render->GetShader())
+			MaterialWidget(_selectedObject);
+		}
+	}
+
+	void EditorSubsystem::MaterialWidget(const Ref<GameObject>& _selectedObject)
+	{
+		const Ref<RenderComponent> rendComp = _selectedObject->GetRenderComponent();
+
+		ImGui::SeparatorText("Material");
+
+		// Material Dropdown
+		{
+			Ref<Material> previewMat = rendComp->GetMaterial();
+			std::string previewMatName = previewMat ? previewMat->GetFriendlyName() : "None";
+			const char* preview = "None";
+			if (ImGui::BeginCombo("##MaterialName", previewMatName.c_str()))
+			{
+				for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
+				{
+					ImGui::PushID(fst.c_str());
+					if (ImGui::Selectable(fst.c_str()))
+					{
+						_selectedObject->GetRenderComponent()->SetMaterial(snd);
+						DE_LOG(LogEditor, Info, "Material on {} set to: {}",
+							_selectedObject->GetRenderComponent()->GetName(), snd->GetFriendlyName())
+					}
+					ImGui::PopID();
+				}
+				ImGui::EndCombo();
+			}
+		}
+		
+		// Material Settings - if material is set
+		if (Ref<Material> mat = rendComp->GetMaterial())
+		{
+			// Color or Texture selectable
+			{
+				bool texSelected = mat->GetBaseParam().IsTexture;
+				bool colSelected = !texSelected;
+
+				if (ImGui::Selectable("Color", colSelected, 0, ImVec2(50, 15)))
+				{
+					mat->GetBaseParam().IsTexture = false;
+				}
+				ImGui::SameLine();
+				if (ImGui::Selectable("Texture", texSelected, 0, ImVec2(50, 15)))
+				{
+					mat->GetBaseParam().IsTexture = true;
+				}
+			}
+
+			ImGui::ColorEdit3("Base Color", &mat->GetBaseParam().Color[0]);
+			ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
+			ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
+
+			/*ImGui::SeparatorText("Shader");
+			if (Ref<GLShader> shader = _selectedObject->GetRenderComponent()->GetShader())
 			{
 				if (ImGui::BeginCombo("##ShaderName", shader->GetName().c_str()))
 				{
@@ -618,82 +673,79 @@ namespace Denix
 				ImGui::SameLine(); if (ImGui::Button("Edit Shader")) m_ShaderEditorWidget = MakeRef<ShaderEditorWidget>(shader);
 			}
 
-			if (m_ShaderEditorWidget) m_ShaderEditorWidget->WidgetEditor();
+			if (m_ShaderEditorWidget) m_ShaderEditorWidget->WidgetEditor();*/
 
-			ImGui::SeparatorText("Material");
-			if (Ref<Material> mat = render->GetMaterial())
-			{
-				if (ImGui::BeginCombo("##MaterialName", mat->GetFriendlyName().c_str()))
-				{
-					for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
-					{
-						ImGui::PushID(fst.c_str());
-						if (ImGui::Selectable(fst.c_str()))
-						{
-							render->SetMaterial(snd);
-							DE_LOG(LogEditor, Info, "Material on {} set to: {}", render->GetName(), snd->GetFriendlyName())
-						}
-						ImGui::PopID();
-					}
-					ImGui::EndCombo();
-				}
 
-				ImGui::ColorEdit3("Base Color", &mat->GetBaseColor()[0]);
-				ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
-				ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
-			}
 
-			ImGui::SeparatorText("Texture");
-			if (const Ref<Texture> texture = render->GetTexture())
-			{
-				// Texture Preview + Selection
-				ImGui::Image((void*)(intptr_t)render->GetTexture()->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
+			//ImGui::SeparatorText("Texture");
+			//std::string preview = previewMat ? previewMat->GetFriendlyName() : "None";
+			//const char* preview = "None";
+			//if (ImGui::BeginCombo("##MaterialName", preview.c_str()))
+			//{
+			//	for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
+			//	{
+			//		ImGui::PushID(fst.c_str());
+			//		if (ImGui::Selectable(fst.c_str()))
+			//		{
+			//			_selectedObject->GetRenderComponent()->SetMaterial(snd);
+			//			DE_LOG(LogEditor, Info, "Material on {} set to: {}",
+			//				_selectedObject->GetRenderComponent()->GetName(), snd->GetFriendlyName())
+			//		}
+			//		ImGui::PopID();
+			//	}
+			//	ImGui::EndCombo();
+			//}
 
-				if (ImGui::BeginCombo("##TextureSelection", render->GetTexture()->GetTextureName().c_str(), ImGuiComboFlags_WidthFitPreview))
-				{
-					for (auto& [fst, snd] : ResourceSubsystem::GetTextureStore())
-					{
-						ImGui::PushID(fst.c_str());
-						ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
-						if (ImGui::Selectable(fst.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(250, 100)))
-						{
-							render->SetTexture(snd);
-							DE_LOG(LogEditor, Info, "Texture on {} set to: {}", render->GetName(), snd->GetTextureName())
-						}
-						ImGui::PopID();
-					}
-					ImGui::EndCombo();
-				}
+			//if (const Ref<Texture> texture = render->GetTexture())
+			//{
+			//	// Texture Preview + Selection
+			//	ImGui::Image((void*)(intptr_t)render->GetTexture()->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
 
-				// Texture Info
-				ImGui::SeparatorText("Texture Info");
-				ImGui::Text("Texture ID: %d", texture->GetTextureID());
-				ImGui::TextWrapped("File Path : % s", texture->GetFileLocation().c_str());
-				ImGui::Text("Size = %d x %d", texture->GetWidth(), texture->GetHeight());
-				ImGui::Separator();
+			//	if (ImGui::BeginCombo("##TextureSelection", render->GetTexture()->GetTextureName().c_str(), ImGuiComboFlags_WidthFitPreview))
+			//	{
+			//		for (auto& [fst, snd] : ResourceSubsystem::GetTextureStore())
+			//		{
+			//			ImGui::PushID(fst.c_str());
+			//			ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
+			//			if (ImGui::Selectable(fst.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(250, 100)))
+			//			{
+			//				render->SetTexture(snd);
+			//				DE_LOG(LogEditor, Info, "Texture on {} set to: {}", render->GetName(), snd->GetTextureName())
+			//			}
+			//			ImGui::PopID();
+			//		}
+			//		ImGui::EndCombo();
+			//	}
 
-				// Texture Settings
-				TextureSettings& texSettings = render->GetTextureSettings();
-				if (ImGui::Combo("Wrap Mode", &texSettings.WrapValue, "GL_REPEAT\0GL_MIRRORED_REPEAT\0GL_CLAMP_TO_EDGE\0GL_CLAMP_TO_BORDER\0\0"))
-				{
-					if (texSettings.WrapValue == 0) texSettings.WrapMode = GL_REPEAT;
-					else if (texSettings.WrapValue == 1) texSettings.WrapMode = GL_MIRRORED_REPEAT;
-					else if (texSettings.WrapValue == 2) texSettings.WrapMode = GL_CLAMP_TO_EDGE;
-					else if (texSettings.WrapValue == 3) texSettings.WrapMode = GL_CLAMP_TO_BORDER;
-				}
+			//	// Texture Info
+			//	ImGui::SeparatorText("Texture Info");
+			//	ImGui::Text("Texture ID: %d", texture->GetTextureID());
+			//	ImGui::TextWrapped("File Path : % s", texture->GetFileLocation().c_str());
+			//	ImGui::Text("Size = %d x %d", texture->GetWidth(), texture->GetHeight());
+			//	ImGui::Separator();
 
-				// Texture Filter
-				if (ImGui::Combo("Filter", &texSettings.FilterValue, "GL_NEAREST\0GL_LINEAR\0GL_NEAREST_MIPMAP_NEAREST\0GL_LINEAR_MIPMAP_NEAREST\0GL_NEAREST_MIPMAP_LINEAR\0GL_LINEAR_MIPMAP_LINEAR\0\0"))
-				{
-					if (texSettings.FilterValue == 0) texSettings.FilterMode = GL_NEAREST;
-					else if (texSettings.FilterValue == 1) texSettings.FilterMode = GL_LINEAR;
-					else if (texSettings.FilterValue == 2) texSettings.FilterMode = GL_NEAREST_MIPMAP_NEAREST;
-					else if (texSettings.FilterValue == 3) texSettings.FilterMode = GL_LINEAR_MIPMAP_NEAREST;
-					else if (texSettings.FilterValue == 4) texSettings.FilterMode = GL_NEAREST_MIPMAP_LINEAR;
-					else if (texSettings.FilterValue == 5) texSettings.FilterMode = GL_LINEAR_MIPMAP_LINEAR;
-				}
+			//	// Texture Settings
+			//	TextureSettings& texSettings = render->GetTextureSettings();
+			//	if (ImGui::Combo("Wrap Mode", &texSettings.WrapValue, "GL_REPEAT\0GL_MIRRORED_REPEAT\0GL_CLAMP_TO_EDGE\0GL_CLAMP_TO_BORDER\0\0"))
+			//	{
+			//		if (texSettings.WrapValue == 0) texSettings.WrapMode = GL_REPEAT;
+			//		else if (texSettings.WrapValue == 1) texSettings.WrapMode = GL_MIRRORED_REPEAT;
+			//		else if (texSettings.WrapValue == 2) texSettings.WrapMode = GL_CLAMP_TO_EDGE;
+			//		else if (texSettings.WrapValue == 3) texSettings.WrapMode = GL_CLAMP_TO_BORDER;
+			//	}
 
-			}
+			//	// Texture Filter
+			//	if (ImGui::Combo("Filter", &texSettings.FilterValue, "GL_NEAREST\0GL_LINEAR\0GL_NEAREST_MIPMAP_NEAREST\0GL_LINEAR_MIPMAP_NEAREST\0GL_NEAREST_MIPMAP_LINEAR\0GL_LINEAR_MIPMAP_LINEAR\0\0"))
+			//	{
+			//		if (texSettings.FilterValue == 0) texSettings.FilterMode = GL_NEAREST;
+			//		else if (texSettings.FilterValue == 1) texSettings.FilterMode = GL_LINEAR;
+			//		else if (texSettings.FilterValue == 2) texSettings.FilterMode = GL_NEAREST_MIPMAP_NEAREST;
+			//		else if (texSettings.FilterValue == 3) texSettings.FilterMode = GL_LINEAR_MIPMAP_NEAREST;
+			//		else if (texSettings.FilterValue == 4) texSettings.FilterMode = GL_NEAREST_MIPMAP_LINEAR;
+			//		else if (texSettings.FilterValue == 5) texSettings.FilterMode = GL_LINEAR_MIPMAP_LINEAR;
+			//	}
+
+			//}
 		}
 	}
 
