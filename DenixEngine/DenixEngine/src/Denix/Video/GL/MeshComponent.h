@@ -2,6 +2,7 @@
 
 #include "Denix/Scene/Component.h"
 #include "Denix/Video/GL/Mesh.h"
+#include "Denix/Video/GL/Model.h"
 
 namespace Denix
 {
@@ -10,21 +11,21 @@ namespace Denix
 	{
 	public:
 		MeshComponent() : Component(ObjectInitializer("Mesh Component")),
-			m_Mesh{ nullptr } {}
+			m_Model{ nullptr } {}
 
 		MeshComponent(const std::string& _parentName) : Component(_parentName, ObjectInitializer("Mesh Component")),
-			m_Mesh{nullptr} {}
+			m_Model{ nullptr } {}
 
-		MeshComponent(const std::string& _parentName, const Ref<Mesh>& _mesh) : Component(_parentName, ObjectInitializer("Mesh Component")),
-			m_Mesh{ _mesh } {}
+		MeshComponent(const std::string& _parentName, const Ref<Model>& _model) : Component(_parentName, ObjectInitializer("Mesh Component")),
+			m_Model{ nullptr } {}
 
-		Ref<Mesh> GetMesh() const { return m_Mesh; }
-		Ref<Mesh>& GetMesh() { return m_Mesh; }
-		void SetMesh(const Ref<Mesh>& _mesh) { m_Mesh = _mesh; }
+		Ref<Model> GetModel() const { return m_Model; }
+		Ref<Model>& GetModel() { return m_Model; }
+		void SetModel(const Ref<Model>& _model) { m_Model = _model; }
 
 	private:
 
-		Ref<Mesh> m_Mesh;
+		Ref<Model> m_Model;
 
 		friend class RendererSubsystem;
 	};

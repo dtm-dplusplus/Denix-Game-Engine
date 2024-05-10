@@ -29,7 +29,6 @@ namespace Denix
 
 		static int& GetViewportMode() { return s_RendererSubSystem->m_ViewportMode; }
 
-		static void DrawImmediate(Ref<RenderComponent> _renderComp, Ref<TransformComponent> _transformComp, Ref<MeshComponent> _meshComp);
 
 	public:
 		static RendererSubsystem* Get() { return s_RendererSubSystem; }
@@ -56,6 +55,7 @@ namespace Denix
 		void RenderCollisionViewport();
 
 		void RenderLighting();
+		void RenderCollider(const Ref<class PhysicsComponent>& _component);
 
 		static void SetActiveScene(const Ref<Scene>& _scene);
 

@@ -14,8 +14,9 @@ namespace Denix
 
 		m_Root = fs::current_path().parent_path().string() + R"(\)";
 		m_EngineRoot = m_Root + R"(DenixEngine\)";
+		m_EngineContentRoot = m_EngineRoot + R"(res\)";
 		m_ProjectRoot = m_Root + m_ProjectName + R"(\)";
-		m_ContentRoot = m_ProjectRoot + R"(Content\)";
+		m_UserContentRoot = m_ProjectRoot + R"(Content\)";
 
 		DE_LOG(LogFileSubSystem, Trace, "Project Name: {0}", m_ProjectName)
 		DE_LOG(LogFileSubSystem, Trace, "Project Root: {0}", m_ProjectRoot)
@@ -89,14 +90,19 @@ namespace Denix
 		return s_FileSubsystem->m_EngineRoot;
 	}
 
+	std::string FileSubsystem::GetEngineContentRoot()
+	{
+		return s_FileSubsystem->m_EngineContentRoot;
+	}
+
 	std::string FileSubsystem::GetProjectName()
 	{
 		return s_FileSubsystem->m_ProjectName;
 	}
 
-	std::string FileSubsystem::GetContentRoot()
+	std::string FileSubsystem::GetUserContentRoot()
 	{
-		return s_FileSubsystem->m_ContentRoot;
+		return s_FileSubsystem->m_UserContentRoot;
 	}
 
 	

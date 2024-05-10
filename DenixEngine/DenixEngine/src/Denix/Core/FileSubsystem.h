@@ -27,12 +27,14 @@ namespace Denix
 		static std::string GetRoot();
 
 		static std::string GetEngineRoot();
+		
+		static std::string GetEngineContentRoot();
 
 		static std::string GetProjectRoot();
 
 		static std::string GetProjectName();
 
-		static std::string GetContentRoot();
+		static std::string GetUserContentRoot();
 
 	public:
 		void Initialize() override;
@@ -49,11 +51,13 @@ namespace Denix
 
 		std::string m_EngineRoot;
 
+		std::string m_EngineContentRoot;
+
 		std::string m_ProjectName;
 
 		std::string m_ProjectRoot;
 
-		std::string m_ContentRoot;
+		std::string m_UserContentRoot;
 
 		friend class Engine;
 

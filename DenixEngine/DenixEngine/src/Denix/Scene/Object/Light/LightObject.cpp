@@ -12,5 +12,5 @@ Denix::Light::Light(const ObjectInitializer& _objInit):
     m_RenderComponent->SetAffectsLighting(false);
     m_RenderComponent->SetBaseColorAsTexture(true);
     m_RenderComponent->GetMaterial()->SetBaseColor(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
-    m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
+    m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Cube"));
 }

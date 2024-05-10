@@ -1,11 +1,8 @@
 #pragma once
 
-#include <glm/vec4.hpp>
-
 #include "Denix/Core.h"
 #include "Denix/Scene/Object.h"
 #include "Denix/Video/GL/MeshComponent.h"
-#include "Denix/Video/Renderer/RenderComponent.h"
 #include <Denix/Scene/Component/TransformComponent.h>
 
 namespace Denix
@@ -25,18 +22,15 @@ namespace Denix
 		Collider() : Object({ "Collider" }) 
 		{
 			m_TransformComponent = MakeRef<TransformComponent>();
-
 		    m_MeshComponent = MakeRef<MeshComponent>();
-
-		    m_RenderComponent = MakeRef<RenderComponent>();
-			m_RenderComponent->SetIsVisible(false);
-			m_RenderComponent->SetAffectsLighting(false);
-			m_RenderComponent->SetBaseColorAsTexture(true);
-			m_RenderComponent->SetMaterial(MakeRef<Material>());
-			m_RenderComponent->GetMaterial()->SetBaseColor(m_NoCollisionColor);
 		}
 
 		~Collider() override = default;
+
+		void Update(float _deltaTime) override
+		{
+			m_TransformComponent->Update(_deltaTime);
+		}
 
 		ColliderType GetColliderType() { return (ColliderType)m_ColliderType; }
 		ColliderType& GetColliderTypeRef() { return (ColliderType&)m_ColliderType; }
@@ -44,22 +38,16 @@ namespace Denix
 
 		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
-		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
-
 	protected:
 		int m_ColliderType;
 
 		Ref<MeshComponent> m_MeshComponent;
 
-		Ref<RenderComponent> m_RenderComponent;
-
 		Ref<TransformComponent> m_TransformComponent;
 
 		//Ref<TransformComponent> m_TransformComponent;
 		/** Render component that is used to draw the collider */
-		const static glm::vec4 m_NoCollisionColor;
-		const static glm::vec4 m_CollisionColor;
-
+		
 		friend class PhysicsSubsystem;
 		friend class GameObject;
 		friend class PhysicsComponent;
@@ -69,8 +57,6 @@ namespace Denix
 	{
 	public:
 		CubeCollider();
-		CubeCollider(Ref<RenderComponent> _renderComponent);
-
 		~CubeCollider() override = default;
 
 		glm::vec3 GetDimensions() const { return m_Dimensions; }
@@ -97,7 +83,6 @@ namespace Denix
 
 			m_TransformComponent->Update(_deltaTime);
 			m_MeshComponent->Update(_deltaTime);
-			m_RenderComponent->Update(_deltaTime);
 		}
 
 	private:

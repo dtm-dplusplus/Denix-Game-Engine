@@ -6,6 +6,7 @@
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Video/GL/Material.h"
 #include "Denix/Video/GL/Mesh.h"
+#include "Denix/Video/GL/Model.h"
 
 
 namespace Denix
@@ -16,7 +17,7 @@ namespace Denix
 	{
 		Subsystem::Initialize();
 
-		DE_LOG_CREATE(LogResourceSubsystem)
+		DE_LOG_CREATE(LogResource)
 
 		// Iniatlize Default Assets
 
@@ -25,36 +26,43 @@ namespace Denix
 		// SHADERS
 		{
 			std::vector<ShaderSource> debugShaders;
-			debugShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugVertex.glsl)");
-			debugShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\DebugFragment.glsl)");
+			debugShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\DebugVertex.glsl)");
+			debugShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\DebugFragment.glsl)");
 			LoadShader(debugShaders, "DebugShader");
 		}
 
 		{
 			std::vector<ShaderSource> defaultShaders;
-			defaultShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Vertex.glsl)");
-			defaultShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\Fragment.glsl)");
+			defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Vertex.glsl)");
+			defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Fragment.glsl)");
 			LoadShader(defaultShaders, "DefaultShader");
 		}
 
 		{
-			std::vector<ShaderSource> wireframeShaders;
-			wireframeShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\WireframeVertex.glsl)");
-			wireframeShaders.emplace_back(FileSubsystem::GetEngineRoot() + R"(res\shaders\WireframeFragment.glsl)");
-			LoadShader(wireframeShaders, "WireframeShader");
+			std::vector<ShaderSource> unlitShaders;
+			unlitShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\UnlitVertex.glsl)");
+			unlitShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\UnlitFragment.glsl)");
+			LoadShader(unlitShaders, "UnlitShader");
 		}
 
+		{
+			std::vector<ShaderSource> wireframeShaders;
+			wireframeShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\WireframeVertex.glsl)");
+			wireframeShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\WireframeFragment.glsl)");
+			LoadShader(wireframeShaders, "WireframeShader");
+		}
 		// TEXTURES
-		LoadTexture(FileSubsystem::GetEngineRoot() + R"(res\textures\DefaultTexture.png)", "DefaultTexture");
+		LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)", "DefaultTexture");
 
 		// MATERIALS
 		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
 
-		//MESHES
-		LoadMesh("SM_Cube", CubeData, CubeIndices, 64, 36);
-		LoadMesh("SM_Plane", PlaneData, PlaneIndices, 32, 6);
+		// Models
+		LoadModel("SM_Plane", FileSubsystem::GetEngineContentRoot() + R"(models\Plane.obj)");
+		LoadModel("SM_Cube", FileSubsystem::GetEngineContentRoot() + R"(models\Cube.obj)");
+		LoadModel("SM_Sphere", FileSubsystem::GetEngineContentRoot() + R"(models\Sphere.obj)");
 
-	    DE_LOG(LogResourceSubsystem, Trace, "Resource Subsystem Initialized")
+	    DE_LOG(LogResource, Trace, "Resource Subsystem Initialized")
 	}
 
 	void ResourceSubsystem::Deinitialize()
@@ -64,7 +72,7 @@ namespace Denix
 		// Free all resources
 		m_TextureStore.clear();
 
-		DE_LOG(LogResourceSubsystem, Trace, "Resource Subsystem Deinitialized")
+		DE_LOG(LogResource, Trace, "Resource Subsystem Deinitialized")
 	}
 
 
@@ -121,7 +129,7 @@ namespace Denix
 		// Check it isn't already loaded
 		if (s_ResourceSubsystem->m_TextureStore.contains(_path))
 		{
-			DE_LOG(LogResourceSubsystem, Error, "Load Texture: A texture name: {} is already loaded", _path)
+			DE_LOG(LogResource, Error, "Load Texture: A texture name: {} is already loaded", _path)
 				return nullptr;
 		}
 
@@ -150,11 +158,11 @@ namespace Denix
 	{
 		if (s_ResourceSubsystem->m_MaterialStore.contains(ref->GetFriendlyName()))
 		{
-			DE_LOG(LogResourceSubsystem, Error, "Load Material: A material name: {} is already loaded", ref->GetName())
+			DE_LOG(LogResource, Error, "Load Material: A material name: {} is already loaded", ref->GetName())
 				return;
 		}
 
-		DE_LOG(LogResourceSubsystem, Trace, "Material Loaded: {}", ref->GetFriendlyName())
+		DE_LOG(LogResource, Trace, "Material Loaded: {}", ref->GetFriendlyName())
 			s_ResourceSubsystem->m_MaterialStore[ref->GetFriendlyName()] = ref;
 	}
 
@@ -175,11 +183,11 @@ namespace Denix
 	{
 		if (s_ResourceSubsystem->m_MeshStore.contains(_mesh->GetFriendlyName()))
 		{
-			DE_LOG(LogResourceSubsystem, Error, "Load Mesh: A Mesh name: {} is already loaded", _mesh->GetName())
+			DE_LOG(LogResource, Error, "Load Mesh: A Mesh name: {} is already loaded", _mesh->GetName())
 				return false;
 		}
 
-		DE_LOG(LogResourceSubsystem, Trace, "Mesh Loaded: {}", _mesh->GetFriendlyName())
+		DE_LOG(LogResource, Trace, "Mesh Loaded: {}", _mesh->GetFriendlyName())
 			s_ResourceSubsystem->m_MeshStore[_mesh->GetFriendlyName()] = _mesh;
 
 		return true;
@@ -190,12 +198,12 @@ namespace Denix
 	{
 		if (s_ResourceSubsystem->m_MeshStore.contains(_name))
 		{
-			DE_LOG(LogResourceSubsystem, Error, "Load Mesh: A Mesh name: {} is already loaded",_name)
+			DE_LOG(LogResource, Error, "Load Mesh: A Mesh name: {} is already loaded",_name)
 				return false;
 		}
 
 		const Ref<Mesh> mesh = MakeRef<Mesh>(_vertices, _indices, _verticesCount, _numOfIndices, ObjectInitializer(_name));
-		DE_LOG(LogResourceSubsystem, Trace, "Mesh Loaded: {}", mesh->GetFriendlyName())
+		DE_LOG(LogResource, Trace, "Mesh Loaded: {}", mesh->GetFriendlyName())
 		s_ResourceSubsystem->m_MeshStore[_name] = mesh;
 
 		return true;
@@ -211,4 +219,46 @@ namespace Denix
 		return nullptr;
 	}
 
+	bool ResourceSubsystem::AddModel(const Ref<Model>& _mesh)
+	{
+		return false;
+	}
+
+	bool ResourceSubsystem::LoadModel(const std::string& _name, const std::string& _path)
+	{
+		if (s_ResourceSubsystem->m_ModelStore.contains(_name))
+		{
+			DE_LOG(LogResource, Error, "Load Mesh: A Model name: {} is already loaded", _name)
+				return false;
+		}
+
+		const Ref<Model> model = MakeRef<Model>(_name, _path);
+		if (!model->m_IsLoaded) return false;
+
+		for (auto texture : model->m_Textures)
+		{
+			if (texture)
+			{
+				if (!texture->GetTextureID())
+				{
+					texture = GetTexture("DefaultTexture");
+				}
+			}
+		}
+
+		DE_LOG(LogResource, Trace, "Model Loaded: {}", model->GetFriendlyName())
+			s_ResourceSubsystem->m_ModelStore[_name] = model;
+
+		return true;
+	}
+
+	Ref<Model> ResourceSubsystem::GetModel(const std::string& _name)
+	{
+		if (s_ResourceSubsystem->m_ModelStore.contains(_name))
+		{
+			return s_ResourceSubsystem->m_ModelStore[_name];
+		}
+
+		return nullptr;
+	}
 }

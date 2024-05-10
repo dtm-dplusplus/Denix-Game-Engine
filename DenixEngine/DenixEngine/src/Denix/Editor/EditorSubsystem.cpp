@@ -248,7 +248,7 @@ namespace Denix
 		ImGui::BeginChild("AddObject", ImVec2(100, 25));
 		bool createdObject = false;
 
-		const static std::string shapeNames[] = { "Plane", "Cube" };
+		const static std::string shapeNames[] = { "Plane", "Cube", "Sphere"};
 		const static std::string lightNames[] = { "Directional Light", "Point Light", "Spot Light" };
 
 		if (ImGui::Button("Add"))
@@ -267,13 +267,22 @@ namespace Denix
 						{
 							const Ref<Plane> plane = MakeRef<Plane>();
 							plane->BeginScene();
+							if (m_ActiveScene->IsPlaying()) plane->BeginPlay();
 							m_ActiveScene->m_SceneObjects.push_back(plane);
 						}
 						else if (name == "Cube")
 						{
 							const Ref<Cube> cube = MakeRef<Cube>();
 							cube->BeginScene();
+							if (m_ActiveScene->IsPlaying()) cube->BeginPlay();
 							m_ActiveScene->m_SceneObjects.push_back(cube);
+						}
+						else if (name == "Sphere")
+						{
+							const Ref<Sphere> sphere = MakeRef<Sphere>();
+							sphere->BeginScene();
+							if (m_ActiveScene->IsPlaying()) sphere->BeginPlay();
+							m_ActiveScene->m_SceneObjects.push_back(sphere);
 						}
 					}
 				}
@@ -508,11 +517,11 @@ namespace Denix
 			ImGui::SameLine(); ImGui::Text(" State: %s", pComp->GetTriggerStateS().c_str());
 
 			// Collision
-			ImGui::Checkbox("Show Collider", &pComp->GetCollider()->GetRenderComponent()->IsVisible());
+			ImGui::Checkbox("Show Collider", &pComp->IsColliderVisible());
 
 			// Collision Type
 			static const char* colliderTypes[] = { "Cube", "Sphere" };
-			static int itemCurrent = (int)pComp->GetCollider()->GetColliderType();
+			static int itemCurrent = pComp->GetCollider()? (int)pComp->GetCollider()->GetColliderType(): 0;
 			const char* previewItem = colliderTypes[itemCurrent];
 			if (ImGui::BeginCombo("Collider Type", previewItem))
 			{
@@ -526,7 +535,7 @@ namespace Denix
 						{
 						case 0:
 						{
-							pComp->m_Collider = MakeRef<CubeCollider>(pComp->m_Collider->GetRenderComponent());
+							pComp->m_Collider = MakeRef<CubeCollider>();
 							DE_LOG(LogEditor, Warn, "Set collider type to cube on {}", _selectedObject->GetName())
 						} break;
 
@@ -545,26 +554,29 @@ namespace Denix
 			}
 
 			// Collision Specifics
-			switch (pComp->GetCollider()->GetColliderType())
+			if (pComp->GetCollider())
 			{
-			case ColliderType::Cube:
-			{
-				if (Ref<CubeCollider> sCol = CastRef<CubeCollider>(pComp->GetCollider()))
+				switch (pComp->GetCollider()->GetColliderType())
 				{
-					if (!pComp->CollisionDimensionOverride()) ImGui::BeginDisabled();
-					ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
-					if (!pComp->CollisionDimensionOverride()) ImGui::EndDisabled();
-					ImGui::SameLine(); ImGui::Checkbox("## Dimesnion Override", &pComp->CollisionDimensionOverride());
-				}
-			} break;
-			
-			case ColliderType::Sphere:
-			{
-				if (Ref<SphereCollider> sCol = CastRef<SphereCollider>(pComp->GetCollider()))
+				case ColliderType::Cube:
 				{
-					ImGui::DragFloat("Radius", &sCol->GetRadius(), DragSpeedDelta, FLT_MIN, FLT_MAX);
+					if (Ref<CubeCollider> sCol = CastRef<CubeCollider>(pComp->GetCollider()))
+					{
+						if (!pComp->CollisionDimensionOverride()) ImGui::BeginDisabled();
+						ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
+						if (!pComp->CollisionDimensionOverride()) ImGui::EndDisabled();
+						ImGui::SameLine(); ImGui::Checkbox("## Dimesnion Override", &pComp->CollisionDimensionOverride());
+					}
+				} break;
+
+				case ColliderType::Sphere:
+				{
+					if (Ref<SphereCollider> sCol = CastRef<SphereCollider>(pComp->GetCollider()))
+					{
+						ImGui::DragFloat("Radius", &sCol->GetRadius(), DragSpeedDelta, FLT_MIN, FLT_MAX);
+					}
+				} break;
 				}
-			} break;
 			}
 		}
 	}
@@ -686,32 +698,30 @@ namespace Denix
 
 			const Ref<MeshComponent> meshComp = _selectedObject->GetMeshComponent();
 			std::string preview = "Empty";
-			if (const Ref<Mesh> mesh = meshComp->GetMesh()) preview = mesh->GetFriendlyName();
+			if (const Ref<Model> model = meshComp->GetModel()) preview = model->GetFriendlyName();
 
-			if (ImGui::BeginCombo("##MeshName", preview.c_str()))
+			if (ImGui::BeginCombo("##ModelName", preview.c_str()))
 			{
-				for (auto& [fst, snd] : ResourceSubsystem::GetMeshStore())
+				for (auto& [fst, snd] : ResourceSubsystem::GetModelStore())
 				{
 					ImGui::PushID(fst.c_str());
 					if (ImGui::Selectable(fst.c_str()))
 					{
-						meshComp->SetMesh(snd);
-						DE_LOG(LogEditor, Info, "Mesh on {} set to: {}", _selectedObject->GetFriendlyName(), snd->GetName())
+						meshComp->SetModel(snd);
+						DE_LOG(LogEditor, Info, "Model on {} set to: {}", _selectedObject->GetFriendlyName(), snd->GetName())
 					}
 					ImGui::PopID();
 				}
 				ImGui::EndCombo();
-					
 			}
 
 			ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetMesh", ImGuiDir_Left))
+			if (ImGui::ArrowButton("##ResetModel", ImGuiDir_Left))
 			{
-				DE_LOG(LogEditor, Info, "Mesh on {} reset", _selectedObject->GetFriendlyName())
-				meshComp->SetMesh(nullptr);
+				DE_LOG(LogEditor, Info, "Model on {} reset", _selectedObject->GetFriendlyName())
+					meshComp->SetModel(nullptr);
 			}
 			ImGui::SetItemTooltip("Reset");
-
 		}
 	}
 

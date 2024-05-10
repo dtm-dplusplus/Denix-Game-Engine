@@ -30,7 +30,7 @@ public:
 	{
 		Engine::PostInitialize();
 
-		ResourceSubsystem::LoadTexture(FileSubsystem::GetProjectRoot() + R"(Content\Textures\brick.png)", "brick");
+		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\brick.png)", "brick");
 
 		Ref<Material> red = MakeRef<Material>("MAT_Red");
 		red->SetBaseColor({ 1.0f,0.0f,0.0f });

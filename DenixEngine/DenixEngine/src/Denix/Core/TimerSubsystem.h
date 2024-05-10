@@ -25,6 +25,7 @@ namespace Denix
 
 		static int GetFPS();
 		static float GetFrameTime();
+		static float GetFrameTimeMs();
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
 	private:
 		static TimerSubsystem* s_TimerSubsystem;
@@ -32,7 +33,8 @@ namespace Denix
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 
 		int m_FramesPerSecond;
-		float m_FrameTime;
+		float m_FrameTimeS;
+		float m_FrameTimeMs;
 		float m_DeltaTime;
 		float m_GameTimeSpeed;
 

@@ -6,6 +6,7 @@
 namespace Denix
 {
     class Mesh;
+    class Model;
     struct ShaderSource;
 	class GLShader;
 	class Material;
@@ -60,10 +61,15 @@ namespace Denix
 
         // Meshes
         static bool AddMesh(const Ref<Mesh>& _mesh);
-        //static Ref<Texture> LoadModel(const std::string& _path, const std::string& _name);
         static bool LoadMesh(const std::string& _name, const float* _vertices, const unsigned int* _indices, unsigned int _verticesCount, unsigned int _numOfIndices);
 
         static Ref<Mesh> GetMesh(const std::string& _name);
+
+        // Models
+        static bool AddModel(const Ref<Model>& _mesh);
+        static bool LoadModel(const std::string& _name, const std::string& _path);
+        static Ref<Model> GetModel(const std::string& _name);
+		static std::unordered_map<std::string, Ref<Model>>& GetModelStore() { return s_ResourceSubsystem->m_ModelStore; }
 
         static std::unordered_map<std::string, Ref<Mesh>>& GetMeshStore() { return s_ResourceSubsystem->m_MeshStore; }
     public:
@@ -83,6 +89,8 @@ namespace Denix
         std::unordered_map<std::string, Ref<Material>> m_MaterialStore;
 
         std::unordered_map<std::string, Ref<Mesh>> m_MeshStore;
+
+		std::unordered_map<std::string, Ref<Model>> m_ModelStore;
 
     };
 }

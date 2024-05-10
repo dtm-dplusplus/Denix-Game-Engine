@@ -51,27 +51,31 @@ namespace Denix
 		{
 			Component::Update(_deltaTime);
 
-			switch (m_Collider->GetColliderType())
+			if (m_Collider)
 			{
-			case ColliderType::Cube:
-			{
-				if (!m_CollisonDimesionOverride)
-				{
-					CastRef<CubeCollider>(m_Collider)->GetDimensions() = m_ParentTransform->GetScale();
-				}
-			} break;
+				m_Collider->m_TransformComponent->SetPosition(m_ParentTransform->GetPosition());
 
-			case ColliderType::Sphere:
-			{
-				if (!m_CollisonDimesionOverride)
+				switch (m_Collider->GetColliderType())
 				{
-					CastRef<CubeCollider>(m_Collider)->GetDimensions() = m_ParentTransform->GetScale();
+				case ColliderType::Cube:
+				{
+					if (!m_CollisonDimesionOverride)
+					{
+						CastRef<CubeCollider>(m_Collider)->GetDimensions() = m_ParentTransform->GetScale();
+					}
+				} break;
+
+				case ColliderType::Sphere:
+				{
+					m_Collider->m_TransformComponent->SetScale(
+						glm::vec3(CastRef<SphereCollider>(m_Collider)->GetRadius()));
+
+					m_ParentTransform->SetScale(m_Collider->m_TransformComponent->GetScale());
+				} break;
 				}
-			} break;
+
+				m_Collider->Update(_deltaTime);
 			}
-
-			m_Collider->m_TransformComponent->SetPosition(m_ParentTransform->GetPosition());
-			m_Collider->Update(_deltaTime);
 		}
 
 		void StepSimulation(float _deltaTime, bool _nextFrame = false)
@@ -229,6 +233,9 @@ namespace Denix
 
 		bool IsColliding() const { return m_IsColliding; }
 
+		bool IsColliderVisible() const { return m_IsColliderVisible; }
+		bool& IsColliderVisible() { return m_IsColliderVisible; }
+
 		bool CollisionDimensionOverride() const { return m_CollisonDimesionOverride; }
 		bool & CollisionDimensionOverride() { return m_CollisonDimesionOverride; }
 
@@ -334,6 +341,9 @@ namespace Denix
 	private:
 		/** Set to decide if the physics component should update simulation */
 		bool m_SimulatePhysics = false;
+
+		/** Set to decide if the attached collider should be rendered in default/unlit viewport - Null effect in collision viewport */
+		bool m_IsColliderVisible = false;
 
 		/** Set to decide if the physics component should perform collision detection */
 		bool m_CollisionDetectionEnabled = true;
