@@ -63,7 +63,6 @@ uniform SpotLight u_SpotLight[MAX_SPOT_LIGHTS];
 
 uniform sampler2D u_Texture;
 uniform bool u_AffectsLighting;
-uniform bool u_BaseColorAsTexture;
 
 uniform Material u_Material;
 uniform vec3 u_CameraPosition;

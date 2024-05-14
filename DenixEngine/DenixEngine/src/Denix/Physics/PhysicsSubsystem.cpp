@@ -50,7 +50,7 @@ namespace Denix
 	{
 		if (!m_Enabled) return;
 
-		if(m_CollisionDetectionEnabled) CollisionDetection(_deltaTime);
+		if(m_CollisionDetectionEnabled && m_ActiveScene->IsPlaying()) CollisionDetection(_deltaTime);
 
 		if (m_CollisionResponseEnabled && m_ActiveScene->IsPlaying()) CollisionResonse(_deltaTime);
 
@@ -113,26 +113,28 @@ namespace Denix
 		{
 			if (!actor || !other) continue;
 
-			
-
 			if (Ref<PhysicsComponent> comp = actor->GetPhysicsComponent())
 			{
 				// Impulse response
-				glm::vec3 planeVelocity = glm::vec3(0.0f);
+				/*glm::vec3 planeVelocity = glm::vec3(0.0f);
 
-				glm::vec3 contactForce = glm::vec3(0.f, comp->m_Mass * m_ActiveScene->GetGravity(), 0.f);
+				glm::vec3 contactForce =  -comp->GetForce();
+				glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
 
 				if (comp->m_ImpulseEnabled)
 				{
 					float impulseEnergy = -(1.0f + comp->m_Elasticity) *
-						glm::dot(comp->m_Velocity - planeVelocity, colData.Normal) / (1.0f / comp->m_Mass);
+						glm::dot(comp->m_Velocity - planeVelocity, normal) / (1.0f / comp->m_Mass);
 
-					glm::vec3 impulseVector = impulseEnergy * colData.Normal;
+					glm::vec3 impulseVector = impulseEnergy * normal;
 
-					comp->m_Velocity += impulseVector / comp->m_Mass;
-				}
+					comp->m_Force = glm::vec3(0.0f);
+					comp->m_Velocity = impulseVector / comp->m_Mass;
+				}*/
+				// comp->AddForce(contactForce);
 
-				comp->AddForce(contactForce);
+				comp->m_Force = glm::vec3(0.0f);
+				comp->m_Velocity = glm::vec3(0.0f);
 
 				// Call client side implementation
 				actor->GetPhysicsComponent()->m_IsColliding = true;
@@ -148,8 +150,6 @@ namespace Denix
 	{
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			
-			
 			if (!physicsComp->m_SimulatePhysics) continue;
 
 			// Compute Torque

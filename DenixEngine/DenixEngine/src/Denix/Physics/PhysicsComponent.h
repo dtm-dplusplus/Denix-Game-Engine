@@ -397,7 +397,7 @@ namespace Denix
 		float m_AngularDrag = 0.5f;
 
 		/** Elasticity used for impulse response (Bounciness) */
-		float m_Elasticity = 0.5f;
+		float m_Elasticity = 0.0f;
 
 		/** Velocity of the object */
 		glm::vec3 m_Velocity = glm::vec3(0.f);

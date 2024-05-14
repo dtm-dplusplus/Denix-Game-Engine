@@ -39,7 +39,7 @@ namespace Denix
 		bool Load() override;
 		void Update(float _deltaTime) override;
 
-		Ref<PhysObject> PhysicsObject;
+		Ref<PhysObject> cube1;
 		Ref<class Cube> TestCube;
 		Ref<PointLight> PntLight;
 		Ref<SpotLight> SptLight;

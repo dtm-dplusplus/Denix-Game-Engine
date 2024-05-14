@@ -286,8 +286,12 @@ namespace Denix
 
 			if (physComp->IsColliding())
 			{
+<<<<<<< Updated upstream
 				glUniform3f(shader->GetUniform("u_Material.BaseColor"), 1.0f, 0.0f, 0.0f);
 				
+=======
+				glUniform3f(shader->GetUniform("u_Material.Base.Color"), 1.0f, 0.0f, 0.0f);
+>>>>>>> Stashed changes
 			}
 			else
 			{
@@ -295,13 +299,13 @@ namespace Denix
 				{
 				case Moveability::Static:
 				{
-					glUniform3f(shader->GetUniform("u_Material.BaseColor"),
+					glUniform3f(shader->GetUniform("u_Material.Base.Color"),
 						m_StaticColliderColor.r, m_StaticColliderColor.g, m_StaticColliderColor.b);
 				} break;
 
 				case Moveability::Dynamic:
 				{
-					glUniform3f(shader->GetUniform("u_Material.BaseColor"),
+					glUniform3f(shader->GetUniform("u_Material.Base.Color"),
 						m_DynamicColliderColor.r, m_DynamicColliderColor.g, m_DynamicColliderColor.b);
 				} break;
 				}
@@ -322,7 +326,6 @@ namespace Denix
 			}
 		}
 	}
-
 
 	void RendererSubsystem::RenderLighting()
 	{
@@ -382,7 +385,7 @@ namespace Denix
 	{
 		if (const Ref<Collider> collider = _component->GetCollider())
 		{
-			Ref<GLShader> shader = ResourceSubsystem::GetShader("UnlitShader");
+			Ref<GLShader> shader = ResourceSubsystem::GetShader("DefaultShader");
 			shader->Bind();
 
 			// Upload the model matrix
@@ -391,18 +394,18 @@ namespace Denix
 
 			// Upload Affects Lighting bool
 			glUniform1i(shader->GetUniform("u_AffectsLighting"), false);
-			glUniform1i(shader->GetUniform("u_BaseColorAsTexture"), true);
+			glUniform1i(shader->GetUniform("u_Material.Base.IsTexture"), false);
 
 			constexpr static glm::vec3 colColor = { 1.0f, 0.0f, 0.0f };
 			constexpr static glm::vec3 noColColor = { 0.0f, 1.0f, 0.0f };
 
 			if (_component->IsColliding())
 			{
-				glUniform3f(shader->GetUniform("u_Material.BaseColor"), colColor[0], colColor[1], colColor[2]);
+				glUniform3f(shader->GetUniform("u_Material.Base.Color"), colColor[0], colColor[1], colColor[2]);
 			}
 			else
 			{
-				glUniform3f(shader->GetUniform("u_Material.BaseColor"), noColColor[0], noColColor[1], noColColor[2]);
+				glUniform3f(shader->GetUniform("u_Material.Base.Color"), noColColor[0], noColColor[1], noColColor[2]);
 			}
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

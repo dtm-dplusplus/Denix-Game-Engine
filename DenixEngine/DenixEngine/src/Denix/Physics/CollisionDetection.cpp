@@ -44,9 +44,9 @@ namespace Denix
 
 				
 
-				if (minA.x < maxB.x && maxA.x > minB.x &&
-					minA.y < maxB.y && maxA.y > minB.y &&
-					minA.z < maxB.z && maxA.z > minB.z)
+				if (minA.x <= maxB.x && maxA.x >= minB.x &&
+					minA.y <= maxB.y && maxA.y >= minB.y &&
+					minA.z <= maxB.z && maxA.z >= minB.z)
 				{
 					collisionEvent.IsCollision = true;
 					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
@@ -64,17 +64,47 @@ namespace Denix
 
 		case ColliderType::Sphere:
 		{
+			Ref<SphereCollider> sphereCol = std::dynamic_pointer_cast<SphereCollider>(col);
+
 			switch (otherCol->GetColliderType())
 			{
 			case ColliderType::Cube:
 			{
 				// Sphere to Cube Collision Detection
+				Ref<CubeCollider> otherCubeCol = std::dynamic_pointer_cast<CubeCollider>(otherCol);
+
+				glm::vec3 minB = otherCubeCol->GetMin();
+				glm::vec3 maxB = otherCubeCol->GetMax();
+
+				// Check left, right, front, back, top
+				/*if (maxB.x < sphereCol->GetTransformComponent()->GetPosition().x - sphereCol->GetRadius() ||
+					minB.x > sphereCol->GetTransformComponent()->GetPosition().x + sphereCol->GetRadius() ||
+					maxB.z < sphereCol->GetTransformComponent()->GetPosition().z - sphereCol->GetRadius() ||
+					minB.z > sphereCol->GetTransformComponent()->GetPosition().z + sphereCol->GetRadius() ||
+					maxB.y < sphereCol->GetTransformComponent()->GetPosition().y - sphereCol->GetRadius() ||
+					minB.y > sphereCol->GetTransformComponent()->GetPosition().y + sphereCol->GetRadius())
+				{
+					collisionEvent.IsCollision = true;
+					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
+					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_otherComponent->GetParentObjectName());
+				}*/
 				break;
 			}
 			
 			case ColliderType::Sphere:
 			{
 				// Sphere to Sphere Collision Detection
+				Ref<SphereCollider> otherSphereCol = std::dynamic_pointer_cast<SphereCollider>(otherCol);
+
+				collisionEvent.IsCollision = SphereToSphereCollision(sphereCol->GetTransformComponent()->GetPosition(),
+					otherSphereCol->GetTransformComponent()->GetPosition(), otherSphereCol->GetRadius(), otherSphereCol->GetRadius(), collisionEvent.ColData.ContactPoint);
+				
+				if (collisionEvent.IsCollision)
+				{
+					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
+					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_otherComponent->GetParentObjectName());
+				}
+	
 				break;
 			}
 
