@@ -38,10 +38,13 @@ namespace Denix
 
 		PhysicsObject = MakeRef<PhysObject>(ObjectInitializer("Cube 1"));
 		PhysicsObject->GetTransformComponent()->SetPosition({ 0.0f, 10.0f, 0.0f });
+		PhysicsObject->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 1.0f, 1.0f };
 		m_SceneObjects.push_back(PhysicsObject);
 
 		Ref<PhysObject> other = MakeRef<PhysObject>(ObjectInitializer("Cube 2"));
 		other->GetTransformComponent()->SetPosition({ 5.0f, 10.0f, 0.0f });
+		other->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 0.5f, 1.0f };
+
 		m_SceneObjects.push_back(other);
 
 		m_DirLight->SetAmbientIntensity(0.7f);
@@ -51,7 +54,11 @@ namespace Denix
 
 		Ref<Sphere> TestModel = MakeRef<Sphere>();
 		TestModel->GetTransformComponent()->SetPosition({ 0.0f, 5.0f, 5.0f });
+		TestModel->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.5f, 0.5f, 1.0f };
+
 		m_SceneObjects.push_back(TestModel);
+
+		m_DirLight->GetLightDirection().z = -0.54f;
 
 		return true;
 	}

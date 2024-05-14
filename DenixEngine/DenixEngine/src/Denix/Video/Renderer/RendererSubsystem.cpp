@@ -43,14 +43,12 @@ namespace Denix
 			const Ref<MeshComponent> meshComp = object->GetMeshComponent();
 
 			if (!renderComp || !transformComp || !meshComp) continue;
-			//if (!renderComp->m_Material) continue;
-			//if (!renderComp->m_Material->GetShader()) continue;
 
-			if (const Ref<Material> mat = renderComp->m_Material; renderComp->IsVisible())
+			if (const Ref<Material> mat = renderComp->m_Material; mat && renderComp->IsVisible())
 			{
 				mat->m_Shader->Bind();
 
-				// Upload the material
+				// Upload material
 				const BaseMatParam& base = mat->GetBaseParam();
 
 				glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
@@ -61,6 +59,7 @@ namespace Denix
 				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
 				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
 
+				// Upload Texture
 				if (base.IsTexture && base.Texture)
 				{
 					base.Texture->Bind();
@@ -72,9 +71,12 @@ namespace Denix
 					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
 				}
 
-				// Upload the camera matrices relative to Object
+				// Upload camera & model matrices
 				if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
 				{
+					glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_Model"), 1,
+						GL_FALSE, glm::value_ptr(transformComp->GetModel()));
+
 					glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_Projection"), 1,
 						GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
 
@@ -87,11 +89,7 @@ namespace Denix
 						camera->GetTransformComponent()->GetPosition().z);
 				}
 
-				// Upload the model matrix
-				glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_Model"), 1,
-					GL_FALSE, glm::value_ptr(transformComp->GetModel()));
-
-				// Upload Affects Lighting bool
+				// Upload Render Comp Settings
 				glUniform1i(renderComp->m_Shader->GetUniform("u_AffectsLighting"), renderComp->m_AffectsLighting);
 
 				// Draw Call
@@ -287,7 +285,6 @@ namespace Denix
 			if (physComp->IsColliding())
 			{
 				glUniform3f(shader->GetUniform("u_Material.BaseColor"), 1.0f, 0.0f, 0.0f);
-				
 			}
 			else
 			{

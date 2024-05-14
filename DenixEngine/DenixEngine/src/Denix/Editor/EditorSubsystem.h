@@ -13,6 +13,7 @@ namespace Denix
 	class Camera;
 	class GameObject;
 	class Scene;
+	class Material;
 
 	class EditorSubsystem : public Subsystem
 	{
@@ -112,8 +113,12 @@ namespace Denix
 		void LightWidget(const Ref<GameObject>& _selectedObject) const;
 		void PhysicsWidget(const Ref<GameObject>& _selectedObject) const;
 		void CollisionWidget(const Ref<GameObject>& _selectedObject) const;
+
 		void RenderWidget(const Ref<GameObject>& _selectedObject);
 		void MaterialWidget(const Ref<GameObject>& _selectedObject);
+		void MaterialSelectionWidget(Ref<Material>& _material);
+		void TextureSelectionWidget(Ref<Material>& _material);
+		void ShaderSelectionWidget(Ref<Material>& _material);
 		void MeshWidget(const Ref<GameObject>& _selectedObject);
 		void TransformWidget(const Ref<GameObject>& _object) const;
 		void CameraWidget(const Ref<GameObject>& _camera) const;

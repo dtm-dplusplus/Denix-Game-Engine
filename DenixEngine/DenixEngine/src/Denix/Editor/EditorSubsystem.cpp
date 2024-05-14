@@ -609,113 +609,38 @@ namespace Denix
 		ImGui::SeparatorText("Material");
 
 		// Material Dropdown
-		{
-			Ref<Material> previewMat = rendComp->GetMaterial();
-			std::string previewMatName = previewMat ? previewMat->GetFriendlyName() : "None";
-			const char* preview = "None";
-			if (ImGui::BeginCombo("##MaterialName", previewMatName.c_str()))
-			{
-				for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
-				{
-					ImGui::PushID(fst.c_str());
-					if (ImGui::Selectable(fst.c_str()))
-					{
-						_selectedObject->GetRenderComponent()->SetMaterial(snd);
-						DE_LOG(LogEditor, Info, "Material on {} set to: {}",
-							_selectedObject->GetRenderComponent()->GetName(), snd->GetFriendlyName())
-					}
-					ImGui::PopID();
-				}
-				ImGui::EndCombo();
-			}
-		}
+		Ref<Material> previewMat = rendComp->GetMaterial();
+		MaterialSelectionWidget(previewMat);
 		
 		// Material Settings - if material is set
 		if (Ref<Material> mat = rendComp->GetMaterial())
 		{
+			BaseMatParam& baseParam = mat->GetBaseParam();
 			// Color or Texture selectable
 			{
-				bool texSelected = mat->GetBaseParam().IsTexture;
+				bool texSelected = baseParam.IsTexture;
 				bool colSelected = !texSelected;
 
 				if (ImGui::Selectable("Color", colSelected, 0, ImVec2(50, 15)))
 				{
-					mat->GetBaseParam().IsTexture = false;
+					baseParam.IsTexture = false;
+					ImGui::ColorEdit3("Base Color", &baseParam.Color[0]);
+
 				}
 				ImGui::SameLine();
 				if (ImGui::Selectable("Texture", texSelected, 0, ImVec2(50, 15)))
 				{
-					mat->GetBaseParam().IsTexture = true;
+					baseParam.IsTexture = true;
+					TextureSelectionWidget(mat);
 				}
 			}
 
-			ImGui::ColorEdit3("Base Color", &mat->GetBaseParam().Color[0]);
 			ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
 			ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
 
-			/*ImGui::SeparatorText("Shader");
-			if (Ref<GLShader> shader = _selectedObject->GetRenderComponent()->GetShader())
-			{
-				if (ImGui::BeginCombo("##ShaderName", shader->GetName().c_str()))
-				{
-					for (auto& [fst, snd] : ResourceSubsystem::GetShaderStore())
-					{
-						ImGui::PushID(fst.c_str());
-						if (ImGui::Selectable(fst.c_str()))
-						{
-							render->SetShader(snd);
-							DE_LOG(LogEditor, Info, "Shader on {} set to: {}", render->GetName(), snd->GetName())
-						}
-						ImGui::PopID();
-					}
-					ImGui::EndCombo();
-				}
-				ImGui::SameLine(); if (ImGui::Button("Edit Shader")) m_ShaderEditorWidget = MakeRef<ShaderEditorWidget>(shader);
-			}
+		
 
-			if (m_ShaderEditorWidget) m_ShaderEditorWidget->WidgetEditor();*/
-
-
-
-			//ImGui::SeparatorText("Texture");
-			//std::string preview = previewMat ? previewMat->GetFriendlyName() : "None";
-			//const char* preview = "None";
-			//if (ImGui::BeginCombo("##MaterialName", preview.c_str()))
-			//{
-			//	for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
-			//	{
-			//		ImGui::PushID(fst.c_str());
-			//		if (ImGui::Selectable(fst.c_str()))
-			//		{
-			//			_selectedObject->GetRenderComponent()->SetMaterial(snd);
-			//			DE_LOG(LogEditor, Info, "Material on {} set to: {}",
-			//				_selectedObject->GetRenderComponent()->GetName(), snd->GetFriendlyName())
-			//		}
-			//		ImGui::PopID();
-			//	}
-			//	ImGui::EndCombo();
-			//}
-
-			//if (const Ref<Texture> texture = render->GetTexture())
-			//{
-			//	// Texture Preview + Selection
-			//	ImGui::Image((void*)(intptr_t)render->GetTexture()->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
-
-			//	if (ImGui::BeginCombo("##TextureSelection", render->GetTexture()->GetTextureName().c_str(), ImGuiComboFlags_WidthFitPreview))
-			//	{
-			//		for (auto& [fst, snd] : ResourceSubsystem::GetTextureStore())
-			//		{
-			//			ImGui::PushID(fst.c_str());
-			//			ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
-			//			if (ImGui::Selectable(fst.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(250, 100)))
-			//			{
-			//				render->SetTexture(snd);
-			//				DE_LOG(LogEditor, Info, "Texture on {} set to: {}", render->GetName(), snd->GetTextureName())
-			//			}
-			//			ImGui::PopID();
-			//		}
-			//		ImGui::EndCombo();
-			//	}
+			if (m_ShaderEditorWidget) m_ShaderEditorWidget->WidgetEditor();
 
 			//	// Texture Info
 			//	ImGui::SeparatorText("Texture Info");
@@ -746,6 +671,79 @@ namespace Denix
 			//	}
 
 			//}
+		}
+	}
+
+	void EditorSubsystem::MaterialSelectionWidget(Ref<Material>& _material)
+	{
+		if (ImGui::BeginCombo("##MaterialName", _material->GetFriendlyName().c_str()))
+		{
+			for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
+			{
+				ImGui::PushID(fst.c_str());
+				if (ImGui::Selectable(fst.c_str()))
+				{
+					_material = snd;
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+		}
+	}
+
+	void EditorSubsystem::TextureSelectionWidget(Ref<Material>& _material)
+	{
+		Ref<Texture> texture = _material->GetBaseParam().Texture;
+		std::string preview = "None";
+
+		// Texture Preview
+		if (texture)
+		{
+			preview = texture->GetTextureName();
+			if (unsigned int id = texture->GetTextureID())
+			{
+				ImGui::Image((void*)(intptr_t)id, ImVec2(100, 100)); ImGui::SameLine();
+			}
+		}
+		
+		// Texture Selection
+		if (ImGui::BeginCombo("##TextureSelection", preview.c_str(), ImGuiComboFlags_WidthFitPreview))
+		{
+			for (auto& [fst, snd] : ResourceSubsystem::GetTextureStore())
+			{
+				ImGui::PushID(fst.c_str());
+				ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
+				if (ImGui::Selectable(fst.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(250, 100)))
+				{
+					texture = snd;
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+		}
+	}
+
+	void EditorSubsystem::ShaderSelectionWidget(Ref<Material>& _material)
+	{
+		if (!_material) return;
+
+		ImGui::SeparatorText("Shader");
+		if (Ref<GLShader> shader = _material->GetShader())
+		{
+			if (ImGui::BeginCombo("##ShaderName", shader->GetName().c_str()))
+			{
+				for (auto& [fst, snd] : ResourceSubsystem::GetShaderStore())
+				{
+					ImGui::PushID(fst.c_str());
+					if (ImGui::Selectable(fst.c_str()))
+					{
+						_material->SetShader(snd);
+					}
+					ImGui::PopID();
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::SameLine(); if (ImGui::Button("Edit Shader")) m_ShaderEditorWidget = MakeRef<ShaderEditorWidget>(shader);
 		}
 	}
 

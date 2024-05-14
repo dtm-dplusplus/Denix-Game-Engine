@@ -6,7 +6,7 @@ namespace Denix
 	Material::Material(const ObjectInitializer& _objInit) : Object({ _objInit })
 	{
 		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
-		m_BaseParam = BaseMatParam(glm::vec3(1.0f));
+		m_BaseParam = BaseMatParam();
 		m_NormalParam = NormalMatParam();
 	}
 	Material::Material(Ref<Material> _other)
