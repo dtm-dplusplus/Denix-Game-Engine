@@ -67,10 +67,7 @@ namespace Denix
 
 				case ColliderType::Sphere:
 				{
-					m_Collider->m_TransformComponent->SetScale(
-						glm::vec3(CastRef<SphereCollider>(m_Collider)->GetRadius()));
-
-					m_ParentTransform->SetScale(m_Collider->m_TransformComponent->GetScale());
+					m_ParentTransform->SetScale(glm::vec3(CastRef<SphereCollider>(m_Collider)->GetRadius() * 2.0f)); // Account for radius
 				} break;
 				}
 

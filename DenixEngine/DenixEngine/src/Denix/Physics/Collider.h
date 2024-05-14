@@ -105,6 +105,6 @@ namespace Denix
 		float& GetRadius() { return m_Radius; }
 
 	private:
-		float m_Radius = 1.0f;
+		float m_Radius = 0.5f;
 	};
 }
