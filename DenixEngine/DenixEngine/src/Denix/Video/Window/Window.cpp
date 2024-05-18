@@ -6,6 +6,8 @@
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
+#include "Denix/Video/GL/Shader.h"
+#include "Denix/Resource/ResourceSubsystem.h"
 
 namespace Denix
 {
@@ -97,17 +99,10 @@ namespace Denix
 		// Clear buffer, move to renderer
 		glClearColor(m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// New ImGui frame - Move to UI class
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL2_NewFrame();
-		ImGui::NewFrame();
 	}
 
 	void SDL_GLWindow::SwapBuffers()
 	{
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		SDL_GL_SwapWindow(m_SDL_GLWindow);
 	}
 

@@ -112,13 +112,14 @@ namespace Denix
 			// Draw Collision over gameobject if set to visible
 			if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
 		}
+
 	}
 
 	void RendererSubsystem::RenderUnlitViewport()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		Ref<GLShader> shader = ResourceSubsystem::GetShader("UnlitShader");
+		Ref<Shader> shader = ResourceSubsystem::GetShader("UnlitShader");
 		shader->Bind();
 
 		// Upload the camera matrices
@@ -195,7 +196,7 @@ namespace Denix
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		Ref<GLShader> shader = ResourceSubsystem::GetShader("UnlitShader");
+		Ref<Shader> shader = ResourceSubsystem::GetShader("UnlitShader");
 		shader->Bind();
 
 		// Upload the camera matrices
@@ -249,8 +250,10 @@ namespace Denix
 
 	void RendererSubsystem::RenderCollisionViewport()
 	{
+		
+
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		Ref<GLShader> shader = ResourceSubsystem::GetShader("DefaultShader");
+		Ref<Shader> shader = ResourceSubsystem::GetShader("DefaultShader");
 		shader->Bind();
 
 		// Upload the camera matrices relative to Object
@@ -286,12 +289,7 @@ namespace Denix
 
 			if (physComp->IsColliding())
 			{
-<<<<<<< Updated upstream
-				glUniform3f(shader->GetUniform("u_Material.BaseColor"), 1.0f, 0.0f, 0.0f);
-				
-=======
 				glUniform3f(shader->GetUniform("u_Material.Base.Color"), 1.0f, 0.0f, 0.0f);
->>>>>>> Stashed changes
 			}
 			else
 			{
@@ -325,13 +323,14 @@ namespace Denix
 				}
 			}
 		}
+
 	}
 
 	void RendererSubsystem::RenderLighting()
 	{
 		if (((ViewportMode)m_ViewportMode != ViewportMode::Default)) return;
 
-		Ref<GLShader> program = ResourceSubsystem::GetShader("DefaultShader");
+		Ref<Shader> program = ResourceSubsystem::GetShader("DefaultShader");
 		program->Bind();
 
 		if (const Ref<DirectionalLight> dirLight = m_ActiveScene->m_DirLight)
@@ -385,7 +384,7 @@ namespace Denix
 	{
 		if (const Ref<Collider> collider = _component->GetCollider())
 		{
-			Ref<GLShader> shader = ResourceSubsystem::GetShader("DefaultShader");
+			Ref<Shader> shader = ResourceSubsystem::GetShader("DefaultShader");
 			shader->Bind();
 
 			// Upload the model matrix

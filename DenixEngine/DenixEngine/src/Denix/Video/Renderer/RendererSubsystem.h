@@ -36,7 +36,6 @@ namespace Denix
 		void Initialize() override
 		{
 			DE_LOG(LogRenderer, Trace, "RendererSubsystem Initialized")
-
 			m_Initialized = true;
 		}
 

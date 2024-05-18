@@ -728,7 +728,7 @@ namespace Denix
 		if (!_material) return;
 
 		ImGui::SeparatorText("Shader");
-		if (Ref<GLShader> shader = _material->GetShader())
+		if (Ref<Shader> shader = _material->GetShader())
 		{
 			if (ImGui::BeginCombo("##ShaderName", shader->GetName().c_str()))
 			{

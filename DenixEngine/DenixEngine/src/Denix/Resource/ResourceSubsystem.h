@@ -8,7 +8,7 @@ namespace Denix
     class Mesh;
     class Model;
     struct ShaderSource;
-	class GLShader;
+	class Shader;
 	class Material;
 	class Texture;
 
@@ -28,16 +28,16 @@ namespace Denix
 
         // Shaders
 
-        static std::unordered_map<std::string, Ref<GLShader>> GetShaderStore() 
+        static std::unordered_map<std::string, Ref<Shader>> GetShaderStore() 
         {
             return s_ResourceSubsystem->m_ShaderStore;
         }
 
-        static void AddShader(const Ref<GLShader>& _shader);
+        static void AddShader(const Ref<Shader>& _shader);
 
         static bool LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name);
         
-        static Ref<GLShader> GetShader(const std::string& _name);
+        static Ref<Shader> GetShader(const std::string& _name);
 
         static bool ShaderExists(const std::string& _name)
         {
@@ -82,7 +82,7 @@ namespace Denix
     private:
         static ResourceSubsystem* s_ResourceSubsystem;
 
-		std::unordered_map<std::string, Ref<GLShader>> m_ShaderStore;
+		std::unordered_map<std::string, Ref<Shader>> m_ShaderStore;
 
         std::unordered_map<std::string, Ref<Texture>> m_TextureStore;
 

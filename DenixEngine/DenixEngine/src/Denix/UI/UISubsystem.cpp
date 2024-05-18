@@ -3,6 +3,7 @@
 #include <SDL_video.h>
 
 #include "Denix/Video/Window/WindowSubSystem.h"
+#include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 
@@ -32,6 +33,8 @@ namespace Denix
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 		io.IniFilename = nullptr;
 
@@ -62,5 +65,16 @@ namespace Denix
 		ImGui::DestroyContext();
 
 		m_Initialized = false;
+	}
+	void UISubsystem::NewFrame()
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
+		ImGui::NewFrame();
+	}
+	void UISubsystem::RenderUI()
+	{
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 }

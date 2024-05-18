@@ -17,6 +17,8 @@ namespace Denix
 
 		void Deinitialize() override;
 
+		void NewFrame();
+		void RenderUI();
 	private:
 		static UISubsystem* s_UISubSystem;
 	};

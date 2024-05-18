@@ -50,15 +50,15 @@ namespace Denix
 	};
 
 
-	class GLShader: public Object
+	class Shader: public Object
 	{
 	public:
-		GLShader(const ObjectInitializer& _objInit): Object(_objInit)
+		Shader(const ObjectInitializer& _objInit): Object(_objInit)
 		{
 			CreateProgram();
 		}
 
-		~GLShader() override
+		~Shader() override
 		{
 			DeleteProgram();
 		}

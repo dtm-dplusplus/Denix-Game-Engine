@@ -4,7 +4,7 @@
 
 
 #include "Denix/Scene/Component.h"
-#include "Denix/Video/GL/GLShader.h"
+#include "Denix/Video/GL/Shader.h"
 #include "Denix/Video/GL/Material.h"
 #include "Denix/Video/GL/Texture.h"
 
@@ -37,8 +37,8 @@ namespace Denix
 		TextureSettings& GetTextureSettings() { return m_TextureSettings; }
 		void SetTextureSettings(const TextureSettings& _settings) { m_TextureSettings = _settings; }
 
-		Ref<GLShader> GetShader() const { return m_Shader; }
-		void SetShader(const Ref<GLShader>& _shader) { m_Shader = _shader; }
+		Ref<Shader> GetShader() const { return m_Shader; }
+		void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
 
 		Ref<Material> GetMaterial() const { return m_Material; }
 		void SetMaterial(const Ref<Material>& _material) { m_Material = _material; }
@@ -75,7 +75,7 @@ namespace Denix
 		bool m_BaseColorAsTexture = false;
 
 		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
-		Ref<GLShader> m_Shader;
+		Ref<Shader> m_Shader;
 		Ref<Texture> m_Texture;
 		Ref<Material> m_Material;
 

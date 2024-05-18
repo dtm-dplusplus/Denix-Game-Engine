@@ -53,7 +53,7 @@ namespace Denix
 
 		Ref<class PhysicsSubsystem> m_PhysicsSubSystem;
 
-		Ref<class UISubsystem> m_UISubSytem;
+		Ref<class UISubsystem> m_UISubsystem;
 
 		Ref<class RendererSubsystem> m_RendererSubSystem;
 

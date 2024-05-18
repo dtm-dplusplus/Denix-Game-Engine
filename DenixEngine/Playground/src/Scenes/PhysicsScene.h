@@ -2,10 +2,11 @@
 
 #include "Denix/Scene/Scene.h"
 #include "Denix/Video/GL/Model.h"
+#include "Denix/Scene/Object/Shapes/Shapes.h"
 
 namespace Denix
 {
-	class PhysObject : public GameObject
+	class PhysObject : public Cube
 	{
 	public:
 		PhysObject(const ObjectInitializer& _objInit = { "PhysObject" });
@@ -39,9 +40,7 @@ namespace Denix
 		bool Load() override;
 		void Update(float _deltaTime) override;
 
-		Ref<PhysObject> cube1;
-		Ref<class Cube> TestCube;
-		Ref<PointLight> PntLight;
-		Ref<SpotLight> SptLight;
+		Ref<PhysObject> Cube1;
+		Ref<class Cube> Cube2;
 	};
 }

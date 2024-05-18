@@ -2,7 +2,7 @@
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Scene/MeshData.h"
 #include "Denix/Video/Renderer/RenderComponent.h"
-#include "Denix/Video/GL/GLShader.h"
+#include "Denix/Video/GL/Shader.h"
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Video/GL/Material.h"
 #include "Denix/Video/GL/Mesh.h"
@@ -48,6 +48,13 @@ namespace Denix
 			wireframeShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\WireframeFragment.glsl)");
 			LoadShader(wireframeShaders, "WireframeShader");
 		}
+
+		{
+			std::vector<ShaderSource> viewportShaders;
+			viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBVertex.glsl)");
+			viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBFragment.glsl)");
+			LoadShader(viewportShaders, "FBShader");
+		}
 		// TEXTURES
 		LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)", "DefaultTexture");
 
@@ -66,9 +73,9 @@ namespace Denix
 		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
 
 		// Models
-		LoadModel("SM_Plane", FileSubsystem::GetEngineContentRoot() + R"(models\Plane.obj)");
-		LoadModel("SM_Cube", FileSubsystem::GetEngineContentRoot() + R"(models\Cube.obj)");
-		LoadModel("SM_Sphere", FileSubsystem::GetEngineContentRoot() + R"(models\Sphere.obj)");
+		LoadModel("SM_Plane", FileSubsystem::GetEngineContentRoot() + R"(models\Plane.fbx)");
+		LoadModel("SM_Cube", FileSubsystem::GetEngineContentRoot() + R"(models\Cube.fbx)");
+		LoadModel("SM_Sphere", FileSubsystem::GetEngineContentRoot() + R"(models\Sphere.fbx)");
 
 	    DE_LOG(LogResource, Trace, "Resource Subsystem Initialized")
 	}
@@ -85,7 +92,7 @@ namespace Denix
 
 
 	////////////////////////  SHADERS ///////////////////////////////
-	void ResourceSubsystem::AddShader(const Ref<GLShader>& _shader)
+	void ResourceSubsystem::AddShader(const Ref<Shader>& _shader)
 	{
 		if (s_ResourceSubsystem->ShaderExists(_shader->GetFriendlyName()))
 		{
@@ -98,7 +105,7 @@ namespace Denix
 
 	bool ResourceSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
 	{
-		if (const Ref<GLShader> program = MakeRef<GLShader>(ObjectInitializer(_name)))
+		if (const Ref<Shader> program = MakeRef<Shader>(ObjectInitializer(_name)))
 		{
 			if (!program->GetGL_ID()) return false;
 
@@ -114,7 +121,7 @@ namespace Denix
 		return false;
 	}
 
-	Ref<GLShader> ResourceSubsystem::GetShader(const std::string& _name)
+	Ref<Shader> ResourceSubsystem::GetShader(const std::string& _name)
 	{
 		if (ShaderExists(_name))
 		{

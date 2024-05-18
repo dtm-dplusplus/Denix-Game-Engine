@@ -3,9 +3,9 @@
 #include <SDL_events.h>
 
 #include "Denix/Core.h"
+#include "Denix/Core/Math.h"
 
 #include "SDL_video.h"
-#include "glm/glm.hpp"
 #include "GL/glew.h"
 
 namespace Denix
@@ -30,8 +30,8 @@ namespace Denix
 
 		glm::vec2 GetWindowSize() const { return { m_WinX, m_WinY }; }
 
-		int GetWindowSizeX() const { return m_WinX; }
-		int GetWindowSizeY() const { return m_WinY; }
+		int GetWidth() const { return m_WinX; }
+		int GetHeight() const { return m_WinY; }
 
 		std::string GetTitle() const { return m_Title; }
 
@@ -65,6 +65,7 @@ namespace Denix
 				SDL_WINDOW_RESIZABLE |
 				SDL_WINDOW_ALLOW_HIGHDPI
 				);
+
 		}
 
 		~SDL_GLWindow() override = default;
@@ -150,7 +151,6 @@ namespace Denix
 		SDL_GLContext m_SDL_GLContext;
 
 		SDL_GLVsyncMode m_VsyncMode = SDL_GLVsyncMode::Off;
-
 
 		// GL Attributes
 		std::string m_GLSLVersion = "#version 330";

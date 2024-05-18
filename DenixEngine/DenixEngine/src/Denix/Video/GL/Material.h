@@ -2,7 +2,7 @@
 
 #include "Denix/Scene/Object.h"
 #include "Denix/Video/GL/Texture.h"
-#include "Denix/Video/GL/GLShader.h"
+#include "Denix/Video/GL/Shader.h"
 
 namespace Denix
 {
@@ -32,8 +32,8 @@ namespace Denix
 		Material(const ObjectInitializer& _objInit = { "Material" });
 		Material(Ref<Material> _other);
 
-		Ref<GLShader> GetShader() const { return m_Shader; }
-		void SetShader(const Ref<GLShader>& _shader) { m_Shader = _shader; }
+		Ref<Shader> GetShader() const { return m_Shader; }
+		void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
 
 		BaseMatParam GetBaseParam() const { return m_BaseParam; }
 		BaseMatParam& GetBaseParam() { return m_BaseParam; }
@@ -53,7 +53,7 @@ namespace Denix
 
 		NormalMatParam m_NormalParam;
 
-		Ref<GLShader> m_Shader;
+		Ref<Shader> m_Shader;
 
 		float m_SpecularIntensity = 0.5f;
 		float m_SpecularPower = 4.0f;

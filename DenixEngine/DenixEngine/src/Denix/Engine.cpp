@@ -54,9 +54,9 @@ namespace Denix
 		m_SubsystemOrder.push_back(m_ResourceSubSystem);
 		m_Subsystems["Resource"] = m_ResourceSubSystem;
 
-		m_UISubSytem = MakeRef<UISubsystem>();
-		m_SubsystemOrder.push_back(m_UISubSytem);
-		m_Subsystems["UI"] = m_UISubSytem;
+		m_UISubsystem = MakeRef<UISubsystem>();
+		m_SubsystemOrder.push_back(m_UISubsystem);
+		m_Subsystems["UI"] = m_UISubsystem;
 
 		m_EditorSubSystem = MakeRef<EditorSubsystem>();
 		m_SubsystemOrder.push_back(m_EditorSubSystem);
@@ -100,6 +100,8 @@ namespace Denix
 	{
 		Initialize();
 
+		m_WindowSubSystem->m_DefaultViewport->m_Shader = ResourceSubsystem::GetShader("FBShader");
+
 		while(m_WindowSubSystem->m_Window->IsOpen())
 		{
 			float deltaTime = m_TimerSubSystem->m_DeltaTime;
@@ -108,7 +110,12 @@ namespace Denix
 
 			m_InputSubsystem->Poll();
 
+			m_UISubsystem->NewFrame();
 			m_WindowSubSystem->m_Window->ClearBuffer();
+
+			m_WindowSubSystem->m_DefaultViewport->m_FrameBuffer->Bind();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			FrameBuffer::Unbind();
 
 			m_EditorSubSystem->Update(deltaTime);
 
@@ -118,9 +125,24 @@ namespace Denix
 			
 			m_PhysicsSubSystem->Update(deltaTime);
 			
-			m_RendererSubSystem->RenderScene();
 
+
+			m_WindowSubSystem->m_DefaultViewport->m_FrameBuffer->Bind();
+			m_RendererSubSystem->RenderScene();
+			FrameBuffer::Unbind();
+
+			m_WindowSubSystem->m_DefaultViewport->m_Mesh->GetVertexArray()->Bind();
+			m_WindowSubSystem->m_DefaultViewport->m_Mesh->GetIndexBuffer()->Bind();
+			m_WindowSubSystem->m_DefaultViewport->m_Shader->Bind();
+
+			glBindTexture(GL_TEXTURE_2D, m_WindowSubSystem->m_DefaultViewport->m_FrameBuffer->m_TexID);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+			m_UISubsystem->RenderUI();
 			m_WindowSubSystem->m_Window->SwapBuffers();
+
+			
+
 
 			m_PhysicsSubSystem->PostUpdate(deltaTime);
 			m_SceneSubSystem->CleanRubbish();

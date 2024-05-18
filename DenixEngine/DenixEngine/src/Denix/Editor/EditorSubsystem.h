@@ -5,7 +5,7 @@
 
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
-#include "Denix/Video/GL/GLShader.h"
+#include "Denix/Video/GL/Shader.h"
 
 namespace Denix
 {
@@ -32,7 +32,7 @@ namespace Denix
 
 		struct ShaderEditorWidget
 		{
-			Ref<GLShader> Shader;
+			Ref<Shader> Shader;
 			bool IsOpen;
 			void WidgetEditor()
 			{
