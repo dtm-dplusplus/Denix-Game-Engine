@@ -6,19 +6,24 @@ in vec2 TexCoord;
 in vec3 Normal;
 out vec4 Color;
 
+struct BaseMatParam
+{
+	vec3 Color;
+	bool IsTexture;
+};
+
 struct Material
 {
-	vec3 BaseColor;
+	BaseMatParam Base;
 	float SpecularIntensity;
 	float SpecularPower;
 };
 
 uniform sampler2D u_Texture;
-uniform bool u_BaseColorAsTexture;
 
 uniform Material u_Material;
 
 void main()
 {
-	Color = u_BaseColorAsTexture ? vec4(u_Material.BaseColor, 1.0f) : texture(u_Texture, TexCoord);
+	Color = u_Material.Base.IsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.Base.Color, 1.0f);
 }

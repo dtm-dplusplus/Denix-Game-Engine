@@ -20,7 +20,7 @@ namespace Denix
 		Scene::Load();
 
 		Ref <Plane> floor = MakeRef<Plane>();
-		floor->GetTransformComponent()->SetScale(glm::vec3(50.0f, 1.0f, 50.0f));
+		floor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 1.0f, 5.0f));
 		m_SceneObjects.push_back(floor);
 
 		/*PntLight = MakeRef<PointLight>();
@@ -36,6 +36,7 @@ namespace Denix
 		SptLight->GetTransformComponent()->SetPosition({ -5.0f, 5.0f, 0.0f });
 		m_SceneObjects.push_back(SptLight);*/
 
+<<<<<<< Updated upstream
 		PhysicsObject = MakeRef<PhysObject>(ObjectInitializer("Cube 1"));
 		PhysicsObject->GetTransformComponent()->SetPosition({ 0.0f, 10.0f, 0.0f });
 		PhysicsObject->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 1.0f, 1.0f };
@@ -46,17 +47,50 @@ namespace Denix
 		other->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 0.5f, 1.0f };
 
 		m_SceneObjects.push_back(other);
+=======
+		cube1 = MakeRef<PhysObject>(ObjectInitializer("Cube 1"));
+		cube1->GetTransformComponent()->SetPosition({ 0.0f, 5.0f, 0.0f });
+		cube1->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 1.0f, 1.0f };
+		m_SceneObjects.push_back(cube1);
+
+		/*Ref<PhysObject> cube2 = MakeRef<PhysObject>(ObjectInitializer("Cube 2"));
+		cube2->GetTransformComponent()->SetPosition({ 5.0f, 10.0f, 0.0f });
+		cube2->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 0.5f, 1.0f };
+
+		m_SceneObjects.push_back(cube2);
+
+		
+
+		Ref<Sphere> sphere1 = MakeRef<Sphere>();
+		sphere1->GetTransformComponent()->SetPosition({ 0.0f, 5.0f, 5.0f });
+		sphere1->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
+		sphere1->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.5f, 0.5f, 1.0f };
+
+		m_SceneObjects.push_back(sphere1);
+
+
+		Ref<Sphere> sphere2 = MakeRef<Sphere>();
+		sphere2->GetTransformComponent()->SetPosition({ 5.0f, 5.0f, 5.0f });
+		sphere2->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
+		sphere2->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.5f, 0.5f, 1.0f };
+
+		m_SceneObjects.push_back(sphere2);*/
+>>>>>>> Stashed changes
 
 		m_DirLight->SetAmbientIntensity(0.7f);
 		m_ViewportCamera->SetFov(100.0f);
 		m_ViewportCamera->GetTransformComponent()->SetPosition({ 0.0f,5.0f, 10.0f });
 
+<<<<<<< Updated upstream
 
 		Ref<Sphere> TestModel = MakeRef<Sphere>();
 		TestModel->GetTransformComponent()->SetPosition({ 0.0f, 5.0f, 5.0f });
 		TestModel->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.5f, 0.5f, 1.0f };
 
 		m_SceneObjects.push_back(TestModel);
+=======
+		m_DirLight->GetLightDirection().z = -0.54f;
+>>>>>>> Stashed changes
 
 		m_DirLight->GetLightDirection().z = -0.54f;
 
