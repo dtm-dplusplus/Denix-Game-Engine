@@ -5,6 +5,8 @@
 
 namespace Denix
 {
+	class SDL_GLWindow;
+
 	class UISubsystem: public Subsystem
 	{
 	public:
@@ -19,6 +21,7 @@ namespace Denix
 
 		void NewFrame();
 		void RenderUI();
+		void ViewportUpdate(const Ref<SDL_GLWindow> _window);
 	private:
 		static UISubsystem* s_UISubSystem;
 	};

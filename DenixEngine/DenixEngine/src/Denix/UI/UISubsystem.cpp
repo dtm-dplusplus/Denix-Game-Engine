@@ -2,10 +2,11 @@
 
 #include <SDL_video.h>
 
-#include "Denix/Video/Window/WindowSubSystem.h"
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
+#include "Denix/Video/Window/Window.h"
+#include "Denix/Video/Window/WindowSubsystem.h"
 
 namespace Denix
 {
@@ -33,9 +34,10 @@ namespace Denix
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
+		// Disable Ini file - stops window positions being saved
 		io.IniFilename = nullptr;
 
 		// Setup Dear ImGui style
@@ -76,5 +78,15 @@ namespace Denix
 	{
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+	void UISubsystem::ViewportUpdate(const Ref<SDL_GLWindow> _window)
+	{
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+
+			SDL_GL_MakeCurrent(_window->GetSDLWindow(), _window->GetSDL_GLContext());
+		}
 	}
 }

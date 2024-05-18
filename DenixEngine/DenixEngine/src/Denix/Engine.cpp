@@ -42,9 +42,9 @@ namespace Denix
 		m_SubsystemOrder.push_back(m_FileSubSystem);
 		m_Subsystems["File"] = m_FileSubSystem;
 
-		m_WindowSubSystem = MakeRef<WindowSubsystem>();
-		m_SubsystemOrder.push_back(m_WindowSubSystem);
-		m_Subsystems["Window"] = m_WindowSubSystem;
+		m_WindowSubsystem = MakeRef<WindowSubsystem>();
+		m_SubsystemOrder.push_back(m_WindowSubsystem);
+		m_Subsystems["Window"] = m_WindowSubsystem;
 
 		m_RendererSubSystem = MakeRef<RendererSubsystem>();
 		m_SubsystemOrder.push_back(m_RendererSubSystem);
@@ -100,9 +100,10 @@ namespace Denix
 	{
 		Initialize();
 
-		m_WindowSubSystem->m_DefaultViewport->m_Shader = ResourceSubsystem::GetShader("FBShader");
+		Ref<Viewport> viewport = m_WindowSubsystem->m_DefaultViewport;
+		viewport->m_Shader = ResourceSubsystem::GetShader("FBShader");
 
-		while(m_WindowSubSystem->m_Window->IsOpen())
+		while(m_WindowSubsystem->m_Window->IsOpen())
 		{
 			float deltaTime = m_TimerSubSystem->m_DeltaTime;
 
@@ -111,9 +112,9 @@ namespace Denix
 			m_InputSubsystem->Poll();
 
 			m_UISubsystem->NewFrame();
-			m_WindowSubSystem->m_Window->ClearBuffer();
+			m_WindowSubsystem->m_Window->ClearBuffer();
 
-			m_WindowSubSystem->m_DefaultViewport->m_FrameBuffer->Bind();
+			viewport->m_FrameBuffer->Bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			FrameBuffer::Unbind();
 
@@ -125,31 +126,45 @@ namespace Denix
 			
 			m_PhysicsSubSystem->Update(deltaTime);
 			
+			bool b = true;
+			ImGui::Begin("Viewport", &b, ImGuiWindowFlags_NoTitleBar);
 
-
-			m_WindowSubSystem->m_DefaultViewport->m_FrameBuffer->Bind();
+			viewport->m_FrameBuffer->Bind();
 			m_RendererSubSystem->RenderScene();
 			FrameBuffer::Unbind();
 
-			m_WindowSubSystem->m_DefaultViewport->m_Mesh->GetVertexArray()->Bind();
-			m_WindowSubSystem->m_DefaultViewport->m_Mesh->GetIndexBuffer()->Bind();
-			m_WindowSubSystem->m_DefaultViewport->m_Shader->Bind();
-
-			glBindTexture(GL_TEXTURE_2D, m_WindowSubSystem->m_DefaultViewport->m_FrameBuffer->m_TexID);
+			// Draw the framebuffer texture
+			viewport->m_Mesh->GetVertexArray()->Bind();
+			viewport->m_Mesh->GetIndexBuffer()->Bind();
+			viewport->m_Shader->Bind();
+			
+			glBindTexture(GL_TEXTURE_2D, viewport->m_FrameBuffer->m_TexID);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+			// we get the screen position of the window
+			ImVec2 pos = ImGui::GetCursorScreenPos();
+			const float windowWidth = ImGui::GetContentRegionAvail().x;
+			const float windowHeight = ImGui::GetContentRegionAvail().y;
+
+			ImGui::GetWindowDrawList()->AddImage(
+				(void*)viewport->m_FrameBuffer->m_TexID,
+				ImVec2(pos.x, pos.y),
+				ImVec2(pos.x + windowWidth, pos.y + windowHeight),
+				ImVec2(0, 1),
+				ImVec2(1, 0)
+			);
+			ImGui::End();
+
+
 			m_UISubsystem->RenderUI();
-			m_WindowSubSystem->m_Window->SwapBuffers();
-
-			
-
+			m_WindowSubsystem->m_Window->SwapBuffers();
+			m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
 
 			m_PhysicsSubSystem->PostUpdate(deltaTime);
 			m_SceneSubSystem->CleanRubbish();
 
 			m_TimerSubSystem->EndFrame();
 		}
-
 		Deinitialize();
 	}
 

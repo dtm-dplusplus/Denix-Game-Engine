@@ -43,7 +43,7 @@ namespace Denix
 
 		Ref<class TimerSubsystem> m_TimerSubSystem;
 
-		Ref<class WindowSubsystem> m_WindowSubSystem;
+		Ref<class WindowSubsystem> m_WindowSubsystem;
 
 		Ref<class FileSubsystem> m_FileSubSystem;
 
