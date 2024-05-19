@@ -70,10 +70,11 @@ namespace Denix
 
 	private:
 		static EditorSubsystem* s_EditorSubsystem;
-		class WindowSubsystem* s_WindowSubSystem;
-		class SceneSubsystem* s_SceneSubSystem;
+		class WindowSubsystem* s_WindowSubsystem;
+		class SceneSubsystem* s_SceneSubsystem;
 		class InputSubsystem* s_InputSubsystem;
-		class RendererSubsystem* s_RendererSubSystem;
+		class RendererSubsystem* s_RendererSubsystem;
+		class UISubsystem* s_UISubsystem;
 
 		Ref<Scene> m_ActiveScene;
 

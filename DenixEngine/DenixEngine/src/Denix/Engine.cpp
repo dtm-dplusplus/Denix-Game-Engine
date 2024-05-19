@@ -118,6 +118,8 @@ namespace Denix
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			FrameBuffer::Unbind();
 
+			m_UISubsystem->Update(deltaTime);
+
 			m_EditorSubSystem->Update(deltaTime);
 
 			m_PhysicsSubSystem->PreUpdate(deltaTime);
@@ -126,9 +128,6 @@ namespace Denix
 			
 			m_PhysicsSubSystem->Update(deltaTime);
 			
-			bool b = true;
-			ImGui::Begin("Viewport", &b, ImGuiWindowFlags_NoTitleBar);
-
 			viewport->m_FrameBuffer->Bind();
 			m_RendererSubSystem->RenderScene();
 			FrameBuffer::Unbind();
@@ -141,19 +140,21 @@ namespace Denix
 			glBindTexture(GL_TEXTURE_2D, viewport->m_FrameBuffer->m_TexID);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-			// we get the screen position of the window
-			ImVec2 pos = ImGui::GetCursorScreenPos();
-			const float windowWidth = ImGui::GetContentRegionAvail().x;
-			const float windowHeight = ImGui::GetContentRegionAvail().y;
+			//bool b = true;
+			//ImGui::Begin("Viewport", &b, ImGuiWindowFlags_NoTitleBar);
+			//// we get the screen position of the window
+			//ImVec2 pos = ImGui::GetCursorScreenPos();
+			//const float windowWidth = ImGui::GetContentRegionAvail().x;
+			//const float windowHeight = ImGui::GetContentRegionAvail().y;
 
-			ImGui::GetWindowDrawList()->AddImage(
-				(void*)viewport->m_FrameBuffer->m_TexID,
-				ImVec2(pos.x, pos.y),
-				ImVec2(pos.x + windowWidth, pos.y + windowHeight),
-				ImVec2(0, 1),
-				ImVec2(1, 0)
-			);
-			ImGui::End();
+			//ImGui::GetWindowDrawList()->AddImage(
+			//	(void*)viewport->m_FrameBuffer->m_TexID,
+			//	ImVec2(pos.x, pos.y),
+			//	ImVec2(pos.x + windowWidth, pos.y + windowHeight),
+			//	ImVec2(0, 1),
+			//	ImVec2(1, 0)
+			//);
+			//ImGui::End();
 
 
 			m_UISubsystem->RenderUI();

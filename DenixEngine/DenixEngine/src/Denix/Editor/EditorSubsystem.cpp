@@ -8,6 +8,7 @@
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
+#include "Denix/UI/UISubsystem.h"
 #include "Denix/Video/Renderer/RendererSubSystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Object/Shapes/Shapes.h"
@@ -19,10 +20,11 @@ namespace Denix
 
 	void EditorSubsystem::Initialize()
 	{
-		s_WindowSubSystem = WindowSubsystem::Get();
-		s_SceneSubSystem = SceneSubsystem::Get();
+		s_WindowSubsystem = WindowSubsystem::Get();
+		s_SceneSubsystem = SceneSubsystem::Get();
 		s_InputSubsystem = InputSubsystem::Get();
-		s_RendererSubSystem = RendererSubsystem::Get();
+		s_RendererSubsystem = RendererSubsystem::Get();
+		s_UISubsystem = UISubsystem::Get();
 
 		DE_LOG_CREATE(LogEditor)
 		DE_LOG(LogEditor, Trace, "Editor Subsystem Initialized")
@@ -39,7 +41,7 @@ namespace Denix
 	void EditorSubsystem::Update(float _deltaTime)
 	{
 		DragSpeedDelta = DragSpeed * _deltaTime;
-		const glm::vec2 winSize = s_WindowSubSystem->GetWindow()->GetWindowSize();
+		const glm::vec2 winSize = s_WindowSubsystem->GetWindow()->GetWindowSize();
 		WinX = winSize.x;
 		WinY = winSize.y;
 
@@ -77,7 +79,7 @@ namespace Denix
 			{
 				if (ImGui::MenuItem("Quit", "Alt+F4")) 
 				{
-					s_WindowSubSystem->GetWindow()->RequestClose();
+					s_WindowSubsystem->GetWindow()->RequestClose();
 				}
 
 				ImGui::EndMenu();
@@ -97,7 +99,7 @@ namespace Denix
 			{
 				if (ImGui::MenuItem("Toggle Fullscreen", "F11"))
 				{
-					s_WindowSubSystem->GetWindow()->ToggleFullscreen();
+					s_WindowSubsystem->GetWindow()->ToggleFullscreen();
 				}
 
 				ImGui::EndMenu();
@@ -109,20 +111,20 @@ namespace Denix
 			{
 				if (ImGui::Button("Play"))
 				{
-					s_SceneSubSystem->PlayScene();
+					s_SceneSubsystem->PlayScene();
 				}
 			}
 			else
 			{
 				if (ImGui::Button("Pause"))
 				{
-					s_SceneSubSystem->PauseScene();
+					s_SceneSubsystem->PauseScene();
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Stop"))
 				{
 					m_ObjectSelection = -1;
-					s_SceneSubSystem->StopScene();
+					s_SceneSubsystem->StopScene();
 				}
 			}
 
@@ -133,7 +135,7 @@ namespace Denix
 				if (ShowDemoWindow) ImGui::ShowDemoWindow(&ShowDemoWindow);
 				ImGui::DragFloat("UI Drag Speed", &DragSpeed, DragSpeed, 0.1f, 10.0f);
 
-				ImGui::ColorEdit4("Clear Color", &s_WindowSubSystem->GetWindow()->GetClearColor()[0]);
+				ImGui::ColorEdit4("Clear Color", &s_WindowSubsystem->GetWindow()->GetClearColor()[0]);
 				ImGui::EndMenu();
 			}
 
@@ -144,9 +146,10 @@ namespace Denix
 	void EditorSubsystem::ScenePanel()
 	{
 		ImGui::SetNextWindowSize(ImVec2((WinX / 6), WinY), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2(0, MenuBarHeight), ImGuiCond_Appearing); // + ViewportBarHeight
+		//ImGui::SetNextWindowPos(ImVec2(0, MenuBarHeight), ImGuiCond_Appearing); // + ViewportBarHeight
 		ImGui::SetNextItemOpen(&ScenePanelOpen, ImGuiCond_Appearing);
 
+		ImGui::SetNextWindowDockID(s_UISubsystem->DockLeftID, ImGuiCond_FirstUseEver);
 		ImGui::Begin("Scene Panel", &ScenePanelOpen);
 		ScenePropertiesWidget();
 		SceneAddObjectWidget();
@@ -157,8 +160,9 @@ namespace Denix
 	void EditorSubsystem::DetailsPanel()
 	{
 		ImGui::SetNextWindowSize(ImVec2((WinX / 5), WinY), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2((WinX / 6), MenuBarHeight), ImGuiCond_Appearing);
+		//ImGui::SetNextWindowPos(ImVec2((WinX / 6), MenuBarHeight), ImGuiCond_Appearing);
 
+		ImGui::SetNextWindowDockID(s_UISubsystem->DockRightID);
 		if (ImGui::Begin("Details Panel", &ScenePanelOpen))
 		{
 			if (m_ObjectSelection >= 0 && m_ObjectSelection < m_ActiveScene->m_SceneObjects.size())
@@ -191,10 +195,10 @@ namespace Denix
 		}
 
 		// Subsystems
-		ImGui::Checkbox("Render Subsystem", &s_RendererSubSystem->IsEnabled());
+		ImGui::Checkbox("Render Subsystem", &s_RendererSubsystem->IsEnabled());
 
 		// Scene gravity
-		ImGui::DragFloat("Scene Gravity", &s_SceneSubSystem->m_ActiveScene->GetGravity(), DragSpeedDelta, -FLT_MAX, FLT_MAX);
+		ImGui::DragFloat("Scene Gravity", &s_SceneSubsystem->m_ActiveScene->GetGravity(), DragSpeedDelta, -FLT_MAX, FLT_MAX);
 
 		// Camera Properties
 		{
