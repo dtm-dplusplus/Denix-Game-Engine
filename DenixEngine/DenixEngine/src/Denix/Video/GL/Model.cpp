@@ -3,7 +3,7 @@
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Video/GL/Mesh.h"
 #include "Denix/Core/FileSubsystem.h"
-
+#include "Denix/Core/Math.h"
 
 
 bool Denix::Model::LoadModel(const std::string& _path)
@@ -63,6 +63,7 @@ inline void Denix::Model::LoadNode(aiNode* _node, const aiScene* _scene)
 inline void Denix::Model::LoadMesh(aiMesh* _mesh, const aiScene* _scene)
 {
 	std::vector<float> vertices;
+	std::vector<glm::vec3> normals;
 	std::vector<unsigned int> indices;
 
 	for (unsigned int i = 0; i < _mesh->mNumVertices; i++)
@@ -71,6 +72,7 @@ inline void Denix::Model::LoadMesh(aiMesh* _mesh, const aiScene* _scene)
 		if (_mesh->mTextureCoords[0]) vertices.insert(vertices.end(), { _mesh->mTextureCoords[0][i].x, _mesh->mTextureCoords[0][i].y });
 		else vertices.insert(vertices.end(), { 0.0f, 0.0f });
 		vertices.insert(vertices.end(), { -_mesh->mNormals[i].x, -_mesh->mNormals[i].y, -_mesh->mNormals[i].z });
+		normals.insert(normals.end(), { -_mesh->mNormals[i].x, -_mesh->mNormals[i].y, -_mesh->mNormals[i].z });
 	}
 
 	for (unsigned int i = 0; i < _mesh->mNumFaces; i++)
@@ -83,6 +85,7 @@ inline void Denix::Model::LoadMesh(aiMesh* _mesh, const aiScene* _scene)
 	}
 
 	Ref<Mesh> mesh = MakeRef<Mesh>();
+	mesh->m_Normals = normals;
 	mesh->CreateMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
 	m_Meshes.push_back(mesh);
 	m_MeshToTex.push_back(_mesh->mMaterialIndex);

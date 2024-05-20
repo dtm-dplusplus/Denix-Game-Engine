@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
+#include "Denix/Core/Math.h"
 #include "Denix/Scene/Object.h"
 #include "Denix/Video/GL/VertexArray.h"
 #include "Denix/Video/GL/VertexBuffer.h"
@@ -98,9 +99,12 @@ namespace Denix
         Ref<VertexBuffer> m_VBO;
         Ref<IndexBuffer> m_IBO;
 
+		std::vector<glm::vec3> m_Normals;
 		unsigned int* m_Indices;
 
         friend class RendererSubsystem;
+		friend class Model;
+
     };
 }
 

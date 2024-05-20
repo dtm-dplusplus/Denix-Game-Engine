@@ -55,6 +55,18 @@ namespace Denix
 			case ColliderType::Sphere:
 			{
 				// Cube to Sphere Collision Detection
+				Ref<SphereCollider> sphereColB = CastRef<SphereCollider>(colB);
+				float minY = sphereColB->GetTransformComponent()->GetPosition().y - sphereColB->GetRadius() * 2;
+				float maxY = sphereColB->GetTransformComponent()->GetPosition().y + sphereColB->GetRadius() * 2;
+				
+				/*if (minY <= cubeColA->GetMax().y && maxY >= cubeColA->GetMin().y)
+				{
+					collisionEvent.IsCollision = true;
+                    collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
+                    collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_otherComponent->GetParentObjectName());
+				}*/
+
+				collisionEvent.IsCollision = MovingSphereToPlaneCollision(_otherComponent, _component);
 			}  break;
 			}
 		} break;
@@ -85,6 +97,8 @@ namespace Denix
 					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
 					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_otherComponent->GetParentObjectName());
 				}*/
+
+				collisionEvent.IsCollision = MovingSphereToPlaneCollision(_component, _otherComponent);
 				break;
 			}
 			
@@ -140,6 +154,26 @@ namespace Denix
 		return false;
 	}
 
+	bool CollisionDetection::MovingSphereToPlaneCollision(const Ref<PhysicsComponent>& _component, const Ref<PhysicsComponent>& _otherComponent)
+	{
+		Ref<SphereCollider> spherColA = CastRef<SphereCollider>(_component->GetCollider());
+		Ref<CubeCollider> cubeColB = CastRef<CubeCollider>(_otherComponent->GetCollider());
+
+		float t;
+		glm::vec3 n = { 0.0f, 1.0f, 0.0f };
+		float d0 = DistanceToPlane(n, spherColA->GetTransformComponent()->GetPosition(), cubeColB->GetMax());
+
+		
+
+		if (glm::abs(d0) <= spherColA->GetRadius())
+		{
+			//ci = c0;
+			t = 0.0f;
+			return true;
+		}
+		
+		return false;
+	}
 
 	bool CollisionDetection::SphereToSphereCollision(const glm::vec3& c0, const glm::vec3 c1, float r1, float r2, glm::vec3& cp)
 	{

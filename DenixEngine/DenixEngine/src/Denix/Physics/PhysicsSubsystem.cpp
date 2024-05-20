@@ -28,7 +28,7 @@ namespace Denix
 
 		// Clean collision colData
 		m_CollisionEvents.clear();
-
+		
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
 			// Set  status
@@ -36,7 +36,8 @@ namespace Denix
 			physicsComp->m_SteppedNextFrame = false;
 			physicsComp->m_IsColliding = false;
 
-			if(physicsComp->m_SimulateGravity) physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
+			if(physicsComp->m_SimulateGravity && physicsComp->SimulatePhysics()) 
+				physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
 
 			//actor->m_Torque = glm::vec3(0.0f);
 
@@ -132,7 +133,7 @@ namespace Denix
 					comp->m_Force = glm::vec3(0.0f);
 					comp->m_Velocity = impulseVector / comp->m_Mass;
 				}
-				// comp->AddForce(contactForce);
+				//comp->AddForce(contactForce);
 
 				//comp->m_Force = glm::vec3(0.0f);
 				//comp->m_Velocity = glm::vec3(0.0f);
