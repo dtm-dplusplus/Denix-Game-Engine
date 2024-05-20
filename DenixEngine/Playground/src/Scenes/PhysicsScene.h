@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Denix/Scene/Scene.h"
-#include "Denix/Video/GL/Model.h"
 #include "Denix/Scene/Object/Shapes/Shapes.h"
 
 namespace Denix

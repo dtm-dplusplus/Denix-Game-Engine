@@ -188,8 +188,6 @@ namespace Denix
 
 		// Scene update implementation 
 		m_ActiveScene->Update(_deltaTime);
-
-		
 	}
 
 	void SceneSubsystem::GameObjectsUpdate(float _deltaTime)

@@ -1,96 +1,50 @@
 #include "PlatformerScene.h"
 
 #include "imgui.h"
-#include "Denix/Input/InputSubsystem.h"
+#include "Denix/Core/TimerSubsystem.h"
 #include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Scene/Object/Shapes/Shapes.h"
+#include "Denix/Core/Math.h"
+#include "Character.h"
 
-Character::Character() : GameObject({"Character"})
+namespace Denix
 {
-	m_FollowCamera = MakeRef<Camera>(ObjectInitializer("Follow Camera"));
-	
-	m_MeshComponent->SetMesh(ResourceSubsystem::GetMesh("SM_Cube"));
-
-	//GetTransformComponent()->SetScale({ 0.25f, 1.0f, 0.25f });
-
-	//m_RenderComponent->SetBaseColorAsTexture(true);
-}
-
-void Character::BeginPlay()
-{}
-
-void Character::EndPlay()
-{}
-
-void Character::BeginScene()
-{
-	
-}
-
-void Character::EndScene()
-{}
-
-void Character::Update(float _deltaTime)
-{
-	// Camera Movement
-	if (InputSubsystem* input = InputSubsystem::Get())
+	bool PlatformerScene::Load()
 	{
-		const float moveSpeed = input->IsKeyDown(SDL_SCANCODE_LSHIFT) ? m_SprintSpeed : m_MoveSpeed;
+		Scene::Load();
 
-		// XZ 
-		if (input->IsKeyDown(SDL_SCANCODE_W))
-		{
-			GetTransformComponent()->GetPosition() += moveSpeed * m_FollowCamera->GetCameraFront() * _deltaTime;
-		}
-		if (input->IsKeyDown(SDL_SCANCODE_S))
-		{
-			GetTransformComponent()->GetPosition() -= moveSpeed * m_FollowCamera->GetCameraFront() * _deltaTime;
-		}
-		if (input->IsKeyDown(SDL_SCANCODE_A))
-		{
-			GetTransformComponent()->GetPosition() -= moveSpeed * glm::normalize(glm::cross(m_FollowCamera->GetCameraFront(), m_FollowCamera->GetCameraUp())) * _deltaTime;
-		}
-		if (input->IsKeyDown(SDL_SCANCODE_D))
-		{
-			GetTransformComponent()->GetPosition() += moveSpeed * glm::normalize(glm::cross(m_FollowCamera->GetCameraFront(), m_FollowCamera->GetCameraUp())) * _deltaTime;
-		}
+		Ref <Plane> floor = MakeRef<Plane>();
+		floor->GetPhysicsComponent()->CollisionDetectionEnabled() = true;
+		floor->GetPhysicsComponent()->IsColliderVisible() = true;
+		floor->GetTransformComponent()->SetScale(glm::vec3(30.0f, 0.01f, 30.0f));
+		m_SceneObjects.push_back(floor);
 
-		if (input->IsKeyDown(SDL_SCANCODE_SPACE))
-		{
-			GetPhysicsComponent()->AddForce({ 0.0f, m_JumpForce, 0.0f });
-		}
+		Player = MakeRef<Character>();
+		Player->GetTransformComponent()->SetPosition({ 0.0f, 5.0f, 5.0f });
+		m_SceneObjects.push_back(Player);
+		m_SceneObjects.push_back(Player->m_FollowCamera);
 
-		// Character Movement
-		m_FollowCamera->GetTransformComponent()->SetPosition(m_TransformComponent->GetPosition() + glm::vec3(0.0f, 0.0f, m_CameraBoomLength));
+		m_DirLight->GetLightDirection().z = -0.54f;
+
+		return true;
 	}
-}
 
-bool PlatformerScene::Load()
-{
-	Scene::Load();
+	void PlatformerScene::Update(float _deltaTime)
+	{
+		Scene::Update(_deltaTime);
 
-	Player = MakeRef<Character>();
-	m_SceneObjects.push_back(Player);
-	m_SceneObjects.push_back(Player->m_FollowCamera);
+		ImGui::SetNextWindowPos(ImVec2(1000, 50));
+		ImGui::Begin("Physics Scene Tools");
+		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
+		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
+		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+		static glm::vec3 force = { 0.0f, 15.0f, 0.0f };
+		ImGui::DragFloat("Jump Force", &force.y, 0.1f);
+		ImGui::DragFloat("Move Speed", &Player->m_MoveSpeed, 0.1f);
 
-	Ref<Plane> plane = MakeRef<Plane>();
-	plane->GetTransformComponent()->SetScale({ 100.0f, 100.0f , 1.0f });
-	m_SceneObjects.push_back(plane);
-
-	m_DirLight->SetAmbientIntensity(0.8f);
-
-	return true;
-}
-
-void PlatformerScene::Update(float _deltaTime)
-{
-	ImGui::SetNextWindowPos(ImVec2(1000, 50));
-	ImGui::Begin("Playground Tools");
-	ImGui::DragFloat("Camera Boom Length", &Player->m_CameraBoomLength, 0.1f, 0.0f, 100.0f);
-	ImGui::End();
-}
-
-void PlatformerScene::BeginPlay()
-{
-	Scene::BeginPlay();
+		ImGui::DragFloat3("Force", &force.x, 0.1f);
+		if (ImGui::Button("Add Force to Sphere 1")) Sphere1->GetPhysicsComponent()->AddImpulse(force);
+		ImGui::End();
+	}
 
 }
