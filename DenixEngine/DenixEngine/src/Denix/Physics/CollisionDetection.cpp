@@ -13,11 +13,11 @@ namespace Denix
 		return false;
 	}
 
-	CollisionEvent CollisionDetection::NarrowCollisionDetection(const Ref<PhysicsComponent>& _component, const Ref<PhysicsComponent>& _otherComponent)
+	CollisionEvent CollisionDetection::NarrowCollisionDetection(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB)
 	{
 		// Narrow Collision Detection
-		Ref<Collider> colA = _component->GetCollider();
-		Ref<Collider> colB = _otherComponent->GetCollider();
+		Ref<Collider> colA = _compA->GetCollider();
+		Ref<Collider> colB = _compB->GetCollider();
 		CollisionEvent collisionEvent;
 
 		if (!colA || !colB) return collisionEvent;
@@ -46,8 +46,8 @@ namespace Denix
                     minA.z <= maxB.z && maxA.z >= minB.z)
 				{
 					collisionEvent.IsCollision = true;
-					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
-					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_otherComponent->GetParentObjectName());
+					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_compA->GetParentObjectName());
+					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_compB->GetParentObjectName());
 				}
 				
 			} break;
@@ -55,50 +55,22 @@ namespace Denix
 			case ColliderType::Sphere:
 			{
 				// Cube to Sphere Collision Detection
-				Ref<SphereCollider> sphereColB = CastRef<SphereCollider>(colB);
-				float minY = sphereColB->GetTransformComponent()->GetPosition().y - sphereColB->GetRadius() * 2;
-				float maxY = sphereColB->GetTransformComponent()->GetPosition().y + sphereColB->GetRadius() * 2;
-				
-				/*if (minY <= cubeColA->GetMax().y && maxY >= cubeColA->GetMin().y)
-				{
-					collisionEvent.IsCollision = true;
-                    collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
-                    collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_otherComponent->GetParentObjectName());
-				}*/
-
-				collisionEvent.IsCollision = MovingSphereToPlaneCollision(_otherComponent, _component);
 			}  break;
 			}
 		} break;
 
 		case ColliderType::Sphere:
 		{
-			Ref<SphereCollider> sphereColA = std::dynamic_pointer_cast<SphereCollider>(colA);
+			Ref<SphereCollider> sphereColA = CastRef<SphereCollider>(colA);
 
 			switch (colB->GetColliderType())
 			{
 			case ColliderType::Cube:
 			{
 				// Sphere to Cube Collision Detection
-				Ref<CubeCollider> otherCubeCol = std::dynamic_pointer_cast<CubeCollider>(colB);
+				Ref<CubeCollider> cubeColB = CastRef<CubeCollider>(colB);
 
-				glm::vec3 minB = otherCubeCol->GetMin();
-				glm::vec3 maxB = otherCubeCol->GetMax();
-
-				// Check left, right, front, back, top
-				/*if (maxB.x < sphereCol->GetTransformComponent()->GetPosition().x - sphereCol->GetRadius() ||
-					minB.x > sphereCol->GetTransformComponent()->GetPosition().x + sphereCol->GetRadius() ||
-					maxB.z < sphereCol->GetTransformComponent()->GetPosition().z - sphereCol->GetRadius() ||
-					minB.z > sphereCol->GetTransformComponent()->GetPosition().z + sphereCol->GetRadius() ||
-					maxB.y < sphereCol->GetTransformComponent()->GetPosition().y - sphereCol->GetRadius() ||
-					minB.y > sphereCol->GetTransformComponent()->GetPosition().y + sphereCol->GetRadius())
-				{
-					collisionEvent.IsCollision = true;
-					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
-					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_otherComponent->GetParentObjectName());
-				}*/
-
-				collisionEvent.IsCollision = MovingSphereToPlaneCollision(_component, _otherComponent);
+				SphereCubeCollision(sphereColA, cubeColB, collisionEvent, _compA, _compB);
 				break;
 			}
 			
@@ -112,8 +84,8 @@ namespace Denix
 				
 				if (collisionEvent.IsCollision)
 				{
-					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
-					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_otherComponent->GetParentObjectName());
+					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_compA->GetParentObjectName());
+					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_compB->GetParentObjectName());
 				}
 	
 				break;
@@ -124,6 +96,19 @@ namespace Denix
 		}
 
 		return collisionEvent;
+	}
+
+	void CollisionDetection::SphereCubeCollision(Ref<SphereCollider>& _sphereColA, Ref<CubeCollider>& _cubeColB, CollisionEvent& collisionEvent, const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB)
+	{
+		float minY = _sphereColA->GetTransformComponent()->GetPosition().y - _sphereColA->GetRadius() * 2;
+		float maxY = _sphereColA->GetTransformComponent()->GetPosition().y + _sphereColA->GetRadius() * 2;
+
+		if (minY <= _cubeColB->GetMax().y && maxY >= _cubeColB->GetMin().y)
+		{
+			collisionEvent.IsCollision = true;
+			collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_compA->GetParentObjectName());
+			collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_compB->GetParentObjectName());
+		}
 	}
 
 	float CollisionDetection::DistanceToPlane(const glm::vec3& n, const glm::vec3& p, const glm::vec3& q)
@@ -161,7 +146,7 @@ namespace Denix
 
 		float t;
 		glm::vec3 n = { 0.0f, 1.0f, 0.0f };
-		float d0 = DistanceToPlane(n, spherColA->GetTransformComponent()->GetPosition(), cubeColB->GetMax());
+		float d0 = DistanceToPlane(n, spherColA->GetTransformComponent()->GetPosition(), cubeColB->GetTransformComponent()->GetPosition());
 
 		
 

@@ -27,6 +27,8 @@ namespace Denix
 
 		static CollisionEvent NarrowCollisionDetection(const Ref<PhysicsComponent>& _component, const Ref<PhysicsComponent>& _otherComponent);
 
+		static void SphereCubeCollision(Ref<SphereCollider>& _sphereColA, Ref<CubeCollider>& _cubeColB, CollisionEvent& collisionEvent, const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB);
+
 		/*
 		A signed distance 'd' from a point in space 'p'
 		to a plane is calculated by a dot product of the plane's normal vector 'n'
