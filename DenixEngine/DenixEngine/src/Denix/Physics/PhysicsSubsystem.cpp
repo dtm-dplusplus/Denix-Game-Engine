@@ -36,10 +36,10 @@ namespace Denix
 			physicsComp->m_SteppedNextFrame = false;
 			physicsComp->m_IsColliding = false;
 
-			if(physicsComp->m_SimulateGravity && physicsComp->SimulatePhysics()) 
-				physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
+			physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
 
-			//actor->m_Torque = glm::vec3(0.0f);
+			physicsComp->m_Torque = glm::vec3(0.0f);
+
 
 			physicsComp->m_PreviousPosition = physicsComp->m_ParentTransform->GetPosition();
 
@@ -54,9 +54,9 @@ namespace Denix
 		
 		if(m_CollisionDetectionEnabled) CollisionDetection(_deltaTime);
 
-		if (m_CollisionResponseEnabled) CollisionResonse(_deltaTime);
+		if (m_CollisionResponseEnabled) CollisionResonsePhase(_deltaTime);
 
-		PhysicsSimulation(_deltaTime);
+		PhysicsSimulationPhase(_deltaTime);
 	}
  
 	void PhysicsSubsystem::CollisionDetection(float _deltaTime)
@@ -109,58 +109,66 @@ namespace Denix
 		}
 	}
 
-	void PhysicsSubsystem::CollisionResonse(float _deltaTime)
+	void PhysicsSubsystem::CollisionResonsePhase(float _deltaTime)
 	{
-		for (auto& [isCollison, actor, other, colData] : m_CollisionEvents)
+		for (CollisionEvent& collisionEvent : m_CollisionEvents)
 		{
-			if (!actor || !other) continue;
-
-			if (Ref<PhysicsComponent> comp = actor->GetPhysicsComponent())
-			{
-				// Impulse response
-				glm::vec3 planeVelocity = glm::vec3(0.0f);
-
-				glm::vec3 contactForce =  -comp->GetForce();
-				glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
-
-				if (comp->m_ImpulseEnabled)
-				{
-					float impulseEnergy = -(1.0f + comp->m_Elasticity) *
-						glm::dot(comp->m_Velocity - planeVelocity, normal) / (1.0f / comp->m_Mass);
-
-					glm::vec3 impulseVector = impulseEnergy * normal;
-
-					comp->m_Force = glm::vec3(0.0f);
-					comp->m_Velocity = impulseVector / comp->m_Mass;
-				}
-				//comp->AddForce(contactForce);
-
-				//comp->m_Force = glm::vec3(0.0f);
-				//comp->m_Velocity = glm::vec3(0.0f);
-
-				// Call client side implementation
-				actor->GetPhysicsComponent()->m_IsColliding = true;
-				other->GetPhysicsComponent()->m_IsColliding = true;
-
-				actor->OnCollision(other, colData);
-				if (other) other->OnCollision(actor, colData);
-			}
+			if (!collisionEvent.Actor || !collisionEvent.Other) continue;
+			CollisionResponse(collisionEvent);
 		}
 	}
 
-	void PhysicsSubsystem::PhysicsSimulation(float _deltaTime)
+	void PhysicsSubsystem::CollisionResponse(CollisionEvent& _collisionEvent)
+	{
+		Ref<PhysicsComponent> compActor  = _collisionEvent.Actor->GetPhysicsComponent();
+		Ref<PhysicsComponent> compOther = _collisionEvent.Other->GetPhysicsComponent();
+
+		// Impulse response
+		glm::vec3 otherVelocity = compOther->GetVelocity();
+
+		glm::vec3 contactForce = -glm::vec3(0.0f, compActor->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
+
+		if (compActor->m_ImpulseEnabled)
+		{
+			float impulseEnergy = ImpulseEnergy(
+				compActor, compOther, _collisionEvent.ColData.Normal, _collisionEvent.ColData.ContactPoint);
+
+			glm::vec3 impulseVector = impulseEnergy * _collisionEvent.ColData.Normal;
+
+			compActor->m_Force = glm::vec3(0.0f);
+			compActor->m_Velocity = impulseVector / compActor->m_Mass;
+
+		}
+
+		compActor->AddForce(contactForce);
+
+		// Update collision status for rendering
+		compActor->m_IsColliding = true;
+		compOther->m_IsColliding = true;
+
+		// Call client side implementation
+		if(compActor->GetParentTransform()->GetMoveability() == Moveability::Dynamic)
+			_collisionEvent.Actor->OnCollision(_collisionEvent.Other, _collisionEvent.ColData);
+
+		if (compOther->GetParentTransform()->GetMoveability() == Moveability::Dynamic)
+			_collisionEvent.Other->OnCollision(_collisionEvent.Actor, _collisionEvent.ColData);
+	}
+
+	void PhysicsSubsystem::SphereCubeCollision(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, Ref<SphereCollider>& _sphereColA, Ref<CubeCollider>& _cubeColB, CollisionEvent& _collisionEvent)
+	{
+
+	}
+
+	void PhysicsSubsystem::PhysicsSimulationPhase(float _deltaTime)
 	{
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
 			if (!physicsComp->m_SimulatePhysics) continue;
 
 			// Compute Torque
-			//actor->m_Torque = actor->m_Force * actor->m_Radius;
+			physicsComp->m_Torque = physicsComp->m_Force * physicsComp->m_Radius;
 
-			// Step Integration - Collision detection may have already stepped for dynamic objects
-			if (!physicsComp->m_SteppedThisFrame) physicsComp->StepSimulation(_deltaTime);
-
-
+			
 			// update the angular momentum : L(t + 1) = L(t) + T * dt;
 			// actor->m_AngularMomentum += actor->m_Radius * actor->m_Mass  * actor->m_Velocity * _deltaTime;
 
@@ -170,7 +178,18 @@ namespace Denix
 			// update the angular velocity wt + 1 = | -1 Lt + 1
 			// 	reconstruct the skew matrix w(*) (refer to my lecture note)
 			// 	update the rotation matrix R of the rigid body : R(t + 1) = R(t) + dt w(*)R(t);
-			// 12) apply the rotation to the rigid body using glm matrix for visualisation;		
+			// 12) apply the rotation to the rigid body using glm matrix for visualisation;	
+			// 
+			// 
+			// Step Integration - Collision detection may have already stepped for dynamic objects
+			if (!physicsComp->m_SteppedThisFrame) physicsComp->StepSimulation(_deltaTime);
 		}
+	}
+	float PhysicsSubsystem::ImpulseEnergy(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, const glm::vec3& _normal, const glm::vec3& _contactPoint)
+	{
+		float impulseEnergy = -(1.0f + _compA->m_Elasticity) *
+			glm::dot(_compA->m_Velocity - _compB->m_Velocity, _normal) / (1.0f / _compB->m_Mass);
+
+		return impulseEnergy;
 	}
 }

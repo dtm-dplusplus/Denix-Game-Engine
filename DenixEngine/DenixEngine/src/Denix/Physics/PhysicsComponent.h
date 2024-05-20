@@ -109,6 +109,11 @@ namespace Denix
 			m_Force += _force;
 		}
 
+		void AddImpulse(const glm::vec3& _impulse)
+		{
+            m_Velocity += _impulse / m_Mass;
+        }
+
 		void AddTorque(const glm::vec3& _torque)
 		{
 			m_Torque += _torque;
@@ -116,7 +121,30 @@ namespace Denix
 
 		Ref<Collider> GetCollider() const { return m_Collider; }
 		Ref<Collider>& GetCollider() { return m_Collider; }
-		void SetCollider(const Ref<Collider>& _collider) { m_Collider = _collider; }
+		void SetCollider(const Ref<Collider>& _collider) 
+		{ 
+			m_Collider = _collider; 
+			
+			// Set Inertia Tensor && inverse Inertia Tensor
+
+			// Set rotation matrix
+
+			// Set angular momentum
+			m_AngularMomentum = glm::vec3(0.0f);
+			switch (m_Collider->GetColliderType())
+			{
+			case ColliderType::Cube:
+			{
+				Ref<CubeCollider> cubeCol = CastRef<CubeCollider>(m_Collider);
+              
+            } break;
+
+			case ColliderType::Sphere:
+            {
+                   Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
+            } break;
+            }
+		}
 
 	public:
 		/**/

@@ -9,6 +9,7 @@ namespace Denix
 {
     PhysicsComponent::PhysicsComponent(): Component(ObjectInitializer("Physics Component")), m_Collider(nullptr)
     {
+        // Set Inertia Tensor && inverse Inertia Tensor
     }
 
     PhysicsComponent::PhysicsComponent(const std::string& _parentName): 

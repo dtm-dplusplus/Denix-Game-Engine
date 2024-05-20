@@ -106,6 +106,7 @@ namespace Denix
 		if (minY <= _cubeColB->GetMax().y && maxY >= _cubeColB->GetMin().y)
 		{
 			collisionEvent.IsCollision = true;
+			collisionEvent.ColData.Normal = { 0.0f, 1.0f, 0.0f }; // Hard Coded Normal
 			collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_compA->GetParentObjectName());
 			collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_compB->GetParentObjectName());
 		}

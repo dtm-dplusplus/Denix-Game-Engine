@@ -34,10 +34,14 @@ namespace Denix
 
 	private:
 		void CollisionDetection(float _deltaTime);
-		void CollisionResonse(float _deltaTime);
-		void PhysicsSimulation(float _deltaTime);
 
-		
+		void CollisionResonsePhase(float _deltaTime);
+		void CollisionResponse(CollisionEvent& _collisionEvent);
+		void SphereCubeCollision(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, Ref<SphereCollider>& _sphereColA, Ref<CubeCollider>& _cubeColB, CollisionEvent& _collisionEvent);
+
+		void PhysicsSimulationPhase(float _deltaTime);
+
+		float ImpulseEnergy(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, const glm::vec3& _normal, const glm::vec3& _contactPoint);
 	public:
 
 		void PreUpdate(float _deltaTime) override;

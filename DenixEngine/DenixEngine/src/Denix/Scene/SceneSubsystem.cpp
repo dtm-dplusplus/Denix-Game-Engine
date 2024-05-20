@@ -144,6 +144,7 @@ namespace Denix
 		// Cleanup rubbish objects here. TEMP loop, will be moved to a queue
 		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
 		{
+			if(!gameObject) continue;
 			if (gameObject->IsRubbish())
 			{
 				// This will remove registered Components & other neccessary cleanups
