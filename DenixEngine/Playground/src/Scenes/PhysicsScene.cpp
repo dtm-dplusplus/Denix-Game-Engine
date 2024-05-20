@@ -18,22 +18,30 @@ namespace Denix
 		Scene::Load();
 
 		Ref <Plane> floor = MakeRef<Plane>();
-		//floor->GetTransformComponent()->SetScale(glm::vec3(5.0f, 1.0f, 5.0f));
+		floor->GetPhysicsComponent()->CollisionDetectionEnabled() = false;
+		floor->GetTransformComponent()->SetScale(glm::vec3(15.0f, 0.01f, 15.0f));
 		m_SceneObjects.push_back(floor);
 
-		Cube1 = MakeRef<PhysObject>(ObjectInitializer("Cube 1"));
-		Cube1->GetTransformComponent()->SetPosition({ 0.0f, 10.0f, 0.0f });
-		Cube1->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 1.0f, 1.0f };
+		//Sphere1 = MakeRef<Sphere>(ObjectInitializer("Sphere 1"));
+		//Sphere1->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
+		//Sphere1->GetPhysicsComponent()->SetSimulatePhysics(true);
+		//Sphere1->GetTransformComponent()->SetPosition({ 0.0f, 10.0f, 0.0f });
+		//Sphere1->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 1.0f, 1.0f };
+		//m_SceneObjects.push_back(Sphere1);
+
+		Cube1 = MakeRef<Cube>(ObjectInitializer("Cube 1"));
+		Cube1->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
+		Cube1->GetPhysicsComponent()->SetSimulatePhysics(false);
+		Cube1->GetTransformComponent()->SetPosition({ 0.0f, 10.0f, 0.0f }); //
+		Cube1->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 0.5f, 0.0f };
 		m_SceneObjects.push_back(Cube1);
 
-		Cube2 = MakeRef<Cube>(ObjectInitializer("Cube 2"));
-		Cube2->GetTransformComponent()->SetPosition({ 5.0f, 10.0f, 0.0f });
-		Cube2->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 0.0f, 0.5f, 1.0f };
-
-		Ref<GameObject> Cone = MakeRef<GameObject>(ObjectInitializer("Cone"));
-		ResourceSubsystem::LoadModel("SM_Cone", FileSubsystem::GetEngineContentRoot() + R"(models/Cone.fbx)");
-		Cone->GetMeshComponent()->SetModel(ResourceSubsystem::GetModel("SM_Cone"));
-		m_SceneObjects.push_back(Cone);
+		Ref<Cube> cube2 = MakeRef<Cube>(ObjectInitializer("Cube 2"));
+		cube2->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
+		cube2->GetPhysicsComponent()->SetSimulatePhysics(false);
+		cube2->GetTransformComponent()->SetPosition(glm::vec3(4.0f, 10.0f, 0.0f));
+		cube2->GetRenderComponent()->GetMaterial()->GetBaseParam().Color = { 1.0f, 0.5f, 0.0f };
+		m_SceneObjects.push_back(cube2);
 
 		m_DirLight->GetLightDirection().z = -0.54f;
 

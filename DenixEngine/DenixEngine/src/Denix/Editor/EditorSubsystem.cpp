@@ -576,6 +576,11 @@ namespace Denix
 							ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
 							if (!pComp->CollisionDimensionOverride()) ImGui::EndDisabled();
 							ImGui::SameLine(); ImGui::Checkbox("## Dimesnion Override", &pComp->CollisionDimensionOverride());
+							const glm::vec3& min = sCol->GetMin();
+							const glm::vec3& max = sCol->GetMax();
+							ImGui::Text("AABB Min x: %.2f Max x: %.2f", min.x, max.x);
+							ImGui::Text("AABB Min y: %.2f Max y: %.2f", min.y, max.y);
+							ImGui::Text("AABB Min z: %.2f Max z: %.2f", min.z, max.z);
 						}
 					} break;
 

@@ -29,7 +29,7 @@ namespace Denix
 		virtual bool Load()
 		{
 			m_ViewportCamera = MakeRef<ViewportCamera>();
-			m_ViewportCamera->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+			m_ViewportCamera->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 10.0f, 5.0f));
 
 			m_DirLight = MakeRef<DirectionalLight>();
 			m_DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));

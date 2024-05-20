@@ -211,6 +211,19 @@ namespace Denix
 		// Getters
 		bool SimulatePhysics() const { return m_SimulatePhysics; }
 		bool& SimulatePhysics() { return m_SimulatePhysics; }
+		void SetSimulatePhysics(const bool _simulatePhysics)
+		{
+            m_SimulatePhysics = _simulatePhysics;
+
+			if (m_SimulatePhysics)
+			{
+                DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
+            }
+			else
+			{
+                DE_LOG(LogPhysics, Trace, "Physics simulation disabled")
+            }
+        }
 
 		bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
 		bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }

@@ -73,9 +73,11 @@ namespace Denix
 		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
 
 		// Models
-		LoadModel("SM_Plane", FileSubsystem::GetEngineContentRoot() + R"(models\Plane.fbx)");
-		LoadModel("SM_Cube", FileSubsystem::GetEngineContentRoot() + R"(models\Cube.fbx)");
-		LoadModel("SM_Sphere", FileSubsystem::GetEngineContentRoot() + R"(models\Sphere.fbx)");
+		LoadModel("SM_Plane", FileSubsystem::GetEngineContentRoot() + R"(models\Plane.obj)");
+		LoadModel("SM_Cube", FileSubsystem::GetEngineContentRoot() + R"(models\Cube.obj)");
+		LoadModel("SM_Sphere", FileSubsystem::GetEngineContentRoot() + R"(models\Sphere.obj)");
+		LoadModel("SM_Cone", FileSubsystem::GetEngineContentRoot() + R"(models\Cone.obj)");
+		LoadModel("SM_Cylinder", FileSubsystem::GetEngineContentRoot() + R"(models\Cylinder.obj)");
 
 	    DE_LOG(LogResource, Trace, "Resource Subsystem Initialized")
 	}

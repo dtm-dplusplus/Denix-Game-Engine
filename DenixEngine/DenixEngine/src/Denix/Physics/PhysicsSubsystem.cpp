@@ -26,17 +26,17 @@ namespace Denix
 
 		if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
 
+		// Clean collision colData
+		m_CollisionEvents.clear();
+
 		for (const auto& physicsComp : m_PhysicsComponents)
 		{
-			// Clean collision colData
-			m_CollisionEvents.clear();
-
 			// Set  status
 			physicsComp->m_SteppedThisFrame = physicsComp->m_SteppedNextFrame;
 			physicsComp->m_SteppedNextFrame = false;
 			physicsComp->m_IsColliding = false;
 
-			physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
+			if(physicsComp->m_SimulateGravity) physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
 
 			//actor->m_Torque = glm::vec3(0.0f);
 
@@ -49,10 +49,11 @@ namespace Denix
 	void PhysicsSubsystem::Update(float _deltaTime)
 	{
 		if (!m_Enabled) return;
+		if (!m_ActiveScene->IsPlaying()) return;
+		
+		if(m_CollisionDetectionEnabled) CollisionDetection(_deltaTime);
 
-		if(m_CollisionDetectionEnabled && m_ActiveScene->IsPlaying()) CollisionDetection(_deltaTime);
-
-		if (m_CollisionResponseEnabled && m_ActiveScene->IsPlaying()) CollisionResonse(_deltaTime);
+		if (m_CollisionResponseEnabled) CollisionResonse(_deltaTime);
 
 		PhysicsSimulation(_deltaTime);
 	}
@@ -116,7 +117,7 @@ namespace Denix
 			if (Ref<PhysicsComponent> comp = actor->GetPhysicsComponent())
 			{
 				// Impulse response
-				/*glm::vec3 planeVelocity = glm::vec3(0.0f);
+				glm::vec3 planeVelocity = glm::vec3(0.0f);
 
 				glm::vec3 contactForce =  -comp->GetForce();
 				glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -130,11 +131,11 @@ namespace Denix
 
 					comp->m_Force = glm::vec3(0.0f);
 					comp->m_Velocity = impulseVector / comp->m_Mass;
-				}*/
+				}
 				// comp->AddForce(contactForce);
 
-				comp->m_Force = glm::vec3(0.0f);
-				comp->m_Velocity = glm::vec3(0.0f);
+				//comp->m_Force = glm::vec3(0.0f);
+				//comp->m_Velocity = glm::vec3(0.0f);
 
 				// Call client side implementation
 				actor->GetPhysicsComponent()->m_IsColliding = true;

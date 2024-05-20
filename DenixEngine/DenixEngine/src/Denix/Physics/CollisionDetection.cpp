@@ -16,37 +16,34 @@ namespace Denix
 	CollisionEvent CollisionDetection::NarrowCollisionDetection(const Ref<PhysicsComponent>& _component, const Ref<PhysicsComponent>& _otherComponent)
 	{
 		// Narrow Collision Detection
-		Ref<Collider> col = _component->GetCollider();
-		Ref<Collider> otherCol = _otherComponent->GetCollider();
+		Ref<Collider> colA = _component->GetCollider();
+		Ref<Collider> colB = _otherComponent->GetCollider();
 		CollisionEvent collisionEvent;
 
-		if (!col || !otherCol) return collisionEvent;
+		if (!colA || !colB) return collisionEvent;
 
 
-		switch (col->GetColliderType())
+		switch (colA->GetColliderType())
 		{
 		case ColliderType::Cube:
 		{
-			Ref<CubeCollider> cubeCol = std::dynamic_pointer_cast<CubeCollider>(col);
-			glm::vec3 minA = cubeCol->GetMin();
-			glm::vec3 maxA = cubeCol->GetMax();
+			Ref<CubeCollider> cubeColA = CastRef<CubeCollider>(colA);
+			glm::vec3 minA = cubeColA->GetMin();
+			glm::vec3 maxA = cubeColA->GetMax();
 			
 
-			switch (otherCol->GetColliderType())
+			switch (colB->GetColliderType())
 			{
 			case ColliderType::Cube:
 			{
 				// Cube to Cube Collision Detection
-				Ref<CubeCollider> otherCubeCol = std::dynamic_pointer_cast<CubeCollider>(otherCol);
-				glm::vec3 minB = otherCubeCol->GetMin();
-				glm::vec3 maxB = otherCubeCol->GetMax();
-
-
-				
+				Ref<CubeCollider> cubeColB = CastRef<CubeCollider>(colB);
+				glm::vec3 minB = cubeColB->GetMin();
+				glm::vec3 maxB = cubeColB->GetMax();
 
 				if (minA.x <= maxB.x && maxA.x >= minB.x &&
 					minA.y <= maxB.y && maxA.y >= minB.y &&
-					minA.z <= maxB.z && maxA.z >= minB.z)
+                    minA.z <= maxB.z && maxA.z >= minB.z)
 				{
 					collisionEvent.IsCollision = true;
 					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_component->GetParentObjectName());
@@ -64,14 +61,14 @@ namespace Denix
 
 		case ColliderType::Sphere:
 		{
-			Ref<SphereCollider> sphereCol = std::dynamic_pointer_cast<SphereCollider>(col);
+			Ref<SphereCollider> sphereColA = std::dynamic_pointer_cast<SphereCollider>(colA);
 
-			switch (otherCol->GetColliderType())
+			switch (colB->GetColliderType())
 			{
 			case ColliderType::Cube:
 			{
 				// Sphere to Cube Collision Detection
-				Ref<CubeCollider> otherCubeCol = std::dynamic_pointer_cast<CubeCollider>(otherCol);
+				Ref<CubeCollider> otherCubeCol = std::dynamic_pointer_cast<CubeCollider>(colB);
 
 				glm::vec3 minB = otherCubeCol->GetMin();
 				glm::vec3 maxB = otherCubeCol->GetMax();
@@ -94,10 +91,10 @@ namespace Denix
 			case ColliderType::Sphere:
 			{
 				// Sphere to Sphere Collision Detection
-				Ref<SphereCollider> otherSphereCol = std::dynamic_pointer_cast<SphereCollider>(otherCol);
+				Ref<SphereCollider> sphereColB = CastRef<SphereCollider>(colB);
 
-				collisionEvent.IsCollision = SphereToSphereCollision(sphereCol->GetTransformComponent()->GetPosition(),
-					otherSphereCol->GetTransformComponent()->GetPosition(), otherSphereCol->GetRadius(), otherSphereCol->GetRadius(), collisionEvent.ColData.ContactPoint);
+				collisionEvent.IsCollision = SphereToSphereCollision(sphereColA->GetTransformComponent()->GetPosition(),
+					sphereColB->GetTransformComponent()->GetPosition(), sphereColB->GetRadius(), sphereColB->GetRadius(), collisionEvent.ColData.ContactPoint);
 				
 				if (collisionEvent.IsCollision)
 				{
@@ -107,8 +104,6 @@ namespace Denix
 	
 				break;
 			}
-
-			default: break;
 			}
 
 		} break;

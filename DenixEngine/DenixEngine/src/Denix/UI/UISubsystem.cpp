@@ -73,6 +73,7 @@ namespace Denix
 		ImGui::SetNextWindowPos(imguiViewport->Pos);
 		ImGui::SetNextWindowSize(imguiViewport->Size);
 		ImGui::SetNextWindowViewport(imguiViewport->ID);
+		ImGui::SetNextWindowBgAlpha(0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;

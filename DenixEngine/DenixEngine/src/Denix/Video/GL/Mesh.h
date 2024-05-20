@@ -35,6 +35,7 @@ namespace Denix
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices[0]) * _numOfIndices, _indices, GL_STATIC_DRAW);
 
 			m_VBO->Bind();
+			m_VBO->m_Vertices = _vertices;
 			glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices[0]) * _verticesCount, _vertices, GL_STATIC_DRAW);
 
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(_vertices[0]) * 8, 0);
@@ -96,6 +97,8 @@ namespace Denix
         Ref<VertexArray> m_VAO;
         Ref<VertexBuffer> m_VBO;
         Ref<IndexBuffer> m_IBO;
+
+		unsigned int* m_Indices;
 
         friend class RendererSubsystem;
     };

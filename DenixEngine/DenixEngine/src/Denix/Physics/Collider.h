@@ -77,8 +77,9 @@ namespace Denix
 
 		void Update(float _deltaTime) override
 		{
-			m_Min = m_TransformComponent->GetPosition() - m_Dimensions / 2.0f;
-			m_Max = m_TransformComponent->GetPosition() + m_Dimensions / 2.0f;
+			m_Min.x = m_TransformComponent->GetPosition().x - m_Dimensions.x;
+			m_Min = m_TransformComponent->GetPosition() - m_Dimensions;
+			m_Max = m_TransformComponent->GetPosition() + m_Dimensions;
 			m_TransformComponent->SetScale(m_Dimensions);
 
 			m_TransformComponent->Update(_deltaTime);

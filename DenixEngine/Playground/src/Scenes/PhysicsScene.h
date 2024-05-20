@@ -40,7 +40,7 @@ namespace Denix
 		bool Load() override;
 		void Update(float _deltaTime) override;
 
-		Ref<PhysObject> Cube1;
-		Ref<class Cube> Cube2;
+		Ref<GameObject> Sphere1;
+		Ref<GameObject> Cube1;
 	};
 }

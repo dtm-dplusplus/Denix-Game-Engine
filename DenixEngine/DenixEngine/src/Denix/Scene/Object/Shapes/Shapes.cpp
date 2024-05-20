@@ -8,6 +8,7 @@ namespace Denix
         m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Plane"));
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
         CastRef<CubeCollider>(m_PhysicsComponent->GetCollider())->GetDimensions().y = 0.01f;
+        m_TransformComponent->GetScale().y = 0.01f;
     }
 
     void Plane::Update(float _deltaTime)

@@ -8,7 +8,6 @@ namespace Denix
 	{
 	public:
 		Plane(const ObjectInitializer& _objInit = { "Plane" });
-
 		void Update(float _deltaTime) override;
 	};
 
