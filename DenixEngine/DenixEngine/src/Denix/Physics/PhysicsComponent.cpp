@@ -1,8 +1,6 @@
 #include "PhysicsComponent.h"
 
-#include "Denix/Physics/Collider.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
-#include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 
 namespace Denix
@@ -17,22 +15,52 @@ namespace Denix
     {
     }
 
+    void PhysicsComponent::ComputeCenterOfMass()
+    {
+        // Compute the center of mass of the object
+        // For now, we will assume the center of mass is at the center of the object
+        m_CenterOfMass = m_ParentTransform->GetPosition();
+    }
+
+    void PhysicsComponent::ComputeRotationMatrix(float _deltaTime)
+    {
+        m_ParentTransform->m_RotationMatrix += GetSkewMatrix(m_AngularVelocity) * m_ParentTransform->m_RotationMatrix * _deltaTime;
+    }
+
     void PhysicsComponent::ComputeStepEuler(float _deltaTime)
     {
-        // Calculate the net force - Null effect if Drag = 0
-        m_Force -= m_LinearDrag * m_Velocity;
-
-
+        //////////////* Linear */////////////////////
 		// Calculate acceleration at time t
 		m_Acceleration = m_Force / m_Mass;
 
         // Calculate new velocity at time t + dt
         m_Velocity += m_Acceleration * _deltaTime;
 
-		//m_Velocity = m_Velocity.length() < m_MinimumVelocity? glm::vec3(0.0f) : m_Velocity;
-
         // Calculate new displacement at time t + dt
         m_ParentTransform->GetPosition() += m_Velocity * _deltaTime;
+
+        ////////////* Angular */////////////////////
+        // Calulate angular momentum
+        m_AngularMomentum += m_Torque * _deltaTime;
+
+        // Calculate Inverse Inertia Tensor
+        ComputeObjectInverseInertiaTensor();
+
+        // Calulate angular velocity
+        m_AngularVelocity = m_ObjectInteriaTensorInverse * m_AngularMomentum;
+
+        // Reconstruct skew matrix
+         glm::mat3 skewMatrix = glm::mat3(
+             0.0f, -m_AngularVelocity.z, m_AngularVelocity.y,
+             m_AngularVelocity.z, 0.0f, -m_AngularVelocity.x,
+             -m_AngularVelocity.y, m_AngularVelocity.x, 0.0f);
+
+        // Update rotation matrix
+        ComputeRotationMatrix(_deltaTime);
+        //m_ParentTransform->UpdateRotationVectorFromMatrix();
+
+        glm::vec3 angles = GetEulerAngles(m_ParentTransform->m_RotationMatrix);
+        m_ParentTransform->GetRotation() += angles;
     }
 
     void PhysicsComponent::ComputeStepRK2(float _deltaTime)
@@ -53,34 +81,85 @@ namespace Denix
         // Calculate new velocity at time t + dt
         m_Velocity += (k1 + k2) / 2.f;
 
-        m_Velocity = m_Velocity.length() > m_MinimumVelocity ? m_Velocity : glm::vec3(0.0f);
+        //m_Velocity = m_Velocity.length() > m_MinimumVelocity ? m_Velocity : glm::vec3(0.0f);
 
         // Calculate new displacement at time t + dt
         m_ParentTransform->GetPosition() += m_Velocity * _deltaTime;
     }
 
-    void PhysicsComponent::BeginScene()
+    void PhysicsComponent::StepSimulation(float _deltaTime)
     {
-        Component::BeginScene();
+        // Calculate the net force - Null effect if Drag = 0
+        m_Force -= m_LinearDrag * m_Velocity;
 
+        // Calcylate net torque
+        if (m_Collider)
+        {
+            switch (m_Collider->GetColliderType())
+            {
+            case ColliderType::Cube:
+            {
+                m_Torque = glm::vec3(0.0f); // No torque for cubes currently
+            } break;
+
+            case ColliderType::Sphere:
+            {
+                //Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
+                m_Torque-= m_AngularDrag * m_AngularVelocity;
+
+            } break;
+            }
+
+            m_Collider->Update(_deltaTime);
+        }
+
+
+        switch (m_StepMethod)
+        {
+        case StepMethod::Euler:
+            ComputeStepEuler(_deltaTime);
+            break;
+
+        case StepMethod::RK2:
+            ComputeStepRK2(_deltaTime);
+            break;
+
+        case StepMethod::RK4:
+            ComputeStepRK4(_deltaTime);
+            break;
+
+        case StepMethod::Verlet:
+            ComputeStepVerlet(_deltaTime);
+            break;
+
+        default:; // assert here
+        }
+
+        m_SteppedThisFrame = true;
+    }
+
+    void PhysicsComponent::BeginPlay()
+    {
+        // Register the physics component with the physics subsystem
+        Component::BeginPlay();
         RegisterComponent();
 
-        const float tensor = (2.0f, 5.0f)  * m_Mass* pow(m_Radius, 2);
-        glm::mat3 bodyInertiaTensor = {
-            tensor, 0.0f, 0.0f,
-			0.0f, tensor, 0.0f,
-			0.0f, 0.0f, tensor
-		};
 
-        m_BodyInteriaTensorInverse = glm::inverse(bodyInertiaTensor);
-		ComputeInverseInertiaTensor();
+        // Initialize the physics component
+        m_CenterOfMass = m_ParentTransform->GetPosition();
+        m_PreviousPosition = m_ParentTransform->GetPosition();
+        m_ParentTransform->m_RotationMatrix = glm::mat4(1.0f);
 
-    /*   
-        5) Pre - compute the body inertia tensor at rest body,
-        and pre - compute the inverse of the body inertia tensor Ibody1;
-        6) Initialize the position and velocity of the com, x and v, initialize the rigid body's rotation matrix
-        R as the identity matrix and the angular momentum L = (0, 0, 0);
-        7) Compute the inverse inertia tensor at the start : I1 = R Ibody" 8) Compute the angular velocity at the start: w(0) = 1-1 L ; */
+        m_Force = glm::vec3(0.0f);
+        m_Torque = glm::vec3(0.0f);
+        m_Acceleration = glm::vec3(0.0f);
+        m_Velocity = glm::vec3(0.0f);
+        m_AngularMomentum = glm::vec3(0.0f);
+        m_AngularVelocity = glm::vec3(0.0f);
+        ComputeBodyInertiaTensor();
+        ComputeObjectInverseInertiaTensor();
+        ComputeAngularVelocity();
+
     }
 
     void PhysicsComponent::EndScene()

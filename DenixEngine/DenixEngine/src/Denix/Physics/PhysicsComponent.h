@@ -9,9 +9,6 @@
 
 namespace Denix
 {
-	class Collider;
-
-	
 	struct CollisionData
 	{
 		glm::vec3 Normal;
@@ -26,9 +23,6 @@ namespace Denix
 		Exit,
 		Stay
 	};
-
-	
-	
 
 	enum class StepMethod
 	{
@@ -76,32 +70,7 @@ namespace Denix
 			}
 		}
 
-		void StepSimulation(float _deltaTime, bool _nextFrame = false)
-		{
-			switch (m_StepMethod)
-			{
-			case StepMethod::Euler:
-				ComputeStepEuler(_deltaTime);
-				break;
-
-			case StepMethod::RK2:
-				ComputeStepRK2(_deltaTime);
-				break;
-
-			case StepMethod::RK4:
-				ComputeStepRK4(_deltaTime);
-				break;
-
-			case StepMethod::Verlet:
-				ComputeStepVerlet(_deltaTime);
-				break;
-
-			default:; // assert here
-			}
-
-			m_SteppedThisFrame = true;
-			m_SteppedNextFrame = _nextFrame;
-		}
+		void StepSimulation(float _deltaTime);
 
 
 		void AddForce(const glm::vec3& _force)
@@ -119,76 +88,245 @@ namespace Denix
 			m_Torque += _torque;
 		}
 
-		Ref<Collider> GetCollider() const { return m_Collider; }
-		Ref<Collider>& GetCollider() { return m_Collider; }
-		void SetCollider(const Ref<Collider>& _collider) 
-		{ 
-			m_Collider = _collider; 
-			
-			// Set Inertia Tensor && inverse Inertia Tensor
+		void BeginPlay() override;
 
-			// Set rotation matrix
+		void EndScene() override;
 
-			// Set angular momentum
-			m_AngularMomentum = glm::vec3(0.0f);
-			switch (m_Collider->GetColliderType())
+		void RegisterComponent() override;
+
+		void UnregisterComponent() override;
+
+	private:
+			/**/
+			void ComputeTriggerState()
 			{
-			case ColliderType::Cube:
-			{
-				Ref<CubeCollider> cubeCol = CastRef<CubeCollider>(m_Collider);
-              
-            } break;
+				/*if (collisionDetected)
+				{
+					trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Stay : TriggerState::Enter;
+				}
+				else
+				{
+					trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Exit : TriggerState::Null;
+				}
 
-			case ColliderType::Sphere:
-            {
-                   Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
-            } break;
+
+
+				if (trigger.TrigData.NewState != TriggerState::Null) m_TriggerEvents.push_back(trigger);*/
+			}
+
+			void ComputeCenterOfMass();
+
+			void ComputeObjectInertiaTensor()
+			{
+				m_ObjectInteriaTensor = m_ParentTransform->m_RotationMatrix * m_BodyInteriaTensor * glm::transpose(m_ParentTransform->m_RotationMatrix);
+			}
+			void ComputeObjectInverseInertiaTensor()
+			{
+				m_ObjectInteriaTensorInverse = m_ParentTransform->m_RotationMatrix * 
+					m_BodyInteriaTensorInverse * glm::transpose(m_ParentTransform->m_RotationMatrix);
+			}
+
+			void ComputeBodyInertiaTensor()
+			{
+				// Set Inertia Tensor && inverse Inertia Tensor
+				if (m_Collider)
+				{
+					switch (m_Collider->GetColliderType())
+					{
+					case ColliderType::Cube:
+					{
+						Ref<CubeCollider> cubeCol = CastRef<CubeCollider>(m_Collider);
+
+					} break;
+
+					case ColliderType::Sphere:
+					{
+						Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
+						m_BodyInteriaTensor = glm::mat3((2.0f / 5.0f) * m_Mass * pow(sphereCol->GetRadius(), 2));
+						m_BodyInteriaTensorInverse = glm::inverse(m_BodyInteriaTensor);
+					} break;
+					}
+				}
+				
+			}
+
+			void ComputeAngularVelocity()
+			{
+                m_AngularVelocity = m_ObjectInteriaTensorInverse * m_AngularMomentum;
             }
-		}
 
+			void ComputeRotationMatrix(float _deltaTime);
+
+			void ComputeTorque(const glm::vec3& _torqueArm, const glm::vec3& _force)
+			{
+				 m_Torque += glm::cross(_torqueArm, _force);
+			}
+
+			glm::mat3 GetSkewMatrix(const glm::vec3& _vector)
+			{
+				return glm::mat3(
+                    0.0f, -_vector.z, _vector.y,
+                    _vector.z, 0.0f, -_vector.x,
+                    -_vector.y, _vector.x, 0.0f);
+            }
+
+			glm::vec3 GetEulerAngles(const glm::mat3& _rotationMatrix) const
+			{
+				float value = pow(_rotationMatrix[0][0], 2) + pow(_rotationMatrix[1][0], 2);
+				float sy = sqrt(value);
+
+				float x, y, z;
+
+				if (sy < 1e-6)
+				{
+					x = atan2(_rotationMatrix[2][1], _rotationMatrix[2][2]);
+					y = atan2(-_rotationMatrix[2][0], sy);
+					z = atan2(_rotationMatrix[1][0], _rotationMatrix[0][0]);
+				}
+				else
+				{
+					x = atan2(-_rotationMatrix[1][2], _rotationMatrix[1][1]);
+					y = atan2(-_rotationMatrix[2][0], sy);
+					z = 0.0f;
+				}
+
+                return glm::vec3(x,y,z);
+            }
+
+			glm::vec3 FrictionForce(const glm::vec3& _relVel, const glm::vec3& _contactNormal, 
+				const glm::vec3& _forceNormal, float _mu)
+			{
+
+			}
+			void ComputeStepEuler(float _deltaTime);
+
+			void ComputeStepRK2(float _deltaTime);
+
+			void ComputeStepRK4(float _deltaTime)
+			{
+			}
+
+			void ComputeStepVerlet(float _deltaTime)
+			{
+			}
 	public:
-		/**/
-		void ComputeTriggerState()
-		{
-			/*if (collisionDetected)
-			{
-				trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Stay : TriggerState::Enter;
-			}
-			else
-			{
-				trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Exit : TriggerState::Null;
-			}
+		
+		
 
+	private:
+		/* Physics Component Settings */
+		/** Set to decide if the physics component should update simulation */
+		bool m_SimulatePhysics = false;
 
+		/** Apply gravitaional force to this object */
+		bool m_SimulateGravity = true;
 
-			if (trigger.TrigData.NewState != TriggerState::Null) m_TriggerEvents.push_back(trigger);*/
-		}
+		/** Set to decide if the attached collider should be rendered in default/unlit viewport - Null effect in collision viewport */
+		bool m_IsColliderVisible = false;
 
-		void ComputeCenterOfMass()
-		{
-			// Compute the center of mass of the object
-			// For now, we will assume the center of mass is at the center of the object
-			m_CenterOfMass = m_ParentTransform->GetPosition();
-		}
+		/** Set to decide if the physics component should perform collision detection */
+		bool m_CollisionDetectionEnabled = true;
 
-		void ComputeInverseInertiaTensor()
-		{
-			m_ObjectInteriaTensorInverse = m_RotationMatrix * m_BodyInteriaTensorInverse * glm::transpose(m_RotationMatrix);
-		}
+		bool m_CollisonDimesionOverride = false;
 
-		void ComputeStepEuler(float _deltaTime);
+		/** Set to decide if the physics component should override collision tolereance used by collision system */
+		bool m_CustomCollisonTolerance = false;
 
-		void ComputeStepRK2(float _deltaTime);
+		/** Custom collision tolerance value which overrides the value used by the collision system */
+		float m_CollisionTolerance = 0.5f;
 
-		void ComputeStepRK4(float _deltaTime)
-		{
-		}
-
-		void ComputeStepVerlet(float _deltaTime)
-		{
-		}
+		/** Set to decide if the physics component should be a trigger collider 
+		 * If true, the physics component will not respond to collisions, but will still trigger events
+		*/
+		bool m_IsTrigger = false;
 
 		
+
+		bool m_ImpulseEnabled = true;
+
+		/** Method used to step the physics simulation */
+		StepMethod m_StepMethod = StepMethod::Euler;
+
+		TriggerState m_TriggerState = TriggerState::Null;
+
+		/** Collision used to compute collision responses. Belongs to the physics component */
+		Ref<Collider> m_Collider;
+
+		/** Transform component which is attached to this components game object */
+		Ref<class TransformComponent> m_ParentTransform;
+
+	private:
+		/////////////////////* Linear Properties *///////////////////////
+		/** Mass of the object */
+		float m_Mass = 1.0f;
+
+		/** Velocity of the object */
+		glm::vec3 m_Velocity = glm::vec3(0.f);
+
+		/** Acceleration of the object */
+		glm::vec3 m_Acceleration = glm::vec3(0.f);
+
+		/** Force acting on the object */
+		glm::vec3 m_Force = glm::vec3(0.f);
+
+		/** Center of mass of the object */
+		glm::vec3 m_CenterOfMass = glm::vec3(0.f);
+
+		/** Mass Moment of inertia of the object */
+		/*glm::vec3 m_MomentOfInertia = glm::vec3(0.f);*/
+
+		/** Linear Drag force acting on the object */
+		float m_LinearDrag = 0.01f;
+
+		/** Elasticity used for impulse response (Bounciness) */
+		float m_Elasticity = 0.0f;
+
+		
+
+		///** Minimum velocity of the object. Used to stop negligble bouncing */
+		//float m_MinimumVelocity = 0.05f;
+
+	private:
+		/////////////////////* Angular Properties *///////////////////////
+		/** Angular velocity of the object */
+		glm::vec3 m_AngularVelocity = glm::vec3(0.f);
+
+		/** Angular Momentum */
+		glm::vec3 m_AngularMomentum = glm::vec3(0.f);
+
+		// Net Torque
+		glm::vec3 m_Torque = glm::vec3(0.f);
+
+		/** Angular Drag force acting on the object */
+		float m_AngularDrag = 0.5f;
+
+		// Object Inertia Tensor
+		glm::mat3 m_ObjectInteriaTensor = glm::mat3(1.0f);
+
+		// Object Inverse Intertia Tensor
+		glm::mat3 m_ObjectInteriaTensorInverse = glm::mat3(1.0f);
+
+		// Body Inertia Tensor
+		glm::mat3 m_BodyInteriaTensor = glm::mat3(1.0f);
+
+		// Body Inertia Tensor Inverse
+		glm::mat3 m_BodyInteriaTensorInverse = glm::mat3(1.0f);
+
+	private:
+		/* Stateful members below. These dictacte engine behaviour, e.g. IsCollidig determines collider render color */
+		bool m_SteppedThisFrame = false;
+		bool m_SteppedNextFrame = false;
+		bool m_IsColliding = false;
+		glm::vec3 m_PreviousPosition = glm::vec3(0.f);
+
+	
+		friend class EditorSubsystem;
+		friend class SceneSubsystem;
+		friend class PhysicsSubsystem;
+		friend class CollisionDetection;
+		friend class GameObject;
+
+	public:
 		void ToggleSimulation()
 		{
 			if (m_SimulatePhysics)
@@ -242,17 +380,17 @@ namespace Denix
 		bool& SimulatePhysics() { return m_SimulatePhysics; }
 		void SetSimulatePhysics(const bool _simulatePhysics)
 		{
-            m_SimulatePhysics = _simulatePhysics;
+			m_SimulatePhysics = _simulatePhysics;
 
 			if (m_SimulatePhysics)
 			{
-                DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
-            }
+				DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
+			}
 			else
 			{
-                DE_LOG(LogPhysics, Trace, "Physics simulation disabled")
-            }
-        }
+				DE_LOG(LogPhysics, Trace, "Physics simulation disabled")
+			}
+		}
 
 		bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
 		bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }
@@ -276,7 +414,7 @@ namespace Denix
 		bool& IsColliderVisible() { return m_IsColliderVisible; }
 
 		bool CollisionDimensionOverride() const { return m_CollisonDimesionOverride; }
-		bool & CollisionDimensionOverride() { return m_CollisonDimesionOverride; }
+		bool& CollisionDimensionOverride() { return m_CollisonDimesionOverride; }
 
 		void SetStepMethod(const StepMethod _method)
 		{
@@ -324,8 +462,8 @@ namespace Denix
 		glm::vec3 GetVelocity() const { return m_Velocity; }
 		glm::vec3& GetVelocity() { return m_Velocity; }
 
-		float GetMinimumVelocity() const { return m_MinimumVelocity; }	
-		float& GetMinimumVelocity() { return m_MinimumVelocity; }
+		/*float GetMinimumVelocity() const { return m_MinimumVelocity; }
+		float& GetMinimumVelocity() { return m_MinimumVelocity; }*/
 
 		glm::vec3 GetAngularVelocity() const { return m_AngularVelocity; }
 		glm::vec3& GetAngularVelocity() { return m_AngularVelocity; }
@@ -349,9 +487,9 @@ namespace Denix
 		glm::vec3 GetCenterOfMass() const { return m_CenterOfMass; }
 		glm::vec3& GetCenterOfMass() { return m_CenterOfMass; }
 
-		glm::vec3 GetMomentOfInertia() const { return m_MomentOfInertia; }
-		glm::vec3& GetMomentOfInertia() { return m_MomentOfInertia; }
-		
+		/*glm::vec3 GetMomentOfInertia() const { return m_MomentOfInertia; }
+		glm::vec3& GetMomentOfInertia() { return m_MomentOfInertia; }*/
+
 		float GetLinearDrag() const { return m_LinearDrag; }
 		float& GetLinearDrag() { return m_LinearDrag; }
 
@@ -361,123 +499,19 @@ namespace Denix
 		bool GetSimulateGravity() const { return m_SimulateGravity; }
 		bool& GetSimulateGravity() { return m_SimulateGravity; }
 		void SetSimulateGravity(const bool _simulateGravity) { m_SimulateGravity = _simulateGravity; }
-		
+
 		bool GetImpulseEnabled() const { return m_ImpulseEnabled; }
 		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
 		void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
 
 		Ref<TransformComponent> GetParentTransform() { return m_ParentTransform; }
-	public:
-		void BeginScene() override;
 
-		void EndScene() override;
+		Ref<Collider> GetCollider() const { return m_Collider; }
+		Ref<Collider>& GetCollider() { return m_Collider; }
+		void SetCollider(const Ref<Collider>& _collider)
+		{
+			m_Collider = _collider;
 
-		void RegisterComponent() override;
-
-		void UnregisterComponent() override;
-		
-
-	private:
-		/** Set to decide if the physics component should update simulation */
-		bool m_SimulatePhysics = false;
-
-		/** Set to decide if the attached collider should be rendered in default/unlit viewport - Null effect in collision viewport */
-		bool m_IsColliderVisible = false;
-
-		/** Set to decide if the physics component should perform collision detection */
-		bool m_CollisionDetectionEnabled = true;
-
-		bool m_CollisonDimesionOverride = false;
-
-		/** Set to decide if the physics component should override collision tolereance used by collision system */
-		bool m_CustomCollisonTolerance = false;
-
-		/** Custom collision tolerance value which overrides the value used by the collision system */
-		float m_CollisionTolerance = 0.5f;
-
-		/** Set to decide if the physics component should be a trigger collider 
-		 * If true, the physics component will not respond to collisions, but will still trigger events
-		*/
-		bool m_IsTrigger = false;
-
-		/** Apply gravitaional force to this object */
-		bool m_SimulateGravity = true;
-
-		bool m_ImpulseEnabled = true;
-
-		/** Method used to step the physics simulation */
-		StepMethod m_StepMethod = StepMethod::Euler;
-
-		TriggerState m_TriggerState = TriggerState::Null;
-
-		/** Collision used to compute collision responses. Belongs to the physics component */
-		Ref<Collider> m_Collider;
-
-		/** Transform component which is attached to this components game object */
-		Ref<class TransformComponent> m_ParentTransform;
-
-	private:
-		bool m_SteppedThisFrame = false;
-		bool m_SteppedNextFrame = false;
-		bool m_IsColliding = false;
-
-		glm::vec3 m_PreviousPosition = glm::vec3(0.f);
-
-		/** Mass of the object */
-		float m_Mass = 1.0f;
-
-		/** Center of mass of the object */
-		glm::vec3 m_CenterOfMass = glm::vec3(0.f);
-
-		/** Mass Moment of inertia of the object */
-		glm::vec3 m_MomentOfInertia = glm::vec3(0.f);
-
-		/** Linear Drag force acting on the object */
-		float m_LinearDrag = 0.01f;
-
-		/** Angular Drag force acting on the object */
-		float m_AngularDrag = 0.5f;
-
-		/** Elasticity used for impulse response (Bounciness) */
-		float m_Elasticity = 0.0f;
-
-		/** Velocity of the object */
-		glm::vec3 m_Velocity = glm::vec3(0.f);
-
-		/** Minimum velocity of the object. Used to stop negligble bouncing */
-		float m_MinimumVelocity = 0.05f;
-
-		/** Angular velocity of the object */
-		glm::vec3 m_AngularVelocity = glm::vec3(0.f);
-
-		/** Angular Momentum */
-		glm::vec3 m_AngularMomentum = glm::vec3(0.f);
-
-		/** Acceleration of the object */
-		glm::vec3 m_Acceleration = glm::vec3(0.f);
-
-		/** Force acting on the object */
-		glm::vec3 m_Force = glm::vec3(0.f);
-
-		float m_Radius = 1.0f; // Radius only applies to sphere colliders
-
-		// Net Torque
-		glm::vec3 m_Torque = glm::vec3(0.f);
-
-		// Object Inverse Intertia Tensor
-		glm::mat3 m_ObjectInteriaTensorInverse = glm::mat3(1.0f);
-
-		// Body Inertia Tensor Inverse
-		glm::mat3 m_BodyInteriaTensorInverse = glm::mat3(1.0f);
-
-		// Rotation Matrix
-		glm::mat3 m_RotationMatrix = glm::mat3(1.0f);
-
-		friend class EditorSubsystem;
-		friend class SceneSubsystem;
-		friend class PhysicsSubsystem;
-		friend class CollisionDetection;
-		friend class GameObject;
+		}
 	};
 }
-

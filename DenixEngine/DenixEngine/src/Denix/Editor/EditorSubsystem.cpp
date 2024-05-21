@@ -495,7 +495,7 @@ namespace Denix
 				}
 
 				// Minimum Velocity
-				ImGui::DragFloat("Minimum Velocity", &comp->GetMinimumVelocity(), DragSpeedDelta);
+				//ImGui::DragFloat("Minimum Velocity", &comp->GetMinimumVelocity(), DragSpeedDelta);
 			}
 
 			// Viewable Properties

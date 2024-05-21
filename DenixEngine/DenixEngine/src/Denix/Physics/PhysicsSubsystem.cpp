@@ -36,7 +36,8 @@ namespace Denix
 			physicsComp->m_SteppedNextFrame = false;
 			physicsComp->m_IsColliding = false;
 
-			physicsComp->m_Force = glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
+			physicsComp->m_Force = physicsComp->m_SimulateGravity? 
+				glm::vec3(0.0f, physicsComp->m_Mass * -m_ActiveScene->GetGravity(), 0.0f) : glm::vec3(0.0f);
 
 			physicsComp->m_Torque = glm::vec3(0.0f);
 
@@ -165,23 +166,6 @@ namespace Denix
 		{
 			if (!physicsComp->m_SimulatePhysics) continue;
 
-			// Compute Torque
-			physicsComp->m_Torque = physicsComp->m_Force * physicsComp->m_Radius;
-
-			
-			// update the angular momentum : L(t + 1) = L(t) + T * dt;
-			// actor->m_AngularMomentum += actor->m_Radius * actor->m_Mass  * actor->m_Velocity * _deltaTime;
-
-			// compute the inverse inertia tensor I1 = R Ibody 1RT; 
-			// actor->ComputeInverseInertiaTensor();
-
-			// update the angular velocity wt + 1 = | -1 Lt + 1
-			// 	reconstruct the skew matrix w(*) (refer to my lecture note)
-			// 	update the rotation matrix R of the rigid body : R(t + 1) = R(t) + dt w(*)R(t);
-			// 12) apply the rotation to the rigid body using glm matrix for visualisation;	
-			// 
-			// 
-			// Step Integration - Collision detection may have already stepped for dynamic objects
 			if (!physicsComp->m_SteppedThisFrame) physicsComp->StepSimulation(_deltaTime);
 		}
 	}

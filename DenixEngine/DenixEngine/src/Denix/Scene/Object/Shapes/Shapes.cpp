@@ -33,6 +33,7 @@ namespace Denix
 		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Sphere"));
 		m_PhysicsComponent->SetCollider(MakeRef<SphereCollider>());
 	}
+
     void Sphere::Update(float _deltaTime)
     {
         GameObject::Update(_deltaTime);

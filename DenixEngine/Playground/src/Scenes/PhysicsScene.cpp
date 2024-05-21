@@ -63,9 +63,13 @@ namespace Denix
 		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
 		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
 		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+		
 		static glm::vec3 force= { 0.0f, 15.0f, 0.0f };
+		static glm::vec3 torque = { 0.0f, 1.0f, 0.0f };
 		ImGui::DragFloat3("Force", &force.x, 0.1f);
+		ImGui::DragFloat3("Torque", &torque.x, 0.1f);
 		if (ImGui::Button("Add Force to Sphere 1")) Sphere1->GetPhysicsComponent()->AddImpulse(force);
+		if (ImGui::Button("Add Torque to Sphere 1")) Sphere1->GetPhysicsComponent()->AddTorque(torque);
 		ImGui::End();
 	}
 	
