@@ -129,6 +129,11 @@ namespace Denix
 
 		glm::vec3 contactForce = -glm::vec3(0.0f, compActor->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
 
+		if (_collisionEvent.Actor->GetFriendlyName().find("Character") != std::string::npos)
+		{
+           DE_LOG(LogPhysics, Info, "Collision with Character")
+        }
+
 		if (compActor->m_ImpulseEnabled)
 		{
 			float impulseEnergy = ImpulseEnergy(

@@ -43,15 +43,23 @@ namespace Denix
 
 		void Update(float _deltaTime) override
 		{
-			// Update Rotation Matrix
-			glm::mat4 rotationMatrix = glm::mat4(m_RotationMatrix);
-			m_RotationMatrix = glm::rotate(rotationMatrix, glm::radians(m_Rotation.x), glm::vec3(1, 0, 0));
-			m_RotationMatrix = glm::rotate(rotationMatrix, glm::radians(m_Rotation.y), glm::vec3(0, 1, 0));
-			m_RotationMatrix = glm::rotate(rotationMatrix, glm::radians(m_Rotation.z), glm::vec3(0, 0, 1));
-
-			// Update the m_Model matrix
 			m_Model = glm::translate(glm::mat4(1.0f), m_Position);
-			m_Model *= rotationMatrix;
+
+			if (m_PhysicsRotationOverride)
+			{
+				glm::mat4 rotationMatrix = glm::mat4(m_RotationMatrix);
+				m_RotationMatrix = glm::rotate(rotationMatrix, glm::radians(m_Rotation.x), glm::vec3(1, 0, 0));
+				m_RotationMatrix = glm::rotate(rotationMatrix, glm::radians(m_Rotation.y), glm::vec3(0, 1, 0));
+				m_RotationMatrix = glm::rotate(rotationMatrix, glm::radians(m_Rotation.z), glm::vec3(0, 0, 1));
+				m_Model *= rotationMatrix;
+			}
+			else
+			{
+				m_Model = glm::rotate(m_Model, glm::radians(m_Rotation.x), glm::vec3(1, 0, 0));
+				m_Model = glm::rotate(m_Model, glm::radians(m_Rotation.y), glm::vec3(0, 1, 0));
+				m_Model = glm::rotate(m_Model, glm::radians(m_Rotation.z), glm::vec3(0, 0, 1));
+			}
+
 			m_Model = glm::scale(m_Model, m_Scale);
 		}
 
@@ -93,6 +101,8 @@ namespace Denix
 
 		// Will be a flag in future
 		bool m_MoveabilityChanged = false;
+
+		bool m_PhysicsRotationOverride = false;
 
 		glm::vec3 m_Position = glm::vec3(0.f);
 		glm::vec3 m_Rotation = glm::vec3(0.f);

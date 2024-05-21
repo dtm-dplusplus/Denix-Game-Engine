@@ -10,7 +10,7 @@ namespace Denix
 	public:
 		PhysObject(const ObjectInitializer& _objInit = { "PhysObject" });
 
-		void OnCollision(Ref<GameObject> _other, CollisionData& _collison) override
+		void OnCollision(Ref<GameObject>& _other, CollisionData& _collison) override
 		{
 			DE_LOG(Log, Info, "PhysObject OnCollision")
 		}

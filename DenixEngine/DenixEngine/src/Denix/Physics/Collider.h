@@ -115,9 +115,12 @@ namespace Denix
 		glm::vec3 GetMin() const { return m_Min; }
 		glm::vec3 GetMax() const { return m_Max; }
 
+		glm::vec3 GetOffset() const { return m_Offset; }
+		glm::vec3& GetOffset() { return m_Offset; }
 
 		void Update(float _deltaTime) override
 		{
+			m_TransformComponent->GetPosition() += m_Offset;
 			m_Min.x = m_TransformComponent->GetPosition().x - m_Dimensions.x;
 			m_Min = m_TransformComponent->GetPosition() - m_Dimensions;
 			m_Max = m_TransformComponent->GetPosition() + m_Dimensions;
@@ -129,6 +132,7 @@ namespace Denix
 
 	private:
 		glm::vec3 m_Dimensions = {1.0f, 1.0f, 1.0f};
+		glm::vec3 m_Offset = { 0.0f, 0.0f, 0.0f };
 
 		glm::vec3 m_Min = { -0.5f, -0.5f, -0.5f };
 		glm::vec3 m_Max = { 0.5f, 0.5f, 0.5f };

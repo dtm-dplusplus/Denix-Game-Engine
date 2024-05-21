@@ -5,13 +5,15 @@ namespace Denix
 {
 	class Character;
 
-	class PlatformerScene final : public Scene
+	class GraphicsGame final : public Scene
 	{
 	public:
-		PlatformerScene() : Scene({ "Physics Scene" }) {}
+		GraphicsGame() : Scene({ "Physics Scene" }) {}
 
 		bool Load() override;
 		void Update(float _deltaTime) override;
+
+		int PipePairCount = 0;
 
 		Ref<Character> Player;
 

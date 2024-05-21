@@ -93,7 +93,7 @@ inline void Denix::Model::LoadMesh(aiMesh* _mesh, const aiScene* _scene)
 
 inline void Denix::Model::LoadMaterials(const aiScene* _scene)
 {
-	m_Textures.resize(_scene->mNumMaterials);
+	/*m_Textures.resize(_scene->mNumMaterials);
 
 	for (unsigned int i = 0; i < _scene->mNumMaterials; i++)
 	{
@@ -118,12 +118,5 @@ inline void Denix::Model::LoadMaterials(const aiScene* _scene)
 					}
 			}
 		}
-
-		/*if (!m_Textures[i])
-		{
-			DE_LOG(Log, Error, "Texture failed to load")
-				m_Textures[i] = ResourceSubsystem::GetTexture("DefaultTexture");
-			m_Textures[i]->LoadTexture();
-		}*/
-	}
+	}*/
 }

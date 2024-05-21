@@ -1,6 +1,6 @@
 #include "Denix.h"
 #include "Scenes/PhysicsScene.h"
-#include "Scenes/PlatformerScene.h"
+#include "Scenes/GraphicsGame.h"
 
 using namespace Denix;
 
@@ -32,7 +32,7 @@ public:
 		Engine::PostInitialize();
 
 		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\brick.png)", "brick");
-
+		ResourceSubsystem::LoadModel("SM_Pipe", FileSubsystem::GetUserContentRoot() + R"(Models\Pipe.obj)");
 		Ref<Material> red = MakeRef<Material>(ObjectInitializer("MAT_Red"));
 		red->GetBaseParam().Color = {1.0f,0.0f,0.0f};
 		ResourceSubsystem::AddMaterial(red);
@@ -44,7 +44,7 @@ public:
 	{
 		if (SceneSubsystem* sceneSys = SceneSubsystem::Get())
 		{
-			if (const auto scene = MakeRef<PhysicsScene>())
+			if (const auto scene = MakeRef<GraphicsGame>())
 			{
 				sceneSys->LoadScene(scene);
 				sceneSys->OpenScene(scene->GetSceneName());

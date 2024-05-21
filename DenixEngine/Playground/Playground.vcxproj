@@ -103,13 +103,14 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Scenes\Character.cpp" />
+    <ClCompile Include="src\Scenes\Graphics\Pipe.cpp" />
+    <ClCompile Include="src\Scenes\Graphics\Character.cpp" />
     <ClCompile Include="src\Scenes\PhysicsScene.cpp" />
     <ClCompile Include="src\PlayGround.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Scenes\PlatformerScene.cpp" />
+    <ClCompile Include="src\Scenes\GraphicsGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DenixEngine\DenixEngine.vcxproj">
@@ -117,9 +118,10 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Scenes\Character.h" />
+    <ClInclude Include="src\Scenes\Graphics\Pipe.h" />
+    <ClInclude Include="src\Scenes\Graphics\Character.h" />
     <ClInclude Include="src\Scenes\PhysicsScene.h" />
-    <ClInclude Include="src\Scenes\PlatformerScene.h" />
+    <ClInclude Include="src\Scenes\GraphicsGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

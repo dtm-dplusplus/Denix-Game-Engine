@@ -572,10 +572,16 @@ namespace Denix
 					{
 						if (Ref<CubeCollider> sCol = CastRef<CubeCollider>(pComp->GetCollider()))
 						{
+							// Collider Offset
+							ImGui::DragFloat3("Offset", &sCol->GetOffset()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
+
+							// Collider Dimensions
 							if (!pComp->CollisionDimensionOverride()) ImGui::BeginDisabled();
-							ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, FLT_MIN, FLT_MAX);
+							ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], DragSpeedDelta, -FLT_MIN, FLT_MAX);
 							if (!pComp->CollisionDimensionOverride()) ImGui::EndDisabled();
 							ImGui::SameLine(); ImGui::Checkbox("## Dimesnion Override", &pComp->CollisionDimensionOverride());
+
+							// Min Max Debug Info
 							const glm::vec3& min = sCol->GetMin();
 							const glm::vec3& max = sCol->GetMax();
 							ImGui::Text("AABB Min x: %.2f Max x: %.2f", min.x, max.x);

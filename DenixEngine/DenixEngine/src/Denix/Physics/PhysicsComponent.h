@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Collider.h"
 #include "Denix/Core.h"
 #include "Denix/Core/Math.h"
 
 #include "Denix/Scene/Component.h"
 #include "Denix/Scene/Component/TransformComponent.h"
+#include "Denix/Physics/Collider.h"
 
 namespace Denix
 {
@@ -45,6 +45,8 @@ namespace Denix
 		{
 			Component::Update(_deltaTime);
 
+			m_ParentTransform->m_PhysicsRotationOverride = m_SimulatePhysics;
+
 			if (m_Collider)
 			{
 				m_Collider->m_TransformComponent->SetPosition(m_ParentTransform->GetPosition());
@@ -81,6 +83,7 @@ namespace Denix
 		void AddImpulse(const glm::vec3& _impulse)
 		{
             m_Velocity += _impulse / m_Mass;
+			//m_Velocity = _impulse / m_Mass;
         }
 
 		void AddTorque(const glm::vec3& _torque)

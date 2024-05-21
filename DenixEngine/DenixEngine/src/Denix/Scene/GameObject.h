@@ -53,7 +53,7 @@ namespace Denix
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 		// Physics Component
-		virtual void OnCollision(Ref<GameObject> _other, CollisionData& _collision) {} //const Ref<GameObject>& _other
+		virtual void OnCollision(Ref<GameObject>& _other, CollisionData& _collision) {} //const Ref<GameObject>& _other
 
 		virtual void OnTriggerEnter(Ref<GameObject> _other) {}
 		virtual void OnTriggerStay(Ref<GameObject> _other) {}

@@ -15,15 +15,19 @@ namespace Denix
 
 		void Update(float _deltaTime) override;
 
-		float m_MoveSpeed = 1.5f;
-		float m_SprintSpeed = 3.0f;
-		float m_JumpForce = 50.0f;
+		void OnCollision(Ref<GameObject>& _other, CollisionData& _collision) override;
 
-		float m_CameraBoomLength = 10.0f;
+		void BeginPlay() override;
 
+		bool HitPipe;
+
+		float MoveSpeed = 5.0f;
+		float JumpForce = 1.0f;
+		
 		// Character  Camera
 		Ref<Camera> m_FollowCamera;
+
+		float m_CameraBoomLength = 1.0f;
+		float m_CameraBoomHeight = 1.0f;
 	};
-
-
 }

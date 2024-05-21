@@ -18,6 +18,12 @@
     <Filter Include="src\Scenes">
       <UniqueIdentifier>{02348264-9021-4cdd-842f-6f318ffe9a38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Scenes\Physics">
+      <UniqueIdentifier>{0a44897e-1252-460c-b5bb-f650d4bee17f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Scenes\Graphics">
+      <UniqueIdentifier>{42e3be91-01d2-43e8-acba-ce1f16d4b32d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PlayGround.cpp">
@@ -26,22 +32,26 @@
     <ClCompile Include="src\Scenes\PhysicsScene.cpp">
       <Filter>src\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scenes\Character.cpp">
+    <ClCompile Include="src\Scenes\GraphicsGame.cpp">
       <Filter>src\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scenes\PlatformerScene.cpp">
-      <Filter>src\Scenes</Filter>
+    <ClCompile Include="src\Scenes\Graphics\Character.cpp">
+      <Filter>src\Scenes\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scenes\Graphics\Pipe.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Scenes\PhysicsScene.h">
       <Filter>src\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scenes\Character.h">
+    <ClInclude Include="src\Scenes\GraphicsGame.h">
       <Filter>src\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scenes\PlatformerScene.h">
-      <Filter>src\Scenes</Filter>
+    <ClInclude Include="src\Scenes\Graphics\Character.h">
+      <Filter>src\Scenes\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scenes\Graphics\Pipe.h" />
   </ItemGroup>
 </Project>
