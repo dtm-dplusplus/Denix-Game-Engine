@@ -4,6 +4,7 @@
 namespace Denix
 {
 	class Character;
+	class PipePair;
 
 	class GraphicsGame final : public Scene
 	{
@@ -11,13 +12,19 @@ namespace Denix
 		GraphicsGame() : Scene({ "Physics Scene" }) {}
 
 		bool Load() override;
+
+		void BeginPlay() override;
+
 		void Update(float _deltaTime) override;
 
 		int PipePairCount = 0;
 
+		float PipeDistance = 5.0f;
+
+		bool GameOver;
+
 		Ref<Character> Player;
 
-		Ref<GameObject> Sphere1;
-		Ref<GameObject> Cube1;
+		std::vector<Ref<PipePair>> PipePairs;
 	};
 }

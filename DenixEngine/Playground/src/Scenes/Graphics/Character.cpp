@@ -19,20 +19,20 @@ namespace Denix
 		
 		m_RenderComponent->GetMaterial()->GetBaseParam().Color = { 1.0f, 0.0f, 0.0f };
 
-		m_FollowCamera = MakeRef<Camera>();
-		m_FollowCamera->GetTransformComponent()->GetRotation().x = -25.0f;
-		m_FollowCamera->SetFov(80.0f);
+		FollowCamera = MakeRef<Camera>();
+		FollowCamera->GetTransformComponent()->GetRotation().x = -25.0f;
+		FollowCamera->SetFov(80.0f);
 
-		m_CameraBoomHeight = 8.0f;
-		m_CameraBoomLength = 5.0f;
+		CameraBoomHeight = 8.0f;
+		CameraBoomLength = 5.0f;
 	}
 
 	void Character::Update(float _deltaTime)
 	{
 		GameObject::Update(_deltaTime);
 
-		// Camera Movement
-		if (InputSubsystem* input = InputSubsystem::Get())
+		// Jump Logic
+		if (InputSubsystem* input = InputSubsystem::Get(); !HitPipe)
 		{
 			if (input->IsKeyDown(SDL_SCANCODE_SPACE))
 			{
@@ -40,8 +40,8 @@ namespace Denix
 			}
 		}
 
-		m_FollowCamera->GetTransformComponent()->SetPosition(
-			m_TransformComponent->GetPosition() + glm::vec3(0.0f, m_CameraBoomHeight, m_CameraBoomLength));
+		FollowCamera->GetTransformComponent()->SetPosition(
+			m_TransformComponent->GetPosition() + glm::vec3(0.0f, CameraBoomHeight, CameraBoomLength));
 	}
 	void Character::OnCollision(Ref<GameObject>& _other, CollisionData& _collision)
 	{

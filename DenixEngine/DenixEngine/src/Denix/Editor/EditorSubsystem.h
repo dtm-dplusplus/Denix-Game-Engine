@@ -102,6 +102,11 @@ namespace Denix
 		// Physics
 		bool m_IsPhysicsSettingsOpen = false;
 		void PhysicsSettings();
+
+		// Timer
+		bool m_IsTimerSettingsOpen = false;
+		void TimerSettings();
+
 		// Menu Bar
 		void MenuBar();
 		float MenuBarHeight = 15.f;

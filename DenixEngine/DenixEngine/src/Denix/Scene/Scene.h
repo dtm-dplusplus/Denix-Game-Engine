@@ -106,10 +106,13 @@ namespace Denix
 		}
 		virtual void Update(float _deltaTime)
 		{
-			for (const auto& gameObject : m_SceneObjects)
+			if (m_IsPlaying)
 			{
-				// Update the GameObject -  This will always be here
-				gameObject->Update(_deltaTime);
+				for (const auto& gameObject : m_SceneObjects)
+				{
+					// Update the GameObject -  This will always be here
+					gameObject->Update(_deltaTime);
+				}
 			}
 		}
 

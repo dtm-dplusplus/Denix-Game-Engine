@@ -59,7 +59,12 @@ namespace Denix
 		virtual void OnTriggerStay(Ref<GameObject> _other) {}
 		virtual void OnTriggerExit(Ref<GameObject> _other) {}
 
-		
+		void Destroy()
+		{
+			// Add more clean up code here
+
+			m_IsRubbish = true;
+		}
 
 	public:
 		void BeginScene() override
@@ -113,7 +118,10 @@ namespace Denix
             }
 		}
 
+		
 	protected:
+		
+
 		std::unordered_map<std::string, Ref<Component>> m_Components;
 
 		Ref<TransformComponent> m_TransformComponent;

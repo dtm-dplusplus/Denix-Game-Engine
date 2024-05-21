@@ -14,44 +14,74 @@ namespace Denix
 	{
 		Scene::Load();
 
-		/*Player = MakeRef<Character>();
-		Player->GetTransformComponent()->SetPosition({ 0.0f, 5.0f, 5.0f });
+		Player = MakeRef<Character>();
+		Player->GetTransformComponent()->SetPosition({ -10.0f, 5.0f, 5.0f });
 		m_SceneObjects.push_back(Player);
-		m_SceneObjects.push_back(Player->m_FollowCamera);*/
+		//m_SceneObjects.push_back(Player->FollowCamera);
 
-		Ref<PipePair> PipePair1 = MakeRef<PipePair>(PipePairCount++, ObjectInitializer("PipePair 1"));
-		m_SceneObjects.push_back(PipePair1);
-		m_SceneObjects.push_back(PipePair1->PipeTop);
-		m_SceneObjects.push_back(PipePair1->PipeBottom);
+		for (int i = 0; i < 10; i++)
+		{
+			Ref<PipePair> pipePair = MakeRef<PipePair>(PipePairCount, ObjectInitializer("PipePair " + std::to_string(PipePairCount)));
+			pipePair->GetTransformComponent()->SetPosition({ i * PipeDistance, 0.0f, 0.0f });
+			pipePair->InitPipePair();
+			m_SceneObjects.push_back(pipePair);
+			m_SceneObjects.push_back(pipePair->PipeTop);
+			m_SceneObjects.push_back(pipePair->PipeBottom);
 
-		/*Ref<Cube> cube1 = MakeRef<Cube>(ObjectInitializer("Cube 1"));
-		m_SceneObjects.push_back(cube1);
-
-		Ref<GameObject> pipe = MakeRef<GameObject>(ObjectInitializer("Pipe"));
-		pipe->GetMeshComponent()->SetModel(ResourceSubsystem::GetModel("SM_Pipe"));
-		m_SceneObjects.push_back(pipe);*/
+			PipePairs.push_back(pipePair);
+			PipePairCount++;
+        }
 
 		m_DirLight->GetLightDirection().z = -0.54f;
 
 		return true;
 	}
 
+	void GraphicsGame::BeginPlay()
+	{
+		Scene::BeginPlay();
+
+		GameOver = false;
+	}
+
 	void GraphicsGame::Update(float _deltaTime)
 	{
 		Scene::Update(_deltaTime);
 
-		ImGui::SetNextWindowPos(ImVec2(1000, 50));
-		ImGui::Begin("Physics Scene Tools");
-		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
-		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
-		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+		ImGui::SetNextWindowPos(ImVec2(1000, 50), ImGuiCond_Appearing);
 
-		//ImGui::DragFloat("Jump Force", &Player->m_JumpForce, 0.1f);
-		//ImGui::DragFloat("Move Speed", &Player->m_MoveSpeed, 0.1f);
+		ImGui::Begin("Graphics Game");
+		ImGui::DragFloat("Pipe Distance", &PipeDistance, 0.1f);
+		ImGui::DragFloat("Pipe Speed", &PipePair::MoveSpeed, 0.1f);
+		ImGui::SeparatorText("Character Camera");
+		if (Player)
+		{
+			ImGui::DragFloat("Jump Force", &Player->JumpForce, 0.1f);
+
+			if (Player->FollowCamera)
+			{
+				ImGui::DragFloat("Camera Boom Length", &Player->CameraBoomLength, 0.1f);
+				ImGui::DragFloat("Camera Boom Height", &Player->CameraBoomHeight, 0.1f);
+			}
+		}
+
+		
+		
+		/*ImGui::Checkbox("Game Over", &GameOver);
+		if (ImGui::Button("Restart Game")) m_RequestRe
+
+		if (Player->HitPipe)
+		{
+			 GameOver = true;
+        }
+
+		if (GameOver)
+		{
+            
+        }*/
 		//
-		//ImGui::SeparatorText("Character Camera");
-		//ImGui::DragFloat("Camera Boom Length", &Player->m_CameraBoomLength, 0.1f);
-		//ImGui::DragFloat("Camera Boom Height", &Player->m_CameraBoomHeight, 0.1f);
+		//
+		//
 
 
 		ImGui::End();

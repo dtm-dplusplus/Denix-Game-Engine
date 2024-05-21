@@ -20,10 +20,18 @@ namespace Denix
         PipePair(const int _pipePairID, const ObjectInitializer& _object_init = ObjectInitializer::Get());
         ~PipePair() override = default;
 
+        void InitPipePair();
+
+        void Update(float _deltaTime) override;
+
+        static float MoveSpeed;
+
         float Seperation;
         static float SeperationMax;
+        static float SeperationMin;
 
-        float Height = 0.0f;
+        /* Distance in -x axis when this object should be destroyed - Optimizes framerate */
+        static float DestructionDistance;
 
         int PipePairID = 0;
 

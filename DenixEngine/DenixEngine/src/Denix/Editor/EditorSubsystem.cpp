@@ -13,6 +13,7 @@
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Object/Shapes/Shapes.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
+#include "Denix/Core/TimerSubsystem.h"
 
 namespace Denix
 {
@@ -49,6 +50,7 @@ namespace Denix
 		if (!m_ActiveScene) return;
 		if(m_IsScenePanelOpen) ScenePanel();
 		if (m_IsDetailsPanelOpen) DetailsPanel();
+		if(m_IsTimerSettingsOpen) TimerSettings();
 		if(m_IsInputPanelOpen) s_InputSubsystem->InputPanel();
 		if (m_IsPhysicsSettingsOpen) PhysicsSettings();
 	}
@@ -71,6 +73,13 @@ namespace Denix
 		}
 	}
 
+	void EditorSubsystem::TimerSettings()
+	{
+		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
+		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
+		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+	}
+
 	void EditorSubsystem::MenuBar()
 	{
 		if (ImGui::BeginMainMenuBar())
@@ -90,8 +99,9 @@ namespace Denix
 				ImGui::SeparatorText("Panels");
 				ImGui::Checkbox("Scene Panel", &m_IsScenePanelOpen);
 				ImGui::Checkbox("Details Panel", &m_IsDetailsPanelOpen);
-				ImGui::Checkbox("Input Debugger", &m_IsInputPanelOpen);
+				ImGui::Checkbox("Timer Settings", &m_IsTimerSettingsOpen);
 				ImGui::Checkbox("Physics Settings", &m_IsPhysicsSettingsOpen);
+				ImGui::Checkbox("Input Debugger", &m_IsInputPanelOpen);
 				ImGui::EndMenu();
 			}
 

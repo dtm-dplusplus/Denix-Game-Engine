@@ -21,13 +21,12 @@ namespace Denix
 
 		bool HitPipe;
 
-		float MoveSpeed = 5.0f;
 		float JumpForce = 1.0f;
 		
 		// Character  Camera
-		Ref<Camera> m_FollowCamera;
+		Ref<Camera> FollowCamera;
 
-		float m_CameraBoomLength = 1.0f;
-		float m_CameraBoomHeight = 1.0f;
+		float CameraBoomLength = 1.0f;
+		float CameraBoomHeight = 1.0f;
 	};
 }
