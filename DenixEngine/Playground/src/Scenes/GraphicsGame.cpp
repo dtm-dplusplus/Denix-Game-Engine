@@ -62,8 +62,9 @@ namespace Denix
 	{
 		Scene::BeginPlay();
 
-		Player->GetPhysicsComponent()->SetSimulatePhysics(true);
 		GameOver = false;
+		GameOverTime = 0.0f;
+		GameStart = false;
 	}
 
 	void GraphicsGame::Update(float _deltaTime)
@@ -100,35 +101,32 @@ namespace Denix
 	{
 		Scene::GameUpdate(_deltaTime);
 
-		if (!GameOver)
+		if (Player)
 		{
-			if (Player)
+			if (Player->HitPipe)
 			{
-				if (Player->HitPipe)
-				{
-					GameOver = true;
-					return;
-				}
-
-				if (InputSubsystem::IsKeyDown(SDL_SCANCODE_SPACE))
-				{
-					Player->GetPhysicsComponent()->AddImpulse({ 0.0f, Player->JumpForce, 0.0f });
-				}
+				GameOver = true;
 			}
 
-			// Pipe Logic - Increase speed over time
-			//	PipePair::MoveSpeed += pow(2, PipeMinSpeed + _deltaTime);
+			if (InputSubsystem::IsKeyDown(SDL_SCANCODE_SPACE))
+			{
+				if (!GameStart)
+				{
+					GameStart = true;
+					Player->GetPhysicsComponent()->SetSimulatePhysics(true);
+					PipePair::CanMove = true;
+				}
+
+				// Player hits space after game over to play again
+				if (GameOver && GameOverTime >= GameOverWaitTime) m_RequestStop = true;
+			}
 		}
-		else
+
+		if (GameOver)
 		{
 			GameOverTime += _deltaTime;
-			if (GameOverTime >= GameOverWaitTime)
-			{
-				if (InputSubsystem::IsKeyDown(SDL_SCANCODE_SPACE))
-				{
-					m_RequestStop = true;
-				}
-            }
+
+			PipePair::CanMove = false;
 		}
 	}
 }

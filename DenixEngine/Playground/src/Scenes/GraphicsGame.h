@@ -31,6 +31,7 @@ namespace Denix
 		float PipeDistance = 5.0f;
 		float PipeInitOffset = 2.0f;
 		
+		bool GameStart;
 		bool GameOver;
 
 		/* Time to wait before accepting further user input*/

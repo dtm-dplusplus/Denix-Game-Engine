@@ -49,6 +49,7 @@ namespace Denix
         void GameUpdate(float _deltaTime) override;
 
         static float MoveSpeed;
+        static bool CanMove;
 
         float Seperation;
         static float SeperationMax;

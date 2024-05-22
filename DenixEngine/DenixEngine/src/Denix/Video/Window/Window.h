@@ -13,7 +13,7 @@ namespace Denix
 	class Window
 	{
 	public:
-		Window() : m_IsOpen{ false }, m_Title{ "Denix Engine" }, m_WinX{ 1920 }, m_WinY{ 1080 } {}
+		Window() : m_IsOpen{ false }, m_Title{ "Denix Engine" }, m_WinX{ 1280 }, m_WinY{ 720 } {}
 
 		virtual ~Window() = default;
 
@@ -61,8 +61,8 @@ namespace Denix
 		{
 			m_SDL_WindowFlags = static_cast<SDL_WindowFlags>(
 				SDL_WINDOW_OPENGL |
-				SDL_WINDOW_MAXIMIZED |
-				SDL_WINDOW_RESIZABLE |
+				//SDL_WINDOW_MAXIMIZED |
+				//SDL_WINDOW_RESIZABLE |
 				SDL_WINDOW_ALLOW_HIGHDPI
 				);
 

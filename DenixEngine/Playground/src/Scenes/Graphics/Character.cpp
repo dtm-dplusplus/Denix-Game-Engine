@@ -1,5 +1,6 @@
 #include "Character.h"
 #include "Denix/Scene/Camera.h"
+#include "Denix/Input/InputSubsystem.h"
 
 namespace Denix
 {
@@ -8,8 +9,7 @@ namespace Denix
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
 		m_PhysicsComponent->IsColliderVisible() = true;
 		m_PhysicsComponent->SetSimulatePhysics(false);
-		m_PhysicsComponent->GetLinearDrag() = 1.0f;
-		m_PhysicsComponent->GetElasticity() = 0.0f;
+		m_PhysicsComponent->GetLinearDrag() = 0.75f;
 
 		m_TransformComponent->SetMoveability(Moveability::Dynamic);
 		m_TransformComponent->SetScale(glm::vec3(0.3f));
@@ -24,6 +24,10 @@ namespace Denix
 	{
 		GameObject::GameUpdate(_deltaTime);
 		
+		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_SPACE))
+		{
+			m_PhysicsComponent->AddImpulse({ 0.0f, JumpForce, 0.0f });
+		}
 	}
 
 	void Character::OnCollision(Ref<GameObject>& _other, CollisionData& _collision)
@@ -34,6 +38,7 @@ namespace Denix
 		{
 			DE_LOG(LogPlayground, Info, "Player Collided with {}", _other->GetName())
 			HitPipe = true;
+			m_PhysicsComponent->CollisionDetectionEnabled() = false;
         }
 	}
 	void Character::BeginPlay()

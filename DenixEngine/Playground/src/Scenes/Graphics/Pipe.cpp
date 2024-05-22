@@ -3,6 +3,7 @@
 namespace Denix
 {
     float PipePair::MoveSpeed{0.8f};
+    bool PipePair::CanMove{false};
     float PipePair::SeperationMax{3.0f};
     float PipePair::SeperationMin{0.5f};
     float PipePair::DestructionDistance{20.0f};
@@ -24,6 +25,8 @@ namespace Denix
     void PipePair::GameUpdate(float _deltaTime)
     {
         GameObject::GameUpdate(_deltaTime);
+
+        if (!CanMove) return;
 
         // Update Pipe Position
         glm::vec3& position = m_TransformComponent->GetPosition();

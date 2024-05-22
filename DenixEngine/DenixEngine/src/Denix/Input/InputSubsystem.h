@@ -32,13 +32,16 @@ namespace Denix
 		InputSubsystem()
 		{
 			s_InputSubsystem = this;
+			m_SDL_LastKeyboardState = new Uint8[322];
 		}
 		~InputSubsystem() override
 		{
+			delete[] m_SDL_LastKeyboardState;
 			s_InputSubsystem = nullptr;
 		}
 
 		static bool IsKeyDown(const int _key) { return s_InputSubsystem->m_SDL_KeyboardState[_key]; }
+		//static bool IsKeyReleased(const int _key) { return (!s_InputSubsystem->m_SDL_KeyboardState[_key] && s_InputSubsystem->m_SDL_LastKeyboardState[_key]); }
 		static bool IsMouseButtonDown(const int _button) { return s_InputSubsystem->m_MouseData.SDL_State & SDL_BUTTON(_button); }
 		static MouseData& GetMouseData() { return s_InputSubsystem->m_MouseData; }
 
@@ -58,9 +61,9 @@ namespace Denix
 		//SDL_Event m_Event;
 		Ref<class Window> m_Window;
 
+		Uint8* m_SDL_LastKeyboardState;
 		const Uint8* m_SDL_KeyboardState;
 		
-
 		// Mouse Properties
 		MouseData m_MouseData;
 	};

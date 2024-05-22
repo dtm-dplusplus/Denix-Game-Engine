@@ -41,6 +41,9 @@ namespace Denix
 
 	void EditorSubsystem::Update(float _deltaTime)
 	{
+		if(InputSubsystem::IsKeyDown(SDL_SCANCODE_H)) m_Enabled = !m_Enabled;
+		if(!m_Enabled) return;
+
 		DragSpeedDelta = DragSpeed * _deltaTime;
 		const glm::vec2 winSize = s_WindowSubsystem->GetWindow()->GetWindowSize();
 		WinX = winSize.x;
@@ -48,6 +51,11 @@ namespace Denix
 
 		MenuBar();
 		if (!m_ActiveScene) return;
+		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_F5))
+		{
+			if(m_ActiveScene->IsPlaying()) s_SceneSubsystem->StopScene();
+            else s_SceneSubsystem->PlayScene();
+		}
 		if(m_IsScenePanelOpen) ScenePanel();
 		if (m_IsDetailsPanelOpen) DetailsPanel();
 		if(m_IsTimerSettingsOpen) TimerSettings();

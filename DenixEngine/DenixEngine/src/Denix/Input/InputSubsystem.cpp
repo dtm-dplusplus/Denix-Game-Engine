@@ -79,7 +79,8 @@ namespace Denix
 
         m_MouseData.SDL_RelativeState = SDL_GetRelativeMouseState(&m_MouseData.RelX, &m_MouseData.RelY);
         m_MouseData.SDL_State = SDL_GetMouseState(&m_MouseData.X, &m_MouseData.Y);
-        
+
+        m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
 	}
 
 	void InputSubsystem::InputPanel()

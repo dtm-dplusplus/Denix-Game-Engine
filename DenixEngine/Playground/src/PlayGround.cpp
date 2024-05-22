@@ -45,7 +45,7 @@ public:
 	{
 		if (SceneSubsystem* sceneSys = SceneSubsystem::Get())
 		{
-			if (const auto scene = MakeRef<PhysicsScene>())
+			if (const auto scene = MakeRef<GraphicsGame>())
 			{
 				sceneSys->LoadScene(scene);
 				sceneSys->OpenScene(scene->GetSceneName());

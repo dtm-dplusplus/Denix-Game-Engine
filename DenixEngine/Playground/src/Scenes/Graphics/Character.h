@@ -23,7 +23,7 @@ namespace Denix
 
 		float JumpForce = 0.1f;
 		
-		glm::vec3 CameraOffset = { 2.0f, 0.0f, 10.0f };
+		glm::vec3 CameraOffset = { 4.0f, 0.0f, 10.0f };
 
 		int Score = 0;
 
