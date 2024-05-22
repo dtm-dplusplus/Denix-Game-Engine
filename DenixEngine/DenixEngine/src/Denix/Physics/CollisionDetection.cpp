@@ -103,8 +103,12 @@ namespace Denix
 	{
 		float minY = _sphereColA->GetTransformComponent()->GetPosition().y - _sphereColA->GetRadius() * 2;
 		float maxY = _sphereColA->GetTransformComponent()->GetPosition().y + _sphereColA->GetRadius() * 2;
-
-		if (minY <= _cubeColB->GetMax().y && maxY >= _cubeColB->GetMin().y)
+		float minX = _sphereColA->GetTransformComponent()->GetPosition().x - _sphereColA->GetRadius() * 2;
+		float maxX = _sphereColA->GetTransformComponent()->GetPosition().x + _sphereColA->GetRadius() * 2;
+		
+		if (minY <= _cubeColB->GetMax().y && maxY >= _cubeColB->GetMin().y &&
+			minX <= _cubeColB->GetMax().x && maxX >= _cubeColB->GetMin().x
+			)
 		{
 			collisionEvent.IsCollision = true;
 			collisionEvent.ColData.Normal = { 0.0f, 1.0f, 0.0f }; // Hard Coded Normal
@@ -150,8 +154,6 @@ namespace Denix
 		glm::vec3 n = { 0.0f, 1.0f, 0.0f };
 		float d0 = DistanceToPlane(n, spherColA->GetTransformComponent()->GetPosition(), cubeColB->GetTransformComponent()->GetPosition());
 
-		
-
 		if (glm::abs(d0) <= spherColA->GetRadius())
 		{
 			//ci = c0;
@@ -175,7 +177,4 @@ namespace Denix
 		}
 		return false;
 	}
-
-
-
 }

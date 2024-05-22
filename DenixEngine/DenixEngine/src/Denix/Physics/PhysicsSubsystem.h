@@ -34,14 +34,18 @@ namespace Denix
 
 	private:
 		void CollisionDetection(float _deltaTime);
-
+		bool ColllisionExists(const Ref<GameObject>& _objectA, const Ref<GameObject>& _objectB);
 		void CollisionResonsePhase(float _deltaTime);
 		void CollisionResponse(CollisionEvent& _collisionEvent);
-		void SphereCubeCollision(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, Ref<SphereCollider>& _sphereColA, Ref<CubeCollider>& _cubeColB, CollisionEvent& _collisionEvent);
+		void CubeCollision(const Ref<PhysicsComponent>& _cubeCompA, const Ref<PhysicsComponent>& _cubeCompB, CollisionEvent& _collisionEvent);
+		void SphereCollision(const Ref<PhysicsComponent>& _sphereCompA, const Ref<PhysicsComponent>& _sphereCompB, CollisionEvent& _collisionEvent);
+		void SphereCubeCollision(const Ref<PhysicsComponent>& _sphereComp, const Ref<PhysicsComponent>& _cubeComp, CollisionEvent& _collisionEvent);
 
 		void PhysicsSimulationPhase(float _deltaTime);
 
-		float ImpulseEnergy(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, const glm::vec3& _normal, const glm::vec3& _contactPoint);
+		void ImpulseResponse(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB); //, const glm::vec3& _normal, const glm::vec3& _contactPoint, float _penetration
+		float ImpulseEnergy(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, const glm::vec3& _normal);
+	
 	public:
 
 		void PreUpdate(float _deltaTime) override;

@@ -37,9 +37,13 @@ namespace Denix
 		PhysicsScene(): Scene({ "Physics Scene" }) {}
 
 		bool Load() override;
+		void BeginScene() override;
+		void BeginPlay() override;
 		void Update(float _deltaTime) override;
 
+		glm::vec3 StartImpulse = { 5.0f, 0.0f, 0.0f };
 		Ref<GameObject> Sphere1;
+		Ref<GameObject> Sphere2;
 		Ref<GameObject> Cube1;
 	};
 }
