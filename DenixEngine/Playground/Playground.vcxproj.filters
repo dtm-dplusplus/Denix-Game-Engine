@@ -35,7 +35,7 @@
     <ClCompile Include="src\Scenes\GraphicsGame.cpp">
       <Filter>src\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scenes\Graphics\Character.cpp">
+    <ClCompile Include="src\Scenes\Graphics\JumpPawn.cpp">
       <Filter>src\Scenes\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Scenes\Graphics\Pipe.cpp">
@@ -49,7 +49,7 @@
     <ClInclude Include="src\Scenes\GraphicsGame.h">
       <Filter>src\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scenes\Graphics\Character.h">
+    <ClInclude Include="src\Scenes\Graphics\JumpPawn.h">
       <Filter>src\Scenes\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Scenes\Graphics\Pipe.h" />

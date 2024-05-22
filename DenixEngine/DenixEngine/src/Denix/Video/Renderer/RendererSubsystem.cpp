@@ -52,15 +52,7 @@ namespace Denix
 
 				// Upload the material
 				const BaseMatParam& base = mat->GetBaseParam();
-
-				glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
-					base.Color.r, base.Color.g, base.Color.b);
-
-				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
-
-				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
-				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
-
+				
 				if (base.IsTexture && base.Texture)
 				{
 					base.Texture->Bind();
@@ -71,7 +63,17 @@ namespace Denix
 					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
 					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
 				}
+				else
+				{
+					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
+						base.Color.r, base.Color.g, base.Color.b);
 
+					glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
+
+					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+				}
+				
 				// Upload the camera matrices relative to Object
 				if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
 				{

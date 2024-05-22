@@ -6,7 +6,6 @@
 #include "Denix/Video/GL/Viewport.h"
 
 
-
 namespace Denix
 {
 	class Camera : public GameObject
@@ -20,9 +19,6 @@ namespace Denix
 		}
 
 		~Camera() override = default;
-
-		
-
 
 		void Update(float _deltaTime) override
 		{
@@ -234,6 +230,21 @@ namespace Denix
 		glm::mat4 m_View = glm::mat4(1.0f);
 		glm::vec3 m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 		glm::vec3 m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	};
+
+	class UICamera : public Camera
+	{
+	public:
+		UICamera() : Camera({ "UI Camera" })
+		{
+			m_Layer = LayerType::UI;
+            m_RenderComponent->SetIsVisible(false);
+        }
+
+		void Update(float _deltaTime) override
+		{
+            m_Projection = glm::ortho(0.0f, m_Aspect.x, 0.0f, m_Aspect.y, m_NearPlane, m_FarPlane);
+		}
 	};
 
 	class ViewportCamera: public Camera

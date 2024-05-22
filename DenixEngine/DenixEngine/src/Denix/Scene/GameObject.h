@@ -12,7 +12,11 @@
 
 namespace Denix
 {
-	
+	/*enum class LayerType
+	{
+        Default,
+		UI
+    };*/
 
 	/*	Base class for all game objects
 	*
@@ -129,7 +133,7 @@ namespace Denix
         }
 
 	protected:
-		
+		//LayerType m_Layer = LayerType::Default;
 
 		std::unordered_map<std::string, Ref<Component>> m_Components;
 

@@ -58,7 +58,7 @@
       <PreprocessorDefinitions>DE_PLATFORM_WINDOWS; _CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\contrib\stb;$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\assimp\include;$(SolutionDir)DenixEngine\contrib\imgui;%(AdditionalIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\contrib\stb;$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\assimp\include;$(SolutionDir)DenixEngine\contrib\imgui;$(SolutionDir)DenixEngine\contrib\ft\include;%(AdditionalIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -67,8 +67,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)DenixEngine\contrib\sdl\lib\x64;$(SolutionDir)DenixEngine\contrib\glew\lib\x64;$(SolutionDir)DenixEngine\contrib\assimp\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;assimp-vc143-mt.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)DenixEngine\contrib\sdl\lib\x64;$(SolutionDir)DenixEngine\contrib\glew\lib\x64;$(SolutionDir)DenixEngine\contrib\assimp\lib;$(SolutionDir)DenixEngine\contrib\ft\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;assimp-vc143-mt.lib;freetype.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>XCOPY /y "$(SolutionDir)DenixEngine\contrib\glew\lib\x64\glew32.dll" "$(OutDir)"
@@ -85,7 +85,7 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
       <PreprocessorDefinitions>DE_PLATFORM_WINDOWS; _CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\contrib\stb;$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\assimp\include;$(SolutionDir)DenixEngine\contrib\imgui;;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DenixEngine\contrib\stb;$(ProjectDir)src;$(SolutionDir)DenixEngine\src;$(SolutionDir)DenixEngine\contrib\spdlog\include;$(SolutionDir)DenixEngine\contrib\glm;$(SolutionDir)DenixEngine\contrib\glew\include;$(SolutionDir)DenixEngine\contrib\sdl\include;$(SolutionDir)DenixEngine\contrib\assimp\include;$(SolutionDir)DenixEngine\contrib\imgui;$(SolutionDir)DenixEngine\contrib\ft\include;;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>DePch.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -95,8 +95,8 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)DenixEngine\contrib\sdl\lib\x64;$(SolutionDir)DenixEngine\contrib\glew\lib\x64;$(SolutionDir)DenixEngine\contrib\assimp\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;assimp-vc143-mt.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)DenixEngine\contrib\sdl\lib\x64;$(SolutionDir)DenixEngine\contrib\glew\lib\x64;$(SolutionDir)DenixEngine\contrib\assimp\lib;$(SolutionDir)DenixEngine\contrib\ft\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;assimp-vc143-mt.lib;freetype.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>XCOPY /y "$(SolutionDir)DenixEngine\contrib\glew\lib\x64\glew32.dll" "$(OutDir)"</Command>
@@ -104,7 +104,7 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Scenes\Graphics\Pipe.cpp" />
-    <ClCompile Include="src\Scenes\Graphics\Character.cpp" />
+    <ClCompile Include="src\Scenes\Graphics\JumpPawn.cpp" />
     <ClCompile Include="src\Scenes\PhysicsScene.cpp" />
     <ClCompile Include="src\PlayGround.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -119,7 +119,7 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Scenes\Graphics\Pipe.h" />
-    <ClInclude Include="src\Scenes\Graphics\Character.h" />
+    <ClInclude Include="src\Scenes\Graphics\JumpPawn.h" />
     <ClInclude Include="src\Scenes\PhysicsScene.h" />
     <ClInclude Include="src\Scenes\GraphicsGame.h" />
   </ItemGroup>
