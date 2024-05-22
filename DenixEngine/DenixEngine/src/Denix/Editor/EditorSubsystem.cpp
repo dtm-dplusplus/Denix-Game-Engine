@@ -629,8 +629,6 @@ namespace Denix
 
 			ImGui::Checkbox("Visible", &render->IsVisible());
 			ImGui::Checkbox("Affects Lighting", &render->AffectsLighting());
-			ImGui::Checkbox("Base Color As Texture", &render->GetBaseColorAsTexture());
-
 			MaterialWidget(_selectedObject);
 		}
 	}

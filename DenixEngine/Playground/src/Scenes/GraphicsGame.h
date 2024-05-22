@@ -38,6 +38,9 @@ namespace Denix
 		float GameOverTime = 0.0f;
 		float GameOverWaitTime = 2.0f;
 
+		Ref<GameObject> GameStartPlane;
+		Ref<GameObject> GameOverPlane;
+
 		Ref<JumpPawn> Player;
 	};
 }

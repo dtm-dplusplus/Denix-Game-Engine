@@ -52,7 +52,8 @@ namespace Denix
 
 				// Upload the material
 				const BaseMatParam& base = mat->GetBaseParam();
-				
+				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
+
 				if (base.IsTexture && base.Texture)
 				{
 					base.Texture->Bind();
@@ -68,7 +69,6 @@ namespace Denix
 					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
 						base.Color.r, base.Color.g, base.Color.b);
 
-					glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
 
 					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
 					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
@@ -130,23 +130,7 @@ namespace Denix
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		Ref<Shader> shader = ResourceSubsystem::GetShader("UnlitShader");
-		shader->Bind();
-
-		// Upload the camera matrices
-		if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
-		{
-			glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1,
-				GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
-
-			glUniformMatrix4fv(shader->GetUniform("u_View"), 1,
-				GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
-
-			glUniform3f(shader->GetUniform("u_CameraPosition"),
-				camera->GetTransformComponent()->GetPosition().x,
-				camera->GetTransformComponent()->GetPosition().y,
-				camera->GetTransformComponent()->GetPosition().z);
-		}
+		ResourceSubsystem::GetShader("UnlitShader")->Bind();
 
 		for (const Ref<GameObject>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
 		{
@@ -155,33 +139,58 @@ namespace Denix
 			const Ref<MeshComponent> meshComp = object->GetMeshComponent();
 
 			if (!renderComp || !transformComp || !meshComp) continue;
+			//if (!renderComp->m_Material) continue;
+			//if (!renderComp->m_Material->GetShader()) continue;
 
-			if (object->GetRenderComponent()->IsVisible())
+			if (const Ref<Material> mat = renderComp->m_Material; renderComp->IsVisible())
 			{
+				mat->m_Shader->Bind();
+
+				// Upload the material
+				const BaseMatParam& base = mat->GetBaseParam();
+
+				if (base.IsTexture && base.Texture)
+				{
+					base.Texture->Bind();
+
+					// Texture Settings need to move to the material/texture
+					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
+					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
+				}
+				else
+				{
+					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
+						base.Color.r, base.Color.g, base.Color.b);
+
+					glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
+
+					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+				}
+
+				// Upload the camera matrices relative to Object
+				if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
+				{
+					glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_Projection"), 1,
+						GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+
+					glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_View"), 1,
+						GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+
+					glUniform3f(renderComp->m_Shader->GetUniform("u_CameraPosition"),
+						camera->GetTransformComponent()->GetPosition().x,
+						camera->GetTransformComponent()->GetPosition().y,
+						camera->GetTransformComponent()->GetPosition().z);
+				}
+
 				// Upload the model matrix
-				glUniformMatrix4fv(shader->GetUniform("u_Model"), 1,
+				glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_Model"), 1,
 					GL_FALSE, glm::value_ptr(transformComp->GetModel()));
 
 				// Upload Affects Lighting bool
-				glUniform1i(shader->GetUniform("u_BaseColorAsTexture"), renderComp->GetBaseColorAsTexture());
-
-				// Upload the texture
-				if (!renderComp->GetBaseColorAsTexture() && renderComp->m_Texture)
-				{
-					renderComp->m_Texture->Bind();
-
-					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
-					glTexParameteri(renderComp->m_Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
-				}
-
-				// Upload the material
-				if (const Ref<Material> mat = renderComp->m_Material)
-				{
-					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.BaseColor"),
-						1.0f, 1.0f, 1.0f);
-				}
+				glUniform1i(renderComp->m_Shader->GetUniform("u_AffectsLighting"), renderComp->m_AffectsLighting);
 
 				// Draw Call
 				if (const Ref<Model> model = meshComp->GetModel())
@@ -236,9 +245,6 @@ namespace Denix
 			// Upload the model matrix
 			glUniformMatrix4fv(shader->GetUniform("u_Model"), 1,
 				GL_FALSE, glm::value_ptr(transformComp->GetModel()));
-
-			// Upload Affects Lighting bool
-			glUniform1i(shader->GetUniform("u_BaseColorAsTexture"), renderComp->GetBaseColorAsTexture());
 
 			// Upload the material
 			glUniform3f(renderComp->m_Shader->GetUniform("u_Material.BaseColor"),1.0f, 1.0f, 1.0f);

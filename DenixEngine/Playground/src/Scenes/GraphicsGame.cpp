@@ -9,8 +9,6 @@
 #include "Graphics/JumpPawn.h"
 #include "Graphics/Pipe.h"
 
-
-
 namespace Denix
 {
 
@@ -35,6 +33,18 @@ namespace Denix
 	{
 		Scene::Load();
 
+		GameStartPlane = MakeRef<Plane>(ObjectInitializer("GameStartPlane"));
+		BaseMatParam& baseGameStart = GameStartPlane->GetRenderComponent()->GetMaterial()->GetBaseParam();
+		baseGameStart.Texture = ResourceSubsystem::GetTexture("GameStart");
+		baseGameStart.IsTexture = true;
+		m_SceneObjects.push_back(GameStartPlane);
+
+		GameOverPlane = MakeRef<Plane>(ObjectInitializer("GameOverPlane"));
+		BaseMatParam& baseGameOver = GameOverPlane->GetRenderComponent()->GetMaterial()->GetBaseParam();
+		baseGameOver.Texture = ResourceSubsystem::GetTexture("GameEnd");
+		baseGameOver.IsTexture = true;
+		m_SceneObjects.push_back(GameOverPlane);
+		
 		Player = MakeRef<JumpPawn>();
 		Player->GetMeshComponent()->SetModel(ResourceSubsystem::GetModel("SM_Bird"));
 		

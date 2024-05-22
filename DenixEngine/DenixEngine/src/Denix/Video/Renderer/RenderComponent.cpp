@@ -22,7 +22,6 @@ namespace Denix
 		m_DebugColor = _other->m_DebugColor;
 		m_IsVisible = _other->m_IsVisible;
 		m_AffectsLighting = _other->m_AffectsLighting;
-		m_BaseColorAsTexture = _other->m_BaseColorAsTexture;
 	}
 
 	RenderComponent::RenderComponent(const std::string& _parentName): Component(_parentName, ObjectInitializer("Render Component"))

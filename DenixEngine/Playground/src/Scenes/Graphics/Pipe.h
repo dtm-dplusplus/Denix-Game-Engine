@@ -24,6 +24,8 @@ namespace Denix
             {
                 m_TransformComponent->GetRotation().x = 180.0f;
             }
+
+            m_RenderComponent->GetMaterial()->GetBaseParam().Color = {0.0f, 1.0f, 0.0f};
         }
 
         ~Pipe() override = default;

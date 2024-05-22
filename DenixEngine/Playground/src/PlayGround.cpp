@@ -31,7 +31,8 @@ public:
 	{
 		Engine::PostInitialize();
 
-		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\brick.png)", "brick");
+		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Start.png)", "GameStart");
+		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\End.png)", "GameEnd");
 		ResourceSubsystem::LoadModel("SM_Pipe", FileSubsystem::GetUserContentRoot() + R"(Models\Pipe.obj)");
 		ResourceSubsystem::LoadModel("SM_Bird", FileSubsystem::GetUserContentRoot() + R"(Models\Bird.obj)");
 		Ref<Material> red = MakeRef<Material>(ObjectInitializer("MAT_Red"));
