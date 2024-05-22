@@ -3,7 +3,7 @@
 
 namespace Denix
 {
-	class Character;
+	class JumpPawn;
 	class PipePair;
 
 	class GraphicsGame final : public Scene
@@ -38,6 +38,6 @@ namespace Denix
 		float GameOverTime = 0.0f;
 		float GameOverWaitTime = 2.0f;
 
-		Ref<Character> Player;
+		Ref<JumpPawn> Player;
 	};
 }

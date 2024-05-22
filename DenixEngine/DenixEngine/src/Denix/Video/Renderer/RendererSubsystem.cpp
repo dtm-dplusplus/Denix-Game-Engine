@@ -115,6 +115,15 @@ namespace Denix
 			if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
 		}
 
+		if (const Ref<UICamera> cam = s_RendererSubSystem->m_ActiveScene->m_UICamera)
+		{
+			Ref<Shader> shader = ResourceSubsystem::GetShader("TextShader");
+
+			for (const TextUI& text : cam->m_Texts)
+			{
+				cam->RenderText(shader, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+            }
+		}
 	}
 
 	void RendererSubsystem::RenderUnlitViewport()

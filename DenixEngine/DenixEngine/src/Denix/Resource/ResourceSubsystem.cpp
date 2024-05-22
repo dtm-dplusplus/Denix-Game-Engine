@@ -55,6 +55,14 @@ namespace Denix
 			viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBFragment.glsl)");
 			LoadShader(viewportShaders, "FBShader");
 		}
+
+		{
+			std::vector<ShaderSource> textShaders;
+			textShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\TextVertex.glsl)");
+			textShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\TextFragment.glsl)");
+			LoadShader(textShaders, "TextShader");
+		}
+
 		// TEXTURES
 		LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)", "DefaultTexture");
 

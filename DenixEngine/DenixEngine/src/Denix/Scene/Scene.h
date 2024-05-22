@@ -31,6 +31,7 @@ namespace Denix
 			m_ViewportCamera = MakeRef<ViewportCamera>();
 			m_ViewportCamera->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 10.0f, 5.0f));
 
+			m_UICamera = MakeRef<UICamera>();
 			m_DirLight = MakeRef<DirectionalLight>();
 			m_DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));
 			m_SceneObjects.push_back(m_DirLight);
@@ -244,6 +245,8 @@ namespace Denix
 		Ref<ViewportCamera> m_ViewportCamera;
 
 		Ref<Camera> m_ActiveCamera;
+
+		Ref<UICamera> m_UICamera;
 
 		Ref<DirectionalLight> m_DirLight;
 
