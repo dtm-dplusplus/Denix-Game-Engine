@@ -117,8 +117,17 @@ namespace Denix
 			    component->Update(_deltaTime);
             }
 		}
-
 		
+		virtual void GameUpdate(float _deltaTime) override
+		{
+            Object::GameUpdate(_deltaTime);
+
+			for (const auto& component : m_Components | std::views::values)
+			{
+                component->GameUpdate(_deltaTime);
+            }
+        }
+
 	protected:
 		
 

@@ -10,11 +10,11 @@ namespace Denix
 	constexpr unsigned int MAX_SPOT_LIGHTS = 3;
 
 	// Basic Scene class
-	class Scene
+	class Scene: public Object
 	{
 	public:
 
-		Scene(const std::string& _name) :
+		Scene(const std::string& _name) : Object(ObjectInitializer(_name)),
 			m_SceneName{ _name },
 			m_ViewportCamera{ nullptr },
 			m_ActiveCamera{ nullptr },
@@ -106,13 +106,11 @@ namespace Denix
 		}
 		virtual void Update(float _deltaTime)
 		{
-			if (m_IsPlaying)
+			for (const auto& gameObject : m_SceneObjects)
 			{
-				for (const auto& gameObject : m_SceneObjects)
-				{
-					// Update the GameObject -  This will always be here
-					gameObject->Update(_deltaTime);
-				}
+				// Update the GameObject -  This will always be here
+				gameObject->Update(_deltaTime);
+				if (m_IsPlaying) gameObject->GameUpdate(_deltaTime);
 			}
 		}
 
@@ -234,6 +232,8 @@ namespace Denix
 		bool m_IsLoaded = false;
 
 		bool m_IsOpen = false;
+
+		bool m_RequestStop = false;
 
 		/** Gravity of the scene */
 		float m_Gravity = 9.81f;

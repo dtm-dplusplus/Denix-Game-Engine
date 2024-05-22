@@ -13,7 +13,7 @@ namespace Denix
 		Character();
 		~Character() = default;
 
-		void Update(float _deltaTime) override;
+		void GameUpdate(float _deltaTime) override;
 
 		void OnCollision(Ref<GameObject>& _other, CollisionData& _collision) override;
 
@@ -21,12 +21,13 @@ namespace Denix
 
 		bool HitPipe;
 
-		float JumpForce = 1.0f;
+		float JumpForce = 0.1f;
 		
+		glm::vec3 CameraOffset = { 2.0f, 0.0f, 10.0f };
+
+		int Score = 0;
+
 		// Character  Camera
 		Ref<Camera> FollowCamera;
-
-		float CameraBoomLength = 1.0f;
-		float CameraBoomHeight = 1.0f;
 	};
 }

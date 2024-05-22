@@ -59,8 +59,11 @@ namespace Denix
 		// Called when the game ends
 		virtual void EndPlay() {}
 
-		// Called every frame
+		// Called every frame to update regardless of playing state
 		virtual void Update(float _deltaTime) {}
+
+		// Called each frame if the game is playing
+		virtual void GameUpdate(float _deltaTime) {}
 
 		// Called after all updates, often used when objetcs change flags during update
 		virtual void LateUpdate(float _deltaTime) {}

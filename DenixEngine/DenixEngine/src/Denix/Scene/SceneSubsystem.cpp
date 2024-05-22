@@ -130,6 +130,7 @@ namespace Denix
 			
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
 
+			// Temporary restart scene
 			Engine::Get().RestartScene();
 		}
 	}
@@ -179,6 +180,12 @@ namespace Denix
 
 	void SceneSubsystem::Update(float _deltaTime)
 	{
+		if (m_ActiveScene->m_RequestStop)
+		{
+			StopScene();
+			return;
+		}
+
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
@@ -188,6 +195,7 @@ namespace Denix
 
 		// Scene update implementation 
 		m_ActiveScene->Update(_deltaTime);
+		if(m_ActiveScene->IsPlaying()) m_ActiveScene->GameUpdate(_deltaTime);
 	}
 
 	void SceneSubsystem::GameObjectsUpdate(float _deltaTime)

@@ -33,6 +33,7 @@ public:
 
 		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\brick.png)", "brick");
 		ResourceSubsystem::LoadModel("SM_Pipe", FileSubsystem::GetUserContentRoot() + R"(Models\Pipe.obj)");
+		ResourceSubsystem::LoadModel("SM_Bird", FileSubsystem::GetUserContentRoot() + R"(Models\Bird.obj)");
 		Ref<Material> red = MakeRef<Material>(ObjectInitializer("MAT_Red"));
 		red->GetBaseParam().Color = {1.0f,0.0f,0.0f};
 		ResourceSubsystem::AddMaterial(red);

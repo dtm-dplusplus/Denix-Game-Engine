@@ -38,9 +38,9 @@ namespace Denix
 			s_InputSubsystem = nullptr;
 		}
 
-		bool IsKeyDown(const int _key) const { return m_SDL_KeyboardState[_key]; }
-		bool IsMouseButtonDown(const int _button) const { return m_MouseData.SDL_State & SDL_BUTTON(_button); }
-		MouseData& GetMouseData() { return m_MouseData; }
+		static bool IsKeyDown(const int _key) { return s_InputSubsystem->m_SDL_KeyboardState[_key]; }
+		static bool IsMouseButtonDown(const int _button) { return s_InputSubsystem->m_MouseData.SDL_State & SDL_BUTTON(_button); }
+		static MouseData& GetMouseData() { return s_InputSubsystem->m_MouseData; }
 
 		static InputSubsystem* Get() { return s_InputSubsystem; }
 
