@@ -40,6 +40,7 @@ namespace Denix
         m_ParentTransform->GetPosition() += m_Velocity * _deltaTime;
 
         ////////////* Angular */////////////////////
+
         // Calulate angular momentum
         m_AngularMomentum += m_Torque * _deltaTime;
 
@@ -91,25 +92,11 @@ namespace Denix
     {
         // Calculate the net force - Null effect if Drag = 0
         m_Force -= m_LinearDrag * m_Velocity;
+        m_Torque -= m_AngularDrag * m_AngularVelocity;
 
         // Calcylate net torque
         if (m_Collider)
         {
-            switch (m_Collider->GetColliderType())
-            {
-            case ColliderType::Cube:
-            {
-                m_Torque = glm::vec3(0.0f); // No torque for cubes currently
-            } break;
-
-            case ColliderType::Sphere:
-            {
-                //Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
-                m_Torque-= m_AngularDrag * m_AngularVelocity;
-
-            } break;
-            }
-
             m_Collider->Update(_deltaTime);
         }
 
