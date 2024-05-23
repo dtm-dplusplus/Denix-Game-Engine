@@ -52,14 +52,14 @@ namespace Denix
 		if (!m_Enabled) return;
 		if (!m_ActiveScene->IsPlaying()) return;
 		
-		if(m_CollisionDetectionEnabled) CollisionDetection(_deltaTime);
+		if(m_CollisionDetectionEnabled) CollisionDetectionPhase(_deltaTime);
 
 		if (m_CollisionResponseEnabled) CollisionResonsePhase(_deltaTime);
 
 		PhysicsSimulationPhase(_deltaTime);
 	}
  
-	void PhysicsSubsystem::CollisionDetection(float _deltaTime)
+	void PhysicsSubsystem::CollisionDetectionPhase(float _deltaTime)
 	{
 		// Sort physics components into static and dynamic objects - Check they have collision detection enabled
 		std::vector<Ref<PhysicsComponent>> staticObjects;
@@ -83,7 +83,7 @@ namespace Denix
 			// Check for collision with static objects
 			for (const auto& staticComp : staticObjects)
 			{
-				if (CollisionDetection::BroadCollisionDetection(dynamicComp, staticComp); true)
+				if (CollisionDetection::BroadCollisionDetection(dynamicComp, staticComp))
 				{
 					if (CollisionEvent collision = CollisionDetection::NarrowCollisionDetection(dynamicComp, staticComp); collision.IsCollision)
 					{
@@ -97,7 +97,7 @@ namespace Denix
 			{
 				if (dynamicComp == otherDynamicComp) continue;
 
-				if (CollisionDetection::BroadCollisionDetection(dynamicComp, otherDynamicComp); true)
+				if (CollisionDetection::BroadCollisionDetection(dynamicComp, otherDynamicComp))
 				{
 					if (CollisionEvent collision = CollisionDetection::NarrowCollisionDetection(dynamicComp, otherDynamicComp); collision.IsCollision)
 					{
@@ -179,8 +179,6 @@ namespace Denix
 		} break;
 		}
 
-		
-
 		// Call client side implementation
 		if(compActor->GetParentTransform()->GetMoveability() == Moveability::Dynamic)
 			_collisionEvent.Actor->OnCollision(_collisionEvent.Other, _collisionEvent.ColData);
@@ -191,11 +189,9 @@ namespace Denix
 
 	void PhysicsSubsystem::CubeCollision(const Ref<PhysicsComponent>& _cubeCompA, const Ref<PhysicsComponent>& _cubeCompB, CollisionEvent& _collisionEvent)
 	{
-		// Impulse response
-		glm::vec3 compBVelocity = _cubeCompB->GetVelocity();
-
-		glm::vec3 contactForce = -glm::vec3(0.0f, _cubeCompA->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
-
+		Ref<CubeCollider> cubeColA= CastRef<CubeCollider>(_cubeCompA->GetCollider());
+		Ref<CubeCollider> cubeColB = CastRef<CubeCollider>(_cubeCompB->GetCollider());
+		
 		if (_cubeCompA->m_ImpulseEnabled)
 		{
 			float impulseEnergy = ImpulseEnergy(
@@ -203,12 +199,22 @@ namespace Denix
 
 			glm::vec3 impulseVector = impulseEnergy * _collisionEvent.ColData.Normal;
 
-			_cubeCompA->m_Force = glm::vec3(0.0f);
+			_cubeCompA->m_Force = -glm::vec3(0.0f, _cubeCompA->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
 			_cubeCompA->m_Velocity = impulseVector / _cubeCompA->m_Mass;
-
 		}
+	}
 
-		_cubeCompA->AddForce(contactForce);
+	void PhysicsSubsystem::SphereCubeCollision(const Ref<PhysicsComponent>& _sphereComp, const Ref<PhysicsComponent>& _cubeComp, CollisionEvent& _collisionEvent)
+	{
+		const Ref<SphereCollider>& sphereCollider = CastRef<SphereCollider>(_sphereComp->GetCollider());
+		const Ref<CubeCollider>& cubeCollider = CastRef<CubeCollider>(_cubeComp->GetCollider());
+		const glm::vec3& max = cubeCollider->GetMax();
+		glm::vec3& position = _sphereComp->m_ParentTransform->GetPosition();
+		position = { position.x, max.y + sphereCollider->GetRadius() * 2.0f, position.z };
+
+		ImpulseResponse(_sphereComp, _cubeComp);
+
+		_sphereComp->ComputeTorque({ 0.0f, sphereCollider->GetRadius(),0.0f }, -_sphereComp->m_Velocity);
 	}
 
 	void PhysicsSubsystem::SphereCollision(const Ref<PhysicsComponent>& _sphereCompA, const Ref<PhysicsComponent>& _sphereCompB, CollisionEvent& _collisionEvent)
@@ -227,7 +233,7 @@ namespace Denix
 
 		float distance = glm::length(positionDistance);
 		
-		ImpulseResponse(_sphereCompA, _sphereCompB);
+		
 		_sphereCompB->m_Velocity = -_sphereCompB->m_Velocity;
 		float penetration = glm::abs(r1 + r2 - distance);
 		float mass = _sphereCompA->m_Mass;
@@ -244,21 +250,10 @@ namespace Denix
 		mov = positionB + penetration * (inverseMassOther / totalInverseMass) * normal;
 		positionB = mov;
 
+		ImpulseResponse(_sphereCompA, _sphereCompB);
+
 		_sphereCompA->ComputeTorque(normal, -_sphereCompB->m_Velocity);
 		_sphereCompB->ComputeTorque(normal, -_sphereCompA->m_Velocity);
-	}
-
-	void PhysicsSubsystem::SphereCubeCollision(const Ref<PhysicsComponent>& _sphereComp, const Ref<PhysicsComponent>& _cubeComp, CollisionEvent& _collisionEvent)
-	{
-		ImpulseResponse(_sphereComp, _cubeComp);
-
-		const Ref<SphereCollider>& sphereCollider = CastRef<SphereCollider>(_sphereComp->GetCollider());
-		const Ref<CubeCollider>& cubeCollider = CastRef<CubeCollider>(_cubeComp->GetCollider());
-		const glm::vec3& max = cubeCollider->GetMax();
-		glm::vec3& position = _sphereComp->m_ParentTransform->GetPosition();
-		position = { position.x, max.y + sphereCollider->GetRadius() * 2.0f, position.z };
-
-		if(_sphereComp->m_IsColliding)_sphereComp->ComputeTorque({ 0.0f, position.y + sphereCollider->GetRadius() * 2.0f,0.0f }, -_sphereComp->m_Velocity);
 	}
 
 	void PhysicsSubsystem::PhysicsSimulationPhase(float _deltaTime)
@@ -287,8 +282,6 @@ namespace Denix
 
 		glm::vec3 impulse = j * normal;
 
-		
-
 		// Add Contact Force
 		_compA->m_Force = -glm::vec3(0.0f, _compA->GetMass() * -m_ActiveScene->GetGravity(),0.0f);
 		_compB->m_Force = -glm::vec3(0.0f, _compB->GetMass() * -m_ActiveScene->GetGravity(), 0.0f);
@@ -296,6 +289,7 @@ namespace Denix
 		_compA->m_Velocity += impulse * inverseMassA;
 		_compB->m_Velocity -= impulse * inverseMassB;
 	}
+
 	float PhysicsSubsystem::ImpulseEnergy(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, const glm::vec3& _normal)
 	{
 		float impulseEnergy = -(1.0f + _compA->m_Elasticity) *

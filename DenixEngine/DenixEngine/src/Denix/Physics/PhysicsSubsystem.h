@@ -33,7 +33,7 @@ namespace Denix
 		static bool& CollisionResponseEnabledRef() { return s_PhysicsSubSystem->m_CollisionResponseEnabled; }
 
 	private:
-		void CollisionDetection(float _deltaTime);
+		void CollisionDetectionPhase(float _deltaTime);
 		bool ColllisionExists(const Ref<GameObject>& _objectA, const Ref<GameObject>& _objectB);
 		void CollisionResonsePhase(float _deltaTime);
 		void CollisionResponse(CollisionEvent& _collisionEvent);

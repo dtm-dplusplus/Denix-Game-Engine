@@ -7,12 +7,15 @@ namespace Denix
 {
     PhysicsComponent::PhysicsComponent(): Component(ObjectInitializer("Physics Component")), m_Collider(nullptr)
     {
-        // Set Inertia Tensor && inverse Inertia Tensor
+		m_BroadCollider = MakeRef<SphereCollider>();
+		m_BroadCollider->GetRadius() = 2.0f;
     }
 
     PhysicsComponent::PhysicsComponent(const std::string& _parentName): 
         Component(_parentName, ObjectInitializer("Physics Component")), m_Collider(nullptr)
     {
+        m_BroadCollider = MakeRef<SphereCollider>();
+        m_BroadCollider->GetRadius() = 2.0f;
     }
 
     void PhysicsComponent::ComputeCenterOfMass()
@@ -58,7 +61,6 @@ namespace Denix
 
         // Update rotation matrix
         ComputeRotationMatrix(_deltaTime);
-        //m_ParentTransform->UpdateRotationVectorFromMatrix();
 
         glm::vec3 angles = GetEulerAngles(m_ParentTransform->m_RotationMatrix);
         m_ParentTransform->GetRotation() += angles;
@@ -66,26 +68,42 @@ namespace Denix
 
     void PhysicsComponent::ComputeStepRK2(float _deltaTime)
     {
-        glm::vec3 netF;
-        glm::vec3 accel;
-
-        // Calculate k1
-        netF = m_Force - m_LinearDrag * m_Velocity;
-        accel = netF / m_Mass;
-        const glm::vec3 k1 = accel * _deltaTime;
+        //////////////* Linear */////////////////////
+        m_Acceleration = m_Force / m_Mass;
+        const glm::vec3 k1 = m_Acceleration * _deltaTime;
 
         // Calculate k2
-        netF = m_Force - m_LinearDrag * (m_Velocity + k1);
-        accel = netF / m_Mass;
-        const glm::vec3 k2 = accel * _deltaTime;
+        m_Force-= m_LinearDrag * (m_Velocity + k1);
+        m_Acceleration = m_Force / m_Mass;
+        const glm::vec3 k2 = m_Acceleration * _deltaTime;
 
         // Calculate new velocity at time t + dt
         m_Velocity += (k1 + k2) / 2.f;
 
-        //m_Velocity = m_Velocity.length() > m_MinimumVelocity ? m_Velocity : glm::vec3(0.0f);
-
         // Calculate new displacement at time t + dt
         m_ParentTransform->GetPosition() += m_Velocity * _deltaTime;
+       
+        ////////////* Angular */////////////////////
+        // Calulate angular momentum
+        m_AngularMomentum += m_Torque * _deltaTime;
+
+        // Calculate Inverse Inertia Tensor
+        ComputeObjectInverseInertiaTensor();
+
+        // Calulate angular velocity
+        m_AngularVelocity = m_ObjectInteriaTensorInverse * m_AngularMomentum;
+
+        // Reconstruct skew matrix
+        glm::mat3 skewMatrix = glm::mat3(
+            0.0f, -m_AngularVelocity.z, m_AngularVelocity.y,
+            m_AngularVelocity.z, 0.0f, -m_AngularVelocity.x,
+            -m_AngularVelocity.y, m_AngularVelocity.x, 0.0f);
+
+        // Update rotation matrix
+        ComputeRotationMatrix(_deltaTime);
+
+        glm::vec3 angles = GetEulerAngles(m_ParentTransform->m_RotationMatrix);
+        m_ParentTransform->GetRotation() += angles;
     }
 
     void PhysicsComponent::StepSimulation(float _deltaTime)
@@ -94,12 +112,10 @@ namespace Denix
         m_Force -= m_LinearDrag * m_Velocity;
         m_Torque -= m_AngularDrag * m_AngularVelocity;
 
-        // Calcylate net torque
         if (m_Collider)
         {
             m_Collider->Update(_deltaTime);
         }
-
 
         switch (m_StepMethod)
         {
@@ -110,16 +126,6 @@ namespace Denix
         case StepMethod::RK2:
             ComputeStepRK2(_deltaTime);
             break;
-
-        case StepMethod::RK4:
-            ComputeStepRK4(_deltaTime);
-            break;
-
-        case StepMethod::Verlet:
-            ComputeStepVerlet(_deltaTime);
-            break;
-
-        default:; // assert here
         }
 
         m_SteppedThisFrame = true;

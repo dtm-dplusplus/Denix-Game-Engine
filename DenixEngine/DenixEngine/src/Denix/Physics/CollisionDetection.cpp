@@ -8,9 +8,15 @@ namespace Denix
 {
 	bool CollisionDetection::BroadCollisionDetection(const Ref<PhysicsComponent>& _component, const Ref<PhysicsComponent>& _otherComponent)
 	{
-		// Create a bounding sphere for the physics component
+		Ref<SphereCollider> colA = _component->m_BroadCollider;
+		Ref<SphereCollider> colB = _otherComponent->m_BroadCollider;
 
-		return false;
+		if (!colA || !colB) return false;
+
+		glm::vec3 cp = glm::vec3(0.0f);
+
+		return SphereToSphereCollision(colA->GetTransformComponent()->GetPosition(),
+			colB->GetTransformComponent()->GetPosition(), colA->GetRadius(), colB->GetRadius(), cp);;
 	}
 
 	CollisionEvent CollisionDetection::NarrowCollisionDetection(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB)
@@ -46,7 +52,7 @@ namespace Denix
                     minA.z <= maxB.z && maxA.z >= minB.z)
 				{
 					collisionEvent.IsCollision = true;
-					collisionEvent.ColData.Normal = { 0.0f, 1.0f, 0.0f }; // Hard Coded Normal
+					collisionEvent.ColData.Normal = { 0.0f, 1.0f, 0.0f };
 					collisionEvent.Actor = SceneSubsystem::GetActiveScene()->GetGameObject(_compA->GetParentObjectName());
 					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_compB->GetParentObjectName());
 				}
@@ -105,9 +111,11 @@ namespace Denix
 		float maxY = _sphereColA->GetTransformComponent()->GetPosition().y + _sphereColA->GetRadius() * 2;
 		float minX = _sphereColA->GetTransformComponent()->GetPosition().x - _sphereColA->GetRadius() * 2;
 		float maxX = _sphereColA->GetTransformComponent()->GetPosition().x + _sphereColA->GetRadius() * 2;
-		
+		float minZ = _sphereColA->GetTransformComponent()->GetPosition().z - _sphereColA->GetRadius() * 2;
+		float maxZ = _sphereColA->GetTransformComponent()->GetPosition().z + _sphereColA->GetRadius() * 2;
 		if (minY <= _cubeColB->GetMax().y && maxY >= _cubeColB->GetMin().y &&
-			minX <= _cubeColB->GetMax().x && maxX >= _cubeColB->GetMin().x
+			minX <= _cubeColB->GetMax().x && maxX >= _cubeColB->GetMin().x && 
+			minZ <= _cubeColB->GetMax().z && maxZ >= _cubeColB->GetMin().z
 			)
 		{
 			collisionEvent.IsCollision = true;

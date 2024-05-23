@@ -31,6 +31,7 @@ public:
 	{
 		Engine::PostInitialize();
 
+		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Brick.png)", "Brick");
 		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Start.png)", "GameStart");
 		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\End.png)", "GameEnd");
 		ResourceSubsystem::LoadModel("SM_Pipe", FileSubsystem::GetUserContentRoot() + R"(Models\Pipe.obj)");

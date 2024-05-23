@@ -39,7 +39,7 @@
       <Filter>src\Scenes\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Scenes\Graphics\Pipe.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Scenes\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

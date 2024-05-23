@@ -85,7 +85,6 @@ namespace Denix
 		void AddImpulse(const glm::vec3& _impulse)
 		{
             m_Velocity += _impulse / m_Mass;
-			//m_Velocity = _impulse / m_Mass;
         }
 
 		void AddTorque(const glm::vec3& _torque)
@@ -125,12 +124,15 @@ namespace Denix
 		bool m_ImpulseEnabled = true;
 
 		/** Method used to step the physics simulation */
-		StepMethod m_StepMethod = StepMethod::Euler;
+		StepMethod m_StepMethod = StepMethod::RK2;
 
 		TriggerState m_TriggerState = TriggerState::Null;
 
 		/** Collision used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
+
+		/** Broad collider used for broad phase collision detection */
+		Ref<SphereCollider> m_BroadCollider;
 
 		/** Transform component which is attached to this components game object */
 		Ref<class TransformComponent> m_ParentTransform;
@@ -249,7 +251,6 @@ namespace Denix
 				} break;
 				}
 			}
-
 		}
 
 		void ComputeTorqueArm(const glm::vec3& _contactPoint, const glm::vec3& _force)
@@ -308,14 +309,6 @@ namespace Denix
 		void ComputeStepEuler(float _deltaTime);
 
 		void ComputeStepRK2(float _deltaTime);
-
-		void ComputeStepRK4(float _deltaTime)
-		{
-		}
-
-		void ComputeStepVerlet(float _deltaTime)
-		{
-		}
 	private:
 		/* Stateful members below. These dictacte engine behaviour, e.g. IsCollidig determines collider render color */
 		bool m_SteppedThisFrame = false;

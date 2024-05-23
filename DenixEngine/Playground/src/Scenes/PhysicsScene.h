@@ -39,11 +39,8 @@ namespace Denix
 		bool Load() override;
 		void BeginScene() override;
 		void BeginPlay() override;
-		void Update(float _deltaTime) override;
 
-		glm::vec3 Sphere1StartImpulse = { 50.0f, 0.0f, 0.0f };
-		Ref<GameObject> Sphere1;
-		Ref<GameObject> Sphere2;
-		Ref<GameObject> Cube1;
+		glm::vec3 Sphere1StartImpulse = { 35.0f, 0.0f, 0.0f };
+		std::vector<Ref<GameObject>> Spheres;
 	};
 }

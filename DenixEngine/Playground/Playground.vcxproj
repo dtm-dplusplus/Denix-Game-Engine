@@ -48,7 +48,7 @@
     <IntDir>$(SolutionDir)bin-int\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin-int\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -99,7 +99,11 @@ XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(O
       <AdditionalDependencies>opengl32.lib; glew32.lib;SDL2.lib; SDL2main.lib;assimp-vc143-mt.lib;freetype.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY /y "$(SolutionDir)DenixEngine\contrib\glew\lib\x64\glew32.dll" "$(OutDir)"</Command>
+      <Command>XCOPY /y "$(SolutionDir)DenixEngine\contrib\glew\lib\x64\glew32.dll" "$(OutDir)"
+XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(OutDir)"
+XCOPY /y "$(SolutionDir)DenixEngine\contrib\sdl\lib\x64\SDL2.dll" "$(OutDir)"
+XCOPY /e /y "$(ProjectDir)Content" "$(OutDir)Content\"
+XCOPY /e /y "$(SolutionDir)DenixEngine\res" "$(OutDir)DenixEngine\res\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

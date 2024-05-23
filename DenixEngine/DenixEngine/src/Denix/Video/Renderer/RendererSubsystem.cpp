@@ -25,10 +25,9 @@ namespace Denix
 		case ViewportMode::Wireframe: RenderWireframeViewport(); break;
 		
 		case ViewportMode::Collision: RenderCollisionViewport(); break;
-
-		default: DE_LOG(LogScene, Error, "Invalid Viewport");
 		}
 
+		// Will skip if viewport mode is not default
 		RenderLighting();
 	}
 
@@ -43,8 +42,6 @@ namespace Denix
 			const Ref<MeshComponent> meshComp = object->GetMeshComponent();
 
 			if (!renderComp || !transformComp || !meshComp) continue;
-			//if (!renderComp->m_Material) continue;
-			//if (!renderComp->m_Material->GetShader()) continue;
 
 			if (const Ref<Material> mat = renderComp->m_Material; renderComp->IsVisible())
 			{

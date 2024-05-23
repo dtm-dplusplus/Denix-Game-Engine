@@ -483,15 +483,13 @@ namespace Denix
 			// Elasticity
 			ImGui::DragFloat("Elasticity", &comp->GetElasticity(), DragSpeedDelta, 0.0f, 1.0f);
 
-			
-
 			if (ImGui::TreeNode("Advanced Settings"))
 			{
 				// Impulse Response
 				ImGui::Checkbox("Impulse Resonses", &comp->GetImpulseEnabled());
 
 				// Step Simulation Method
-				static const char* stepMethods[] = { "Euler", "k2", "k4", "Verlet" };
+				static const char* stepMethods[] = { "Euler", "k2"};
 				static int itemCurrent = 0; // Here we store our selection data as an index.
 				const char* comboPreview = stepMethods[itemCurrent];  // Pass in the previewMatName value visible before opening the combo
 				if (ImGui::BeginCombo("Step Method", comboPreview))
@@ -511,9 +509,6 @@ namespace Denix
 					}
 					ImGui::EndCombo();
 				}
-
-				// Minimum Velocity
-				//ImGui::DragFloat("Minimum Velocity", &comp->GetMinimumVelocity(), DragSpeedDelta);
 			}
 
 			// Viewable Properties
