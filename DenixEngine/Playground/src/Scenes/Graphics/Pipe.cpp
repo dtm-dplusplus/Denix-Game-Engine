@@ -1,25 +1,35 @@
 #include "Pipe.h"
+#include <cstdlib> 
+#include <ctime> 
 
 namespace Denix
 {
     float PipePair::MoveSpeed{0.8f};
     bool PipePair::CanMove{false};
-    float PipePair::SeperationMax{3.0f};
-    float PipePair::SeperationMin{0.5f};
+    float PipePair::SeperationMax{2.0f};
+    float PipePair::SeperationMin{1.0f};
     float PipePair::DestructionDistance{20.0f};
+	float PipePair::HeightMin{ 0.0f };
+	float PipePair::HeightMax{ 2.0f };
+    bool PipePair::RandSeedInit{false};
 
     void PipePair::InitPipePair()
     {
-        // Generate Random Seperation
-        Seperation = 2.0f;
+		if (!RandSeedInit)
+		{
+			srand(time(0)); // seed the random number generator
+			RandSeedInit = true;
+		}
 
+        Seperation = SeperationMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (SeperationMax - SeperationMin)));
+		Height = HeightMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HeightMax - HeightMin)));
+
+		m_TransformComponent->GetPosition().y = Height;
+		const glm::vec3& position = m_TransformComponent->GetPosition();
         // Set Pipe Positions
-        const glm::vec3& pairPosition = m_TransformComponent->GetPosition();
-        PipeTop->GetTransformComponent()->SetPosition(
-            { pairPosition.x, pairPosition.y + Seperation / 2.0f, pairPosition.z });
+        PipeTop->GetTransformComponent()->SetPosition({ position.x, Height + Seperation, position.z });
+        PipeBottom->GetTransformComponent()->SetPosition({ position.x, Height - Seperation, position.z });
 
-        PipeBottom->GetTransformComponent()->SetPosition(
-            { pairPosition.x, pairPosition.y -Seperation / 2.0f, pairPosition.z });
     }
 
     void PipePair::GameUpdate(float _deltaTime)

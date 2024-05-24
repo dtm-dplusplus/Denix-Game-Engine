@@ -634,37 +634,32 @@ namespace Denix
 
 		ImGui::SeparatorText("Material");
 
-		// Material Dropdown
-		Ref<Material> previewMat = rendComp->GetMaterial();
-		MaterialSelectionWidget(previewMat);
-		
-		// Material Settings - if material is set
+		// Material Settings
 		if (Ref<Material> mat = rendComp->GetMaterial())
 		{
+			MaterialSelectionWidget(mat);
+
 			BaseMatParam& baseParam = mat->GetBaseParam();
 			// Color or Texture selectable
 			{
-				bool texSelected = baseParam.IsTexture;
-				bool colSelected = !texSelected;
-
-				if (ImGui::Selectable("Color", colSelected, 0, ImVec2(50, 15)))
+				int currItem = baseParam.IsTexture ? 1 : 0;
+				if (ImGui::Combo("Base or Texture", &currItem, "Color\0Texture\0\0"))
 				{
-					baseParam.IsTexture = false;
-					ImGui::ColorEdit3("Base Color", &baseParam.Color[0]);
-
+					baseParam.IsTexture = currItem == 1;
 				}
-				ImGui::SameLine();
-				if (ImGui::Selectable("Texture", texSelected, 0, ImVec2(50, 15)))
+
+				if (baseParam.IsTexture)
 				{
-					baseParam.IsTexture = true;
 					TextureSelectionWidget(mat);
+				}
+				else
+				{
+					ImGui::ColorEdit3("Base Color", &baseParam.Color[0]);
 				}
 			}
 
 			ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
 			ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
-
-		
 
 			if (m_ShaderEditorWidget) m_ShaderEditorWidget->WidgetEditor();
 
@@ -719,7 +714,7 @@ namespace Denix
 
 	void EditorSubsystem::TextureSelectionWidget(Ref<Material>& _material)
 	{
-		Ref<Texture> texture = _material->GetBaseParam().Texture;
+		Ref<Texture>& texture = _material->GetBaseParam().Texture;
 		std::string preview = "None";
 
 		// Texture Preview

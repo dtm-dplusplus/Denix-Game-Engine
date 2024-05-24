@@ -186,6 +186,12 @@ namespace Denix
 			return;
 		}
 
+		if (m_ActiveScene->m_RequestStart)
+		{
+			PlayScene();
+			return;
+		}
+
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{

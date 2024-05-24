@@ -19,7 +19,6 @@ namespace Denix
 
 		void BeginPlay() override;
 
-		void Update(float _deltaTime) override;
 		void GameUpdate(float _deltaTime) override;
 
 	private:
@@ -27,16 +26,16 @@ namespace Denix
 
 		int PipePairCount = 0;
 
-		float PipeMinSpeed = 0.8f;
-		float PipeDistance = 5.0f;
-		float PipeInitOffset = 2.0f;
+		float PipeSpeed = 1.5f;
+		float PipePairDistance = 8.0f;
+		float PipeInitOffset = 10.0f;
 		
 		bool GameStart;
 		bool GameOver;
 
 		/* Time to wait before accepting further user input*/
 		float GameOverTime = 0.0f;
-		float GameOverWaitTime = 2.0f;
+		float GameOverWaitTime = 0.5f;
 
 		Ref<GameObject> GameStartPlane;
 		Ref<GameObject> GameOverPlane;

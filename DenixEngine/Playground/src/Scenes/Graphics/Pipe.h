@@ -57,6 +57,11 @@ namespace Denix
         static float SeperationMax;
         static float SeperationMin;
 
+        float Height;
+		static float HeightMax;
+		static float HeightMin;
+
+        static bool RandSeedInit;
         /* Distance in -x axis when this object should be destroyed - Optimizes framerate */
         static float DestructionDistance;
 

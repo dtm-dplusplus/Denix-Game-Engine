@@ -15,7 +15,12 @@ namespace Denix
 	class Light : public GameObject
 	{
 	public:
-		explicit Light(const ObjectInitializer& _objInit = {"Light"});
+		Light(const ObjectInitializer& _objInit = {"Light"});
+
+		void Update(float _deltaTime) override
+		{
+			GameObject::Update(_deltaTime);
+		}
 
 		LightType GetLightType() const { return (LightType)m_LightType; }
 		int& GetLightType() { return m_LightType; }
@@ -54,8 +59,6 @@ namespace Denix
 			m_LightDirection(0.0f, 1.0f, 0.0f) 
 		{
 			m_LightType = (int)LightType::Directional;
-			m_AmbientIntensity = 0.1f;
-			m_DiffuseIntensity = 0.5f;
 		}
 
 		glm::vec3 GetLightDirection() const { return m_LightDirection; }
@@ -70,17 +73,9 @@ namespace Denix
 	class PointLight : public Light
 	{
 	public:
-		PointLight() : Light({"PointLight"}), constant(0.3f), linear(0.2f), exponent(0.1f)
+		PointLight(const ObjectInitializer& _objInit = ObjectInitializer("PointLight")) : Light(_objInit), constant(0.3f), linear(0.2f), exponent(0.1f)
 		{
 			m_LightType = (int)LightType::Point;
-			m_AmbientIntensity = 0.0f;
-			m_DiffuseIntensity = 1.0f;
-		}
-
-		PointLight(const ObjectInitializer& _objInit) : Light( _objInit ), constant(0.3f), linear(0.2f), exponent(0.1f)
-		{
-			m_AmbientIntensity = 0.0f;
-			m_DiffuseIntensity = 1.0f;
 		}
 
 		float GetConstant() const { return constant; }
@@ -105,17 +100,17 @@ namespace Denix
 	class SpotLight : public PointLight
 	{
 	public:
-		SpotLight() : PointLight({"SpotLight"}), m_Direction(0.0f, -1.0f,0.0f), m_Edge(5), m_ProcessedEdge(0)
+		SpotLight(const ObjectInitializer& _objInit = ObjectInitializer("SpotLight")) : PointLight(_objInit), m_Direction(0.0f, -1.0f,0.0f), m_Edge(5), m_ProcessedEdge(0)
 		{
 			m_LightType = (int)LightType::Spot;
-			m_AmbientIntensity = 0.5f;
-			m_DiffuseIntensity = 1.0f;
 			m_ProcessedEdge = cosf(glm::radians(m_Edge));
 		}
 
 
 		void Update(float _deltaTime) override
 		{
+			Light::Update(_deltaTime);
+
 			// Update the processed edge
 			m_ProcessedEdge = cosf(glm::radians(m_Edge));
 		}

@@ -20,16 +20,6 @@ namespace Denix
 		HitPipe = false;
 	}
 
-	void JumpPawn::GameUpdate(float _deltaTime)
-	{
-		GameObject::GameUpdate(_deltaTime);
-		
-		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_SPACE))
-		{
-			m_PhysicsComponent->AddImpulse({ 0.0f, JumpForce, 0.0f });
-		}
-	}
-
 	void JumpPawn::OnCollision(Ref<GameObject>& _other, CollisionData& _collision)
 	{
 		if (!_other) return;

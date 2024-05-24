@@ -32,6 +32,7 @@ public:
 		Engine::PostInitialize();
 
 		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Brick.png)", "Brick");
+		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Brickw.png)", "Brickw");
 		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Start.png)", "GameStart");
 		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\End.png)", "GameEnd");
 		ResourceSubsystem::LoadModel("SM_Pipe", FileSubsystem::GetUserContentRoot() + R"(Models\Pipe.obj)");
@@ -47,7 +48,7 @@ public:
 	{
 		if (SceneSubsystem* sceneSys = SceneSubsystem::Get())
 		{
-			if (const auto scene = MakeRef<PhysicsScene>())
+			if (const auto scene = MakeRef<GraphicsGame>())
 			{
 				sceneSys->LoadScene(scene);
 				sceneSys->OpenScene(scene->GetSceneName());

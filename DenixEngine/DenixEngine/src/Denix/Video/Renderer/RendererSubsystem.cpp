@@ -111,16 +111,6 @@ namespace Denix
 			// Draw Collision over gameobject if set to visible
 			if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
 		}
-
-		if (const Ref<UICamera> cam = s_RendererSubSystem->m_ActiveScene->m_UICamera)
-		{
-			Ref<Shader> shader = ResourceSubsystem::GetShader("TextShader");
-
-			for (const TextUI& text : cam->m_Texts)
-			{
-				cam->RenderText(shader, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-            }
-		}
 	}
 
 	void RendererSubsystem::RenderUnlitViewport()
@@ -287,7 +277,7 @@ namespace Denix
 
 		for (const Ref<GameObject>& object : m_ActiveScene->m_SceneObjects)
 		{
-			if (!object->GetPhysicsComponent()->GetCollider()) continue;
+			if (!object->GetPhysicsComponent()->GetCollider() || !object->GetPhysicsComponent()->CollisionDetectionEnabled()) continue;
 
 			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
 			const Ref<MeshComponent> meshComp = object->GetCollider()->GetMeshComponent();

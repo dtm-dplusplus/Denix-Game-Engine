@@ -6,8 +6,8 @@
 
 namespace Denix
 {
-	constexpr unsigned int MAX_POINT_LIGHTS = 3;
-	constexpr unsigned int MAX_SPOT_LIGHTS = 3;
+	constexpr unsigned int MAX_POINT_LIGHTS = 100;
+	constexpr unsigned int MAX_SPOT_LIGHTS = 100;
 
 	// Basic Scene class
 	class Scene: public Object
@@ -31,7 +31,6 @@ namespace Denix
 			m_ViewportCamera = MakeRef<ViewportCamera>();
 			m_ViewportCamera->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 10.0f, 5.0f));
 
-			m_UICamera = MakeRef<UICamera>();
 			m_DirLight = MakeRef<DirectionalLight>();
 			m_DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));
 			m_SceneObjects.push_back(m_DirLight);
@@ -236,6 +235,8 @@ namespace Denix
 
 		bool m_RequestStop = false;
 
+		bool m_RequestStart = false;
+
 		/** Gravity of the scene */
 		float m_Gravity = 9.81f;
 
@@ -245,8 +246,6 @@ namespace Denix
 		Ref<ViewportCamera> m_ViewportCamera;
 
 		Ref<Camera> m_ActiveCamera;
-
-		Ref<UICamera> m_UICamera;
 
 		Ref<DirectionalLight> m_DirLight;
 
