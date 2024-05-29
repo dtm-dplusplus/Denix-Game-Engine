@@ -176,11 +176,11 @@
     <ClCompile Include="src\Denix\Video\Renderer\RendererSubsystem.cpp">
       <Filter>src\Denix\Video\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Denix\Video\GL\FrameBuffer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\Denix\Video\GL\Viewport.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Denix\Video\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Denix\Video\GL\FrameBuffer.cpp">
+      <Filter>src\Denix\Video\GL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -329,7 +329,11 @@
     <ClInclude Include="src\Denix\Video\Renderer\RendererSubsystem.h">
       <Filter>src\Denix\Video\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Denix\Video\GL\FrameBuffer.h" />
-    <ClInclude Include="src\Denix\Video\GL\Viewport.h" />
+    <ClInclude Include="src\Denix\Video\GL\FrameBuffer.h">
+      <Filter>src\Denix\Video\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Denix\Video\GL\Viewport.h">
+      <Filter>src\Denix\Video\GL</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

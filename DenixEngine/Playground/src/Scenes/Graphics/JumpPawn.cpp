@@ -7,7 +7,6 @@ namespace Denix
 	JumpPawn::JumpPawn() : GameObject({ "JumpPawn" })
 	{
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
-		m_PhysicsComponent->IsColliderVisible() = true;
 		m_PhysicsComponent->SetSimulatePhysics(false);
 		m_PhysicsComponent->GetLinearDrag() = 0.75f;
 

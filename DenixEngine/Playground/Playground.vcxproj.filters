@@ -52,6 +52,8 @@
     <ClInclude Include="src\Scenes\Graphics\JumpPawn.h">
       <Filter>src\Scenes\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scenes\Graphics\Pipe.h" />
+    <ClInclude Include="src\Scenes\Graphics\Pipe.h">
+      <Filter>src\Scenes\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
