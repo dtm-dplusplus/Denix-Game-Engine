@@ -29,6 +29,7 @@ namespace Denix
 
 		static int& GetViewportMode() { return s_RendererSubSystem->m_ViewportMode; }
 
+		bool ValidateForRenderer(const Ref<RenderComponent>& _renderComp, const Ref<TransformComponent>& _transformComp, const Ref<MeshComponent>& _meshComp);
 
 	public:
 		static RendererSubsystem* Get() { return s_RendererSubSystem; }
@@ -49,6 +50,7 @@ namespace Denix
 	private:
 		void RenderScene();
 		void RenderDefaultViewport();
+		void UploadCameraMatrices(const Denix::Ref<Denix::Shader>& shader);
 		void RenderUnlitViewport();
 		void RenderWireframeViewport();
 		void RenderCollisionViewport();

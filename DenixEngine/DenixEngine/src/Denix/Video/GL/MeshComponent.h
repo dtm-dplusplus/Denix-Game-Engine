@@ -6,8 +6,7 @@
 
 namespace Denix
 {
-	class
-	MeshComponent final : public Component
+	class MeshComponent final : public Component
 	{
 	public:
 		MeshComponent() : Component(ObjectInitializer("Mesh Component")),
@@ -18,6 +17,9 @@ namespace Denix
 
 		MeshComponent(const std::string& _parentName, const Ref<Model>& _model) : Component(_parentName, ObjectInitializer("Mesh Component")),
 			m_Model{ nullptr } {}
+
+		void DrawModel();
+		
 
 		Ref<Model> GetModel() const { return m_Model; }
 		Ref<Model>& GetModel() { return m_Model; }

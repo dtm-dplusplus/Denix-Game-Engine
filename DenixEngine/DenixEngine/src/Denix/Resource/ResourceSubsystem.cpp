@@ -69,16 +69,12 @@ namespace Denix
 		// MATERIALS
 		{
 			Ref<Material> defaultMaterial = MakeRef<Material>(ObjectInitializer("MAT_Default"));
-			defaultMaterial->SetShader(GetShader("DefaultShader"));
-			defaultMaterial->GetBaseParam().IsTexture = true;
-			defaultMaterial->GetBaseParam().Texture = GetTexture("DefaultTexture");
 			AddMaterial(defaultMaterial);
 
 			Ref<Material> unlitMaterial = MakeRef<Material>(ObjectInitializer("MAT_Unlit"));
 			unlitMaterial->SetShader(GetShader("UnlitShader"));
 			AddMaterial(unlitMaterial);
 		}
-		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
 
 		// Models
 		LoadModel("SM_Plane", FileSubsystem::GetEngineContentRoot() + R"(models\Plane.obj)");

@@ -11,6 +11,19 @@ namespace Denix
 {
 	RendererSubsystem* RendererSubsystem::s_RendererSubSystem{ nullptr };
 
+	bool RendererSubsystem::ValidateForRenderer(const Ref<RenderComponent>& _renderComp, const Ref<TransformComponent>& _transformComp, const Ref<MeshComponent>& _meshComp)
+	{
+		if (!_renderComp || !_transformComp || !_meshComp) return false;
+
+		const Ref<Material> mat = _renderComp->m_Material;
+		if (!mat) return false;
+
+		const Ref<Shader> shader = mat->GetShader();
+		if (!shader) return false;
+
+		return true;
+	}
+
 	void RendererSubsystem::RenderScene()
 	{
 		if (!s_RendererSubSystem->m_Enabled) return;
@@ -41,75 +54,42 @@ namespace Denix
 			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
 			const Ref<MeshComponent> meshComp = object->GetMeshComponent();
 
-			if (!renderComp || !transformComp || !meshComp) continue;
-
-			if (const Ref<Material> mat = renderComp->m_Material; renderComp->IsVisible())
+			if (ValidateForRenderer(renderComp, transformComp, meshComp) && renderComp->IsVisible())
 			{
-				mat->m_Shader->Bind();
+				const Ref<Material> mat = renderComp->m_Material;
+				const Ref<Shader> shader = mat->GetShader();
 
-				// Upload the material
-				const BaseMatParam& base = mat->GetBaseParam();
-				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
+				shader->Bind();
 
-				if (base.IsTexture && base.Texture)
-				{
-					base.Texture->Bind();
+				mat->UploadUniforms();
 
-					// Texture Settings need to move to the material/texture
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
-				}
-				else
-				{
-					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
-						base.Color.r, base.Color.g, base.Color.b);
+				UploadCameraMatrices(shader);
 
-
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
-				}
-				
-				// Upload the camera matrices relative to Object
-				if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
-				{
-					glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_Projection"), 1,
-						GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
-
-					glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_View"), 1,
-						GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
-
-					glUniform3f(renderComp->m_Shader->GetUniform("u_CameraPosition"),
-						camera->GetTransformComponent()->GetPosition().x,
-						camera->GetTransformComponent()->GetPosition().y,
-						camera->GetTransformComponent()->GetPosition().z);
-				}
-
-				// Upload the model matrix
-				glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_Model"), 1,
+				glUniformMatrix4fv(shader->GetUniform("u_Model"), 1,
 					GL_FALSE, glm::value_ptr(transformComp->GetModel()));
 
-				// Upload Affects Lighting bool
-				glUniform1i(renderComp->m_Shader->GetUniform("u_AffectsLighting"), renderComp->m_AffectsLighting);
+				glUniform1i(shader->GetUniform("u_AffectsLighting"), renderComp->m_AffectsLighting);
 
-				// Draw Call
-				if (const Ref<Model> model = meshComp->GetModel())
-				{
-					for (unsigned int i = 0; i < model->m_Meshes.size(); i++)
-					{
-						if (model->m_Meshes[i]->m_VAO && model->m_Meshes[i]->m_IBO)
-						{
-							model->m_Meshes[i]->m_VAO->Bind();
-							model->m_Meshes[i]->m_IBO->Bind();
-							glDrawElements(GL_TRIANGLES, model->m_Meshes[i]->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
-						}
-					}
-				}
+				meshComp->DrawModel();
 			}
 
-			// Draw Collision over gameobject if set to visible
+			// Draw Collider over gameobject if set to visible
 			if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
+		}
+	}
+
+	void RendererSubsystem::UploadCameraMatrices(const Ref<Shader>& shader)
+	{
+		if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
+		{
+			glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1,
+				GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+
+			glUniformMatrix4fv(shader->GetUniform("u_View"), 1,
+				GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+
+			const glm::vec3& camPos = camera->GetTransformComponent()->GetPosition();
+			glUniform3f(shader->GetUniform("u_CameraPosition"), camPos.x, camPos.y, camPos.z);
 		}
 	}
 
@@ -119,214 +99,214 @@ namespace Denix
 
 		ResourceSubsystem::GetShader("UnlitShader")->Bind();
 
-		for (const Ref<GameObject>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
-		{
-			const Ref<RenderComponent> renderComp = object->GetRenderComponent();
-			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
-			const Ref<MeshComponent> meshComp = object->GetMeshComponent();
+		//for (const Ref<GameObject>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
+		//{
+		//	const Ref<RenderComponent> renderComp = object->GetRenderComponent();
+		//	const Ref<TransformComponent> transformComp = object->GetTransformComponent();
+		//	const Ref<MeshComponent> meshComp = object->GetMeshComponent();
 
-			if (!renderComp || !transformComp || !meshComp) continue;
-			//if (!renderComp->m_Material) continue;
-			//if (!renderComp->m_Material->GetShader()) continue;
+		//	if (!renderComp || !transformComp || !meshComp) continue;
+		//	//if (!renderComp->m_Material) continue;
+		//	//if (!renderComp->m_Material->GetShader()) continue;
 
-			if (const Ref<Material> mat = renderComp->m_Material; renderComp->IsVisible())
-			{
-				mat->m_Shader->Bind();
+		//	if (const Ref<Material> mat = renderComp->m_Material; renderComp->IsVisible())
+		//	{
+		//		mat->m_Shader->Bind();
 
-				// Upload the material
-				const BaseMatParam& base = mat->GetBaseParam();
+		//		// Upload the material
+		//		const BaseMatParam& base = mat->GetBaseParam();
 
-				if (base.IsTexture && base.Texture)
-				{
-					base.Texture->Bind();
+		//		if (base.IsTexture && base.Texture)
+		//		{
+		//			base.Texture->Bind();
 
-					// Texture Settings need to move to the material/texture
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
-				}
-				else
-				{
-					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
-						base.Color.r, base.Color.g, base.Color.b);
+		//			// Texture Settings need to move to the material/texture
+		//			glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
+		//			glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
+		//			glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
+		//			glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
+		//		}
+		//		else
+		//		{
+		//			glUniform3f(shader->GetUniform("u_Material.Base.Color"),
+		//				base.Color.r, base.Color.g, base.Color.b);
 
-					glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
+		//			glUniform1i(shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
 
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
-				}
+		//			glUniform1f(shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+		//			glUniform1f(shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+		//		}
 
-				// Upload the camera matrices relative to Object
-				if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
-				{
-					glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_Projection"), 1,
-						GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+		//		// Upload the camera matrices relative to Object
+		//		if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
+		//		{
+		//			glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1,
+		//				GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
 
-					glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_View"), 1,
-						GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+		//			glUniformMatrix4fv(shader->GetUniform("u_View"), 1,
+		//				GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
 
-					glUniform3f(renderComp->m_Shader->GetUniform("u_CameraPosition"),
-						camera->GetTransformComponent()->GetPosition().x,
-						camera->GetTransformComponent()->GetPosition().y,
-						camera->GetTransformComponent()->GetPosition().z);
-				}
+		//			glUniform3f(shader->GetUniform("u_CameraPosition"),
+		//				camera->GetTransformComponent()->GetPosition().x,
+		//				camera->GetTransformComponent()->GetPosition().y,
+		//				camera->GetTransformComponent()->GetPosition().z);
+		//		}
 
-				// Upload the model matrix
-				glUniformMatrix4fv(renderComp->m_Shader->GetUniform("u_Model"), 1,
-					GL_FALSE, glm::value_ptr(transformComp->GetModel()));
+		//		// Upload the model matrix
+		//		glUniformMatrix4fv(shader->GetUniform("u_Model"), 1,
+		//			GL_FALSE, glm::value_ptr(transformComp->GetModel()));
 
-				// Upload Affects Lighting bool
-				glUniform1i(renderComp->m_Shader->GetUniform("u_AffectsLighting"), renderComp->m_AffectsLighting);
+		//		// Upload Affects Lighting bool
+		//		glUniform1i(shader->GetUniform("u_AffectsLighting"), renderComp->m_AffectsLighting);
 
-				// Draw Call
-				if (const Ref<Model> model = meshComp->GetModel())
-				{
-					for (unsigned int i = 0; i < model->m_Meshes.size(); i++)
-					{
-						if (model->m_Meshes[i]->m_VAO && model->m_Meshes[i]->m_IBO)
-						{
-							model->m_Meshes[i]->m_VAO->Bind();
-							model->m_Meshes[i]->m_IBO->Bind();
-							glDrawElements(GL_TRIANGLES, model->m_Meshes[i]->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
-						}
-					}
-				}
-			}
+		//		// Draw Call
+		//		if (const Ref<Model> model = meshComp->GetModel())
+		//		{
+		//			for (unsigned int i = 0; i < model->m_Meshes.size(); i++)
+		//			{
+		//				if (model->m_Meshes[i]->m_VAO && model->m_Meshes[i]->m_IBO)
+		//				{
+		//					model->m_Meshes[i]->m_VAO->Bind();
+		//					model->m_Meshes[i]->m_IBO->Bind();
+		//					glDrawElements(GL_TRIANGLES, model->m_Meshes[i]->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
+		//				}
+		//			}
+		//		}
+		//	}
 
-			// Draw Collision over gameobject if set to visible
-			if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
-		}
+		//	// Draw Collision over gameobject if set to visible
+		//	if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
+		//}
 	}
 
 	void RendererSubsystem::RenderWireframeViewport()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		Ref<Shader> shader = ResourceSubsystem::GetShader("UnlitShader");
-		shader->Bind();
+		//Ref<Shader> shader = ResourceSubsystem::GetShader("UnlitShader");
+		//shader->Bind();
 
-		// Upload the camera matrices
-		if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
-		{
-			glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1,
-				GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+		//// Upload the camera matrices
+		//if (const Ref<Camera> camera = s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
+		//{
+		//	glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1,
+		//		GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
 
-			glUniformMatrix4fv(shader->GetUniform("u_View"), 1,
-				GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+		//	glUniformMatrix4fv(shader->GetUniform("u_View"), 1,
+		//		GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
 
-			glUniform3f(shader->GetUniform("u_CameraPosition"),
-				camera->GetTransformComponent()->GetPosition().x,
-				camera->GetTransformComponent()->GetPosition().y,
-				camera->GetTransformComponent()->GetPosition().z);
-		}
+		//	glUniform3f(shader->GetUniform("u_CameraPosition"),
+		//		camera->GetTransformComponent()->GetPosition().x,
+		//		camera->GetTransformComponent()->GetPosition().y,
+		//		camera->GetTransformComponent()->GetPosition().z);
+		//}
 
-		for (const Ref<GameObject>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
-		{
-			const Ref<RenderComponent> renderComp = object->GetRenderComponent();
-			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
-			const Ref<MeshComponent> meshComp = object->GetMeshComponent();
+		//for (const Ref<GameObject>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
+		//{
+		//	const Ref<RenderComponent> renderComp = object->GetRenderComponent();
+		//	const Ref<TransformComponent> transformComp = object->GetTransformComponent();
+		//	const Ref<MeshComponent> meshComp = object->GetMeshComponent();
 
-			if (!renderComp || !transformComp || !meshComp) continue;
+		//	if (!renderComp || !transformComp || !meshComp) continue;
 
-			// Upload the model matrix
-			glUniformMatrix4fv(shader->GetUniform("u_Model"), 1,
-				GL_FALSE, glm::value_ptr(transformComp->GetModel()));
+		//	// Upload the model matrix
+		//	glUniformMatrix4fv(shader->GetUniform("u_Model"), 1,
+		//		GL_FALSE, glm::value_ptr(transformComp->GetModel()));
 
-			// Upload the material
-			glUniform3f(renderComp->m_Shader->GetUniform("u_Material.BaseColor"),1.0f, 1.0f, 1.0f);
+		//	// Upload the material
+		//	glUniform3f(shader->GetUniform("u_Material.BaseColor"),1.0f, 1.0f, 1.0f);
 
-			// Draw Call
-			if (const Ref<Model> model = meshComp->GetModel())
-			{
-				for (unsigned int i = 0; i < model->m_Meshes.size(); i++)
-				{
-					if (model->m_Meshes[i]->m_VAO && model->m_Meshes[i]->m_IBO)
-					{
-						model->m_Meshes[i]->m_VAO->Bind();
-						model->m_Meshes[i]->m_IBO->Bind();
-						glDrawElements(GL_TRIANGLES, model->m_Meshes[i]->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
-					}
-				}
-			}
-		}
+		//	// Draw Call
+		//	if (const Ref<Model> model = meshComp->GetModel())
+		//	{
+		//		for (unsigned int i = 0; i < model->m_Meshes.size(); i++)
+		//		{
+		//			if (model->m_Meshes[i]->m_VAO && model->m_Meshes[i]->m_IBO)
+		//			{
+		//				model->m_Meshes[i]->m_VAO->Bind();
+		//				model->m_Meshes[i]->m_IBO->Bind();
+		//				glDrawElements(GL_TRIANGLES, model->m_Meshes[i]->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
+		//			}
+		//		}
+		//	}
+		//}
 	}
 
 	void RendererSubsystem::RenderCollisionViewport()
 	{
 		
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		Ref<Shader> shader = ResourceSubsystem::GetShader("DefaultShader");
-		shader->Bind();
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//Ref<Shader> shader = ResourceSubsystem::GetShader("DefaultShader");
+		//shader->Bind();
 
-		// Upload the camera matrices relative to Object
-		if (const Ref<Camera> camera = m_ActiveScene->m_ActiveCamera)
-		{
-			glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1,
-				GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
+		//// Upload the camera matrices relative to Object
+		//if (const Ref<Camera> camera = m_ActiveScene->m_ActiveCamera)
+		//{
+		//	glUniformMatrix4fv(shader->GetUniform("u_Projection"), 1,
+		//		GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix()));
 
-			glUniformMatrix4fv(shader->GetUniform("u_View"), 1,
-				GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
+		//	glUniformMatrix4fv(shader->GetUniform("u_View"), 1,
+		//		GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
 
-			glUniform3f(shader->GetUniform("u_CameraPosition"),
-				camera->GetTransformComponent()->GetPosition().x,
-				camera->GetTransformComponent()->GetPosition().y,
-				camera->GetTransformComponent()->GetPosition().z);
-		}
+		//	glUniform3f(shader->GetUniform("u_CameraPosition"),
+		//		camera->GetTransformComponent()->GetPosition().x,
+		//		camera->GetTransformComponent()->GetPosition().y,
+		//		camera->GetTransformComponent()->GetPosition().z);
+		//}
 
-		for (const Ref<GameObject>& object : m_ActiveScene->m_SceneObjects)
-		{
-			if (!object->GetPhysicsComponent()->GetCollider() || !object->GetPhysicsComponent()->CollisionDetectionEnabled()) continue;
+		//for (const Ref<GameObject>& object : m_ActiveScene->m_SceneObjects)
+		//{
+		//	if (!object->GetPhysicsComponent()->GetCollider() || !object->GetPhysicsComponent()->CollisionDetectionEnabled()) continue;
 
-			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
-			const Ref<MeshComponent> meshComp = object->GetCollider()->GetMeshComponent();
-			const Ref<PhysicsComponent> physComp = object->GetPhysicsComponent();
+		//	const Ref<TransformComponent> transformComp = object->GetTransformComponent();
+		//	const Ref<MeshComponent> meshComp = object->GetCollider()->GetMeshComponent();
+		//	const Ref<PhysicsComponent> physComp = object->GetPhysicsComponent();
 
-			// Upload the model matrix
-			glUniformMatrix4fv(shader->GetUniform("u_Model"), 1,
-				GL_FALSE, glm::value_ptr(transformComp->GetModel()));
+		//	// Upload the model matrix
+		//	glUniformMatrix4fv(shader->GetUniform("u_Model"), 1,
+		//		GL_FALSE, glm::value_ptr(transformComp->GetModel()));
 
-			// Upload Affects Lighting bool
-			glUniform1i(shader->GetUniform("u_AffectsLighting"), true);
-			glUniform1i(shader->GetUniform("u_BaseColorAsTexture"), true);
+		//	// Upload Affects Lighting bool
+		//	glUniform1i(shader->GetUniform("u_AffectsLighting"), true);
+		//	glUniform1i(shader->GetUniform("u_BaseColorAsTexture"), true);
 
-			if (physComp->IsColliding())
-			{
-				glUniform3f(shader->GetUniform("u_Material.Base.Color"), 1.0f, 0.0f, 0.0f);
-			}
-			else
-			{
-				switch (object->GetTransformComponent()->GetMoveability())
-				{
-				case Moveability::Static:
-				{
-					glUniform3f(shader->GetUniform("u_Material.Base.Color"),
-						m_StaticColliderColor.r, m_StaticColliderColor.g, m_StaticColliderColor.b);
-				} break;
+		//	if (physComp->IsColliding())
+		//	{
+		//		glUniform3f(shader->GetUniform("u_Material.Base.Color"), 1.0f, 0.0f, 0.0f);
+		//	}
+		//	else
+		//	{
+		//		switch (object->GetTransformComponent()->GetMoveability())
+		//		{
+		//		case Moveability::Static:
+		//		{
+		//			glUniform3f(shader->GetUniform("u_Material.Base.Color"),
+		//				m_StaticColliderColor.r, m_StaticColliderColor.g, m_StaticColliderColor.b);
+		//		} break;
 
-				case Moveability::Dynamic:
-				{
-					glUniform3f(shader->GetUniform("u_Material.Base.Color"),
-						m_DynamicColliderColor.r, m_DynamicColliderColor.g, m_DynamicColliderColor.b);
-				} break;
-				}
-			}
+		//		case Moveability::Dynamic:
+		//		{
+		//			glUniform3f(shader->GetUniform("u_Material.Base.Color"),
+		//				m_DynamicColliderColor.r, m_DynamicColliderColor.g, m_DynamicColliderColor.b);
+		//		} break;
+		//		}
+		//	}
 
-			// Draw Call
-			if (const Ref<Model> model = meshComp->GetModel())
-			{
-				for (unsigned int i = 0; i < model->m_Meshes.size(); i++)
-				{
-					if (model->m_Meshes[i]->m_VAO && model->m_Meshes[i]->m_IBO)
-					{
-						model->m_Meshes[i]->m_VAO->Bind();
-						model->m_Meshes[i]->m_IBO->Bind();
-						glDrawElements(GL_TRIANGLES, model->m_Meshes[i]->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
-					}
-				}
-			}
-		}
+		//	// Draw Call
+		//	if (const Ref<Model> model = meshComp->GetModel())
+		//	{
+		//		for (unsigned int i = 0; i < model->m_Meshes.size(); i++)
+		//		{
+		//			if (model->m_Meshes[i]->m_VAO && model->m_Meshes[i]->m_IBO)
+		//			{
+		//				model->m_Meshes[i]->m_VAO->Bind();
+		//				model->m_Meshes[i]->m_IBO->Bind();
+		//				glDrawElements(GL_TRIANGLES, model->m_Meshes[i]->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
+		//			}
+		//		}
+		//	}
+		//}
 
 	}
 
@@ -412,18 +392,10 @@ namespace Denix
 			}
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			// Draw Call
-			if (const Ref<Model> model = _component->GetCollider()->GetMeshComponent()->GetModel())
+
+			if (const Ref<MeshComponent> meshComp = _component->GetCollider()->GetMeshComponent())
 			{
-				for (unsigned int i = 0; i < model->m_Meshes.size(); i++)
-				{
-					if (model->m_Meshes[i]->m_VAO && model->m_Meshes[i]->m_IBO)
-					{
-						model->m_Meshes[i]->m_VAO->Bind();
-						model->m_Meshes[i]->m_IBO->Bind();
-						glDrawElements(GL_TRIANGLES, model->m_Meshes[i]->m_IBO->GetIndexCount(), GL_UNSIGNED_INT, 0);
-					}
-				}
+				meshComp->DrawModel();
 			}
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}

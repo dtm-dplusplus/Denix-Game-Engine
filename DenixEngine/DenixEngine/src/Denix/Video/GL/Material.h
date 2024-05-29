@@ -32,6 +32,8 @@ namespace Denix
 		Material(const ObjectInitializer& _objInit = { "Material" });
 		Material(Ref<Material> _other);
 
+		virtual void UploadUniforms() {}
+
 		Ref<Shader> GetShader() const { return m_Shader; }
 		void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
 
@@ -48,7 +50,7 @@ namespace Denix
 		float& GetSpecularIntensity() { return m_SpecularIntensity; }
 		void SetSpecularIntensity(const float _intensity) { m_SpecularIntensity = _intensity; }
 
-	private:
+	protected:
 		BaseMatParam m_BaseParam;
 
 		NormalMatParam m_NormalParam;
@@ -61,5 +63,14 @@ namespace Denix
 		friend class RendererSubsystem;
 	};
 
+	class DefaultMaterial : public Material
+	{
+	public:
+		DefaultMaterial(const ObjectInitializer& _objInit = { "DefaultMaterial" }) : Material(_objInit)
+		{
+		}
+
+		void UploadUniforms() override;
+	};
 
 }
