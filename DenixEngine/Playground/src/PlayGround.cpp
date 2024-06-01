@@ -1,6 +1,7 @@
 #include "Denix.h"
-#include "Scenes/PhysicsScene.h"
-#include "Scenes/GraphicsGame.h"
+//#include "Scenes/PhysicsScene.h"
+//#include "Scenes/GraphicsGame.h"
+#include "Scenes/YamlScene.h"
 
 using namespace Denix;
 
@@ -31,15 +32,15 @@ public:
 	{
 		Engine::PostInitialize();
 
-		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Brick.png)", "Brick");
-		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Brickw.png)", "Brickw");
-		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Start.png)", "GameStart");
-		ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\End.png)", "GameEnd");
-		ResourceSubsystem::LoadModel("SM_Pipe", FileSubsystem::GetUserContentRoot() + R"(Models\Pipe.obj)");
-		ResourceSubsystem::LoadModel("SM_Bird", FileSubsystem::GetUserContentRoot() + R"(Models\Bird.obj)");
-		Ref<Material> red = MakeRef<Material>(ObjectInitializer("MAT_Red"));
-		red->GetBaseParam().Color = {1.0f,0.0f,0.0f};
-		ResourceSubsystem::AddMaterial(red);
+		//ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Brick.png)", "Brick");
+		//ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Brickw.png)", "Brickw");
+		//ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\Start.png)", "GameStart");
+		//ResourceSubsystem::LoadTexture(FileSubsystem::GetUserContentRoot() + R"(Textures\End.png)", "GameEnd");
+		//ResourceSubsystem::LoadModel("SM_Pipe", FileSubsystem::GetUserContentRoot() + R"(Models\Pipe.obj)");
+		//ResourceSubsystem::LoadModel("SM_Bird", FileSubsystem::GetUserContentRoot() + R"(Models\Bird.obj)");
+		//Ref<Material> red = MakeRef<Material>(ObjectInitializer("MAT_Red"));
+		//red->GetBaseParam().Color = {1.0f,0.0f,0.0f};
+		//ResourceSubsystem::AddMaterial(red);
 
 		RestartScene();
 	}
@@ -48,7 +49,7 @@ public:
 	{
 		if (SceneSubsystem* sceneSys = SceneSubsystem::Get())
 		{
-			if (const auto scene = MakeRef<GraphicsGame>())
+			if (const auto scene = MakeRef<YamlScene>())
 			{
 				sceneSys->LoadScene(scene);
 				sceneSys->OpenScene(scene->GetSceneName());

@@ -29,31 +29,11 @@
     <ClCompile Include="src\PlayGround.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scenes\PhysicsScene.cpp">
-      <Filter>src\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scenes\GraphicsGame.cpp">
-      <Filter>src\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scenes\Graphics\JumpPawn.cpp">
-      <Filter>src\Scenes\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scenes\Graphics\Pipe.cpp">
-      <Filter>src\Scenes\Graphics</Filter>
+    <ClCompile Include="src\Scenes\YamlScene.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Scenes\PhysicsScene.h">
-      <Filter>src\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scenes\GraphicsGame.h">
-      <Filter>src\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scenes\Graphics\JumpPawn.h">
-      <Filter>src\Scenes\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scenes\Graphics\Pipe.h">
-      <Filter>src\Scenes\Graphics</Filter>
-    </ClInclude>
+    <ClInclude Include="src\Scenes\YamlScene.h" />
   </ItemGroup>
 </Project>

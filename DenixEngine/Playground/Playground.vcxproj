@@ -107,14 +107,11 @@ XCOPY /e /y "$(SolutionDir)DenixEngine\res" "$(OutDir)DenixEngine\res\"</Command
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Scenes\Graphics\Pipe.cpp" />
-    <ClCompile Include="src\Scenes\Graphics\JumpPawn.cpp" />
-    <ClCompile Include="src\Scenes\PhysicsScene.cpp" />
     <ClCompile Include="src\PlayGround.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Scenes\GraphicsGame.cpp" />
+    <ClCompile Include="src\Scenes\YamlScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DenixEngine\DenixEngine.vcxproj">
@@ -122,10 +119,7 @@ XCOPY /e /y "$(SolutionDir)DenixEngine\res" "$(OutDir)DenixEngine\res\"</Command
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Scenes\Graphics\Pipe.h" />
-    <ClInclude Include="src\Scenes\Graphics\JumpPawn.h" />
-    <ClInclude Include="src\Scenes\PhysicsScene.h" />
-    <ClInclude Include="src\Scenes\GraphicsGame.h" />
+    <ClInclude Include="src\Scenes\YamlScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
