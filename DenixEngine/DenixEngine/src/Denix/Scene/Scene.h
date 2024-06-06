@@ -14,8 +14,8 @@ namespace Denix
 	{
 	public:
 
-		Scene(const std::string& _name) : Object(ObjectInitializer(_name)),
-			m_SceneName{ _name },
+		Scene(const ObjectInitializer& _objInit) : Object(ObjectInitializer(_objInit)),
+			m_SceneName{ _objInit.Name },
 			m_ViewportCamera{ nullptr },
 			m_ActiveCamera{ nullptr },
 			m_DirLight{ nullptr }

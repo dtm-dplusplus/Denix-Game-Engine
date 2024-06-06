@@ -3,6 +3,7 @@
 
 namespace Denix
 {
+    
     class YamlScene :public Scene
     {
     public:

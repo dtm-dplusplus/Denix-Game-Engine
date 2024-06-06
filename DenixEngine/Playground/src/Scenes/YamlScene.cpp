@@ -2,8 +2,9 @@
 
 #include "imgui.h"
 #include "Denix/Scene/Object/Shapes/Shapes.h"
+#include "Denix/Core/Reflection.h"
 
-Denix::YamlScene::YamlScene() : Scene({"YamlScene"})
+Denix::YamlScene::YamlScene() : Scene(ObjectInitializer("YamlScene"))
 {
 
 }
@@ -16,6 +17,12 @@ bool Denix::YamlScene::Load()
     plane->GetTransformComponent()->GetScale() = glm::vec3(10.0f);
     m_SceneObjects.push_back(plane);
 
+    // Class const* c = GetClass<YamlStruct>();
+
+    /*for (auto& field: GetFields<YamlStruct>())
+	{
+		DE_LOG(Log, Info, "Field: {0}", field.name);
+	}*/
     return true;
 }
 

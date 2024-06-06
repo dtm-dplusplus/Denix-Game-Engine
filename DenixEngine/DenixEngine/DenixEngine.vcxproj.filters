@@ -335,5 +335,6 @@
     <ClInclude Include="src\Denix\Video\GL\Viewport.h">
       <Filter>src\Denix\Video\GL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Denix\Core\Reflection.h" />
   </ItemGroup>
 </Project>
