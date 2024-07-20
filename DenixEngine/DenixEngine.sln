@@ -1,5 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevProject", "DevProject\DevProject.vcxproj", "{717B32C4-53F0-4279-A50F-FCE7AE7345DC}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DE", "DE\DE.vcxproj", "{0EF6834E-3A32-40BC-B604-D78CB264FD5D}"
 EndProject
 Global
@@ -12,5 +14,9 @@ Global
 		{0EF6834E-3A32-40BC-B604-D78CB264FD5D}.Debug|x64.Build.0 = Debug|x64
 		{0EF6834E-3A32-40BC-B604-D78CB264FD5D}.Release|x64.ActiveCfg = Release|x64
 		{0EF6834E-3A32-40BC-B604-D78CB264FD5D}.Release|x64.Build.0 = Release|x64
+		{717B32C4-53F0-4279-A50F-FCE7AE7345DC}.Debug|x64.ActiveCfg = Debug|x64
+		{717B32C4-53F0-4279-A50F-FCE7AE7345DC}.Debug|x64.Build.0 = Debug|x64
+		{717B32C4-53F0-4279-A50F-FCE7AE7345DC}.Release|x64.ActiveCfg = Release|x64
+		{717B32C4-53F0-4279-A50F-FCE7AE7345DC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 EndGlobal
