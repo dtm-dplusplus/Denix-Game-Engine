@@ -1,11 +1,11 @@
 #pragma once
 
-#include <SDL_events.h>
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_video.h>
 
 #include "Denix/Core.h"
 #include "Denix/Core/Math.h"
 
-#include "SDL_video.h"
 #include "GL/glew.h"
 
 namespace Denix
@@ -59,12 +59,7 @@ namespace Denix
 	public:
 		SDL_GLWindow() : m_SDL_GLWindow(nullptr), m_SDL_GLContext(nullptr)
 		{
-			m_SDL_WindowFlags = static_cast<SDL_WindowFlags>(
-				SDL_WINDOW_OPENGL |
-				//SDL_WINDOW_MAXIMIZED |
-				//SDL_WINDOW_RESIZABLE |
-				SDL_WINDOW_ALLOW_HIGHDPI
-				);
+			m_SDL_WindowFlags = SDL_WINDOW_OPENGL;
 
 		}
 
@@ -82,10 +77,10 @@ namespace Denix
 			}
 			else
 			{
-				SDL_SetWindowFullscreen(m_SDL_GLWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				SDL_SetWindowFullscreen(m_SDL_GLWindow, SDL_WINDOW_FULLSCREEN);
 				m_IsFullscreen = true;
 			}
-			DE_LOG(LogWindow, Info, "Toggled Fullscreen: {}", m_IsFullscreen);
+			DE_LOG(LogWindow, Info, "Toggled Fullscreen: {}", m_IsFullscreen)
 		}
 
 		void RequestClose()
@@ -102,7 +97,7 @@ namespace Denix
 
 		SDL_Window* GetSDLWindow() const { return m_SDL_GLWindow; }
 
-		void SetSDL_GLWindowFlags(const int flags) { m_SDL_WindowFlags = static_cast<SDL_WindowFlags>(m_SDL_WindowFlags | flags); }
+		// void SetSDL_GLWindowFlags(const int flags) { m_SDL_WindowFlags = m_SDL_WindowFlags | static_cast<SDL_WindowFlags>(flags); }
 		SDL_WindowFlags GetSDL_GLWindowFlags() const { return m_SDL_WindowFlags; }
 
 		bool Initialize() override;

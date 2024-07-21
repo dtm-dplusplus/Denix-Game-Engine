@@ -1,22 +1,20 @@
 #include "depch.h"
 #include "Window.h"
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_opengl.h>
 #include "GL/glew.h"
 #include "imgui.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_sdl2.h"
 #include "Denix/Video/GL/Shader.h"
-#include "Denix/Resource/ResourceSubsystem.h"
 
 namespace Denix
 {
 	bool SDL_GLWindow::Initialize()
 	{
 		//Initialize SDL
-		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) < 0)
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) < 0)
 		{
-			DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", SDL_GetError())
+			// DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", SDL_GetError())
 				return false;
 		}
 		DE_LOG(Log, Trace, "SDL Init success")
@@ -26,26 +24,22 @@ namespace Denix
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, m_GLMajorVersion);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, m_GLMinorVersion);
-
-		// Useful for virtual keyboards, complex chararacter sets
-		SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
-
+		
 		// Set GL Attributes
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, m_GLDoubleBuffer);
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, m_GLDepthSize);
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, m_GLStencilSize);
 
 		// Create SDL window
-		if (SDL_Window* window = SDL_CreateWindow(m_Title.c_str(),
-			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			m_WinX, m_WinY, m_SDL_WindowFlags))
+		if (SDL_Window* window = SDL_CreateWindow(m_Title.c_str(), m_WinX, m_WinY,
+			m_SDL_WindowFlags))
 		{
 			m_SDL_GLWindow = window;
 			DE_LOG(LogWindow, Trace, "SDL_CreateWindow success")
 		}
 		else
 		{
-			DE_LOG(LogWindow, Critical, "SDL_CreateWindow failed! SDL_Error: {}", SDL_GetError())
+			//DE_LOG(LogWindow, Critical, "SDL_CreateWindow failed! SDL_Error: {}", SDL_GetError())
 				return false;
 
 		}
@@ -58,22 +52,22 @@ namespace Denix
 		}
 		else
 		{
-			DE_LOG(LogWindow, Critical, "SDL_GL_CreateContext failed! SDL_Error: {}", SDL_GetError())
+			// DE_LOG(LogWindow, Critical, "SDL_GL_CreateContext failed! SDL_Error: {}", SDL_GetError())
 				return false;
 		}
 
 		// Make current context
 		if (SDL_GL_MakeCurrent(m_SDL_GLWindow, m_SDL_GLContext) < 0)
 		{
-			DE_LOG(LogWindow, Critical, "SDL_GL_MakeCurrent failed! SDL_Error: {}", SDL_GetError())
+			// DE_LOG(LogWindow, Critical, "SDL_GL_MakeCurrent failed! SDL_Error: {}", SDL_GetError())
 				return false;
 		}
 
 		// Enable Vsync
 		if (SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
 		{
-			DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
-				return false;
+			// DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
+			return false;
 		}
 
 		// Set Viewport
@@ -89,7 +83,7 @@ namespace Denix
 	void SDL_GLWindow::Deinitialize()
 	{
 		// Destroys window and context
-		SDL_GL_DeleteContext(SDL_GL_GetCurrentContext());
+		SDL_GL_DestroyContext(SDL_GL_GetCurrentContext());
 		SDL_DestroyWindow(m_SDL_GLWindow);
 		DE_LOG(LogWindow, Trace, "Destroyed Window")
 	}
@@ -108,9 +102,9 @@ namespace Denix
 
 	void SDL_GLWindow::WindowEvent(const SDL_Event* _event)
 	{
-		switch (_event->window.event)
+		/*switch (_event->window)
 		{
-		case SDL_WINDOWEVENT_CLOSE: // Additioanl CHeck e.window.windowID == SDL_GetWindowID(m_SDL_GLWindow)
+		case SDL_EVENT_WINDOW_CLOSE_REQUESTED: // Additioanl CHeck e.window.windowID == SDL_GetWindowID(m_SDL_GLWindow)
 		{
 			m_IsOpen = false;
 			DE_LOG(LogWindow, Trace, "Window Close Event")
@@ -129,7 +123,7 @@ namespace Denix
 		}
 			break;
 
-		case SDL_WINDOWEVENT_RESIZED:
+		case SDL_EVENT_WINDOW_RESIZED:
 		{
 			m_WinX = _event->window.data1;
 			m_WinY = _event->window.data2;
@@ -140,6 +134,6 @@ namespace Denix
 			break;
 
 		default:	break;
-		}
+		}*/
 	}
 }

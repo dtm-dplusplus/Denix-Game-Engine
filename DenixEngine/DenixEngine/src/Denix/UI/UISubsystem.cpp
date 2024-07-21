@@ -1,7 +1,8 @@
 #include "UISubsystem.h"
 
-#include <SDL_video.h>
-
+#include <SDL3/SDL_video.h>
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_sdl3.h"
 
 #include "Denix/Video/Window/Window.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
@@ -45,7 +46,7 @@ namespace Denix
 		if(const WindowSubsystem* windowSystem = WindowSubsystem::Get())
 		{
 			// Setup Platform/Renderer bindings
-			ImGui_ImplSDL2_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(), SDL_GL_GetCurrentContext());
+			ImGui_ImplSDL3_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(), SDL_GL_GetCurrentContext());
 			ImGui_ImplOpenGL3_Init(windowSystem->GetWindow()->GetGLSLVersion().c_str());
 		}
 		else
@@ -61,7 +62,7 @@ namespace Denix
 	void UISubsystem::Deinitialize()
 	{
 		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplSDL2_Shutdown();
+		ImGui_ImplSDL3_Shutdown();
 		ImGui::DestroyContext();
 
 		m_Initialized = false;
@@ -120,7 +121,7 @@ namespace Denix
 	void UISubsystem::NewFrame()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL2_NewFrame();
+		ImGui_ImplSDL3_NewFrame();
 		ImGui::NewFrame();
 	}
 	void UISubsystem::RenderUI()

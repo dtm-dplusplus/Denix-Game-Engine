@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "InputSubsystem.h"
 
-#include "backends/imgui_impl_sdl2.h"
+#include "backends/imgui_impl_sdl3.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
 
 namespace Denix
@@ -34,21 +34,48 @@ namespace Denix
 
 		while (SDL_PollEvent(&event))
 		{
-			ImGui_ImplSDL2_ProcessEvent(&event);
+			ImGui_ImplSDL3_ProcessEvent(&event);
 
             switch (event.type)
             {
-            case SDL_WINDOWEVENT:
-            {
-                m_Window->WindowEvent(&event);
-            } break;
+	            /*case SDL_EVENT_WINDOW_CLOSE_REQUESTED: // Additioanl CHeck e.window.windowID == SDL_GetWindowID(m_SDL_GLWindow)
+            		{
+            			m_IsOpen = false;
+            			DE_LOG(LogWindow, Trace, "Window Close Event")
+					}
+            		break;
 
-            case SDL_MOUSEWHEEL:
+            	case SDL_WINDOW_MINIMIZED:
+            		{
+            			DE_LOG(LogWindow, Trace, "Window Minimized Event")
+					}
+            		break;
+
+            	case SDL_WINDOW_MAXIMIZED:
+            		{
+            			DE_LOG(LogWindow, Trace, "Window Maximized Event")
+					}
+            		break;
+
+            	case SDL_EVENT_WINDOW_RESIZED:
+            		{
+            			m_WinX = _event->window.data1;
+            			m_WinY = _event->window.data2;
+            			glViewport(0, 0, m_WinX, m_WinY);
+
+            			DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", m_WinX, m_WinY)
+					}
+            		break;
+
+            	default:	break;
+            	}*/
+
+            case SDL_EVENT_MOUSE_WHEEL:
             {
                 m_MouseData.WheelY = event.wheel.y;
             } break;
 
-            case SDL_MOUSEBUTTONDOWN:
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
             {
                 if(event.button.button == SDL_BUTTON_LEFT) m_MouseData.Left = true;
                 if(event.button.button == SDL_BUTTON_RIGHT) m_MouseData.Right = true;
@@ -56,7 +83,7 @@ namespace Denix
                 if(event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = true;
                 if(event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = true;
             } break;
-            case SDL_MOUSEBUTTONUP:
+            case SDL_EVENT_MOUSE_BUTTON_UP:
             {
                 if (event.button.button == SDL_BUTTON_LEFT)  m_MouseData.Left = false;
                 if (event.button.button == SDL_BUTTON_RIGHT) m_MouseData.Right = false;
@@ -66,8 +93,8 @@ namespace Denix
 
             } break;
            
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
+            case SDL_EVENT_KEY_DOWN:
+            case SDL_EVENT_KEY_UP:
             {
                // DE_LOG(LogInput, Trace, "Key: {}", event.key.keysym.scancode);
             } break;
@@ -77,8 +104,8 @@ namespace Denix
 		}
 
 
-        m_MouseData.SDL_RelativeState = SDL_GetRelativeMouseState(&m_MouseData.RelX, &m_MouseData.RelY);
-        m_MouseData.SDL_State = SDL_GetMouseState(&m_MouseData.X, &m_MouseData.Y);
+        /*m_MouseData.SDL_RelativeState = SDL_GetRelativeMouseState(&m_MouseData.RelX, &m_MouseData.RelY);
+        m_MouseData.SDL_State = SDL_GetMouseState(&m_MouseData.X, &m_MouseData.Y);*/
 
         m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
 	}

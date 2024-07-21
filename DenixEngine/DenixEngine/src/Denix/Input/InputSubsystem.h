@@ -1,6 +1,6 @@
 #pragma once
 #include "Denix/System/SubSystem.h"
-#include "SDL_events.h"
+#include <SDL3/SDL_events.h>
 #include "Denix/Core.h"
 
 namespace Denix

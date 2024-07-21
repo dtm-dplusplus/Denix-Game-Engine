@@ -58,7 +58,7 @@
       <PreprocessorDefinitions>DE_PLATFORM_WINDOWS; DE_BUILD_DLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include;$(ProjectDir)contrib\sdl\include;$(ProjectDir)contrib\stb;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\assimp\include;$(ProjectDir)contrib\ft\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)contrib\SDL3\include;$(ProjectDir)contrib\spdlog\include;$(ProjectDir)contrib\glm;$(ProjectDir)contrib\glew\include;$(ProjectDir)contrib\stb;$(ProjectDir)contrib\imgui;$(ProjectDir)contrib\assimp\include;$(ProjectDir)contrib\ft\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>depch.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -113,6 +113,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl3.cpp" />
     <ClCompile Include="src\Denix\Physics\CollisionDetection.cpp" />
     <ClCompile Include="src\Denix\Core\TimerSubsystem.cpp" />
     <ClCompile Include="src\Denix\Scene\Object\Shapes\Shapes.cpp" />
@@ -138,7 +139,6 @@
     <ClCompile Include="src\Denix\Video\Renderer\RenderComponent.cpp" />
     <ClCompile Include="src\Denix\Scene\Camera.cpp" />
     <ClCompile Include="contrib\imgui\backends\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="contrib\imgui\backends\imgui_impl_sdl2.cpp" />
     <ClCompile Include="contrib\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -194,6 +194,7 @@
     <ClCompile Include="src\Denix\Scene\Component\TransformComponent.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Texture.cpp" />
     <ClCompile Include="src\Denix\Video\GL\Viewport.cpp" />
+    <ClInclude Include="contrib\imgui\backends\imgui_impl_sdl3.h" />
     <ClInclude Include="src\Denix\Physics\CollisionDetection.h" />
     <ClInclude Include="src\Denix\Core\Math.h" />
     <ClInclude Include="src\Denix\Core\TimerSubsystem.h" />
@@ -214,7 +215,6 @@
     <ClInclude Include="src\Denix\Video\Renderer\RenderComponent.h" />
     <ClInclude Include="src\Denix\Scene\Camera.h" />
     <ClInclude Include="contrib\imgui\backends\imgui_impl_opengl3.h" />
-    <ClInclude Include="contrib\imgui\backends\imgui_impl_sdl2.h" />
     <ClInclude Include="contrib\imgui\imconfig.h" />
     <ClInclude Include="contrib\imgui\imgui.h" />
     <ClInclude Include="contrib\imgui\imgui_internal.h" />
