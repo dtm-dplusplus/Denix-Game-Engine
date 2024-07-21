@@ -71,7 +71,7 @@ namespace Denix
 			if (const GLuint program = glCreateProgram())
 			{
 				m_GL_ID = program;
-				DE_LOG(LogShader, Trace, "Created shader program ID: {}", program)
+				// DE_LOG(LogShader, Trace, "Created shader program ID: {}", program)
 				return program;
 			}
 
@@ -83,7 +83,7 @@ namespace Denix
 		{
 			if (m_GL_ID)
 			{
-				DE_LOG(LogShader, Trace, "Deleted shader program ID: {}", m_GL_ID)
+				// DE_LOG(LogShader, Trace, "Deleted shader program ID: {}", m_GL_ID)
 				glDeleteProgram(m_GL_ID);
 			}
 		}
@@ -102,7 +102,7 @@ namespace Denix
 					return false;
 			}
 
-			DE_LOG(LogShader, Trace, "GLShader Program Link Success")
+			// DE_LOG(LogShader, Trace, "GLShader Program Link Success")
 
 			return true;
 		}

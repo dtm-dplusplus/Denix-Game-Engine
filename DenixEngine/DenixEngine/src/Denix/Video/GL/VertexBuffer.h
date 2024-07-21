@@ -13,8 +13,7 @@ namespace Denix
 		{
 			glGenBuffers(1, &m_GL_ID);
 
-			if (m_GL_ID) DE_LOG(LogGL, Trace, "Created VBO ID: {}", m_GL_ID)
-			else DE_LOG(LogGL, Error, "Failed to create VBO")
+			if (!m_GL_ID) DE_LOG(LogGL, Error, "Failed to create VBO")
 		}
 
 		~VertexBuffer()
@@ -83,8 +82,7 @@ namespace Denix
 		{
 			glGenBuffers(1, &m_GL_ID);
 
-			if (m_GL_ID) DE_LOG(LogGL, Trace, "Created IBO ID: {}", m_GL_ID)
-			else DE_LOG(LogGL, Error, "Failed to create IBO")
+			if (!m_GL_ID) DE_LOG(LogGL, Error, "Failed to create IBO")
 		}
 
 		~IndexBuffer()

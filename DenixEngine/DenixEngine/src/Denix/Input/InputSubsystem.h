@@ -12,11 +12,11 @@ namespace Denix
 		Uint32 SDL_RelativeState;
 
 		// Movement
-		int X = 0;
-		int Y = 0;
-		int RelX = 0;
-		int RelY = 0;
-		int WheelY = 0;
+		float X = 0;
+		float Y = 0;
+		float RelX = 0;
+		float RelY = 0;
+		float WheelY = 0;
 
 		// Buttons
 		bool Left = false;

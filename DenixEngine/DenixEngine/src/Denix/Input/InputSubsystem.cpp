@@ -32,6 +32,10 @@ namespace Denix
 
         m_MouseData.WheelY = 0;
 
+		m_MouseData.SDL_RelativeState = SDL_GetRelativeMouseState(&m_MouseData.RelX, &m_MouseData.RelY);
+		m_MouseData.SDL_State = SDL_GetMouseState(&m_MouseData.X, &m_MouseData.Y);
+		m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
+		
 		while (SDL_PollEvent(&event))
 		{
 			ImGui_ImplSDL3_ProcessEvent(&event);
@@ -110,12 +114,6 @@ namespace Denix
             default: ;
             }
 		}
-
-
-        /*m_MouseData.SDL_RelativeState = SDL_GetRelativeMouseState(&m_MouseData.RelX, &m_MouseData.RelY);
-        m_MouseData.SDL_State = SDL_GetMouseState(&m_MouseData.X, &m_MouseData.Y);*/
-
-        m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
 	}
 
 	void InputSubsystem::InputPanel()
@@ -123,9 +121,9 @@ namespace Denix
         ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Appearing);
 		ImGui::Begin("Input");
         ImGui::SeparatorText("Mouse Motion");
-        ImGui::Text("Mouse Pos: %d %d", m_MouseData.X, m_MouseData.Y);
-        ImGui::Text("Mouse Rel: %d %d", m_MouseData.RelX, m_MouseData.RelY);
-        ImGui::Text("Mouse Wheel: %d", m_MouseData.WheelY);
+        ImGui::Text("Mouse Pos: %f %f", m_MouseData.X, m_MouseData.Y);
+        ImGui::Text("Mouse Rel: %f %f", m_MouseData.RelX, m_MouseData.RelY);
+        ImGui::Text("Mouse Wheel: %f", m_MouseData.WheelY);
 
         ImGui::SeparatorText("Mouse Buttons");
         ImGui::Text("Left: %s", m_MouseData.Left ? "True" : "False");

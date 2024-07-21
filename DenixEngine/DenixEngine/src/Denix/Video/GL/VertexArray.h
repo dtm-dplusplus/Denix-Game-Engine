@@ -12,8 +12,7 @@ namespace Denix
 		{
 			glGenVertexArrays(1, &m_GL_ID);
 
-			if (m_GL_ID) DE_LOG(LogGL, Trace, "Created VAO ID: {}", m_GL_ID)
-			else DE_LOG(LogGL, Error, "Failed to create VAO")
+			if (!m_GL_ID) DE_LOG(LogGL, Error, "Failed to create VAO")
 		}
 
 		~VertexArray()
