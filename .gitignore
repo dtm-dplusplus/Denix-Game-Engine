@@ -398,4 +398,4 @@ FodyWeavers.xsd
 # Denix Engine
 Saved/
 /DenixEngine/enc_temp_folder
-!/DenixEngine/DE/contrib/SDL3/bin
+!/DenixEngine/DenixEngine/contrib/SDL3/bin
