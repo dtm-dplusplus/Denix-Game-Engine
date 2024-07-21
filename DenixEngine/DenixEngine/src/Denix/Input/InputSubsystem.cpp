@@ -38,38 +38,46 @@ namespace Denix
 
             switch (event.type)
             {
-	            /*case SDL_EVENT_WINDOW_CLOSE_REQUESTED: // Additioanl CHeck e.window.windowID == SDL_GetWindowID(m_SDL_GLWindow)
-            		{
-            			m_IsOpen = false;
-            			DE_LOG(LogWindow, Trace, "Window Close Event")
-					}
-            		break;
+            // All window events will be passed to window subsystem for handling
 
-            	case SDL_WINDOW_MINIMIZED:
-            		{
-            			DE_LOG(LogWindow, Trace, "Window Minimized Event")
-					}
-            		break;
+            case SDL_WINDOW_MINIMIZED: {}
+            case SDL_WINDOW_MAXIMIZED:{}
+			case SDL_EVENT_WINDOW_SHOWN:    { /**< Window has been shown */}	
+		    case SDL_EVENT_WINDOW_HIDDEN:           { /**< Window has been hidden */} 
+		    case SDL_EVENT_WINDOW_EXPOSED:
+			    {
+				    /*< Window has been exposed and should be redrawn:
+					and can be redrawn directly from event watchers for this event */
+			    } 
+		    case SDL_EVENT_WINDOW_MOVED:           {  /**< Window has been moved to data1: data2 */} 
+		    case SDL_EVENT_WINDOW_RESIZED:          { /**< Window has been resized to data1xdata2 */}	
+		    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:{/**< The pixel size of the window has changed to data1xdata2 */}	
+		    case SDL_EVENT_WINDOW_MINIMIZED:         {/**< Window has been minimized */}	
+		    case SDL_EVENT_WINDOW_MAXIMIZED:         {/**< Window has been maximized */}	
+		    case SDL_EVENT_WINDOW_RESTORED:          {/**< Window has been restored to normal size and position */}	
+		    case SDL_EVENT_WINDOW_MOUSE_ENTER:       {/**< Window has gained mouse focus */}	
+		    case SDL_EVENT_WINDOW_MOUSE_LEAVE:       {/**< Window has lost mouse focus */}	
+		    case SDL_EVENT_WINDOW_FOCUS_GAINED:      {/**< Window has gained keyboard focus */}	
+		    case SDL_EVENT_WINDOW_FOCUS_LOST:        {/**< Window has lost keyboard focus */}	
+		    case SDL_EVENT_WINDOW_CLOSE_REQUESTED:   {/**< The window manager requests that the window be closed */}	
+		    case SDL_EVENT_WINDOW_HIT_TEST:          {/**< Window had a hit test that wasn't SDL_HITTEST_NORMAL */}	
+		    case SDL_EVENT_WINDOW_ICCPROF_CHANGED:   {/**< The ICC profile of the window's display has changed */}	
+		    case SDL_EVENT_WINDOW_DISPLAY_CHANGED:   {/**< Window has been moved to display data1 */}	
+            case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED: {/**< Window display scale has been changed */}	
+		    case SDL_EVENT_WINDOW_OCCLUDED:          {/**< The window has been occluded */}		
+		    case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:  {/**< The window has entered fullscreen mode */}	
+		    case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:  {/**< The window has left fullscreen mode */}	
+		    case SDL_EVENT_WINDOW_DESTROYED:
+			    {
+				    /**< The window with the associated ID is being or has been destroyed. If this message is being handled
+					  in an event watcher, the window handle is still valid and can still be used to retrieve any userdata
+					  associated with the window. Otherwise, the handle has already been destroyed and all resources
+					  associated with it are invalid */
 
-            	case SDL_WINDOW_MAXIMIZED:
-            		{
-            			DE_LOG(LogWindow, Trace, "Window Maximized Event")
-					}
-            		break;
+					WindowSubsystem::GetWindow()->WindowEvent(&event);
+			    }	break;
 
-            	case SDL_EVENT_WINDOW_RESIZED:
-            		{
-            			m_WinX = _event->window.data1;
-            			m_WinY = _event->window.data2;
-            			glViewport(0, 0, m_WinX, m_WinY);
-
-            			DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", m_WinX, m_WinY)
-					}
-            		break;
-
-            	default:	break;
-            	}*/
-
+            
             case SDL_EVENT_MOUSE_WHEEL:
             {
                 m_MouseData.WheelY = event.wheel.y;

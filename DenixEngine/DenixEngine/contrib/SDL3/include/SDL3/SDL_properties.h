@@ -373,12 +373,13 @@ extern SDL_DECLSPEC SDL_PropertyType SDLCALL SDL_GetPropertyType(SDL_PropertiesI
  * \sa SDL_HasProperty
  * \sa SDL_SetPointerProperty
  */
-extern SDL_DECLSPEC void *SDLCALL SDL_GetPointerProperty(SDL_PropertiesID props, const char *name, void *default_value);
+extern SDL_DECLSPEC void * SDLCALL SDL_GetPointerProperty(SDL_PropertiesID props, const char *name, void *default_value);
 
 /**
  * Get a string property from a group of properties.
  *
- * The returned string follows the SDL_GetStringRule.
+ * This returns temporary memory which will be automatically freed later, and
+ * can be claimed with SDL_ClaimTemporaryMemory().
  *
  * \param props the properties to query.
  * \param name the name of the property to query.
@@ -394,7 +395,7 @@ extern SDL_DECLSPEC void *SDLCALL SDL_GetPointerProperty(SDL_PropertiesID props,
  * \sa SDL_HasProperty
  * \sa SDL_SetStringProperty
  */
-extern SDL_DECLSPEC const char *SDLCALL SDL_GetStringProperty(SDL_PropertiesID props, const char *name, const char *default_value);
+extern SDL_DECLSPEC const char * SDLCALL SDL_GetStringProperty(SDL_PropertiesID props, const char *name, const char *default_value);
 
 /**
  * Get a number property from a group of properties.
@@ -450,7 +451,7 @@ extern SDL_DECLSPEC float SDLCALL SDL_GetFloatProperty(SDL_PropertiesID props, c
  * \param name the name of the property to query.
  * \param default_value the default value of the property.
  * \returns the value of the property, or `default_value` if it is not set or
- *          not a float property.
+ *          not a boolean property.
  *
  * \threadsafety It is safe to call this function from any thread.
  *

@@ -72,7 +72,7 @@
     </Link>
     <PostBuildEvent>
       <Command>XCOPY /y "$(SolutionDir)DenixEngine\contrib\glew\lib\x64\glew32.dll" "$(OutDir)"
-XCOPY /y "$(SolutionDir)DenixEngine\contrib\sdl\lib\x64\SDL2.dll" "$(OutDir)"
+  XCOPY /y "$(SolutionDir)DenixEngine\contrib\SDL3\bin\SDL3.dll" "$(OutDir)"
 XCOPY /y "$(SolutionDir)DenixEngine\contrib\assimp\lib\assimp-vc143-mt.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

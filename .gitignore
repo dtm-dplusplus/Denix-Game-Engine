@@ -399,3 +399,5 @@ FodyWeavers.xsd
 Saved/
 /DenixEngine/enc_temp_folder
 !/DenixEngine/DenixEngine/contrib/SDL3/bin
+!/DenixEngine/DenixEngine/res
+!/DenixEngine/Playground/Content
