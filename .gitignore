@@ -401,3 +401,6 @@ Saved/
 !/DenixEngine/DenixEngine/contrib/SDL3/bin
 !/DenixEngine/DenixEngine/res
 !/DenixEngine/Playground/Content
+**/CMake/.idea
+/CMake/cmake-build-debug-visual-studio
+/DenixEngine/DenixEngine/src/Denix/.idea
