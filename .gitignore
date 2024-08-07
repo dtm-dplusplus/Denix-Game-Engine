@@ -404,3 +404,6 @@ Saved/
 **/CMake/.idea
 /CMake/cmake-build-debug-visual-studio
 /DenixEngine/DenixEngine/src/Denix/.idea
+/CMake/Build
+/CMake/Build
+/CMake/Build/.idea

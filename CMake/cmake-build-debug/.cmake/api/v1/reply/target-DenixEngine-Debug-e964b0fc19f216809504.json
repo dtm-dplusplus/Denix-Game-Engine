@@ -1,0 +1,516 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "DenixEngine.exe"
+		},
+		{
+			"path" : "DenixEngine.pdb"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"target_link_directories",
+			"target_link_libraries",
+			"include_directories",
+			"target_precompile_headers"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 33,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 40,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 36,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 25,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 51,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -std=gnu++20 -fdiagnostics-color=always"
+				},
+				{
+					"fragment" : "-Winvalid-pch -x c++-header -include \"C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/CMakeFiles/DenixEngine.dir/cmake_pch.hxx\""
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/DenixEngine"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/src"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/contrib/spdlog/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/contrib/sdl3/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/contrib/glew/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/contrib/glm"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "20"
+			},
+			"precompileHeaders" : 
+			[
+				{
+					"backtrace" : 5,
+					"header" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/DenixEngine/src/depch.h"
+				}
+			],
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -std=gnu++20 -fdiagnostics-color=always"
+				},
+				{
+					"fragment" : "-Winvalid-pch -include \"C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/CMakeFiles/DenixEngine.dir/cmake_pch.hxx\""
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/DenixEngine"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/src"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/contrib/spdlog/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/contrib/sdl3/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/contrib/glew/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/DenixEngine/contrib/glm"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "20"
+			},
+			"precompileHeaders" : 
+			[
+				{
+					"backtrace" : 5,
+					"header" : "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/DenixEngine/src/depch.h"
+				}
+			],
+			"sourceIndexes" : 
+			[
+				3,
+				6,
+				8,
+				11,
+				13,
+				15,
+				17,
+				19,
+				21,
+				23,
+				27,
+				29,
+				31,
+				33,
+				35,
+				37
+			]
+		}
+	],
+	"id" : "DenixEngine::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-LC:\\Users\\Denis\\DOCUME~1\\PROGRA~1\\DENIX-~1\\CMake\\CMAKE-~1\\DENIXE~1\\contrib\\sdl3\\lib",
+				"role" : "libraryPath"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-lSDL3",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "DenixEngine",
+	"nameOnDisk" : "DenixEngine.exe",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				3,
+				6,
+				8,
+				11,
+				13,
+				15,
+				17,
+				19,
+				21,
+				23,
+				27,
+				29,
+				31,
+				33,
+				35,
+				37
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				4,
+				5,
+				7,
+				9,
+				10,
+				12,
+				14,
+				16,
+				18,
+				20,
+				22,
+				24,
+				25,
+				26,
+				28,
+				30,
+				32,
+				34,
+				36,
+				38
+			]
+		},
+		{
+			"name" : "Precompile Header File",
+			"sourceIndexes" : 
+			[
+				39
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"path" : "cmake-build-debug/CMakeFiles/DenixEngine.dir/cmake_pch.hxx.cxx",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Core.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Core/Logger.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Core/Logger.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Core/Math.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Engine.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Engine.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/EntryPoint.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Project.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/System/SubSystem.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/FrameBuffer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/FrameBuffer.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Material.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Material.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Mesh.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Mesh.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/MeshComponent.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/MeshComponent.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Model.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Model.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Shader.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Shader.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Texture.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Texture.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/VertexArray.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/VertexBuffer.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Viewport.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/GL/Viewport.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/Renderer/RenderComponent.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/Renderer/RenderComponent.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/Renderer/RendererSubsystem.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/Renderer/RendererSubsystem.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/Window/Window.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/Window/Window.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/Window/WindowSubsystem.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/Denix/Video/Window/WindowSubsystem.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/depch.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "cmake-build-debug/DenixEngine/src/depch.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"path" : "cmake-build-debug/CMakeFiles/DenixEngine.dir/cmake_pch.hxx",
+			"sourceGroupIndex" : 2
+		}
+	],
+	"type" : "EXECUTABLE"
+}
