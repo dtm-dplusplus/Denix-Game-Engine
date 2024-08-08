@@ -41,11 +41,12 @@ namespace Denix
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
+
+		// Setup SDL3 implementation
 		
 		// Setup Platform/Renderer backends
 		if(const WindowSubsystem* windowSystem = WindowSubsystem::Get())
 		{
-			// Setup Platform/Renderer bindings
 			ImGui_ImplSDL3_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(), SDL_GL_GetCurrentContext());
 			ImGui_ImplOpenGL3_Init(windowSystem->GetWindow()->GetGLSLVersion().c_str());
 		}

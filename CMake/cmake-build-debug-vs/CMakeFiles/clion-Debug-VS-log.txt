@@ -1,7 +1,0 @@
-"C:\Program Files\JetBrains\CLion 2024.1.4\bin\cmake\win\x64\bin\cmake.exe" -G "Visual Studio 17 2022" -S "C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake" -B "C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-debug-vs"
--- Selecting Windows SDK version 10.0.22621.0 to target Windows 10.0.22631.
--- C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/DenixEngine
--- C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug-vs/DenixEngine
--- Configuring done (0.3s)
--- Generating done (0.0s)
--- Build files have been written to: C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug-vs

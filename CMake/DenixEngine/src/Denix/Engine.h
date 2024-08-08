@@ -31,7 +31,7 @@ namespace Denix
         virtual void PostInitialize();
 
         // TEMP
-        virtual void RestartScene() {}
+        virtual void RestartScene();
 
     protected:
         std::string m_ProjectName;
@@ -43,23 +43,23 @@ namespace Denix
         std::vector< Ref<Subsystem>> m_SubsystemOrder;
         std::unordered_map<std::string, Ref<Subsystem>>  m_Subsystems;
 
-        // Ref<class TimerSubsystem> m_TimerSubSystem;
+        Ref<class TimerSubsystem> m_TimerSubSystem;
 
         Ref<class WindowSubsystem> m_WindowSubsystem;
 
-        // Ref<class FileSubsystem> m_FileSubSystem;
-        //
-        // Ref<class ResourceSubsystem> m_ResourceSubSystem;
-        //
-        // Ref<class SceneSubsystem> m_SceneSubSystem;
-        //
-        // Ref<class PhysicsSubsystem> m_PhysicsSubSystem;
+        Ref<class FileSubsystem> m_FileSubSystem;
+
+        Ref<class ResourceSubsystem> m_ResourceSubSystem;
+
+        Ref<class SceneSubsystem> m_SceneSubSystem;
+
+        Ref<class PhysicsSubsystem> m_PhysicsSubSystem;
 
         Ref<class UISubsystem> m_UISubsystem;
 
-        // Ref<class RendererSubsystem> m_RendererSubSystem;
-        //
-        // Ref<class EditorSubsystem> m_EditorSubSystem;
+        Ref<class RendererSubsystem> m_RendererSubSystem;
+
+        Ref<class EditorSubsystem> m_EditorSubSystem;
 
         Ref<class InputSubsystem> m_InputSubsystem;
 

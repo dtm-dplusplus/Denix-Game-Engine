@@ -47,7 +47,7 @@ namespace Denix
 		Ref<SDL_GLWindow> m_Window;
 
 
-		//Ref<Viewport> m_DefaultViewport;
+		Ref<Viewport> m_DefaultViewport;
 
 		friend class Engine;
 	};

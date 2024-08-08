@@ -16,6 +16,8 @@ namespace Denix
 
 		m_Window = WindowSubsystem::Get()->GetWindow();
         m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
+
+		m_Initialized = true;
 	}
 
 	void InputSubsystem::Deinitialize()

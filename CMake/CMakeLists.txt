@@ -48,6 +48,8 @@ include_directories(${PROJECT_NAME}
         ${OUTPUT_SOURCE_DIR}/contrib/glew/include
         ${OUTPUT_SOURCE_DIR}/contrib/glm
         ${OUTPUT_SOURCE_DIR}/contrib/imgui
+        ${OUTPUT_SOURCE_DIR}/contrib/assimp/include
+        ${OUTPUT_SOURCE_DIR}/contrib/stb
 )
 
 
@@ -67,15 +69,17 @@ add_dependencies(${PROJECT_NAME} Imgui)
 
 # Add linker libs
 target_link_libraries(${PROJECT_NAME}
-        PUBLIC SDL3.lib
         PUBLIC opengl32.lib
+        PUBLIC SDL3.lib
         PUBLIC glew32.lib
         PUBLIC Imgui
+        PUBLIC assimp-vc143-mt.lib
 )
 
 target_link_directories(${PROJECT_NAME}
         PUBLIC ${OUTPUT_SOURCE_DIR}/contrib/sdl3/lib
         PUBLIC ${OUTPUT_SOURCE_DIR}/contrib/glew/lib
+        PUBLIC ${OUTPUT_SOURCE_DIR}/contrib/assimp/lib
 )
 
 # Enable Edit and Continue for MSVC
@@ -83,6 +87,12 @@ if(MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
 endif()
+
+# Set the C++ flags to enable multi-processor compilation
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+
+# Set the C flags to enable multi-processor compilation
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 
 # Add precompiled header
 #target_precompile_headers(${PROJECT_NAME} PRIVATE DenixEngine/src/depch.h)

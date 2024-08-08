@@ -1,5 +1,5 @@
 #include "WindowSubsystem.h"
-//#include "Denix/Video/GL/Viewport.h"
+#include "Denix/Video/GL/Viewport.h"
 
 namespace Denix
 {
@@ -15,16 +15,16 @@ namespace Denix
         }
 
         // Init Glew
-        //if (glewInit() != GLEW_OK)
-        //{
-        //	DE_LOG(Log, Critical, "glewInit(): failed")
-        //		return;
-        //}
-        //DE_LOG(Log, Trace, "glewInit(): success")
+        if (glewInit() != GLEW_OK)
+        {
+        	DE_LOG(Log, Critical, "glewInit(): failed")
+        		return;
+        }
+        DE_LOG(Log, Trace, "glewInit(): success")
 
         DE_LOG(LogWindow, Trace, "Window Subsystem Initialized")
 
-        //m_DefaultViewport = MakeRef<Viewport>(m_Window->GetWidth(), m_Window->GetHeight());
+        m_DefaultViewport = MakeRef<Viewport>(m_Window->GetWidth(), m_Window->GetHeight());
 
         m_Initialized = true;
     }
