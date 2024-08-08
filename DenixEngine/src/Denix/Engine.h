@@ -67,5 +67,5 @@ namespace Denix
     };
 
     // Defined in client
-    //Engine* CreateEngine();
+    Engine* CreateEngine();
 }

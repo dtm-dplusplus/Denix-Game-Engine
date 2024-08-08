@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.17)
-project(Playground)
+project(DenixEngine)
 
-message(STATUS ${CMAKE_CURRENT_SOURCE_DIR})
 # Define the source directory
-set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/Playground)
-set(OUTPUT_SOURCE_DIR ${CMAKE_BINARY_DIR}/Playground)
+set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/DenixEngine)
+set(OUTPUT_SOURCE_DIR ${CMAKE_BINARY_DIR}/DenixEngine)
 message(STATUS ${SOURCE_DIR})
 message(STATUS ${OUTPUT_SOURCE_DIR})
 
@@ -16,6 +14,8 @@ file(COPY ${SOURCE_DIR} DESTINATION ${CMAKE_BINARY_DIR})
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Create Imgui Library
+add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
 
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
@@ -26,21 +26,17 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 # Set C++ Include Directories
 include_directories(${PROJECT_NAME}
         ${OUTPUT_SOURCE_DIR}/src
-        ${CMAKE_BINARY_DIR}/DenixEngine/src
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/spdlog/include
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/include
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/include
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glm
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/imgui
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/include
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/stb
+        ${OUTPUT_SOURCE_DIR}/contrib/spdlog/include
+        ${OUTPUT_SOURCE_DIR}/contrib/sdl3/include
+        ${OUTPUT_SOURCE_DIR}/contrib/glew/include
+        ${OUTPUT_SOURCE_DIR}/contrib/glm
+        ${OUTPUT_SOURCE_DIR}/contrib/imgui
+        ${OUTPUT_SOURCE_DIR}/contrib/assimp/include
+        ${OUTPUT_SOURCE_DIR}/contrib/stb
 )
 
-
-
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine)
-add_dependencies(${PROJECT_NAME} DenixEngine)
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+add_dependencies(${PROJECT_NAME} Imgui)
 
 #add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND}
 #      XCOPY /y "$(SolutionDir)DenixEngine\\contrib\\SDL3\\bin\\SDL3.dll" "$(OutDir)"
@@ -51,21 +47,6 @@ add_dependencies(${PROJECT_NAME} DenixEngine)
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} XCOPY /y "$$(SolutionDir)DenixEngine\\contrib\\SDL3\\bin\\SDL3.dll" "$$(OutDir)"
 )]]
-
-# Add linker libs
-target_link_libraries(${PROJECT_NAME}
-        PUBLIC opengl32.lib
-        PUBLIC SDL3.lib
-        PUBLIC glew32.lib
-       # PUBLIC Imgui.lib
-        PUBLIC assimp-vc143-mt.lib
-)
-
-target_link_directories(${PROJECT_NAME}
-        PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/lib
-        PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/lib
-        PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/lib
-)
 
 # Enable Edit and Continue for MSVC
 if(MSVC)

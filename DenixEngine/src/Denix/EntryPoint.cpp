@@ -1,16 +1,15 @@
 #pragma once
 #include "Engine.h"
-#include "Project.h"
 #include "Core/Logger.h"
 
-// extern Denix::Engine* Denix::CreateEngine();
+extern Denix::Engine* Denix::CreateEngine();
 
 
 int main(int argc, char** argv)
 {
     Logger::Initialize();
 
-    auto engine = new Project;
+    auto engine = Denix::CreateEngine();
     engine->Run();
     delete engine;
 
