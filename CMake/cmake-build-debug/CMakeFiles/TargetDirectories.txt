@@ -1,3 +1,0 @@
-C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/CMakeFiles/DenixEngine.dir
-C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug/CMakeFiles/rebuild_cache.dir

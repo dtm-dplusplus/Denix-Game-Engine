@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imgui_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imgui_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imgui_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\misc\cpp\imgui_stdlib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\backends\imgui_impl_sdl3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imgui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imgui_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imstb_rectpack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imstb_textedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\imstb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\misc\cpp\imgui_stdlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\contrib\imgui\backends\imgui_impl_sdl3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{DA763F7E-F308-33F9-9432-6BE646DF0B5B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{1BC08B42-3950-3EEB-89E3-8D78CE584194}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

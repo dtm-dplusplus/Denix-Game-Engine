@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Core\Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\EntryPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Input\InputSubsystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\UI\UISubsystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Video\Window\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Video\Window\WindowSubsystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\depch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Core\Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Core\Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Input\InputSubsystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Project.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\System\SubSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\UI\UISubsystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Video\Window\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\Denix\Video\Window\WindowSubsystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\cmake-build-release-vs\DenixEngine\src\depch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\CMake\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{DA763F7E-F308-33F9-9432-6BE646DF0B5B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{1BC08B42-3950-3EEB-89E3-8D78CE584194}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

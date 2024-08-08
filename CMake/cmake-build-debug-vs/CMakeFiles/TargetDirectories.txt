@@ -1,0 +1,4 @@
+C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug-vs/CMakeFiles/Imgui.dir
+C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug-vs/CMakeFiles/DenixEngine.dir
+C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug-vs/CMakeFiles/ALL_BUILD.dir
+C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/CMake/cmake-build-debug-vs/CMakeFiles/ZERO_CHECK.dir
