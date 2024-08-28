@@ -1,10 +1,17 @@
 project(DenixEngine)
 
+# Define Output Directories
+set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME})
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
+
 # Define the source directory
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/DenixEngine)
 set(OUTPUT_SOURCE_DIR ${CMAKE_BINARY_DIR}/DenixEngine)
-message(STATUS ${SOURCE_DIR})
-message(STATUS ${OUTPUT_SOURCE_DIR})
 
 # Copy the source files to the destination directory
 # This ensures cmake source is not modifiable
@@ -38,15 +45,18 @@ include_directories(${PROJECT_NAME}
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} Imgui)
 
-#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND}
-#      XCOPY /y "$(SolutionDir)DenixEngine\\contrib\\SDL3\\bin\\SDL3.dll" "$(OutDir)"
-#)
+target_link_libraries(${PROJECT_NAME}
+        PUBLIC Imgui.lib)
+# Add linker libs
+#[[target_link_libraries(${PROJECT_NAME}
+        PUBLIC Imgui.lib
+        PUBLIC assimp-vc143-mt.lib
+)
 
-#[[add_custom_command(
-        TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} XCOPY /y "$$(SolutionDir)DenixEngine\\contrib\\SDL3\\bin\\SDL3.dll" "$$(OutDir)"
+target_link_directories(${PROJECT_NAME}
+        PUBLIC ${CMAKE_BINARY_DIR}/bin/DenixEngine
 )]]
+
 
 # Enable Edit and Continue for MSVC
 if(MSVC)
@@ -57,17 +67,3 @@ endif()
 # Set the C++ flags to enable multi-processor compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-
-# Add precompiled header
-#target_precompile_headers(${PROJECT_NAME} PRIVATE DenixEngine/src/depch.h)
-
-# Add a post-build event
-#add_custom_command(
-#        TARGET ${PROJECT_NAME} POST_BUILD COMMAND
-#            XCOPY /y "${OUTPUT_SOURCE_DIR}/contrib/sdl3/bin/SDL3.dll" "$$(OutDir)"
-#)
-
-# Use CMAKE_BINARY_DIR to specify the output directory for the executable
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-#)

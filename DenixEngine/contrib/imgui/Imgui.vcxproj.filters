@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imgui_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imgui_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imgui_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\misc\cpp\imgui_stdlib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\backends\imgui_impl_sdl3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imgui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imgui_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imstb_rectpack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imstb_textedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\imstb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\misc\cpp\imgui_stdlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\backends\imgui_impl_sdl3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\DenixEngine\contrib\imgui\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9F4B10A7-04FF-34B7-9613-B0D8BC649C36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{CED76E29-EFDE-374F-B8D9-797BB6A09ABE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

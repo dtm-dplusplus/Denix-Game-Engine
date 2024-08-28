@@ -1,31 +1,37 @@
 cmake_minimum_required(VERSION 3.17)
+
+# Create Development Project
 project(Playground)
 
-message(STATUS ${CMAKE_CURRENT_SOURCE_DIR})
+# Define Solution Output Directory
+set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME})
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
+
 # Define the source directory
-set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/Playground)
-set(OUTPUT_SOURCE_DIR ${CMAKE_BINARY_DIR}/Playground)
-message(STATUS ${SOURCE_DIR})
-message(STATUS ${OUTPUT_SOURCE_DIR})
+set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Playground)
+set(GEN_PROJECT_SOURCE_DIR ${CMAKE_BINARY_DIR}/Playground)
 
-# Copy the source files to the destination directory
+# Create Engine Project
+add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine)
+
+
+# Copy source files to the destination directory
 # This ensures cmake source is not modifiable
-file(COPY ${SOURCE_DIR} DESTINATION ${CMAKE_BINARY_DIR})
-
-# Specify the C++ standard
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-
-# Get all source files
-file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
-        ${OUTPUT_SOURCE_DIR}/src/*.cpp
-        ${OUTPUT_SOURCE_DIR}/src/*.h
-)
+file(COPY ${PROJECT_SOURCE_DIR} DESTINATION ${CMAKE_BINARY_DIR})
 
 # Set C++ Include Directories
+file(GLOB_RECURSE GEN_SOURCE_FILES CONFIGURE_DEPENDS
+        ${GEN_PROJECT_SOURCE_DIR}/src/*.cpp
+        ${GEN_PROJECT_SOURCE_DIR}/src/*.h
+)
+
 include_directories(${PROJECT_NAME}
-        ${OUTPUT_SOURCE_DIR}/src
+        ${GEN_PROJECT_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/DenixEngine/src
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/spdlog/include
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/include
@@ -38,30 +44,30 @@ include_directories(${PROJECT_NAME}
 
 
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine)
+# Set the C++ flags to enable multi-processor compilation
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+
+# Specify the C++ standard
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# Create Executable
+add_executable(${PROJECT_NAME} ${GEN_SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} DenixEngine)
-
-#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND}
-#      XCOPY /y "$(SolutionDir)DenixEngine\\contrib\\SDL3\\bin\\SDL3.dll" "$(OutDir)"
-#)
-
-#[[add_custom_command(
-        TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} XCOPY /y "$$(SolutionDir)DenixEngine\\contrib\\SDL3\\bin\\SDL3.dll" "$$(OutDir)"
-)]]
 
 # Add linker libs
 target_link_libraries(${PROJECT_NAME}
+        PUBLIC DenixEngine.lib
         PUBLIC opengl32.lib
         PUBLIC SDL3.lib
         PUBLIC glew32.lib
-       # PUBLIC Imgui.lib
+        PUBLIC Imgui.lib
         PUBLIC assimp-vc143-mt.lib
 )
 
 target_link_directories(${PROJECT_NAME}
+        PUBLIC ${CMAKE_BINARY_DIR}/bin/DenixEngine
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/lib
@@ -73,20 +79,3 @@ if(MSVC)
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
 endif()
 
-# Set the C++ flags to enable multi-processor compilation
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-
-# Add precompiled header
-#target_precompile_headers(${PROJECT_NAME} PRIVATE DenixEngine/src/depch.h)
-
-# Add a post-build event
-#add_custom_command(
-#        TARGET ${PROJECT_NAME} POST_BUILD COMMAND
-#            XCOPY /y "${OUTPUT_SOURCE_DIR}/contrib/sdl3/bin/SDL3.dll" "$$(OutDir)"
-#)
-
-# Use CMAKE_BINARY_DIR to specify the output directory for the executable
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-#)
