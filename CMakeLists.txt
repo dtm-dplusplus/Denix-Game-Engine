@@ -79,3 +79,14 @@ if(MSVC)
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
 endif()
 
+# Add Post build commands
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>
+
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>
+
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>
+)
