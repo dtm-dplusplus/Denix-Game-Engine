@@ -130,8 +130,8 @@ namespace Denix
 			
 			DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
 
-			// Temporary restart scene
-			Engine::Get().RestartScene();
+			// Temporary fix to reload scene until serializer built
+			Engine::Get().PostInitialize();
 		}
 	}
 

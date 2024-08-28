@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 
 # Create Development Project
-project(Playground)
+project(DevProject)
 
 # Define Solution Output Directory
 set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME})
@@ -13,8 +13,8 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
 
 # Define the source directory
-set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Playground)
-set(GEN_PROJECT_SOURCE_DIR ${CMAKE_BINARY_DIR}/Playground)
+set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/${PROJECT_NAME})
+set(GEN_PROJECT_SOURCE_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 
 # Create Engine Project
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine)

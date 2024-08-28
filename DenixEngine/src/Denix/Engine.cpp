@@ -33,51 +33,39 @@ namespace Denix
 
 		PreInitialize();
 
-		m_TimerSubSystem = MakeRef<TimerSubsystem>();
-		m_SubsystemOrder.push_back(m_TimerSubSystem);
-		m_Subsystems["Timer"] = m_TimerSubSystem;
+		m_TimerSubSystem = new TimerSubsystem;
+		m_Subsystems.push_back(m_TimerSubSystem);
 
-		m_FileSubSystem = MakeRef<FileSubsystem>();
+		m_FileSubSystem = new FileSubsystem;
 		m_FileSubSystem->m_ProjectName = m_ProjectName;
-		m_SubsystemOrder.push_back(m_FileSubSystem);
-		m_Subsystems["File"] = m_FileSubSystem;
+		m_Subsystems.push_back(m_FileSubSystem);
 
-		m_WindowSubsystem = MakeRef<WindowSubsystem>();
-		m_SubsystemOrder.push_back(m_WindowSubsystem);
-		m_Subsystems["Window"] = m_WindowSubsystem;
+		m_WindowSubsystem = new WindowSubsystem;
+		m_Subsystems.push_back(m_WindowSubsystem);
 
-		m_RendererSubSystem = MakeRef<RendererSubsystem>();
-		m_SubsystemOrder.push_back(m_RendererSubSystem);
-		m_Subsystems["Renderer"] = m_RendererSubSystem;
+		m_RendererSubSystem = new RendererSubsystem;
+		m_Subsystems.push_back(m_RendererSubSystem);
 
-		m_ResourceSubSystem = MakeRef<ResourceSubsystem>();
-		m_SubsystemOrder.push_back(m_ResourceSubSystem);
-		m_Subsystems["Resource"] = m_ResourceSubSystem;
+		m_ResourceSubSystem = new ResourceSubsystem;
+		m_Subsystems.push_back(m_ResourceSubSystem);
 
-		m_UISubsystem = MakeRef<UISubsystem>();
-		m_SubsystemOrder.push_back(m_UISubsystem);
-		m_Subsystems["UI"] = m_UISubsystem;
+		m_UISubsystem = new UISubsystem;
+		m_Subsystems.push_back(m_UISubsystem);
 
-		m_EditorSubSystem = MakeRef<EditorSubsystem>();
-		m_SubsystemOrder.push_back(m_EditorSubSystem);
-		m_Subsystems["Editor"] = m_EditorSubSystem;
+		m_EditorSubSystem = new EditorSubsystem;
+		m_Subsystems.push_back(m_EditorSubSystem);
 
-		m_SceneSubSystem = MakeRef<SceneSubsystem>();
-		m_SubsystemOrder.push_back(m_SceneSubSystem);
-		m_Subsystems["Scene"] = m_SceneSubSystem;
+		m_SceneSubSystem = new SceneSubsystem;
+		m_Subsystems.push_back(m_SceneSubSystem);
 
-		m_PhysicsSubSystem = MakeRef<PhysicsSubsystem>();
-		m_SubsystemOrder.push_back(m_PhysicsSubSystem);
-		m_Subsystems["Physics"] = m_PhysicsSubSystem;
+		m_PhysicsSubSystem = new PhysicsSubsystem;
+		m_Subsystems.push_back(m_PhysicsSubSystem);
 
-		m_InputSubsystem = MakeRef<InputSubsystem>();
-		m_SubsystemOrder.push_back(m_InputSubsystem);
-		m_Subsystems["Input"] = m_InputSubsystem;
-
-
+		m_InputSubsystem = new InputSubsystem;
+		m_Subsystems.push_back(m_InputSubsystem);
 
 	    // Order of initialization is defined above
-		for(const auto& subsystem : m_SubsystemOrder)
+		for(const auto& subsystem : m_Subsystems)
 		{
 			subsystem->Initialize();
 			if(!subsystem->IsInitialized()) return;
@@ -94,8 +82,11 @@ namespace Denix
 		DE_LOG(LogEngine, Trace, "Engine Shutting Down")
 
 		// Deinitialie SubSystems in the reverse order of initialization
-		for (const auto& subSystem : std::views::reverse(m_Subsystems) | std::views::values)
-			subSystem->Deinitialize();
+		for (const auto& subsystem : std::views::reverse(m_Subsystems))
+		{
+			subsystem->Deinitialize();
+			delete subsystem;
+		}
 
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
 	}
@@ -103,7 +94,9 @@ namespace Denix
 	void Engine::Run()
 	{
 		Initialize();
-		RestartScene();
+
+		// Tempory Fix until Serializer is built
+		PostInitialize();
 		
 		Ref<Viewport> viewport = m_WindowSubsystem->m_DefaultViewport;
 		viewport->m_Shader = ResourceSubsystem::GetShader("FBShader");
@@ -167,12 +160,5 @@ namespace Denix
 		DE_LOG(LogEngine, Trace, "Engine Post-Initialized")
 	}
 
-	void Engine::RestartScene()
-	{
-		if (const auto scene = MakeRef<Scene>())
-		{
-			SceneSubsystem::LoadScene(scene);
-			SceneSubsystem::OpenScene(scene->GetSceneName());
-		}
-	}
+
 }

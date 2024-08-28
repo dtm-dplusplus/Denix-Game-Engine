@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameObject.h"
+#include "Object/Shapes/Shapes.h"
 #include "Object/Light/LightObject.h"
 #include "Camera.h"
 
@@ -34,6 +35,10 @@ namespace Denix
 			m_DirLight = MakeRef<DirectionalLight>();
 			m_DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));
 			m_SceneObjects.push_back(m_DirLight);
+
+			Ref<Plane> floor = MakeRef<Plane>();
+			floor->GetTransformComponent()->SetScale({50.0f,50.0f, 50.0f});
+			m_SceneObjects.push_back(floor);
 
 			m_IsLoaded = true;
 
