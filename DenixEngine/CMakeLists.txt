@@ -24,11 +24,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Create Imgui Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
 
+# Create RTTI Library
+add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/src/Denix/RTTI)
+
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
         ${OUTPUT_SOURCE_DIR}/src/*.cpp
         ${OUTPUT_SOURCE_DIR}/src/*.h
 )
+
+
+get_target_property(RTTI_INCLUDE_DIRS RTTISubsystem INCLUDE_DIRECTORIES)
+message(${RTTI_INCLUDE_DIRS})
+get_target_property(RTTI_INCLUDE_LIBS RTTISubsystem LINK_LIBRARIES)
+message(${RTTI_INCLUDE_LIBS})
 
 # Set C++ Include Directories
 include_directories(${PROJECT_NAME}
@@ -42,21 +51,30 @@ include_directories(${PROJECT_NAME}
         ${OUTPUT_SOURCE_DIR}/contrib/stb
 )
 
+# Add RTTI Include Directories to project
+foreach (DIR RTTI_INCLUDE_DIRS)
+    include_directories(${PROJECT_NAME} ${DIR})
+endforeach ()
+
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} Imgui)
+add_dependencies(${PROJECT_NAME} RTTISubsystem)
 
 target_link_libraries(${PROJECT_NAME}
-        PUBLIC Imgui.lib)
-# Add linker libs
-#[[target_link_libraries(${PROJECT_NAME}
+        PUBLIC Imgui.lib
+        PUBLIC RTII.lib
+        PUBLIC opengl32.lib
+        PUBLIC SDL3.lib
+        PUBLIC glew32.lib
         PUBLIC Imgui.lib
         PUBLIC assimp-vc143-mt.lib
 )
 
-target_link_directories(${PROJECT_NAME}
-        PUBLIC ${CMAKE_BINARY_DIR}/bin/DenixEngine
-)]]
-
+foreach (LIB RTTI_INCLUDE_LIBS)
+    target_link_libraries(${PROJECT_NAME}
+            PUBLIC ${LIB}
+    )
+endforeach ()
 
 # Enable Edit and Continue for MSVC
 if(MSVC)
@@ -67,3 +85,6 @@ endif()
 # Set the C++ flags to enable multi-processor compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+
+# Then in some target add this to put the target in the Development folder.
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)

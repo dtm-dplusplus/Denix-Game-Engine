@@ -58,3 +58,9 @@ endif()
 # Set the C++ flags to enable multi-processor compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+
+# Set the solution folder for the target
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine/Depend)
+
+# Then in some target add this to put the target in the Development folder.
+#set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Development)
