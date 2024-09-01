@@ -72,7 +72,7 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
-*.obj
+#*.obj
 *.iobj
 *.pch
 *.pdb
@@ -396,5 +396,15 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Denix Engine
-Saved/
+**/Saved
 /DenixEngine/enc_temp_folder
+!**/bin
+!/**/res
+!/DenixEngine/Playground/Content
+
+**/cmake-build-debug-visual-studio
+**/cmake-build-release-visual-studio
+**/Build
+**/.idea
+**/cmake-build-debug-vs
+**/cmake-build-debug-vs
