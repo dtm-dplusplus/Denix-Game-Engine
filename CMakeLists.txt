@@ -65,7 +65,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(${PROJECT_NAME} ${GEN_SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} DenixEngine)
 
-
+# Add Yaml CPP Static Def
+target_compile_definitions(${PROJECT_NAME} PUBLIC YAML_CPP_STATIC_DEFINE)
 
 # Add linker libs
 target_link_libraries(${PROJECT_NAME}
