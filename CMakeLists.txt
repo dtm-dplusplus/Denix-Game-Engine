@@ -2,13 +2,9 @@ cmake_minimum_required(VERSION 3.6)
 
 # Create Development Project
 project(DevProject)
-# Set Startup Project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
 #Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-
-
 
 
 # Define Solution Output Directory
@@ -63,10 +59,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Create Executable
 add_executable(${PROJECT_NAME} ${GEN_SOURCE_FILES})
-add_dependencies(${PROJECT_NAME} DenixEngine)
 
-# Add Yaml CPP Static Def
-target_compile_definitions(${PROJECT_NAME} PUBLIC YAML_CPP_STATIC_DEFINE)
+# Set Startup Project
+set_property(DIRECTORY ${CMAKE_BINARY_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
+add_dependencies(${PROJECT_NAME} DenixEngine)
 
 # Add linker libs
 target_link_libraries(${PROJECT_NAME}
@@ -109,3 +106,4 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 # Then in some target add this to put the target in the Development folder.
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER ${PROJECT_NAME})
+

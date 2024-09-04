@@ -10,6 +10,12 @@
 #include "Denix/Physics/PhysicsComponent.h"
 #include "Denix/Video/GL/MeshComponent.h"
 
+namespace YAML
+{
+	class Node;
+	class Emitter;
+}
+
 namespace Denix
 {
 	enum class LayerType
@@ -30,6 +36,9 @@ namespace Denix
 		// Destructors
 		~GameObject() override = default;
 
+		// Reflection
+		virtual void Serialize(YAML::Emitter& _out);
+		virtual void Deserialize(const YAML::Node& _in);
 		Ref<Component> AddComponent(const Ref<Component>& _component)
 		{
 			m_Components[_component->GetName()] = _component;

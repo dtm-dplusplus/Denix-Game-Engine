@@ -5,47 +5,39 @@
 
 #include "imgui.h"
 
-namespace YAML {
-	template<>
-	struct convert<glm::vec3> {
-		static Node encode(const glm::vec3& rhs) {
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec3& rhs) {
-			if(!node.IsSequence() || node.size() != 3) {
-				return false;
-			}
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
-			return true;
-		}
-	};
-}
-
 using namespace Denix;
 
 DevScene::DevScene(): Scene("Dev Scene")
 {
-	Emitter.SetBoolFormat(YAML::Literal);
 }
 
 void DevScene::Update(float _deltaTime)
 {
     Scene::Update(_deltaTime);
 
-    if(ImGui::Button("Save Scene"))
+    if(ImGui::Button("Serialize"))
     {
+		YAML::Emitter Emitter;
     	Serialize(Emitter);
-    	DE_LOG(LogDevProject, Info, "Scene Saved")
+    	
+    	// Open file stream
+		std::ofstream fout("DevScene.yaml");
+
+		// Write emitter content to file
+		fout << Emitter.c_str();
+
+		// Close file stream
+		fout.close();
+    	DE_LOG(LogDevProject, Info, "Serialize")
+    	m_SceneObjects.clear();
     }
 
+	if(ImGui::Button("Deserialize"))
+	{
+		YAML::Node n = YAML::LoadFile("DevScene.yaml");
+		//DE_LOG(LogDevProject, Info, n["m_SceneName"].as<std::string>())
+		DE_LOG(LogDevProject, Info, "Deserialize")
+	}
 }
 
 bool DevScene::Load()
@@ -55,7 +47,6 @@ bool DevScene::Load()
 
 	// Load node from file
 	YamlObj= MakeRef<Cube>();
-	Deserialize(YAML::LoadFile("object.yaml"));
 	SpawnSceneObject(YamlObj);
 	return true;
 }
@@ -64,41 +55,31 @@ void DevScene::Unload()
 {
 	Scene::Unload();
 
-	Serialize(Emitter);
+	//Serialize(Emitter);
 }
 
  void DevScene::Serialize(YAML::Emitter& _out)
  {
- 	// Render Component
- 	Node["m_IsVisible"] = YamlObj->GetRenderComponent()->IsVisible();
- 	Node["m_AffectsLighting"] = YamlObj->GetRenderComponent()->AffectsLighting();
+	_out << YAML::Comment("DE_ASSET: Scene");
+	_out << YAML::Newline << YAML::Comment( m_SceneName + " Scene Data");
+	_out << YAML::BeginMap;
+	_out << YAML::Key << "m_SceneName" << YAML::Value << m_SceneName;
+	_out << YAML::Key << "m_Gravity" << YAML::Value << m_Gravity;
+	_out << YAML::BeginSeq;
 
- 	// Transform Component
- 	Node["m_Position"] = YamlObj->GetTransformComponent()->GetPosition();
- 	Node["m_Rotation"] = YamlObj->GetTransformComponent()->GetRotation();
- 	Node["m_Scale"] = YamlObj->GetTransformComponent()->GetScale();
- 	Node["m_Moveability"] = static_cast<int>(YamlObj->GetTransformComponent()->GetMoveability());
+	_out << YAML::Comment("Scene Objects");
+	for (const auto& gameObject : m_SceneObjects)
+	{
+		_out << YAML::BeginMap;
+		gameObject->Serialize(_out);
+		_out << YAML::EndMap;
+	}
 
- 	// Save node to emitter
- 	_out << Node;
-
- 	// Open file stream
- 	std::ofstream fout("object.yaml");
-
- 	// Write emitter content to file
- 	fout << Emitter.c_str();
-
- 	// Close file stream
- 	fout.close();
+	_out << YAML::EndSeq;
+	_out << YAML::EndMap;
  }
 
- void DevScene::Deserialize(const YAML::Node& _in)
+ void DevScene::Deserialize(YAML::Node& _in)
  {
- 	// Update Game Object
- 	YamlObj->GetRenderComponent()->SetIsVisible(_in["m_IsVisible"].as<bool>());
- 	YamlObj->GetRenderComponent()->SetAffectsLighting(_in["m_AffectsLighting"].as<bool>());
- 	YamlObj->GetTransformComponent()->SetPosition(_in["m_Position"].as<glm::vec3>());
- 	YamlObj->GetTransformComponent()->SetRotation(_in["m_Rotation"].as<glm::vec3>());
- 	YamlObj->GetTransformComponent()->SetScale(_in["m_Scale"].as<glm::vec3>());
- 	YamlObj->GetTransformComponent()->SetMoveability(static_cast<Moveability>(_in["m_Moveability"].as<int>()));
+	
  }

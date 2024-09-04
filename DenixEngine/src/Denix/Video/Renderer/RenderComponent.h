@@ -43,11 +43,6 @@ namespace Denix
 		Ref<Material> GetMaterial() const { return m_Material; }
 		void SetMaterial(const Ref<Material>& _material) { m_Material = _material; }
 		
-
-		glm::vec4 GetDebugColor() const { return m_DebugColor; }
-		glm::vec4& GetDebugColor() { return m_DebugColor; }
-		glm::vec4 SetDebugColor(const glm::vec4& _color) { return m_DebugColor = _color; }
-
 		bool IsVisible() const { return m_IsVisible; }
 		bool& IsVisible() { return m_IsVisible; }
 		void SetIsVisible(const bool _visible) { m_IsVisible = _visible; }
@@ -69,7 +64,6 @@ namespace Denix
 		bool m_IsVisible = true;
 		bool m_AffectsLighting = true;
 
-		glm::vec4 m_DebugColor = glm::vec4(0.98f, 1.f, 1.f, 1.f);
 		Ref<Shader> m_Shader;
 		Ref<Texture> m_Texture;
 		Ref<Material> m_Material;

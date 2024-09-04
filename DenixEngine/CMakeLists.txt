@@ -49,6 +49,7 @@ include_directories(${PROJECT_NAME}
         ${OUTPUT_SOURCE_DIR}/contrib/imgui
         ${OUTPUT_SOURCE_DIR}/contrib/assimp/include
         ${OUTPUT_SOURCE_DIR}/contrib/stb
+        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/yaml-cpp-master/include
 )
 
 # Add RTTI Include Directories to project
@@ -59,6 +60,9 @@ endforeach ()
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} Imgui)
 add_dependencies(${PROJECT_NAME} RTTISubsystem)
+
+# Add Yaml CPP Static Def
+target_compile_definitions(${PROJECT_NAME} PUBLIC YAML_CPP_STATIC_DEFINE)
 
 target_link_libraries(${PROJECT_NAME}
         PUBLIC Imgui.lib

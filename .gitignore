@@ -408,3 +408,8 @@ FodyWeavers.xsd
 **/.idea
 **/cmake-build-debug-vs
 **/cmake-build-debug-vs
+*.sln
+*.vcxproj
+*.filters
+/DenixEngine/src/Denix/RTTI/CMakeFiles
+*.cmake

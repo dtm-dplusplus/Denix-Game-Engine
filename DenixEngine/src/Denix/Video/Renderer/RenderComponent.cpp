@@ -19,7 +19,6 @@ namespace Denix
 		m_Texture = _other->m_Texture;
 		m_Material = _other->m_Material;
 		m_TextureSettings = _other->m_TextureSettings;
-		m_DebugColor = _other->m_DebugColor;
 		m_IsVisible = _other->m_IsVisible;
 		m_AffectsLighting = _other->m_AffectsLighting;
 	}

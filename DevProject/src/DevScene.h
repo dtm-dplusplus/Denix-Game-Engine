@@ -17,9 +17,7 @@ public:
     bool Load() override;
     void Unload() override;
     void Serialize(YAML::Emitter& _out);
-    void Deserialize(const YAML::Node& _in);
+    void Deserialize(YAML::Node& _in);
 
-    YAML::Emitter Emitter;
-    YAML::Node Node;
     Ref<GameObject> YamlObj;
 };
