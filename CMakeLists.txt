@@ -80,6 +80,7 @@ target_link_libraries(${PROJECT_NAME}
 
 target_link_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_BINARY_DIR}/bin/DenixEngine
+        PUBLIC ${CMAKE_BINARY_DIR}/bin/DenixEngine/depend/Imgui/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/lib
