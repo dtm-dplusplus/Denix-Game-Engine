@@ -26,7 +26,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Include Header
 include_directories(${PROJECT_NAME}${CMAKE_CURRENT_SOURCE_DIR}
         ${OUTPUT_SOURCE_DIR}/contrib/imgui
-        PRIVATE ${CMAKE_BINARY_DIR}/_deps/sdl-src/include
+        PRIVATE ${CMAKE_BINARY_DIR}/DenixEngine/contrib/SDL3/include
 )
 
 # Create Imgui Library

@@ -28,7 +28,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/src/Denix/RTTI)
 
 # Create SDL3 Library
-include(FetchContent)
+#[[include(FetchContent)
 set(SDL_SHARED TRUE CACHE BOOL "Build a SDL shared library (if available)")
 set(SDL_STATIC TRUE CACHE BOOL "Build a SDL static library (if available)")
 FetchContent_Declare(
@@ -39,8 +39,12 @@ FetchContent_Declare(
         GIT_PROGRESS TRUE
 )
 message(STATUS "Using SDL3 via FetchContent")
-FetchContent_MakeAvailable(SDL)
-set_property(DIRECTORY "${CMAKE_BINARY_DIR}/_deps/sdl-src" PROPERTY EXCLUDE_FROM_ALL TRUE)
+FetchContent_MakeAvailable(SDL)]]
+
+#set(SDL_SHARED TRUE CACHE BOOL "Build a SDL shared library (if available)")
+#set(SDL_STATIC FALSE CACHE BOOL "Build a SDL static library (if available)")
+add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/SDL3)
+#set_property(DIRECTORY "${CMAKE_BINARY_DIR}/_deps/sdl-src" PROPERTY EXCLUDE_FROM_ALL TRUE)
 
 
 
@@ -60,7 +64,7 @@ message(${RTTI_INCLUDE_LIBS})
 include_directories(${PROJECT_NAME}
         ${OUTPUT_SOURCE_DIR}/src
         ${OUTPUT_SOURCE_DIR}/contrib/spdlog/include
-        ${CMAKE_BINARY_DIR}/_deps/sdl-src/include
+        ${OUTPUT_SOURCE_DIR}/contrib/SDL3/include
         ${OUTPUT_SOURCE_DIR}/contrib/glew/include
         ${OUTPUT_SOURCE_DIR}/contrib/glm
         ${OUTPUT_SOURCE_DIR}/contrib/imgui
