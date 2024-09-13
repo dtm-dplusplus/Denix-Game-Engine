@@ -62,7 +62,7 @@ namespace Denix
 		Ref<class Window> m_Window;
 
 		Uint8* m_SDL_LastKeyboardState;
-		const Uint8* m_SDL_KeyboardState;
+		const bool* m_SDL_KeyboardState;
 		
 		// Mouse Properties
 		MouseData m_MouseData;

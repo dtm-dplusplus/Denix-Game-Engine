@@ -27,6 +27,23 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
 # Create RTTI Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/src/Denix/RTTI)
 
+# Create SDL3 Library
+include(FetchContent)
+set(SDL_SHARED TRUE CACHE BOOL "Build a SDL shared library (if available)")
+set(SDL_STATIC TRUE CACHE BOOL "Build a SDL static library (if available)")
+FetchContent_Declare(
+        SDL
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG main  # Replace this with a particular git tag or git hash
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+)
+message(STATUS "Using SDL3 via FetchContent")
+FetchContent_MakeAvailable(SDL)
+set_property(DIRECTORY "${CMAKE_BINARY_DIR}/_deps/sdl-src" PROPERTY EXCLUDE_FROM_ALL TRUE)
+
+
+
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
         ${OUTPUT_SOURCE_DIR}/src/*.cpp
@@ -43,7 +60,7 @@ message(${RTTI_INCLUDE_LIBS})
 include_directories(${PROJECT_NAME}
         ${OUTPUT_SOURCE_DIR}/src
         ${OUTPUT_SOURCE_DIR}/contrib/spdlog/include
-        ${OUTPUT_SOURCE_DIR}/contrib/sdl3/include
+        ${CMAKE_BINARY_DIR}/_deps/sdl-src/include
         ${OUTPUT_SOURCE_DIR}/contrib/glew/include
         ${OUTPUT_SOURCE_DIR}/contrib/glm
         ${OUTPUT_SOURCE_DIR}/contrib/imgui
@@ -60,25 +77,14 @@ endforeach ()
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} Imgui)
 add_dependencies(${PROJECT_NAME} RTTISubsystem)
+add_dependencies(${PROJECT_NAME} SDL3::SDL3)
+
+# Set the solution folder for the target
+set_property(TARGET SDL3-shared PROPERTY FOLDER DenixEngine/Depend/SDl3)
+set_property(TARGET SDL_uclibc PROPERTY FOLDER DenixEngine/Depend/SDl3)
 
 # Add Yaml CPP Static Def
 target_compile_definitions(${PROJECT_NAME} PUBLIC YAML_CPP_STATIC_DEFINE)
-
-target_link_libraries(${PROJECT_NAME}
-        PUBLIC Imgui.lib
-        PUBLIC RTII.lib
-        PUBLIC opengl32.lib
-        PUBLIC SDL3.lib
-        PUBLIC glew32.lib
-        PUBLIC Imgui.lib
-        PUBLIC assimp-vc143-mt.lib
-)
-
-foreach (LIB RTTI_INCLUDE_LIBS)
-    target_link_libraries(${PROJECT_NAME}
-            PUBLIC ${LIB}
-    )
-endforeach ()
 
 # Enable Edit and Continue for MSVC
 if(MSVC)

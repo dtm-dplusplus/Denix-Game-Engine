@@ -413,3 +413,4 @@ FodyWeavers.xsd
 *.filters
 /DenixEngine/src/Denix/RTTI/CMakeFiles
 *.cmake
+/SDL3 Cmake

@@ -69,7 +69,7 @@ add_dependencies(${PROJECT_NAME} DenixEngine)
 target_link_libraries(${PROJECT_NAME}
         PUBLIC DenixEngine.lib
         PUBLIC opengl32.lib
-        PUBLIC SDL3.lib
+        PRIVATE SDL3::SDL3
         PUBLIC glew32.lib
         PUBLIC Imgui.lib
         PUBLIC assimp-vc143-mt.lib
@@ -81,7 +81,6 @@ target_link_libraries(${PROJECT_NAME}
 target_link_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_BINARY_DIR}/bin/DenixEngine
         PUBLIC ${CMAKE_BINARY_DIR}/bin/DenixEngine/depend/Imgui/lib
-        PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/yaml-cpp-master/lib
@@ -95,8 +94,8 @@ endif()
 
 # Add Post build commands
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>

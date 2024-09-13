@@ -26,7 +26,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Include Header
 include_directories(${PROJECT_NAME}${CMAKE_CURRENT_SOURCE_DIR}
         ${OUTPUT_SOURCE_DIR}/contrib/imgui
-        PRIVATE ${OUTPUT_SOURCE_DIR}/contrib/SDL3/include
+        PRIVATE ${CMAKE_BINARY_DIR}/_deps/sdl-src/include
 )
 
 # Create Imgui Library
@@ -60,7 +60,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 
 # Set the solution folder for the target
-
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine/Depend/${PROJECT_NAME})
 
 # Then in some target add this to put the target in the Development folder.
