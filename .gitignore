@@ -398,9 +398,9 @@ FodyWeavers.xsd
 # Denix Engine
 **/Saved
 /DenixEngine/enc_temp_folder
-!**/bin
 !/**/res
-!/DenixEngine/Playground/Content
+!/DenixEngine
+!/DevProject
 
 **/cmake-build-debug-visual-studio
 **/cmake-build-release-visual-studio
@@ -412,5 +412,3 @@ FodyWeavers.xsd
 *.vcxproj
 *.filters
 /DenixEngine/src/Denix/RTTI/CMakeFiles
-*.cmake
-/SDL3 Cmake
