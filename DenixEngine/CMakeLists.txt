@@ -24,41 +24,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Create Imgui Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
 
-# Create RTTI Library
-add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/src/Denix/RTTI)
-
 # Create SDL3 Library
-#[[include(FetchContent)
-set(SDL_SHARED TRUE CACHE BOOL "Build a SDL shared library (if available)")
-set(SDL_STATIC TRUE CACHE BOOL "Build a SDL static library (if available)")
-FetchContent_Declare(
-        SDL
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG main  # Replace this with a particular git tag or git hash
-        GIT_SHALLOW TRUE
-        GIT_PROGRESS TRUE
-)
-message(STATUS "Using SDL3 via FetchContent")
-FetchContent_MakeAvailable(SDL)]]
-
-#set(SDL_SHARED TRUE CACHE BOOL "Build a SDL shared library (if available)")
-#set(SDL_STATIC FALSE CACHE BOOL "Build a SDL static library (if available)")
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/SDL3)
-#set_property(DIRECTORY "${CMAKE_BINARY_DIR}/_deps/sdl-src" PROPERTY EXCLUDE_FROM_ALL TRUE)
-
-
 
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
         ${OUTPUT_SOURCE_DIR}/src/*.cpp
         ${OUTPUT_SOURCE_DIR}/src/*.h
 )
-
-
-get_target_property(RTTI_INCLUDE_DIRS RTTISubsystem INCLUDE_DIRECTORIES)
-message(${RTTI_INCLUDE_DIRS})
-get_target_property(RTTI_INCLUDE_LIBS RTTISubsystem LINK_LIBRARIES)
-message(${RTTI_INCLUDE_LIBS})
 
 # Set C++ Include Directories
 include_directories(${PROJECT_NAME}
@@ -73,19 +46,13 @@ include_directories(${PROJECT_NAME}
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/yaml-cpp-master/include
 )
 
-# Add RTTI Include Directories to project
-foreach (DIR RTTI_INCLUDE_DIRS)
-    include_directories(${PROJECT_NAME} ${DIR})
-endforeach ()
-
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} Imgui)
-add_dependencies(${PROJECT_NAME} RTTISubsystem)
 add_dependencies(${PROJECT_NAME} SDL3::SDL3)
 
 # Set the solution folder for the target
-set_property(TARGET SDL3-shared PROPERTY FOLDER DenixEngine/Depend/SDl3)
-set_property(TARGET SDL_uclibc PROPERTY FOLDER DenixEngine/Depend/SDl3)
+set_property(TARGET SDL3-shared PROPERTY FOLDER DenixEngine/Depend/SDL3)
+set_property(TARGET SDL_uclibc PROPERTY FOLDER DenixEngine/Depend/SDL3)
 
 # Add Yaml CPP Static Def
 target_compile_definitions(${PROJECT_NAME} PUBLIC YAML_CPP_STATIC_DEFINE)
