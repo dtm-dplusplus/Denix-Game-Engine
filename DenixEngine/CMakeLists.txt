@@ -27,6 +27,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
 # Create SDL3 Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/SDL3)
 
+# Create Assimp Library
+add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp)
+
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
         ${OUTPUT_SOURCE_DIR}/src/*.cpp
@@ -49,10 +52,17 @@ include_directories(${PROJECT_NAME}
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} Imgui)
 add_dependencies(${PROJECT_NAME} SDL3::SDL3)
+add_dependencies(${PROJECT_NAME} assimp)
+
 
 # Set the solution folder for the target
 set_property(TARGET SDL3-shared PROPERTY FOLDER DenixEngine/Depend/SDL3)
 set_property(TARGET SDL_uclibc PROPERTY FOLDER DenixEngine/Depend/SDL3)
+
+set_property(TARGET assimp PROPERTY FOLDER DenixEngine/Depend/Assimp)
+
+# Set the solution folder for the target
+set_property(TARGET Imgui PROPERTY FOLDER DenixEngine/Depend/Imgui)
 
 # Add Yaml CPP Static Def
 target_compile_definitions(${PROJECT_NAME} PUBLIC YAML_CPP_STATIC_DEFINE)
