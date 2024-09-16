@@ -49,6 +49,9 @@ add_library(Imgui STATIC
         ${OUTPUT_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_opengl3.cpp
 )
 
+# Add Dependency to support the SDL3 Backend
+add_dependencies(${PROJECT_NAME} SDL3::SDL3)
+
 # Enable Edit and Continue for MSVC
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
