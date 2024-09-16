@@ -26,7 +26,7 @@ mono_crash.*
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
-[Oo]bj/
+#[Oo]bj/
 [Ll]og/
 [Ll]ogs/
 
@@ -412,3 +412,4 @@ FodyWeavers.xsd
 *.vcxproj
 *.filters
 /DenixEngine/src/Denix/RTTI/CMakeFiles
+/cmake-build-debug

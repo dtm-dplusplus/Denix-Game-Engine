@@ -1,13 +1,13 @@
 project(DenixEngine)
 
 # Define Output Directories
-set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME})
+#[[set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME})
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")]]
 
 # Define the source directory
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/DenixEngine)
@@ -23,12 +23,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Create Imgui Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
+set_property(TARGET Imgui PROPERTY FOLDER DenixEngine/Depend/Imgui)
 
 # Create SDL3 Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/SDL3)
+set_property(TARGET SDL3-shared PROPERTY FOLDER DenixEngine/Depend/SDL3)
+set_property(TARGET SDL_uclibc PROPERTY FOLDER DenixEngine/Depend/SDL3)
 
 # Create Assimp Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp)
+set_property(TARGET assimp PROPERTY FOLDER DenixEngine/Depend/Assimp)
+set_property(TARGET UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTY FOLDER DenixEngine/Depend/Assimp)
+set_property(TARGET zlibstatic PROPERTY FOLDER DenixEngine/Depend/Assimp)
+
+# Create Yaml-cpp Library
+add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp)
+set_property(TARGET yaml-cpp PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+set_property(TARGET yaml-cpp-parse PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+set_property(TARGET yaml-cpp-read PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+set_property(TARGET yaml-cpp-sandbox PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
@@ -46,26 +59,25 @@ include_directories(${PROJECT_NAME}
         ${OUTPUT_SOURCE_DIR}/contrib/imgui
         ${OUTPUT_SOURCE_DIR}/contrib/assimp/include
         ${OUTPUT_SOURCE_DIR}/contrib/stb
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/yaml-cpp-master/include
+        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/yaml-cpp/include
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+# Create the Engine library
+add_library(DenixEngine STATIC ${SOURCE_FILES})
+
+# Set solution folder for DenixEngine
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
+
+# Set dependencies for DenixEngine
 add_dependencies(${PROJECT_NAME} Imgui)
 add_dependencies(${PROJECT_NAME} SDL3::SDL3)
 add_dependencies(${PROJECT_NAME} assimp)
+add_dependencies(${PROJECT_NAME} yaml-cpp::yaml-cpp)
 
 
-# Set the solution folder for the target
-set_property(TARGET SDL3-shared PROPERTY FOLDER DenixEngine/Depend/SDL3)
-set_property(TARGET SDL_uclibc PROPERTY FOLDER DenixEngine/Depend/SDL3)
-
-set_property(TARGET assimp PROPERTY FOLDER DenixEngine/Depend/Assimp)
-
-# Set the solution folder for the target
-set_property(TARGET Imgui PROPERTY FOLDER DenixEngine/Depend/Imgui)
 
 # Add Yaml CPP Static Def
-target_compile_definitions(${PROJECT_NAME} PUBLIC YAML_CPP_STATIC_DEFINE)
+#target_compile_definitions(${PROJECT_NAME} PUBLIC YAML_CPP_STATIC_DEFINE)
 
 # Enable Edit and Continue for MSVC
 if(MSVC)
@@ -76,6 +88,3 @@ endif()
 # Set the C++ flags to enable multi-processor compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-
-# Then in some target add this to put the target in the Development folder.
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
