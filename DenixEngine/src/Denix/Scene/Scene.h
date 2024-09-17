@@ -32,13 +32,13 @@ namespace Denix
 			m_ViewportCamera = MakeRef<ViewportCamera>();
 			m_ViewportCamera->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 10.0f, 5.0f));
 
-			m_DirLight = MakeRef<DirectionalLight>();
+			/*m_DirLight = MakeRef<DirectionalLight>();
 			m_DirLight->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 100.0f, 0.0f));
 			m_SceneObjects.push_back(m_DirLight);
 
 			Ref<Plane> floor = MakeRef<Plane>();
 			floor->GetTransformComponent()->SetScale({50.0f,50.0f, 50.0f});
-			m_SceneObjects.push_back(floor);
+			m_SceneObjects.push_back(floor);*/
 
 			m_IsLoaded = true;
 
@@ -49,7 +49,7 @@ namespace Denix
 		{
 			m_IsLoaded = false;
 		}
-
+		
 		virtual void BeginScene()
 		{
 			m_ActiveCamera = m_ViewportCamera;

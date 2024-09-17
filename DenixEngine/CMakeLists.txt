@@ -42,6 +42,7 @@ set_property(TARGET yaml-cpp PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 set_property(TARGET yaml-cpp-parse PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 set_property(TARGET yaml-cpp-read PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 set_property(TARGET yaml-cpp-sandbox PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+set_property(TARGET uninstall PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
