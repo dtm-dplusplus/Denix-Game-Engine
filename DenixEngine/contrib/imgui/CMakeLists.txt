@@ -1,7 +1,7 @@
 project(Imgui)
 
 # Define Output Directories
-set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/DenixEngine/depend/${PROJECT_NAME})
+set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/DenixEngine/depend/${PROJECT_NAME})
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}/lib")
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}/lib")
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}/lib")
@@ -14,10 +14,6 @@ set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/DenixEngine)
 set(OUTPUT_SOURCE_DIR ${CMAKE_BINARY_DIR}/DenixEngine)
 message(STATUS ${SOURCE_DIR})
 message(STATUS ${OUTPUT_SOURCE_DIR})
-
-# Copy the source files to the destination directory
-# This ensures cmake source is not modifiable
-file(COPY ${SOURCE_DIR} DESTINATION ${CMAKE_BINARY_DIR})
 
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
