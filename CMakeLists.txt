@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
+# Removes d postfix so lib file names link
 set(CMAKE_DEBUG_POSTFIX "")
 
 # Create Development Project
@@ -8,9 +9,9 @@ project(DevProject)
 #Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Define the source directory
+# Define the source directory - In the future we will copy source to proj folders
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/${PROJECT_NAME})
-set(GEN_PROJECT_SOURCE_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
+set(GEN_PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}) #${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 
 # Create Engine Project
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine)
@@ -101,8 +102,3 @@ if(MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
 endif()
-
-
-
-# Then in some target add this to put the target in the Development folder.
-
