@@ -34,12 +34,9 @@ public:
 		if (const auto scene = MakeRef<DevScene>())
 		{
 			// Load the scene from the asset
-			if (m_SerializeDevScene)
-			{
-				std::string assetPath = FileSubsystem::GetUserContentRoot() + "Scene\\DevScene.asset";
-				YAML::Node sceneNode = YAML::LoadFile(assetPath);
-				scene->Deserialize(sceneNode);
-			}
+			//std::string assetPath = FileSubsystem::GetUserContentRoot() + "Scene\\DevScene.asset";
+			//YAML::Node sceneNode = YAML::LoadFile(assetPath);
+			//scene->Deserialize(sceneNode);
 			
 			SceneSubsystem::LoadScene(scene);
 			SceneSubsystem::OpenScene(scene->GetSceneName());

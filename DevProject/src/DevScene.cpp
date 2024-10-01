@@ -37,11 +37,11 @@ void DevScene::Update(float _deltaTime)
 		ImGui::Text("Engine Root: %s", FileSubsystem::GetEngineRoot().c_str());
 		ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
 		ImGui::Text("User Content Root: %s", FileSubsystem::GetUserContentRoot().c_str());
-		if(Engine::Get().m_EngineStartupScene)
+		/*if(Engine::Get().m_EngineStartupScene)
 		{
 			ImGui::Text("Startup Scene: %s", Engine::Get().m_EngineStartupScene->GetAssetPath().c_str());
 		}
-		ImGui::Checkbox("Serialize Dev Scene", &Engine::Get().m_SerializeDevScene);
+		ImGui::Checkbox("Serialize Dev Scene", &Engine::Get().m_SerializeDevScene);*/
 
 		/*if(ImGui::Button("Reload Scene"))
 		{
@@ -66,10 +66,6 @@ void DevScene::Update(float _deltaTime)
 		if (ImGui::Button("Load Config"))
 		{
 			Engine::Get().LoadConfig();
-		}
-		if (ImGui::Button("Set Start Scene"))
-		{
-			Engine::Get().m_EngineStartupScene = MakeRef<Asset>(m_SceneAsset->GetAssetPath());
 		}
 	}
 	if (ImGui::CollapsingHeader("Assets", ImGuiTreeNodeFlags_DefaultOpen))
