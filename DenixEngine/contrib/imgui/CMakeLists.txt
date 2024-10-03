@@ -1,48 +1,36 @@
 project(Imgui)
 
-# Define Output Directories
-set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/DenixEngine/depend/${PROJECT_NAME})
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}/lib")
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}/lib")
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}/lib")
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}/lib")
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}/lib")
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}/lib")
-
 # Define the source directory
-set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/DenixEngine)
-set(OUTPUT_SOURCE_DIR ${CMAKE_BINARY_DIR}/DenixEngine)
-message(STATUS ${SOURCE_DIR})
-message(STATUS ${OUTPUT_SOURCE_DIR})
+set(ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/DenixEngine)
 
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Include Header
-include_directories(${PROJECT_NAME}${CMAKE_CURRENT_SOURCE_DIR}
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui
-        PRIVATE ${CMAKE_BINARY_DIR}/DenixEngine/contrib/SDL3/include
+include_directories(${PROJECT_NAME}#${CMAKE_CURRENT_SOURCE_DIR}
+        ${ENGINE_SOURCE_DIR}/contrib/imgui
+        PRIVATE ${ENGINE_SOURCE_DIR}/contrib/SDL3/include
 )
 
 # Create Imgui Library
 add_library(Imgui STATIC
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imgui.cpp
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imgui.h
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imconfig.h
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imgui_demo.cpp
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imgui_draw.cpp
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imgui_internal.h
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imgui_tables.cpp
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imgui_widgets.cpp
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imstb_rectpack.h
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imstb_textedit.h
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/imstb_truetype.h
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/misc/cpp/imgui_stdlib.cpp
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/misc/cpp/imgui_stdlib.h
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_sdl3.cpp
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_sdl3.h
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_opengl3.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imgui.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imgui.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imconfig.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imgui_demo.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imgui_draw.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imgui_internal.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imgui_tables.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imgui_widgets.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imstb_rectpack.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imstb_textedit.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/imstb_truetype.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/misc/cpp/imgui_stdlib.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/misc/cpp/imgui_stdlib.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_sdl3.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_sdl3.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_opengl3.cpp
 )
 
 # Add Dependency to support the SDL3 Backend
@@ -57,6 +45,3 @@ endif()
 # Set the C++ flags to enable multi-processor compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-
-# Then in some target add this to put the target in the Development folder.
-#set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Development)

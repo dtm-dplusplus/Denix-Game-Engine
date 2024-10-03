@@ -149,6 +149,14 @@ namespace Denix
 		Deinitialize();
 	}
 
+	void Engine::LoadConfig()
+	{
+	}
+
+	void Engine::SaveConfig()
+	{
+	}
+
 	void Engine::PreInitialize()
 	{
 		DE_LOG(LogEngine, Trace, "Engine Pre-Initialized")

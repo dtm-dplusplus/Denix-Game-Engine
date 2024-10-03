@@ -1,34 +1,35 @@
 cmake_minimum_required(VERSION 3.6)
 
-# Removes d postfix so lib file names link
+# Removes d postfix so lib file names link - Should probably fix this to allow debug postfix
 set(CMAKE_DEBUG_POSTFIX "")
 
-# Create Development Project
+# Create the DenixEngine Project
+# In future builds the name will be passed as an argument to the cmake file
 project(DevProject)
 
-#Use solution folders.
+# Use solution folders for organisation
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Define the source directory - In the future we will copy source to proj folders
+# Define the source directory for the project
+# In the future it would be better to copy all source to the build project
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/${PROJECT_NAME})
-set(GEN_PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}) #${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 
-# Create Engine Project
+# Create DenixEngine Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine)
 
-
-# Copy source files to the destination directory
-# This ensures cmake source is not modifiable
+# Copy resource files to the destination directory
+# The engine uses the root of the runtime directory to scan for assets
+# Unlike source files which are linked via the solution
 file(COPY ${PROJECT_SOURCE_DIR} DESTINATION ${CMAKE_BINARY_DIR})
 
 # Set C++ Include Directories
-file(GLOB_RECURSE GEN_SOURCE_FILES CONFIGURE_DEPENDS
-        ${GEN_PROJECT_SOURCE_DIR}/src/*.cpp
-        ${GEN_PROJECT_SOURCE_DIR}/src/*.h
+file(GLOB_RECURSE PROJECT_SOURCE_FILES CONFIGURE_DEPENDS
+        ${PROJECT_SOURCE_DIR}/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/*.h
 )
 
 include_directories(${PROJECT_NAME}
-        ${GEN_PROJECT_SOURCE_DIR}/src
+        ${PROJECT_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/DenixEngine/src
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/spdlog/include
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/include
@@ -51,7 +52,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Create Project Executable
-add_executable(${PROJECT_NAME} ${GEN_SOURCE_FILES})
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} DenixEngine)
 
 # Create Project Solution Folder

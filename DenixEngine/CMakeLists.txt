@@ -47,13 +47,13 @@ set_property(TARGET format PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
-        ${OUTPUT_SOURCE_DIR}/src/*.cpp
-        ${OUTPUT_SOURCE_DIR}/src/*.h
+        ${SOURCE_DIR}/src/*.cpp
+        ${SOURCE_DIR}/src/*.h
 )
 
 # Set C++ Include Directories
 include_directories(${PROJECT_NAME}
-        ${OUTPUT_SOURCE_DIR}/src
+        ${SOURCE_DIR}/src
         ${OUTPUT_SOURCE_DIR}/contrib/spdlog/include
         ${OUTPUT_SOURCE_DIR}/contrib/SDL3/include
         ${OUTPUT_SOURCE_DIR}/contrib/glew/include

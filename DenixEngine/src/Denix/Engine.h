@@ -21,6 +21,8 @@ namespace Denix
         void Deinitialize();
 
         void Run();
+        void LoadConfig();
+        void SaveConfig();
 
         static Engine& Get() { return *s_Engine; }
 
