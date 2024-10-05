@@ -1,14 +1,4 @@
 project(DenixEngine)
-
-# Define Output Directories
-#[[set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME})
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")]]
-
 # Define the source directory
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/DenixEngine)
 set(OUTPUT_SOURCE_DIR ${CMAKE_BINARY_DIR}/DenixEngine)
@@ -54,14 +44,14 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 # Set C++ Include Directories
 include_directories(${PROJECT_NAME}
         ${SOURCE_DIR}/src
-        ${OUTPUT_SOURCE_DIR}/contrib/spdlog/include
-        ${OUTPUT_SOURCE_DIR}/contrib/SDL3/include
-        ${OUTPUT_SOURCE_DIR}/contrib/glew/include
-        ${OUTPUT_SOURCE_DIR}/contrib/glm
-        ${OUTPUT_SOURCE_DIR}/contrib/imgui
+        ${SOURCE_DIR}/contrib/spdlog/include
+        ${SOURCE_DIR}/contrib/SDL3/include
+        ${SOURCE_DIR}/contrib/glew/include
+        ${SOURCE_DIR}/contrib/glm
+        ${SOURCE_DIR}/contrib/imgui
         ${OUTPUT_SOURCE_DIR}/contrib/assimp/include
-        ${OUTPUT_SOURCE_DIR}/contrib/stb
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/yaml-cpp/include
+        ${SOURCE_DIR}/contrib/stb
+        ${SOURCE_DIR}/contrib/yaml-cpp/include
 )
 
 # Create the Engine library
@@ -75,11 +65,6 @@ add_dependencies(${PROJECT_NAME} Imgui)
 add_dependencies(${PROJECT_NAME} SDL3::SDL3)
 add_dependencies(${PROJECT_NAME} assimp)
 add_dependencies(${PROJECT_NAME} yaml-cpp::yaml-cpp)
-
-
-
-# Add Yaml CPP Static Def
-#target_compile_definitions(${PROJECT_NAME} PUBLIC YAML_CPP_STATIC_DEFINE)
 
 # Enable Edit and Continue for MSVC
 if(MSVC)
