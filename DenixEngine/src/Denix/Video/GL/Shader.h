@@ -110,7 +110,7 @@ namespace Denix
 		bool CompileShader(ShaderSource& _sourceObj) const
 		{
 			// Check Shader Source
-			if (const std::string& source = FileSubsystem::Read(_sourceObj.Path, true); !source.empty())
+			if (const std::string& source = FileSubsystem::ReadFile(_sourceObj.Path); !source.empty())
 			{
 				_sourceObj.Source = source;
 			}

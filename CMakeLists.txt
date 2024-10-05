@@ -17,31 +17,31 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/${PROJECT_NAME})
 # Create DenixEngine Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine)
 
-# Copy resource files to the destination directory
-# The engine uses the root of the runtime directory to scan for assets
-# Unlike source files which are linked via the solution
+# Copy Engine content to the runtime directory
+file(COPY ${CMAKE_SOURCE_DIR}/DenixEngine/res/ DESTINATION ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/Content/Engine)
+
+# Copy Game Project content to the runtime directory
 file(COPY ${PROJECT_SOURCE_DIR} DESTINATION ${CMAKE_BINARY_DIR})
 
-# Set C++ Include Directories
+# Get Game project source files
 file(GLOB_RECURSE PROJECT_SOURCE_FILES CONFIGURE_DEPENDS
         ${PROJECT_SOURCE_DIR}/src/*.cpp
         ${PROJECT_SOURCE_DIR}/src/*.h
 )
 
+# Set Game Project include directories
 include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/src
-        ${CMAKE_BINARY_DIR}/DenixEngine/src
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/spdlog/include
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/sdl3/include
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/include
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glm
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/imgui
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/include
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/stb
-        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/yaml-cpp/include
+        ${CMAKE_SOURCE_DIR}/DenixEngine/src
+        ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/spdlog/include
+        ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/sdl3/include
+        ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/glew/include
+        ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/glm
+        ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui
+        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/include # Temp fix as config.h generated in binary dir
+        ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/stb
+        ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp/include
 )
-
-
 
 # Set the C++ flags to enable multi-processor compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")

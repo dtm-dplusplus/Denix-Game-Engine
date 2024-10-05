@@ -18,23 +18,20 @@ namespace Denix
 			s_FileSubsystem = nullptr;
 		}
 
-		static std::string Read(const std::string& _path, bool _absolute = false);
+		static std::string ReadFile(const std::string& _path);
 
 		static bool WriteFile(const std::string& _path, const std::string_view _data);
 
 		static bool FileExists(const std::string& _path);
 
-		static std::string GetRoot();
+    	static std::string GetProjectRoot();
 
-		static std::string GetEngineRoot();
-		
+    	static std::string GetContentRoot();
+
 		static std::string GetEngineContentRoot();
-
-		static std::string GetProjectRoot();
 
 		static std::string GetProjectName();
 
-		static std::string GetUserContentRoot();
 
 	public:
 		void Initialize() override;
@@ -47,17 +44,16 @@ namespace Denix
 	private:
 		static FileSubsystem* s_FileSubsystem;
 		
-		std::string m_Root;
-
-		std::string m_EngineRoot;
-
-		std::string m_EngineContentRoot;
-
 		std::string m_ProjectName;
 
+    	// Root of the project
 		std::string m_ProjectRoot;
 
-		std::string m_UserContentRoot;
+    	// Root of the content
+		std::string m_ContentRoot;
+
+    	// Root of the engine content 
+    	std::string m_EngineContentRoot;
 
 		friend class Engine;
 

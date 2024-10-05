@@ -1,4 +1,5 @@
 project(DenixEngine)
+
 # Define the source directory
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/DenixEngine)
 set(OUTPUT_SOURCE_DIR ${CMAKE_BINARY_DIR}/DenixEngine)
@@ -49,7 +50,7 @@ include_directories(${PROJECT_NAME}
         ${SOURCE_DIR}/contrib/glew/include
         ${SOURCE_DIR}/contrib/glm
         ${SOURCE_DIR}/contrib/imgui
-        ${OUTPUT_SOURCE_DIR}/contrib/assimp/include
+        ${OUTPUT_SOURCE_DIR}/contrib/assimp/include # Temp fix as config.h generated in binary dir
         ${SOURCE_DIR}/contrib/stb
         ${SOURCE_DIR}/contrib/yaml-cpp/include
 )

@@ -20,5 +20,7 @@ public:
 
     std::vector<Ref<Asset> > m_Assets;
     Ref<Asset> m_SceneAsset;
+
+    bool ShowEngineContent;;
 }
 ;

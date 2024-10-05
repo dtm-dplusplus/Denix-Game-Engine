@@ -10,7 +10,8 @@ using namespace Denix;
 DevScene::DevScene(): Scene("Dev Scene")
 {
 	// Scrape all assets from content folder
-	std::string contentPath = FileSubsystem::GetUserContentRoot();
+	ShowEngineContent = false;
+	std::string contentPath = FileSubsystem::GetContentRoot();
 	m_SceneAsset = MakeRef<Asset>(contentPath + "Scene\\DevScene.asset");
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(contentPath))
 	{
@@ -34,9 +35,10 @@ void DevScene::Update(float _deltaTime)
 	if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
 	{
 		ImGui::Text("Project Name: %s", FileSubsystem::GetProjectName().c_str());
-		ImGui::Text("Engine Root: %s", FileSubsystem::GetEngineRoot().c_str());
 		ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
-		ImGui::Text("User Content Root: %s", FileSubsystem::GetUserContentRoot().c_str());
+		ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
+		ImGui::Checkbox("Show engine content", &ShowEngineContent);
+		
 		/*if(Engine::Get().m_EngineStartupScene)
 		{
 			ImGui::Text("Startup Scene: %s", Engine::Get().m_EngineStartupScene->GetAssetPath().c_str());
@@ -72,6 +74,11 @@ void DevScene::Update(float _deltaTime)
 	{
 		for (auto& asset : m_Assets)
 		{
+			if(!ShowEngineContent && asset->GetAssetDirectory().find("Engine") != std::string::npos)
+			{
+				continue;
+			}
+			
 			ImGui::CollapsingHeader(asset->GetAssetName().c_str());
 			ImGui::Text("Asset Name: %s", asset->GetAssetName().c_str());
 			ImGui::Text("Asset Path: %s", asset->GetAssetPath().c_str());
@@ -126,7 +133,7 @@ void DevScene::Unload()
 	_out << YAML::EndMap;
 
 	// Write to file
-	std::string contentPath = FileSubsystem::GetUserContentRoot();
+	std::string contentPath = FileSubsystem::GetContentRoot();
 	FileSubsystem::WriteFile(m_SceneAsset->GetAssetPath(), _out.c_str());
 	DE_LOG(LogDevProject, Info, "Serialize")
  }
