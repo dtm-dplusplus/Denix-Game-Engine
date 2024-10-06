@@ -4,12 +4,14 @@
 #include "imgui.h"
 #include "Denix/Engine.h"
 #include "Denix/Scene/SceneSubsystem.h"
+#include "yaml-cpp/yaml.h"
 
 using namespace Denix;
 
 DevScene::DevScene(): Scene("Dev Scene")
 {
 	// Scrape all assets from content folder
+	// This should be done on a timer to check for new assets
 	ShowEngineContent = false;
 	std::string contentPath = FileSubsystem::GetContentRoot();
 	m_SceneAsset = MakeRef<Asset>(contentPath + "Scene\\DevScene.asset");
@@ -22,8 +24,6 @@ DevScene::DevScene(): Scene("Dev Scene")
 			m_Assets.push_back(asset);
 		}
 	}
-
-	
 }
 
 void DevScene::Update(float _deltaTime)
@@ -39,31 +39,10 @@ void DevScene::Update(float _deltaTime)
 		ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
 		ImGui::Checkbox("Show engine content", &ShowEngineContent);
 		
-		/*if(Engine::Get().m_EngineStartupScene)
-		{
-			ImGui::Text("Startup Scene: %s", Engine::Get().m_EngineStartupScene->GetAssetPath().c_str());
-		}
-		ImGui::Checkbox("Serialize Dev Scene", &Engine::Get().m_SerializeDevScene);*/
-
-		/*if(ImGui::Button("Reload Scene"))
-		{
-			if (Engine::Get().m_SerializeDevScene)
-			{
-				if (const auto scene = MakeRef<DevScene>())
-				{
-					SceneSubsystem::LoadScene(scene);
-					SceneSubsystem::OpenScene(scene->GetSceneName());
-				}
-			}
-			else
-			{
-				// Load the scene from the asset
-				
-			}
-		}*/
 		if (ImGui::Button("Save Config"))
 		{
 			Engine::Get().SaveConfig();
+
 		}
 		if (ImGui::Button("Load Config"))
 		{
@@ -72,9 +51,11 @@ void DevScene::Update(float _deltaTime)
 	}
 	if (ImGui::CollapsingHeader("Assets", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		// Stupidly slow way to display assets
 		for (auto& asset : m_Assets)
 		{
-			if(!ShowEngineContent && asset->GetAssetDirectory().find("Engine") != std::string::npos)
+			if(!ShowEngineContent &&
+				asset->GetAssetDirectory().find(FileSubsystem::GetEngineContentRoot()) != std::string::npos)
 			{
 				continue;
 			}
@@ -86,68 +67,29 @@ void DevScene::Update(float _deltaTime)
 			ImGui::Text("Asset Extension: %s", asset->GetAssetExtension().c_str());
 		}
 	}
+	
 	if(ImGui::Button("Save Scene"))
 	{
-		YAML::Emitter Emitter;
-		Serialize(Emitter);
+		SceneSubsystem::SerializeScene(this);
 	}
 
 	if (ImGui::Button("Load Scene"))
 	{
-		YAML::Node sceneNode = YAML::LoadFile(m_SceneAsset->GetAssetPath());
-		Deserialize(sceneNode);
+		if(Ref<Scene> newScene = SceneSubsystem::DeserializeScene(m_SceneAsset))
+		{
+			SceneSubsystem::OpenScene(newScene);
+		}
 	}
-
 	
 	ImGui::End();
 }
 
 bool DevScene::Load()
 {
-	//YAML::Node sceneNode = YAML::LoadFile("DevScene.yaml");
-	//Deserialize(sceneNode);
 	return Scene::Load();
 }
 
 void DevScene::Unload()
 {
 	Scene::Unload();
-
-	//Serialize(Emitter);
 }
-
- void DevScene::Serialize(YAML::Emitter& _out)
- {
-	_out << YAML::Comment("DE_ASSET: Scene");
-	_out << YAML::Newline << YAML::Comment( m_SceneName + " Scene Data");
-	_out << YAML::BeginMap;
-	_out << YAML::Key << "m_SceneObjects" << YAML::BeginSeq;
-
-	for(auto& gameObject : m_SceneObjects)
-	{
-		_out << YAML::BeginMap;
-		gameObject->Serialize(_out);
-		_out << YAML::EndMap;
-	}
-
-	_out << YAML::EndMap;
-
-	// Write to file
-	std::string contentPath = FileSubsystem::GetContentRoot();
-	FileSubsystem::WriteFile(m_SceneAsset->GetAssetPath(), _out.c_str());
-	DE_LOG(LogDevProject, Info, "Serialize")
- }
-
- void DevScene::Deserialize(YAML::Node& _in)
- {
-	DE_LOG(LogDevProject, Info, "Deserialize")
-	YAML::Node sequenceNode = _in["m_SceneObjects"];
-
-	m_SceneObjects.clear();
-	for (YAML::const_iterator it = sequenceNode.begin(); it != sequenceNode.end(); ++it)
-	{
-		Ref<GameObject> gameObj = MakeRef<GameObject>();
-		gameObj->Deserialize(*it);
-		m_SceneObjects.push_back(gameObj);
-	}
- }

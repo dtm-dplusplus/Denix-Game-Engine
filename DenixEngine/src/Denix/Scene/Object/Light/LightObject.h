@@ -59,6 +59,7 @@ namespace Denix
 			m_LightDirection(0.0f, 1.0f, 0.0f) 
 		{
 			m_LightType = (int)LightType::Directional;
+			m_TransformComponent->SetPosition(glm::vec3(0.0f, 500.0f, 0.0f));
 		}
 
 		glm::vec3 GetLightDirection() const { return m_LightDirection; }

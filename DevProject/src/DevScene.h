@@ -1,9 +1,17 @@
 ﻿#pragma once
 #include "Denix/Resource/Asset.h"
 #include "Denix/Scene/Scene.h"
-#include "yaml-cpp/yaml.h"
 
 using namespace Denix;
+
+/*template <class T, class PropertyType> 
+    static	void RegisterProperty(	const char* szName, typename CProperty<T, PropertyType>::GetterType Getter, 
+                                    typename CProperty<T, PropertyType>::SetterType Setter )
+{
+    CProperty<T, PropertyType>* pProperty = new CProperty<T, PropertyType>( szName, Getter, Setter );
+    T::GetClassRTTI()->GetProperties()->push_back( pProperty );
+    CPropertySystem::GetProperties()->push_back( pProperty );
+}*/
 
 class DevScene : public Scene
 {
@@ -15,12 +23,9 @@ public:
 
     bool Load() override;
     void Unload() override;
-    void Serialize(YAML::Emitter& _out) ;
-    void Deserialize(YAML::Node& _in) ;
 
     std::vector<Ref<Asset> > m_Assets;
-    Ref<Asset> m_SceneAsset;
 
-    bool ShowEngineContent;;
+    bool ShowEngineContent;
 }
 ;

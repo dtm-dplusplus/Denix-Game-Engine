@@ -3,7 +3,7 @@
 m_SceneObjects:
   -  # Object Data
     m_Object:
-      m_Name: 43_Plane
+      m_Name: 40_Plane
       m_FriendlyName: Plane
 # Render Component
     m_RenderComponent:
@@ -21,9 +21,9 @@ m_SceneObjects:
         m_Shader: DefaultShader
         m_BaseParam:
           Color:
+            - 0.596309066
             - 1
-            - 1
-            - 1
+            - 0.450980365
           IsTexture: false
 # Transform Component
     m_TransformComponent:
@@ -36,9 +36,9 @@ m_SceneObjects:
         - 0
         - 0
       m_Scale:
-        - 1
+        - 30
         - 0.00999999978
-        - 1
+        - 30
       m_Moveability: 0
 # Physics Component
     m_PhysicsComponent:
@@ -59,12 +59,12 @@ m_SceneObjects:
       m_Mesh: SM_Plane
   -  # Object Data
     m_Object:
-      m_Name: 41_Cube
-      m_FriendlyName: Cube
+      m_Name: 52_DirectionalLight
+      m_FriendlyName: DirectionalLight
 # Render Component
     m_RenderComponent:
       m_IsVisible: true
-      m_AffectsLighting: true
+      m_AffectsLighting: false
 # Texture Settings
       m_TextureSettings:
         WrapMode: 10497
@@ -79,29 +79,29 @@ m_SceneObjects:
           Color:
             - 1
             - 1
-            - 1
+            - 0
           IsTexture: false
 # Transform Component
     m_TransformComponent:
       m_Position:
         - 0
-        - 0
+        - 500
         - 0
       m_Rotation:
         - 0
         - 0
         - 0
       m_Scale:
-        - 1
-        - 1
-        - 1
+        - 0.400000006
+        - 0.400000006
+        - 0.400000006
       m_Moveability: 0
 # Physics Component
     m_PhysicsComponent:
       m_SimulatePhysics: false
       m_SimulateGravity: true
       m_ColliderVisible: false
-      m_CollisionDetectionEnabled: true
+      m_CollisionDetectionEnabled: false
       m_CollisonDimesionOverride: false
       m_IsTrigger: false
       m_ImpulseEnabled: true

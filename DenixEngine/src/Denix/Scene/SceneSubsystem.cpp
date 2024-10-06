@@ -5,8 +5,10 @@
 #include "Denix/Video/Renderer/RendererSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
-#include "Denix/Input/InputSubsystem.h"
 #include "Denix/Engine.h" // TEMP
+#include "Denix/Core/FileSubsystem.h"
+#include "Denix/Resource/Asset.h"
+#include  "yaml-cpp/yaml.h"
 
 namespace Denix
 {
@@ -29,6 +31,17 @@ namespace Denix
 	}
 
 
+	Ref<Camera> SceneSubsystem::GetActiveCamera() const
+	{
+		if (m_ActiveScene)
+		{
+			return m_ActiveScene->GetViewportCamera();
+		}
+
+		DE_LOG(LogSceneSubSystem, Error, "No active scene")
+		return nullptr;
+	}
+
 	bool SceneSubsystem::LoadScene(const Ref<Scene>& _scene)
 	{
 		// Check if the pointer is valid
@@ -38,12 +51,12 @@ namespace Denix
 			return false;
 		}
 
-		// Check it isn't already loaded
-		if (s_SceneSubsystem->m_LoadedScenes.contains(_scene->GetSceneName()))
+		// Check it isn't already loaded - Skip until serializer is built
+		/*if (s_SceneSubsystem->m_LoadedScenes.contains(_scene->GetSceneName()))
 		{
 			DE_LOG(LogSceneSubSystem, Error, "Load Scene: A scene name {} is already loaded", _scene->GetSceneName())
 			return false;
-		}
+		}*/
 
 		// Load the scene
 		if (!_scene->Load())
@@ -75,23 +88,38 @@ namespace Denix
 
 	void SceneSubsystem::OpenScene(const std::string& _name)
 	{
-		if (const Ref<Scene>scene = s_SceneSubsystem->m_LoadedScenes[_name])
+		if (const Ref<Scene> scene = s_SceneSubsystem->m_LoadedScenes[_name])
 		{
-			s_SceneSubsystem->m_ActiveScene = scene;
-
-			// Set dependencies with new scene pointer
-			RendererSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
-			PhysicsSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
-			EditorSubsystem::Get()->SetActiveScene(s_SceneSubsystem->m_ActiveScene);
-
-			// Begin new scene
-			s_SceneSubsystem->m_ActiveScene->BeginScene();
-
-			DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}", _name)
+			OpenScene(scene);
 			return;
 		}
 	
 		DE_LOG(LogSceneSubSystem, Error, "Cound't find Scene: {}", _name)
+	}
+
+	void SceneSubsystem::OpenScene(const Ref<Scene>& _scene)
+	{
+		if(!_scene)
+		{
+			DE_LOG(LogSceneSubSystem, Error, "Invalid Scene Reference")
+			return;
+		}
+
+		// Load the scene if it isn't already loaded
+		if(!_scene->IsLoaded()) LoadScene(_scene);
+		
+		s_SceneSubsystem->m_ActiveScene = std::move(_scene);
+		
+		// Set dependencies with new scene pointer
+		RendererSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
+		PhysicsSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
+		EditorSubsystem::Get()->SetActiveScene(s_SceneSubsystem->m_ActiveScene);
+
+		// Begin new scene
+		s_SceneSubsystem->m_ActiveScene->BeginScene();
+
+		DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}",
+			s_SceneSubsystem->m_ActiveScene->m_SceneName)
 	}
 
 	void SceneSubsystem::PlayScene()
@@ -112,9 +140,7 @@ namespace Denix
 				DE_LOG(LogSceneSubSystem, Warn, "No Game Camera found. Using Viewport Camera Instead")
 			}
 
-
-			
-			DE_LOG(LogSceneSubSystem, Trace, "Scene Playing")
+			DE_LOG(LogSceneSubSystem, Trace, "Started Playing Scene: {}", m_ActiveScene->GetSceneName())
 		}
 	}
 
@@ -204,8 +230,137 @@ namespace Denix
 		if(m_ActiveScene->IsPlaying()) m_ActiveScene->GameUpdate(_deltaTime);
 	}
 
-	void SceneSubsystem::GameObjectsUpdate(float _deltaTime)
+	bool SceneSubsystem::SerializeScene(const Scene* _scene)
 	{
+		// Check if the pointer is valid
+		if (!_scene)
+		{
+			DE_LOG(LogSceneSubSystem, Error, "Failed to serialize scene: Invalid scene reference")
+			return false;
+		}
+
+		// Check if there is an asset associated with the scene
+		// We need the path from the asset to write the scene data
+		if(!_scene->m_SceneAsset || _scene->m_SceneAsset->GetAssetPath().empty())
+		{
+			DE_LOG(LogSceneSubSystem, Error, "Scene {} has no asset associated with it", _scene->GetSceneName())
+			return false;
+		}
 		
+		try
+		{
+			Ref<Asset> sceneAsset = _scene->m_SceneAsset;
+
+			// Create a YAML emitter to write the scene data
+			YAML::Emitter SceneEmitter;
+
+			// Serialize the scene attributes
+			SceneEmitter << YAML::Comment("DE_ASSET: Scene");
+			SceneEmitter << YAML::Newline << YAML::Comment( _scene->m_SceneName + " Scene Data");
+			SceneEmitter << YAML::BeginMap;
+			SceneEmitter << YAML::Key << "m_SceneObjects" << YAML::BeginSeq;
+
+			// Serialize the game objects
+			for(auto& gameObject : _scene->m_SceneObjects)
+			{
+				SceneEmitter << YAML::BeginMap;
+				gameObject->Serialize(SceneEmitter);
+				SceneEmitter << YAML::EndMap;
+			}
+
+			SceneEmitter << YAML::EndMap;
+
+			// Write emitter data to yaml file
+			FileSubsystem::WriteFile(sceneAsset->GetAssetPath(), SceneEmitter.c_str());
+			DE_LOG(LogSceneSubSystem, Info, "Serialized scene: {}", _scene->GetSceneName())
+
+			return true;
+		}
+		catch (const std::exception& e)
+		{
+			DE_LOG(LogSceneSubSystem, Error, "Failed to serialize scene: {}", e.what())
+			return false;
+		}
+	}
+
+	Ref<Scene> SceneSubsystem::DeserializeScene(const Ref<Asset>& _sceneAsset)
+	{
+		try
+		{
+			// Load the scene data from the asset file
+        	YAML::Node sceneNode = YAML::LoadFile(_sceneAsset->GetAssetPath());
+    
+        	// Check if the scene data is valid
+        	if (!sceneNode)
+        	{
+        		DE_LOG(LogSceneSubSystem, Error, "Failed to load scene asset data: {}", _sceneAsset->GetAssetPath())
+        		return nullptr;
+        	}
+        		
+			// Create a new scene object
+			Ref<Scene> newScene = MakeRef<Scene>(_sceneAsset->GetAssetName());
+			newScene->m_SceneAsset = _sceneAsset;
+			
+			// Load the scene objects
+			YAML::Node sequenceNode = sceneNode["m_SceneObjects"];
+			
+			for (const auto& gameObject : sequenceNode)
+			{
+				// Create a new game object
+				Ref<GameObject> newGameObject = MakeRef<GameObject>();
+				
+				// Temp check for game object types
+				// This will be moved to reflection system
+				if(YAML::Node objData =  gameObject["m_Object"])
+				{
+					if(objData["m_FriendlyName"].as<std::string>().find("Light") != std::string::npos)
+					{
+						if (objData["m_FriendlyName"].as<std::string>().find("Dir") != std::string::npos)
+						{
+							newGameObject = MakeRef<DirectionalLight>();
+						}
+
+						else if (objData["m_FriendlyName"].as<std::string>().find("Point") != std::string::npos)
+						{
+							newGameObject = MakeRef<PointLight>();
+						}
+
+						else if (objData["m_FriendlyName"].as<std::string>().find("Spot") != std::string::npos)
+						{
+							newGameObject = MakeRef<SpotLight>();
+						}
+					}
+					else if(objData["m_FriendlyName"].as<std::string>().find("Camera") != std::string::npos)
+					{
+						newGameObject = MakeRef<Camera>();
+					}
+				}
+				
+				// Deserialize the game object
+				newGameObject->Deserialize(gameObject);
+				newScene->SpawnSceneObject(newGameObject);
+			}
+
+			DE_LOG(LogSceneSubSystem, Info, "Deserialized scene: {}", _sceneAsset->GetAssetName())
+
+			return newScene;
+		}
+		catch (const std::exception& e)
+		{
+			DE_LOG(LogSceneSubSystem, Error, "Failed to deserialize scene: {}", e.what())
+			return nullptr;
+		}
+	}
+
+	void SceneSubsystem::SpawnSceneObject(const Ref<GameObject>& _object)
+	{
+		if (s_SceneSubsystem->m_ActiveScene)
+		{
+			s_SceneSubsystem->m_ActiveScene->SpawnSceneObject(_object);
+		}
+		else
+		{
+			DE_LOG(LogSceneSubSystem, Critical, "No active scene")
+		}
 	}
 }

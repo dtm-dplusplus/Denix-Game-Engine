@@ -24,15 +24,17 @@ namespace Denix
 
 		static bool FileExists(const std::string& _path);
 
-    	static std::string GetProjectRoot();
+    	static std::string GetProjectRoot() { return s_FileSubsystem->m_ProjectRoot; }
 
-    	static std::string GetContentRoot();
+    	static std::string GetContentRoot() { return s_FileSubsystem->m_ContentRoot; }
 
-		static std::string GetEngineContentRoot();
+		static std::string GetEngineContentRoot() { return s_FileSubsystem->m_EngineContentRoot; }
 
-		static std::string GetProjectName();
+		static std::string GetProjectName()	{ return s_FileSubsystem->m_ProjectName; }
 
+		 static bool DirectoryExists(const std::string& _path);
 
+    	static bool CreateDirectory(const std::string& _path);
 	public:
 		void Initialize() override;
 

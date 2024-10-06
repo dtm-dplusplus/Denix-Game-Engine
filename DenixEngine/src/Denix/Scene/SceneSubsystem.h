@@ -38,37 +38,29 @@ namespace Denix
 
 		void Update(float _deltaTime) override;
 
-		void GameObjectsUpdate(float _deltaTime);
+		static bool SerializeScene(const Scene* _scene);
+		static Ref<Scene> DeserializeScene(const Ref<Asset>& _sceneAsset);
 
-
+		static void SpawnSceneObject(const Ref<GameObject>& _object);
+		
 		static SceneSubsystem* Get() { return s_SceneSubsystem; }
 
 		static Ref<Scene> GetActiveScene() { return s_SceneSubsystem->m_ActiveScene; }
 
-		Ref<Camera> GetActiveCamera() const
-		{
-			if (m_ActiveScene)
-			{
-				return m_ActiveScene->GetViewportCamera();
-			}
+		Ref<Camera> GetActiveCamera() const;
 
-			DE_LOG(LogSceneSubSystem, Error, "No active scene")
-				return nullptr;
-		}
 	public:
 		static bool LoadScene(const Ref<Scene>& _scene);
 
 		static void UnloadScene(const std::string& _name);
 
 		static void OpenScene(const std::string& _name);
-
+		static void OpenScene(const Ref<Scene>& _scene);
 		void PlayScene();
 
 		void StopScene();
 
 		void PauseScene();
-
-
 
 	private:
 		static SceneSubsystem* s_SceneSubsystem;

@@ -8,11 +8,25 @@ namespace Denix
 {
 	FileSubsystem* FileSubsystem::s_FileSubsystem = nullptr;
 
+
 	void FileSubsystem::Initialize()
 	{
 		DE_LOG(LogFileSubSystem, Trace, "File Subsystem Initialized")
 
-		m_ProjectRoot = fs::current_path().string() + R"(\)";
+		// search the directory for the project file
+		// current directory
+		std::string currentPath = fs::current_path().string();
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(fs::current_path()))
+		{
+			if(entry.is_regular_file())
+			{
+				if(entry.path().filename().string().find("deproj") != std::string::npos)
+				{
+					m_ProjectRoot = entry.path().parent_path().string() + R"(\)";
+					break;
+				}
+			}
+		}
 		m_ContentRoot = m_ProjectRoot + R"(Content\)";
 		m_EngineContentRoot = m_ContentRoot + R"(Engine\)";
 
@@ -60,42 +74,46 @@ namespace Denix
 
 	bool FileSubsystem::WriteFile(const std::string& _path, const std::string_view _data)
 	{
-		if (std::ofstream stream(_path); stream.is_open())
+		// Create directory if it doesn't exist
+		if(!DirectoryExists(_path))
 		{
-			DE_LOG(LogFileSubSystem, Trace, "Opened file: {}", _path);
-
-			stream << _data;
-			stream.close();
+			DE_LOG(LogFileSubSystem, Error, "Directory does not exist: {}", _path)
+			CreateDirectoryA(_path);
 		}
 
-		DE_LOG(Log, Error, "Failed to open file: {}", _path)
+		// Open file and write data
+		if (std::ofstream stream(_path); stream.is_open())
+		{
+			stream << _data;
+			stream.close();
+			return true;
+		}
+
+		DE_LOG(LogFileSubSystem, Error, "Failed to open file: {}", _path)
 			return false;
 	}
 
 	bool FileSubsystem::FileExists(const std::string& _path)
 	{
-
 		return std::filesystem::exists(_path.data());
 	}
 
-	std::string FileSubsystem::GetEngineContentRoot()
+	bool FileSubsystem::DirectoryExists(const std::string& _path)
 	{
-		return s_FileSubsystem->m_EngineContentRoot;
+		 return  fs::exists(fs::path(_path).parent_path());
 	}
 
-	std::string FileSubsystem::GetProjectName()
+	bool FileSubsystem::CreateDirectory(const std::string& _path)
 	{
-		return s_FileSubsystem->m_ProjectName;
+	    try
+	    {
+	        fs::create_directories(fs::path(_path).parent_path());
+    		return true;
+	    }
+	    catch (const std::exception& e)
+	    {
+	        DE_LOG(LogFileSubSystem, Error, "Failed to create directory: {}", e.what());
+	        return false;
+	    }
 	}
-
-	std::string FileSubsystem::GetContentRoot()
-	{
-		return s_FileSubsystem->m_ContentRoot;
-	}
-
-	std::string FileSubsystem::GetProjectRoot()
-	{
-		return s_FileSubsystem->m_ProjectRoot;
-	}
-
 }
