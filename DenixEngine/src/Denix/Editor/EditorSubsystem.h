@@ -21,6 +21,7 @@ namespace Denix
 		EditorSubsystem()
 		{
 			s_EditorSubsystem = this;
+			DE_LOG_CREATE(LogEditor)
 		}
 
 		~EditorSubsystem() override

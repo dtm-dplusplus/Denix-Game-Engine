@@ -21,22 +21,20 @@ namespace Denix
 
 	void EditorSubsystem::Initialize()
 	{
+		Subsystem::Initialize();
+		DE_LOG(LogEditor, Warn, "Initializing Editor Subsystem")
 		s_WindowSubsystem = WindowSubsystem::Get();
 		s_SceneSubsystem = SceneSubsystem::Get();
 		s_InputSubsystem = InputSubsystem::Get();
 		s_RendererSubsystem = RendererSubsystem::Get();
 		s_UISubsystem = UISubsystem::Get();
 
-		DE_LOG_CREATE(LogEditor)
-		DE_LOG(LogEditor, Trace, "Editor Subsystem Initialized")
-
-		m_Initialized = true;
+		DE_LOG(LogEditor, Info, "Editor Subsystem Initialized")
 	}
 
 	void EditorSubsystem::Deinitialize()
 	{
 		DE_LOG(LogEditor, Trace, "Editor Subsystem Initialized")
-		m_Initialized = false;
 	}
 
 	void EditorSubsystem::Update(float _deltaTime)

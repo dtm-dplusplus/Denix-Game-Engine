@@ -11,36 +11,65 @@ namespace Denix
 
 	void FileSubsystem::Initialize()
 	{
-		DE_LOG(LogFileSubSystem, Trace, "File Subsystem Initialized")
-
-		// search the directory for the project file
-		// current directory
-		std::string currentPath = fs::current_path().string();
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(fs::current_path()))
+		DE_LOG(LogFileSubsystem, Warn, "Initializing File Subsystem")
+		// Find the project file and set the project root
+		// We need the project name to find the project file
+		if(m_ProjectName.empty()) 
 		{
-			if(entry.is_regular_file())
+			const std::string errorMessage = "Project name is empty";
+			DE_LOG(LogFileSubsystem, Error, errorMessage)
+			throw std::runtime_error(errorMessage.c_str());
+		}
+
+		// Set name of the project executable
+		const std::string projectExecutable = m_ProjectName + ".exe";
+		const std::string projectFile = m_ProjectName + ".proj";
+		
+		// Get Current path
+		// If the project is launched from the IDE, the current path is the solution root
+		// If the project is launched from the executable, the current path is the executable root
+		const fs::path currentPath = fs::current_path();
+		DE_LOG(LogFileSubsystem, Trace, "Starting search for project in: {}", currentPath.string())
+		
+		// Check if the project is launched from the executable
+		if(FileExists(currentPath.string() + R"(\)" + projectExecutable))
+		{
+			// We are in the executable root, use the parent path to get the project root
+			m_ProjectRoot = currentPath.parent_path().parent_path().string() + R"(\)";
+			DE_LOG(LogFileSubsystem, Trace, "Found Project root via executable")
+		}
+		else
+		{
+			// We are in the solution root, search for the project root
+			const fs::path projectFilePath = currentPath.string()  + R"(\)" + m_ProjectName + R"(\)"+ projectFile;
+			if(FileExists(projectFilePath.string()))
 			{
-				if(entry.path().filename().string().find("deproj") != std::string::npos)
-				{
-					m_ProjectRoot = entry.path().parent_path().string() + R"(\)";
-					break;
-				}
+				m_ProjectRoot = projectFilePath.parent_path().string() + R"(\)";
+				DE_LOG(LogFileSubsystem, Trace, "Found Project root via solution")
 			}
 		}
+
+		// Check if project root was found
+		if (m_ProjectRoot.empty())
+		{
+			const char* errorMessage = "Project file not found via executable or solution";
+			DE_LOG(LogFileSubsystem, Critical, errorMessage)
+			throw std::exception(errorMessage);
+		}
+
+		// Set content roots
 		m_ContentRoot = m_ProjectRoot + R"(Content\)";
 		m_EngineContentRoot = m_ContentRoot + R"(Engine\)";
 
-		DE_LOG(LogFileSubSystem, Trace, "Project Name: {0}", m_ProjectName)
-		DE_LOG(LogFileSubSystem, Trace, "Project Root: {0}", m_ProjectRoot)
-
-		m_Initialized = true;
+		DE_LOG(LogFileSubsystem, Trace, "Project Root: {0}", m_ProjectRoot)
+		DE_LOG(LogFileSubsystem, Trace, "Content Root: {0}", m_ContentRoot)
+		DE_LOG(LogFileSubsystem, Trace, "Engine Content Root: {0}", m_EngineContentRoot)
+		DE_LOG(LogFileSubsystem, Info, "File Subsystem Initialized")
 	}
 
 	void FileSubsystem::Deinitialize()
 	{
-		DE_LOG(LogFileSubSystem, Trace, "File Subsystem Deinitialized")
-
-			m_Initialized = false;
+		DE_LOG(LogFileSubsystem, Trace, "File Subsystem Deinitialized")
 	}
 
 	std::string FileSubsystem::ReadFile(const std::string& _path)
@@ -55,9 +84,7 @@ namespace Denix
 		
 		if (std::ifstream fileStream(fullPath); fileStream.is_open())
 		{
-			DE_LOG(LogFileSubSystem, Info, "Opened file: {}", _path)
-
-				std::stringstream fileString;
+			std::stringstream fileString;
 
 			std::string line;
 			while (std::getline(fileStream, line))
@@ -68,7 +95,7 @@ namespace Denix
 			return fileString.str();
 		}
 
-		DE_LOG(LogFileSubSystem, Error, "Failed to open file: {}", fullPath)
+		DE_LOG(LogFileSubsystem, Error, "Failed to open file: {}", fullPath)
 			return "";
 	}
 
@@ -77,7 +104,7 @@ namespace Denix
 		// Create directory if it doesn't exist
 		if(!DirectoryExists(_path))
 		{
-			DE_LOG(LogFileSubSystem, Error, "Directory does not exist: {}", _path)
+			DE_LOG(LogFileSubsystem, Error, "Directory does not exist: {}", _path)
 			CreateDirectoryA(_path);
 		}
 
@@ -89,7 +116,7 @@ namespace Denix
 			return true;
 		}
 
-		DE_LOG(LogFileSubSystem, Error, "Failed to open file: {}", _path)
+		DE_LOG(LogFileSubsystem, Error, "Failed to open file: {}", _path)
 			return false;
 	}
 
@@ -112,7 +139,7 @@ namespace Denix
 	    }
 	    catch (const std::exception& e)
 	    {
-	        DE_LOG(LogFileSubSystem, Error, "Failed to create directory: {}", e.what());
+	        DE_LOG(LogFileSubsystem, Error, "Failed to create directory: {}", e.what());
 	        return false;
 	    }
 	}

@@ -16,9 +16,8 @@ namespace Denix
 	void ResourceSubsystem::Initialize()
 	{
 		Subsystem::Initialize();
-
-		DE_LOG_CREATE(LogResource)
-
+		DE_LOG(LogResource, Warn, "Resource Subsystem Initializing")
+	
 		// Iniatlize Default Assets
 		// SHADERS
 		{
@@ -87,9 +86,7 @@ namespace Denix
 		LoadModel("SM_Cone", FileSubsystem::GetEngineContentRoot() + R"(models\Cone.obj)");
 		LoadModel("SM_Cylinder", FileSubsystem::GetEngineContentRoot() + R"(models\Cylinder.obj)");
 
-	    DE_LOG(LogResource, Trace, "Resource Subsystem Initialized")
-
-		m_Initialized = true;
+	    DE_LOG(LogResource, Info, "Resource Subsystem Initialized")
 	}
 
 	void ResourceSubsystem::Deinitialize()
@@ -127,9 +124,12 @@ namespace Denix
 
 			AddShader(program);
 
+			DE_LOG(LogShader, Trace, "Shader Loaded: {}", _name)
+			
 			return true;
 		}
 
+		DE_LOG(LogShader, Error, "Failed to load shader: {}", _name)
 		return false;
 	}
 
@@ -165,7 +165,7 @@ namespace Denix
 		if (!texture->LoadTexture()) return nullptr;
 
 		s_ResourceSubsystem->m_TextureStore[_name] = texture;
-		DE_LOG(LogSceneSubSystem, Trace, "Texture loaded: ", _name)
+		DE_LOG(LogResource, Trace, "Texture loaded: {}", _name)
 
 			return GetTexture(_name);
 	}

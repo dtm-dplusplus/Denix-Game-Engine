@@ -32,6 +32,8 @@ namespace Denix
 		InputSubsystem()
 		{
 			s_InputSubsystem = this;
+			DE_LOG_CREATE(LogInput)
+
 			m_SDL_LastKeyboardState = new Uint8[322];
 		}
 		~InputSubsystem() override

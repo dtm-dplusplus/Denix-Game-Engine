@@ -11,13 +11,12 @@ namespace Denix
 	void InputSubsystem::Initialize()
 	{
 		Subsystem::Initialize();
-
-        DE_LOG_CREATE(LogInput)
+		DE_LOG(LogInput, Warn, "Input Subsystem Initializing");
 
 		m_Window = WindowSubsystem::Get()->GetWindow();
       	m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
 
-		m_Initialized = true;
+		DE_LOG(LogInput, Info, "Input Subsystem Initialized");
 	}
 
 	void InputSubsystem::Deinitialize()

@@ -16,7 +16,7 @@ namespace Denix
 	{
 		s_UISubSystem = this;
 
-		DE_LOG_CREATE(LogUISubSystem)
+		DE_LOG_CREATE(LogUISubsystem)
 	}
 
 	UISubsystem::~UISubsystem()
@@ -27,6 +27,9 @@ namespace Denix
 
 	void UISubsystem::Initialize()
 	{
+		Subsystem::Initialize();
+		DE_LOG(LogUISubsystem, Warn, "Starting UI Subsystem")
+		
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -45,19 +48,19 @@ namespace Denix
 		// Setup SDL3 implementation
 		
 		// Setup Platform/Renderer backends
-		if(const WindowSubsystem* windowSystem = WindowSubsystem::Get())
+		const WindowSubsystem* windowSystem = WindowSubsystem::Get();
+		if(!ImGui_ImplSDL3_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(),
+				SDL_GL_GetCurrentContext()))
 		{
-			ImGui_ImplSDL3_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(), SDL_GL_GetCurrentContext());
-			ImGui_ImplOpenGL3_Init(windowSystem->GetWindow()->GetGLSLVersion().c_str());
-		}
-		else
-		{
-			DE_LOG(LogUISubSystem, Critical, "Failed to initialize UI Subsystem")
-			return;
+			throw std::runtime_error("ImGui_ImplSDL3_InitForOpenGL failed");
 		}
 
-		DE_LOG(LogUISubSystem, Trace, "UI SubSystem Initialized")
-		m_Initialized = true;
+		if(!ImGui_ImplOpenGL3_Init(windowSystem->GetWindow()->GetGLSLVersion().c_str()))
+		{
+			throw std::runtime_error("ImGui_ImplOpenGL3_Init failed");
+		}
+		
+		DE_LOG(LogUISubsystem, Info, "UI Subsystem Initialized")
 	}
 
 	void UISubsystem::Deinitialize()
@@ -65,8 +68,6 @@ namespace Denix
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplSDL3_Shutdown();
 		ImGui::DestroyContext();
-
-		m_Initialized = false;
 	}
 	void UISubsystem::Update(float _deltaTime)
 	{

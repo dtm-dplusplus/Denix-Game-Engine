@@ -35,14 +35,14 @@ namespace Denix
 
 		void Initialize() override
 		{
-			DE_LOG(LogRenderer, Trace, "RendererSubsystem Initialized")
-			m_Initialized = true;
+			Subsystem::Initialize();
+			DE_LOG(LogRenderer, Warn, "Initializing RendererSubsystem")
+			DE_LOG(LogRenderer, Info, "RendererSubsystem Initialized")
 		}
 
 		void Deinitialize() override
 		{
 			DE_LOG(LogRenderer, Trace, "RendererSubsystem Deinitialized")
-			m_Initialized = false;
 		}
 
 

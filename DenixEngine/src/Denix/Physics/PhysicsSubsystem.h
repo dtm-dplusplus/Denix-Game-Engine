@@ -17,7 +17,6 @@ namespace Denix
 		PhysicsSubsystem()
 		{
 			s_PhysicsSubSystem = this;
-
 			DE_LOG_CREATE(LogPhysics)
 		}
 
@@ -60,15 +59,14 @@ namespace Denix
 
 		void Initialize() override
 		{
-			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Initialized")
-
-				m_Initialized = true;
+			Subsystem::Initialize();
+			DE_LOG(LogPhysics, Warn, "PhysicsSubsystem Initializing")
+			DE_LOG(LogPhysics, Info, "PhysicsSubsystem Initialized")
 		}
 
 		void Deinitialize() override
 		{
 			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
-				m_Initialized = false;
 		}
 	private:
 		static PhysicsSubsystem* s_PhysicsSubSystem;

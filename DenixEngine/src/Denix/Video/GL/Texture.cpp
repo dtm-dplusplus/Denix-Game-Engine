@@ -13,7 +13,6 @@ namespace Denix
 			DE_LOG(LogRenderer, Error, "Failed to find: {}", m_FilePath)
 			return false;
 		}
-		DE_LOG(LogRenderer, Info, "Loaded Texture: {}", m_FilePath)
 
 		glGenTextures(1, &m_TextureID);
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);

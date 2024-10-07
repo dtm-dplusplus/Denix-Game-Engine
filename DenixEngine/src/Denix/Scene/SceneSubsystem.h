@@ -16,7 +16,7 @@ namespace Denix
 		{
 			s_SceneSubsystem = this;
 
-			DE_LOG_CREATE(LogSceneSubSystem)
+			DE_LOG_CREATE(LogScene)
 			DE_LOG_CREATE(LogScene)
 			DE_LOG_CREATE(LogObject)
 		}

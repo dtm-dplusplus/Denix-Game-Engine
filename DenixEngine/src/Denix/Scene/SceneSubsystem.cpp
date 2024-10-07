@@ -16,18 +16,13 @@ namespace Denix
 
 	void SceneSubsystem::Initialize()
 	{
-		DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Initialized")
-
-		m_Initialized = true;
+		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
+		DE_LOG(LogScene, Info, "Scene Subsystem Initialized")
 	}
 
 	void SceneSubsystem::Deinitialize()
 	{
-		m_LoadedScenes.clear();
-
-		DE_LOG(LogSceneSubSystem, Trace, "Scene Subsystem Deinitialized")
-
-		m_Initialized = false;
+		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitialized")
 	}
 
 
@@ -38,7 +33,7 @@ namespace Denix
 			return m_ActiveScene->GetViewportCamera();
 		}
 
-		DE_LOG(LogSceneSubSystem, Error, "No active scene")
+		DE_LOG(LogScene, Error, "No active scene")
 		return nullptr;
 	}
 
@@ -47,26 +42,26 @@ namespace Denix
 		// Check if the pointer is valid
 		if (!_scene)
 		{
-			DE_LOG(LogSceneSubSystem, Error, "Load Scene: Invalid scene reference")
+			DE_LOG(LogScene, Error, "Load Scene: Invalid scene reference")
 			return false;
 		}
 
 		// Check it isn't already loaded - Skip until serializer is built
 		/*if (s_SceneSubsystem->m_LoadedScenes.contains(_scene->GetSceneName()))
 		{
-			DE_LOG(LogSceneSubSystem, Error, "Load Scene: A scene name {} is already loaded", _scene->GetSceneName())
+			DE_LOG(LogScene, Error, "Load Scene: A scene name {} is already loaded", _scene->GetSceneName())
 			return false;
 		}*/
 
 		// Load the scene
 		if (!_scene->Load())
 		{
-			DE_LOG(LogSceneSubSystem, Critical, "Failed to load scene")
+			DE_LOG(LogScene, Critical, "Failed to load scene")
 			return false;
 		}
 
 		s_SceneSubsystem->m_LoadedScenes[_scene->GetSceneName()] = _scene;
-		DE_LOG(LogSceneSubSystem, Trace, "Scene loaded: ", _scene->GetSceneName())
+		DE_LOG(LogScene, Trace, "Scene loaded: ", _scene->GetSceneName())
 
 		return true;
 	}
@@ -79,11 +74,11 @@ namespace Denix
 			scene->Unload();
 			s_SceneSubsystem->m_LoadedScenes.erase(_name);
 
-			DE_LOG(LogSceneSubSystem, Info, "Unloaded Scene: {}", _name)
+			DE_LOG(LogScene, Info, "Unloaded Scene: {}", _name)
 			return;
 		}
 
-		DE_LOG(LogSceneSubSystem, Error, "Load Scene: Invalid scene name, or the scene isn't loaded")
+		DE_LOG(LogScene, Error, "Load Scene: Invalid scene name, or the scene isn't loaded")
 	}
 
 	void SceneSubsystem::OpenScene(const std::string& _name)
@@ -94,14 +89,14 @@ namespace Denix
 			return;
 		}
 	
-		DE_LOG(LogSceneSubSystem, Error, "Cound't find Scene: {}", _name)
+		DE_LOG(LogScene, Error, "Cound't find Scene: {}", _name)
 	}
 
 	void SceneSubsystem::OpenScene(const Ref<Scene>& _scene)
 	{
 		if(!_scene)
 		{
-			DE_LOG(LogSceneSubSystem, Error, "Invalid Scene Reference")
+			DE_LOG(LogScene, Error, "Invalid Scene Reference")
 			return;
 		}
 
@@ -118,7 +113,7 @@ namespace Denix
 		// Begin new scene
 		s_SceneSubsystem->m_ActiveScene->BeginScene();
 
-		DE_LOG(LogSceneSubSystem, Info, "Activated Scene: {}",
+		DE_LOG(LogScene, Info, "Activated Scene: {}",
 			s_SceneSubsystem->m_ActiveScene->m_SceneName)
 	}
 
@@ -133,14 +128,14 @@ namespace Denix
 			{
 				// Set the camera as the active camera
 				m_ActiveScene->m_ActiveCamera = camera;
-				DE_LOG(LogSceneSubSystem, Info, "Game Camera Found: {}", camera->GetName())
+				DE_LOG(LogScene, Info, "Game Camera Found: {}", camera->GetName())
 			}
 			else
 			{
-				DE_LOG(LogSceneSubSystem, Warn, "No Game Camera found. Using Viewport Camera Instead")
+				DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
 			}
 
-			DE_LOG(LogSceneSubSystem, Trace, "Started Playing Scene: {}", m_ActiveScene->GetSceneName())
+			DE_LOG(LogScene, Trace, "Started Playing Scene: {}", m_ActiveScene->GetSceneName())
 		}
 	}
 
@@ -154,7 +149,7 @@ namespace Denix
 			UnloadScene(m_ActiveScene->GetSceneName());
 			m_ActiveScene = nullptr;
 			
-			DE_LOG(LogSceneSubSystem, Trace, "Scene Stopped")
+			DE_LOG(LogScene, Trace, "Scene Stopped")
 
 			// Temporary fix to reload scene until serializer built
 			Engine::Get().PostInitialize();
@@ -163,7 +158,7 @@ namespace Denix
 
 	void SceneSubsystem::PauseScene()
 	{
-		DE_LOG(LogSceneSubSystem, Trace, "Scene Paused")
+		DE_LOG(LogScene, Trace, "Scene Paused")
 	}
 
 	void SceneSubsystem::CleanRubbish()
@@ -235,7 +230,7 @@ namespace Denix
 		// Check if the pointer is valid
 		if (!_scene)
 		{
-			DE_LOG(LogSceneSubSystem, Error, "Failed to serialize scene: Invalid scene reference")
+			DE_LOG(LogScene, Error, "Failed to serialize scene: Invalid scene reference")
 			return false;
 		}
 
@@ -243,7 +238,7 @@ namespace Denix
 		// We need the path from the asset to write the scene data
 		if(!_scene->m_SceneAsset || _scene->m_SceneAsset->GetAssetPath().empty())
 		{
-			DE_LOG(LogSceneSubSystem, Error, "Scene {} has no asset associated with it", _scene->GetSceneName())
+			DE_LOG(LogScene, Error, "Scene {} has no asset associated with it", _scene->GetSceneName())
 			return false;
 		}
 		
@@ -272,13 +267,13 @@ namespace Denix
 
 			// Write emitter data to yaml file
 			FileSubsystem::WriteFile(sceneAsset->GetAssetPath(), SceneEmitter.c_str());
-			DE_LOG(LogSceneSubSystem, Info, "Serialized scene: {}", _scene->GetSceneName())
+			DE_LOG(LogScene, Info, "Serialized scene: {}", _scene->GetSceneName())
 
 			return true;
 		}
 		catch (const std::exception& e)
 		{
-			DE_LOG(LogSceneSubSystem, Error, "Failed to serialize scene: {}", e.what())
+			DE_LOG(LogScene, Error, "Failed to serialize scene: {}", e.what())
 			return false;
 		}
 	}
@@ -293,7 +288,7 @@ namespace Denix
         	// Check if the scene data is valid
         	if (!sceneNode)
         	{
-        		DE_LOG(LogSceneSubSystem, Error, "Failed to load scene asset data: {}", _sceneAsset->GetAssetPath())
+        		DE_LOG(LogScene, Error, "Failed to load scene asset data: {}", _sceneAsset->GetAssetPath())
         		return nullptr;
         	}
         		
@@ -341,13 +336,13 @@ namespace Denix
 				newScene->SpawnSceneObject(newGameObject);
 			}
 
-			DE_LOG(LogSceneSubSystem, Info, "Deserialized scene: {}", _sceneAsset->GetAssetName())
+			DE_LOG(LogScene, Info, "Deserialized scene: {}", _sceneAsset->GetAssetName())
 
 			return newScene;
 		}
 		catch (const std::exception& e)
 		{
-			DE_LOG(LogSceneSubSystem, Error, "Failed to deserialize scene: {}", e.what())
+			DE_LOG(LogScene, Error, "Failed to deserialize scene: {}", e.what())
 			return nullptr;
 		}
 	}
@@ -360,7 +355,7 @@ namespace Denix
 		}
 		else
 		{
-			DE_LOG(LogSceneSubSystem, Critical, "No active scene")
+			DE_LOG(LogScene, Critical, "No active scene")
 		}
 	}
 }

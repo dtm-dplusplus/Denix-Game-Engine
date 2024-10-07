@@ -7,6 +7,9 @@ namespace Denix
 
     void WindowSubsystem::Initialize()
     {
+        Subsystem::Initialize();
+        DE_LOG(LogWindow, Warn, "Initializing Window Subsystem")
+
         //Create window
         if (const Ref<SDL_GLWindow> window = MakeRef<SDL_GLWindow>())
         {
@@ -17,15 +20,13 @@ namespace Denix
         // Init Glew
         if (glewInit() != GLEW_OK)
         {
-        	DE_LOG(Log, Critical, "glewInit(): failed")
+        	DE_LOG(LogWindow, Critical, "glewInit(): failed")
         		return;
         }
-        DE_LOG(Log, Trace, "glewInit(): success")
-
-        DE_LOG(LogWindow, Trace, "Window Subsystem Initialized")
-
+        DE_LOG(LogWindow, Trace, "glewInit(): success")
+        
         m_DefaultViewport = MakeRef<Viewport>(m_Window->GetWidth(), m_Window->GetHeight());
 
-        m_Initialized = true;
+        DE_LOG(LogWindow, Info, "Window Subsystem Initialized")
     }
 }
