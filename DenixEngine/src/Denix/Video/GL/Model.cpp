@@ -8,8 +8,7 @@
 
 bool Denix::Model::LoadModel(const std::string& _path)
 {
-	DE_LOG(Log, Trace, "Loading Model: {0}", _path)
-		Assimp::Importer importer;
+	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(_path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)

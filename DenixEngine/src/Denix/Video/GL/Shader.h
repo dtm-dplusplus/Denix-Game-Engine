@@ -170,8 +170,6 @@ namespace Denix
 					type += _source[typeIt];
 				}
 
-				DE_LOG(LogShader, Trace, "Shader Type: {}", type)
-				
 				// Return the type if we find it
 				for (const auto& [StringType, EnumType] : g_SHADER_TYPES)
 					if (type == StringType) return EnumType;
@@ -187,7 +185,7 @@ namespace Denix
 		{
 			for (ShaderSource& source : m_ShaderSources)
 			{
-				if (const GLuint shader = CompileShader(source))
+				if (CompileShader(source))
 				{
 					source.IsCompiled = true;
 				}

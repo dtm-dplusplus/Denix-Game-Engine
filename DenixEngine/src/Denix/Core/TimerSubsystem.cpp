@@ -17,15 +17,14 @@ namespace Denix
 
 	void TimerSubsystem::Initialize()
 	{
-		DE_LOG(LogTimer, Trace, "TimerSubsystem Initialized")
-
-			m_Initialized = true;
+		Subsystem::Initialize();
+		DE_LOG(LogTimer, Warn, "Initializing TimerSubsystem")
+		DE_LOG(LogTimer, Info, "TimerSubsystem Initialized")
 	}
 
 	void TimerSubsystem::Deinitialize()
 	{
 		DE_LOG(LogTimer, Trace, "TimerSubsystem Deinitialized")
-			m_Initialized = false;
 	}
 
 	void TimerSubsystem::BeginFrame()

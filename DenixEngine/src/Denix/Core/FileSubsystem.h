@@ -7,9 +7,9 @@ namespace Denix
     class FileSubsystem: public Subsystem
     {
 	public:
-		FileSubsystem()
+		FileSubsystem(const std::string& _projectName) : m_ProjectName(_projectName)
 		{
-			DE_LOG_CREATE(LogFileSubSystem)
+			DE_LOG_CREATE(LogFileSubsystem)
 			s_FileSubsystem = this;
 		}
 
@@ -36,6 +36,7 @@ namespace Denix
 
     	static bool CreateDirectory(const std::string& _path);
 	public:
+    	
 		void Initialize() override;
 
 		void Deinitialize() override;

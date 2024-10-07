@@ -36,7 +36,7 @@ namespace Denix
 		m_TimerSubSystem = new TimerSubsystem;
 		m_Subsystems.push_back(m_TimerSubSystem);
 
-		m_FileSubSystem = new FileSubsystem;
+		m_FileSubSystem = new FileSubsystem(m_ProjectName);
 		m_FileSubSystem->m_ProjectName = m_ProjectName;
 		m_Subsystems.push_back(m_FileSubSystem);
 
@@ -67,8 +67,16 @@ namespace Denix
 	    // Order of initialization is defined above
 		for(const auto& subsystem : m_Subsystems)
 		{
-			subsystem->Initialize();
-			if(!subsystem->IsInitialized()) return;
+			try
+			{
+				subsystem->Initialize();
+			}
+			catch (const std::exception& e)
+			{
+				// Assert and terminate
+				DE_LOG(LogEngine, Critical, "Failed to Initialize Subsystem: {0}", e.what())
+				assert(false, e.what());
+			}
 		}
 			
 

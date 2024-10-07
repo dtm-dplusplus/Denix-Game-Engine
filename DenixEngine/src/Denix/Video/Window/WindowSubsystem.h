@@ -35,8 +35,6 @@ namespace Denix
 			SDL_Quit();
 
 			DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
-
-			m_Initialized = false;
 		}   
 
 		static Ref<SDL_GLWindow> GetWindow() { return s_WindowSubSystem->m_Window; }
