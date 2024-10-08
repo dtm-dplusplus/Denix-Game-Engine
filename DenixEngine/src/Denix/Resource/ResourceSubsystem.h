@@ -36,6 +36,7 @@ namespace Denix
         static void AddShader(const Ref<Shader>& _shader);
 
         static bool LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name);
+        static bool ReloadShader(Ref<Shader>& _shader);
         
         static Ref<Shader> GetShader(const std::string& _name);
 

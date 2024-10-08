@@ -23,7 +23,7 @@ namespace Denix
 
 		// Set name of the project executable
 		const std::string projectExecutable = m_ProjectName + ".exe";
-		const std::string projectFile = m_ProjectName + ".deproj";
+		const std::string projectFile = m_ProjectName + ".proj";
 		
 		// Get Current path
 		// If the project is launched from the IDE, the current path is the solution root

@@ -133,6 +133,39 @@ namespace Denix
 		return false;
 	}
 
+	bool ResourceSubsystem::ReloadShader(Ref<Shader>& _shader)
+	{
+		// Create a new shader to check if it compiles
+		const Ref<Shader> testShader = MakeRef<Shader>(ObjectInitializer(_shader->GetFriendlyName() + "_temp"));
+		
+		if (!testShader->GetGL_ID()) return false;
+
+		testShader->SetShaderSources(_shader->GetShaderSources());
+
+		// Compile the new shader
+		if (!testShader->CompileProgram(false))
+		{
+			DE_LOG(LogResource, Error, "Shader Recompile failed: {}", _shader->GetFriendlyName())
+			return false;
+		}
+
+		// Save the shader sources to disk
+		for(const auto& shader : testShader->GetShaderSources())
+		{
+			if(!FileSubsystem::WriteFile(shader.Path, shader.Source))
+			{
+				DE_LOG(LogResource, Error, "Failed to write shader source to disk: {}", shader.Path)
+				return false;
+			}
+		}
+
+		// Reassign the new shader ID to the old shader
+		_shader->m_GL_ID = testShader->m_GL_ID;
+		DE_LOG(LogResource, Info, "Shader Recompiled successfully: {}", _shader->GetFriendlyName())
+		
+		return true;
+	}
+
 	Ref<Shader> ResourceSubsystem::GetShader(const std::string& _name)
 	{
 		if (ShaderExists(_name))

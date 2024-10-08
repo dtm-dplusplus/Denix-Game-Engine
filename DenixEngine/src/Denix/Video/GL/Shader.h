@@ -53,6 +53,47 @@ namespace Denix
 	class Shader: public Object
 	{
 	public:
+		Shader(const Shader& other)
+			: Object(other),
+			  m_GL_ID(other.m_GL_ID),
+			  m_ShaderSources(other.m_ShaderSources),
+			  m_ShaderUniforms(other.m_ShaderUniforms)
+		{
+		}
+
+		Shader(Shader&& other) noexcept
+			:m_GL_ID(other.m_GL_ID),
+			  m_ShaderSources(std::move(other.m_ShaderSources)),
+			  m_ShaderUniforms(std::move(other.m_ShaderUniforms)),
+				Object(std::move(other))
+
+
+			  
+		{
+		}
+
+		Shader& operator=(const Shader& other)
+		{
+			if (this == &other)
+				return *this;
+			Object::operator =(other);
+			m_GL_ID = other.m_GL_ID;
+			m_ShaderSources = other.m_ShaderSources;
+			m_ShaderUniforms = other.m_ShaderUniforms;
+			return *this;
+		}
+
+		Shader& operator=(Shader&& other) noexcept
+		{
+			if (this == &other)
+				return *this;
+			Object::operator =(std::move(other));
+			m_GL_ID = other.m_GL_ID;
+			m_ShaderSources = std::move(other.m_ShaderSources);
+			m_ShaderUniforms = std::move(other.m_ShaderUniforms);
+			return *this;
+		}
+
 		Shader(const ObjectInitializer& _objInit): Object(_objInit)
 		{
 			CreateProgram();
@@ -60,7 +101,7 @@ namespace Denix
 
 		~Shader() override
 		{
-			DeleteProgram();
+			//DeleteProgram();
 		}
 
 		void Bind() const { glUseProgram(m_GL_ID); }
@@ -107,19 +148,10 @@ namespace Denix
 			return true;
 		}
 
+		// Compile Shader
+		// set sourceFromPath to false if you want to receive the source from the ShaderSource object
 		bool CompileShader(ShaderSource& _sourceObj) const
 		{
-			// Check Shader Source
-			if (const std::string& source = FileSubsystem::ReadFile(_sourceObj.Path); !source.empty())
-			{
-				_sourceObj.Source = source;
-			}
-			else
-			{
-				DE_LOG(LogShader, Error, "Failed to read shader file: {}", _sourceObj.Path)
-				return false;
-			}
-
 			// Get Shader Type
 			if (const GLenum type = GetShaderType(_sourceObj.Source); type != GL_FALSE)
 			{
@@ -181,10 +213,25 @@ namespace Denix
 			return GL_FALSE;
 		}
 
-		bool CompileProgram()
+		bool CompileProgram(bool sourceFromPath = true)
 		{
 			for (ShaderSource& source : m_ShaderSources)
 			{
+				// Check Shader Source
+				if (sourceFromPath)
+				{
+					// Read Shader File
+					if (const std::string& sourceData = FileSubsystem::ReadFile(source.Path); !sourceData.empty())
+					{
+						source.Source = sourceData;
+					}
+					else
+					{
+						DE_LOG(LogShader, Error, "Failed to read shader file: {}", source.Path)
+						return false;
+					}
+				}
+				
 				if (CompileShader(source))
 				{
 					source.IsCompiled = true;
@@ -233,5 +280,7 @@ namespace Denix
 
 		std::vector<ShaderSource> m_ShaderSources;
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
+
+		friend class ResourceSubsystem;
 	};
 }
