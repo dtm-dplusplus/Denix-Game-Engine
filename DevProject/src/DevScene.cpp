@@ -10,35 +10,6 @@
 
 using namespace Denix;
 
-void ShaderEditor::Update()
-{
-	ImGui::Begin("Shader Editor", &IsOpen);
-	ImGui::BeginTabBar("Shader Editor Tabs");
-	if (EditShader)
-	{
-		for (auto& shaderSource : EditShader->GetShaderSources())
-		{
-			if (ImGui::BeginTabItem(shaderSource.FileName.c_str()))
-			{
-				//static ImGuiChildFlags cflags = ImGuiChildFlags_AlwaysAutoResize | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY;
-				//
-				static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput |
-					ImGuiInputTextFlags_CtrlEnterForNewLine ;
-				//ImGui::SameLine();
-				if(ImGui::Button("Recompile Shader"))
-				{
-					ResourceSubsystem::ReloadShader(EditShader);
-				}
-				ImGui::BeginChild(shaderSource.FileName.c_str());
-				ImGui::InputTextMultiline("##source", &shaderSource.Source, ImGui::GetWindowSize(), flags);
-				ImGui::EndChild();
-				ImGui::EndTabItem();
-			}
-		}
-	}
-	ImGui::EndTabBar();
-	ImGui::End();
-}
 
 DevScene::DevScene(): Scene("Dev Scene")
 {
@@ -56,8 +27,6 @@ DevScene::DevScene(): Scene("Dev Scene")
 			m_Assets.push_back(asset);
 		}
 	}
-
-	m_ShaderEditor = MakeRef<ShaderEditor>(ResourceSubsystem::GetShader("DefaultShader"));
 }
 
 void DevScene::Update(float _deltaTime)
@@ -113,11 +82,6 @@ void DevScene::Update(float _deltaTime)
 		{
 			SceneSubsystem::OpenScene(newScene);
 		}
-	}
-
-	if (ImGui::CollapsingHeader("Shader Editor", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		m_ShaderEditor->Update();
 	}
 	
 	ImGui::End();

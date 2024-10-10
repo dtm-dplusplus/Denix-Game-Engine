@@ -14,6 +14,7 @@
 #include "Denix/Scene/Object/Shapes/Shapes.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Core/TimerSubsystem.h"
+#include "Denix/Editor/ShaderEditor.h"
 
 namespace Denix
 {
@@ -659,8 +660,16 @@ namespace Denix
 			ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
 			ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
 
-			if (m_ShaderEditorWidget) m_ShaderEditorWidget->WidgetEditor();
-
+			ImGui::Separator();
+			ImGui::Text(mat->GetShader()->GetFriendlyName().c_str());
+			ImGui::SameLine();
+			if (ImGui::Button("Edit Shader"))
+			{
+				m_ShaderEditor = MakeRef<ShaderEditor>(mat->GetShader());
+				ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Appearing);
+			}
+			if(m_ShaderEditor) m_ShaderEditor->Update();
+			
 			//	// Texture Info
 			//	ImGui::SeparatorText("Texture Info");
 			//	ImGui::Text("Texture ID: %d", texture->GetTextureID());
@@ -762,7 +771,6 @@ namespace Denix
 				}
 				ImGui::EndCombo();
 			}
-			ImGui::SameLine(); if (ImGui::Button("Edit Shader")) m_ShaderEditorWidget = MakeRef<ShaderEditorWidget>(shader);
 		}
 	}
 

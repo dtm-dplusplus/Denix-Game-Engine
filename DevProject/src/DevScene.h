@@ -13,18 +13,7 @@ using namespace Denix;
     CPropertySystem::GetProperties()->push_back( pProperty );
 }*/
 
-class ShaderEditor
-{
-public:
-    
-    Ref<Shader> EditShader;
-    bool IsOpen;
-    ShaderEditor(const Ref<Shader>& _shader) : EditShader(_shader), IsOpen(false)
-    {
-        
-    }
-    void Update();
-};
+
 
 class DevScene : public Scene
 {
@@ -40,6 +29,4 @@ public:
     std::vector<Ref<Asset> > m_Assets;
 
     bool ShowEngineContent;
-
-    Ref<ShaderEditor> m_ShaderEditor;
 };
