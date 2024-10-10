@@ -21,7 +21,8 @@ struct DircetionalLight
 {
 	Light Base;
 	vec3 Direction;
-};	
+	bool IsValid;
+};
 
 struct PointLight
 {
@@ -67,92 +68,57 @@ uniform bool u_AffectsLighting;
 uniform Material u_Material;
 uniform vec3 u_CameraPosition;
 
-vec4 CalcLightByDir(Light _light, vec3 _direction)
+vec3 CalcDirLightColor(Light _light, vec3 _direction)
 {
-	vec4 ambientColor = vec4(_light.Color, 1.0f) * _light.AmbientIntensity;
-	
+	vec3 ambientColor = _light.Color * _light.AmbientIntensity;
+
+	// Calc diffuse factor based on light angle, min is 0.0f
 	float diffuseFactor = max(dot(normalize(Normal), normalize(_direction)), 0.0f);
-	vec4 diffuseColor = vec4(_light.Color * _light.DiffuseIntensity * diffuseFactor, 1.0f);
-	
-	vec4 specularColor = vec4(0, 0, 0, 0);
-	
-	if(diffuseFactor > 0.0f)
-	{
-		vec3 fragToEye = normalize(u_CameraPosition - FragPosition);
-		vec3 reflectedVertex = normalize(reflect(_direction, normalize(Normal)));
-		
-		float specularFactor = dot(fragToEye, reflectedVertex);
-		if(specularFactor > 0.0f)
-		{
-			specularFactor = pow(specularFactor, u_Material.SpecularPower);
-			specularColor = vec4(_light.Color * u_Material.SpecularIntensity * specularFactor, 1.0f);
-		}
-	}
 
-	return (ambientColor + diffuseColor + specularColor);
+	// Calc diffuse color of incident light
+	vec3 diffuseColor = _light.Color * _light.DiffuseIntensity * diffuseFactor;
+
+	vec3 specularColor = vec3(0.0f);
+
+	//if(diffuseFactor > 0.0f)
+	//{
+		//vec3 fragToEye = normalize(u_CameraPosition - FragPosition);
+	//	vec3 reflectedVertex = normalize(reflect(_direction, normalize(Normal)));
+
+	//	float specularFactor = dot(fragToEye, reflectedVertex);
+		//if(specularFactor > 0.0f)
+		//{
+	//		specularFactor = pow(specularFactor, u_Material.SpecularPower);
+	//		specularColor = vec4(_light.Color * u_Material.SpecularIntensity * specularFactor, 1.0f);
+		//}
+	//}
+
+	return vec3(ambientColor + diffuseColor + specularColor);
 }
 
-vec4 CalcDirLight()
+vec3 CalcDirLight()
 {
-	return CalcLightByDir(u_DirLight.Base, u_DirLight.Direction);
+	return CalcDirLightColor(u_DirLight.Base, u_DirLight.Direction);
 
 }
 
-vec4 CalcPointLight(PointLight _light)
+
+// Calculate the color of light reflected from a surfce
+// u_Material.Base.Color = diffuse color
+// u_DirLight.Base.DiffuseIntensity - Amplifies intensity of light color
+// dot(_n, _l),0.0f,1.0f - Determines light intensity with respect to angle of incidence
+// clamp(dot(_n, _l),0.0f,1.0f) - clamp ensures we don't get negative illuminance. This can happen if the face is away from dir light
+vec3 CalcDiffuseReflectance(vec3 _n,vec3 _l)
 {
-	vec3 direction = FragPosition - _light.Position;
-	float dist = length(direction);
-	direction = normalize(direction);
-		
-	vec4 Color = CalcLightByDir(_light.Base, direction);
-	float attenuation = _light.Exponent * pow(dist,2) + _light.Linear * dist + _light.Constant;
-		
-	 return (Color / attenuation);
+	vec3 directColor = CalcDirLight();
+
+	return directColor * u_Material.Base.Color;
 }
 
-vec4 CalcPointLights()
-{
-	vec4 totalColor = vec4(0, 0, 0, 0);
-	for(int i = 0; i < u_PointLightCount; i++)
-	{
-		totalColor += CalcPointLight(u_PointLight[i]);
-	}
-	
-	return totalColor;
-}
-
-vec4 CalcSpotLight(SpotLight _light)
-{
-	vec3 rayDirction = normalize(FragPosition - _light.Base.Position);
-	float spotFactor = dot(rayDirction, normalize(_light.Direction));
-
-	if (spotFactor > _light.Edge)
-	{
-		vec4 color = CalcPointLight(_light.Base);
-		return color * (1.0f - (1.0f - spotFactor) * (1.0f/(1.0f - _light.Edge)));
-	}
-	else
-	{
-		return vec4(0.0f);
-	}
-
-}
-
-vec4 CalcSpotLights()
-{
-	vec4 totalColor = vec4(0.0f);
-	for(int i = 0; i < u_SpotLightCount; i++)
-	{
-		totalColor += CalcSpotLight(u_SpotLight[i]);
-	}
-	
-	return totalColor;
-}
 
 void main()
 {
-	vec4 totalColor;
-
+	vec4 totalColor = vec4(0.0f);
 	// Usa
 	if (!u_AffectsLighting)
 	{
@@ -160,11 +126,18 @@ void main()
 		return;
 	}
 
-	// Get color from lighting
-	totalColor = CalcDirLight() + CalcPointLights() + CalcSpotLights();
+
+	// Get diffuse from direct sources
+	if(u_DirLight.IsValid)
+	{
+
+		totalColor += vec4(CalcDiffuseReflectance(Normal, u_DirLight.Direction), 1.0f);
+	}
+
+
 
 	// Get base from color or texture
-	totalColor *= u_Material.Base.IsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.Base.Color, 1.0f);
+	//totalColor *= u_Material.Base.IsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.Base.Color, 1.0f);
 
 	// Output Color
 	Color = totalColor;

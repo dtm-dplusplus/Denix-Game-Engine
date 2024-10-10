@@ -55,20 +55,6 @@ void DevScene::Update(float _deltaTime)
 	ImGui::Begin("Dev Scene");
 	if(ImGui::CollapsingHeader("Graphics"))
 	{
-		if(!m_DirectionalLight)
-		{
-			m_DirectionalLight = CastRef<DirectionalLight>(GetGameObjectByClass<DirectionalLight>());
-		}
-		bool uExists = m_DirectionalLight->GetRenderComponent()->
-		GetMaterial()->GetShader()->GetUniform("u_DirLight");
-		if(uExists)
-		{
-			ImGui::Text("u_DirLight exists");
-		}
-		else
-		{
-			ImGui::Text("u_DirLight does not exist");
-		}
 		EditorSubsystem::Get()->LightWidget(m_DirectionalLight);
 	}
 	

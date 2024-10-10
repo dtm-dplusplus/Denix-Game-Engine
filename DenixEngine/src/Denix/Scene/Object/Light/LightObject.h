@@ -56,7 +56,7 @@ namespace Denix
 	public:
 
 		DirectionalLight() : Light({ "DirectionalLight" }),
-			m_LightDirection(0.0f, 1.0f, 0.0f) 
+			m_LightDirection(-1.0f, 0.0f, 0.0f) 
 		{
 			m_LightType = (int)LightType::Directional;
 			m_TransformComponent->SetPosition(glm::vec3(0.0f, 500.0f, 0.0f));

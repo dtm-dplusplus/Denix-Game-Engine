@@ -334,7 +334,7 @@ namespace Denix
 	{
 		if (((ViewportMode)m_ViewportMode != ViewportMode::Default)) return;
 
-		Ref<Shader> program = ResourceSubsystem::GetShader("DefaultShader");
+		static Ref<Shader> program = ResourceSubsystem::GetShader("DefaultShader");
 		program->Bind();
 
 		if (const Ref<DirectionalLight> dirLight = m_ActiveScene->m_DirLight)
@@ -345,6 +345,11 @@ namespace Denix
 			glUniform1f(program->GetUniform("u_DirLight.Base.AmbientIntensity"), dirLight->GetAmbientIntensity());
 			glUniform1f(program->GetUniform("u_DirLight.Base.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
 			glUniform3f(program->GetUniform("u_DirLight.Direction"), lightDir.x, lightDir.y, lightDir.z);
+			glUniform1i(program->GetUniform("u_DirLight.IsValid"), true);
+		}
+		else
+		{
+			glUniform1i(program->GetUniform("u_DirLight.IsValid"), false);
 		}
 
 		glUniform1i(program->GetUniform("u_PointLightCount"), (int)m_ActiveScene->m_PointLights.size());
