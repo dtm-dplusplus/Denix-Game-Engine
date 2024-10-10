@@ -19,6 +19,7 @@ class DevScene : public Scene
 {
 public:
     DevScene();
+    DevScene(const Ref<Asset>& _sceneAsset);
     ~DevScene() override = default;
 
     void Update(float _deltaTime) override;
@@ -28,5 +29,6 @@ public:
 
     std::vector<Ref<Asset> > m_Assets;
 
+    Ref<DirectionalLight> m_DirectionalLight;
     bool ShowEngineContent;
 };

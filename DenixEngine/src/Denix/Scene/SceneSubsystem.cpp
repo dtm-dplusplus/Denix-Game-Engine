@@ -8,7 +8,6 @@
 #include "Denix/Engine.h" // TEMP
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Resource/Asset.h"
-#include  "yaml-cpp/yaml.h"
 
 namespace Denix
 {
@@ -278,73 +277,56 @@ namespace Denix
 		}
 	}
 
-	Ref<Scene> SceneSubsystem::DeserializeScene(const Ref<Asset>& _sceneAsset)
+	bool SceneSubsystem::DeserializeSceneObjects(const YAML::Node& _sceneNode,
+	                                             std::vector<Ref<GameObject>>& _gameObjects)
 	{
-		try
+		// Load the scene objects
+		YAML::Node sequenceNode = _sceneNode["m_SceneObjects"];
+
+		if(sequenceNode.IsNull())
 		{
-			// Load the scene data from the asset file
-        	YAML::Node sceneNode = YAML::LoadFile(_sceneAsset->GetAssetPath());
-    
-        	// Check if the scene data is valid
-        	if (!sceneNode)
-        	{
-        		DE_LOG(LogScene, Error, "Failed to load scene asset data: {}", _sceneAsset->GetAssetPath())
-        		return nullptr;
-        	}
-        		
-			// Create a new scene object
-			Ref<Scene> newScene = MakeRef<Scene>(_sceneAsset->GetAssetName());
-			newScene->m_SceneAsset = _sceneAsset;
-			
-			// Load the scene objects
-			YAML::Node sequenceNode = sceneNode["m_SceneObjects"];
-			
-			for (const auto& gameObject : sequenceNode)
-			{
-				// Create a new game object
-				Ref<GameObject> newGameObject = MakeRef<GameObject>();
+			DE_LOG(LogScene, Error, "Failed to load scene objects")
+			return false;
+		}
+		
+		for (const auto& gameObject : sequenceNode)
+		{
+			// Create a new game object
+			Ref<GameObject> newGameObject = MakeRef<GameObject>();
 				
-				// Temp check for game object types
-				// This will be moved to reflection system
-				if(YAML::Node objData =  gameObject["m_Object"])
+			// Temp check for game object types
+			// This will be moved to reflection system
+			if(YAML::Node objData =  gameObject["m_Object"])
+			{
+				if(objData["m_FriendlyName"].as<std::string>().find("Light") != std::string::npos)
 				{
-					if(objData["m_FriendlyName"].as<std::string>().find("Light") != std::string::npos)
+					if (objData["m_FriendlyName"].as<std::string>().find("Dir") != std::string::npos)
 					{
-						if (objData["m_FriendlyName"].as<std::string>().find("Dir") != std::string::npos)
-						{
-							newGameObject = MakeRef<DirectionalLight>();
-						}
-
-						else if (objData["m_FriendlyName"].as<std::string>().find("Point") != std::string::npos)
-						{
-							newGameObject = MakeRef<PointLight>();
-						}
-
-						else if (objData["m_FriendlyName"].as<std::string>().find("Spot") != std::string::npos)
-						{
-							newGameObject = MakeRef<SpotLight>();
-						}
+						newGameObject = MakeRef<DirectionalLight>();
 					}
-					else if(objData["m_FriendlyName"].as<std::string>().find("Camera") != std::string::npos)
+
+					else if (objData["m_FriendlyName"].as<std::string>().find("Point") != std::string::npos)
 					{
-						newGameObject = MakeRef<Camera>();
+						newGameObject = MakeRef<PointLight>();
+					}
+
+					else if (objData["m_FriendlyName"].as<std::string>().find("Spot") != std::string::npos)
+					{
+						newGameObject = MakeRef<SpotLight>();
 					}
 				}
-				
-				// Deserialize the game object
-				newGameObject->Deserialize(gameObject);
-				newScene->SpawnSceneObject(newGameObject);
+				else if(objData["m_FriendlyName"].as<std::string>().find("Camera") != std::string::npos)
+				{
+					newGameObject = MakeRef<Camera>();
+				}
 			}
-
-			DE_LOG(LogScene, Info, "Deserialized scene: {}", _sceneAsset->GetAssetName())
-
-			return newScene;
+				
+			// Deserialize the game object
+			newGameObject->Deserialize(gameObject);
+			_gameObjects.push_back(newGameObject);
 		}
-		catch (const std::exception& e)
-		{
-			DE_LOG(LogScene, Error, "Failed to deserialize scene: {}", e.what())
-			return nullptr;
-		}
+		
+		return true;
 	}
 
 	void SceneSubsystem::SpawnSceneObject(const Ref<GameObject>& _object)

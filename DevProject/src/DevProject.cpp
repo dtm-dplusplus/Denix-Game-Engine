@@ -31,15 +31,10 @@ public:
 		Engine::PostInitialize();
 
 		// Hack to serialize the dev scene  until reflection is implemented
-		if (const auto scene = MakeRef<DevScene>())
+		std::string contentPath = FileSubsystem::GetContentRoot();
+		if(Ref<Scene> newScene = SceneSubsystem::DeserializeScene<DevScene>(MakeRef<Asset>(contentPath + "Scene\\DevScene.asset")))
 		{
-			// Load the scene from the asset
-			//std::string assetPath = FileSubsystem::GetUserContentRoot() + "Scene\\DevScene.asset";
-			//YAML::Node sceneNode = YAML::LoadFile(assetPath);
-			//scene->Deserialize(sceneNode);
-			
-			SceneSubsystem::LoadScene(scene);
-			SceneSubsystem::OpenScene(scene->GetSceneName());
+			SceneSubsystem::OpenScene(newScene);
 		}
 	}
 };

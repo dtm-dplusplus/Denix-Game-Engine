@@ -1,7 +1,18 @@
 ﻿#include "Denix/Scene/Scene.h"
 
+#include "Denix/Resource/Asset.h"
+
 namespace Denix
 {
+    Scene::Scene(const Ref<Asset>& _sceneAsset): Object(ObjectInitializer(_sceneAsset->GetAssetName())),
+                                                 m_SceneName{ _sceneAsset->GetAssetName() },
+                                                 m_SceneAsset{ _sceneAsset },
+                                                 m_ViewportCamera{ nullptr },
+                                                 m_ActiveCamera{ nullptr },
+                                                 m_DirLight{ nullptr }
+    {
+    }
+
     void Scene::SpawnSceneObject(const Ref<GameObject>& _object)
     {
         // An object can be spawned as long as the level is loaded. It doesn't have to be open
@@ -24,7 +35,7 @@ namespace Denix
         {
             if (m_PointLights.size() < MAX_POINT_LIGHTS)
             {
-                m_PointLights.push_back(std::dynamic_pointer_cast<PointLight>(_object));
+                m_PointLights.push_back((std::dynamic_pointer_cast<PointLight>(_object)));
             }
             else
             {

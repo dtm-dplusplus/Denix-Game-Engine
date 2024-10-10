@@ -25,6 +25,8 @@ namespace Denix
 		{
 		}
 
+		Scene(const Ref<Asset>& _sceneAsset);
+
 		virtual ~Scene() = default;
 
 		std::string GetSceneName() const { return m_SceneName; }
@@ -157,6 +159,20 @@ namespace Denix
 			for (const auto& obj : m_SceneObjects)
 			{
 				if (obj->GetName() == _name)
+				{
+					return obj;
+				}
+			}
+
+			return nullptr;
+		}
+
+		template<class T>
+		Ref<GameObject> GetGameObjectByClass()
+		{
+			for (const auto& obj : m_SceneObjects)
+			{
+				if (typeid(T) == typeid(*obj))
 				{
 					return obj;
 				}

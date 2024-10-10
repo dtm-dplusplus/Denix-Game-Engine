@@ -40,7 +40,7 @@ namespace Denix
 
 	void EditorSubsystem::Update(float _deltaTime)
 	{
-		if(InputSubsystem::IsKeyDown(SDL_SCANCODE_H)) m_Enabled = !m_Enabled;
+		//if(InputSubsystem::IsKeyDown(SDL_SCANCODE_H)) m_Enabled = !m_Enabled;
 		if(!m_Enabled) return;
 
 		DragSpeedDelta = DragSpeed * _deltaTime;

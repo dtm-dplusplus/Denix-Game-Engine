@@ -7,6 +7,7 @@
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "yaml-cpp/yaml.h"
+#include "Denix/Editor/EditorSubsystem.h"
 
 using namespace Denix;
 
@@ -29,11 +30,47 @@ DevScene::DevScene(): Scene("Dev Scene")
 	}
 }
 
+DevScene::DevScene(const Ref<Asset>& _sceneAsset): Scene(_sceneAsset)
+{
+	// Scrape all assets from content folder
+	// This should be done on a timer to check for new assets
+	ShowEngineContent = false;
+	std::string contentPath = FileSubsystem::GetContentRoot();
+	m_SceneAsset = MakeRef<Asset>(contentPath + "Scene\\DevScene.asset");
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(contentPath))
+	{
+		if (entry.is_regular_file())
+		{
+			std::string filePath = entry.path().string();
+			Ref<Asset> asset = MakeRef<Asset>(filePath);
+			m_Assets.push_back(asset);
+		}
+	}
+}
+
 void DevScene::Update(float _deltaTime)
 {
 	Scene::Update(_deltaTime);
 
 	ImGui::Begin("Dev Scene");
+	if(ImGui::CollapsingHeader("Graphics"))
+	{
+		if(!m_DirectionalLight)
+		{
+			m_DirectionalLight = CastRef<DirectionalLight>(GetGameObjectByClass<DirectionalLight>());
+		}
+		bool uExists = m_DirectionalLight->GetRenderComponent()->
+		GetMaterial()->GetShader()->GetUniform("u_DirLight");
+		if(uExists)
+		{
+			ImGui::Text("u_DirLight exists");
+		}
+		else
+		{
+			ImGui::Text("u_DirLight does not exist");
+		}
+		EditorSubsystem::Get()->LightWidget(m_DirectionalLight);
+	}
 	
 	if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
 	{
@@ -78,10 +115,10 @@ void DevScene::Update(float _deltaTime)
 
 	if (ImGui::Button("Load Scene"))
 	{
-		if(Ref<Scene> newScene = SceneSubsystem::DeserializeScene(m_SceneAsset))
-		{
-			SceneSubsystem::OpenScene(newScene);
-		}
+		//if(Ref<Scene> newScene = SceneSubsystem::DeserializeScene<DevScene>(m_SceneAsset))
+		//{
+		//	SceneSubsystem::OpenScene(newScene);
+		//}
 	}
 	
 	ImGui::End();

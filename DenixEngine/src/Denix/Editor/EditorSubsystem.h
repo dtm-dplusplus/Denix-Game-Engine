@@ -42,6 +42,22 @@ namespace Denix
 		void Initialize() override;
 		void Deinitialize() override;
 
+		// Scene Viewer
+		void ScenePropertiesWidget() const;
+		void SceneAddObjectWidget();
+		void SceneOrganizerWidget();
+		void LightWidget(const Ref<GameObject>& _selectedObject) const;
+		void PhysicsWidget(const Ref<GameObject>& _selectedObject) const;
+		void CollisionWidget(const Ref<GameObject>& _selectedObject) const;
+
+		void RenderWidget(const Ref<GameObject>& _selectedObject);
+		void MaterialWidget(const Ref<GameObject>& _selectedObject);
+		void MaterialSelectionWidget(Ref<Material>& _material);
+		void TextureSelectionWidget(Ref<Material>& _material);
+		void ShaderSelectionWidget(Ref<Material>& _material);
+		void MeshWidget(const Ref<GameObject>& _selectedObject);
+		void TransformWidget(const Ref<GameObject>& _object) const;
+		void CameraWidget(const Ref<GameObject>& _camera) const;
 	private:
 		static EditorSubsystem* s_EditorSubsystem;
 		class WindowSubsystem* s_WindowSubsystem;
@@ -87,21 +103,6 @@ namespace Denix
 		float MenuBarHeight = 15.f;
 		float ViewportBarHeight = 15.f;
 
-		// Scene Viewer
-		void ScenePropertiesWidget() const;
-		void SceneAddObjectWidget();
-		void SceneOrganizerWidget();
-		void LightWidget(const Ref<GameObject>& _selectedObject) const;
-		void PhysicsWidget(const Ref<GameObject>& _selectedObject) const;
-		void CollisionWidget(const Ref<GameObject>& _selectedObject) const;
-
-		void RenderWidget(const Ref<GameObject>& _selectedObject);
-		void MaterialWidget(const Ref<GameObject>& _selectedObject);
-		void MaterialSelectionWidget(Ref<Material>& _material);
-		void TextureSelectionWidget(Ref<Material>& _material);
-		void ShaderSelectionWidget(Ref<Material>& _material);
-		void MeshWidget(const Ref<GameObject>& _selectedObject);
-		void TransformWidget(const Ref<GameObject>& _object) const;
-		void CameraWidget(const Ref<GameObject>& _camera) const;
+	
 	};
 }
