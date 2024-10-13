@@ -48,6 +48,18 @@ namespace Denix
 		float& GetSpecularIntensity() { return m_SpecularIntensity; }
 		void SetSpecularIntensity(const float _intensity) { m_SpecularIntensity = _intensity; }
 
+		float GetAO() const { return AO; }
+		float& GetAO() { return AO; }
+		void SetAO(const float _ao) { AO = _ao; }
+
+		float GetMetallic() const { return Metallic; }
+		float& GetMetallic() { return Metallic; }
+		void SetMetallic(const float _metallic) { Metallic = _metallic; }
+
+		float GetRoughness() const { return Roughness; }
+		float& GetRoughness() { return Roughness; }
+		void SetRoughness(const float _roughness) { Roughness = _roughness; }
+		
 	private:
 		BaseMatParam m_BaseParam;
 
@@ -58,6 +70,10 @@ namespace Denix
 		float m_SpecularIntensity = 0.5f;
 		float m_SpecularPower = 4.0f;
 
+		float AO;
+		float Metallic;
+		float Roughness;
+		
 		friend class RendererSubsystem;
 	};
 
