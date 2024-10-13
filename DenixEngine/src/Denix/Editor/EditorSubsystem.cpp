@@ -637,7 +637,11 @@ namespace Denix
 		if (Ref<Material> mat = rendComp->GetMaterial())
 		{
 			MaterialSelectionWidget(mat);
-
+	
+			// Material Properties
+			ImGui::DragFloat("AO", &mat->GetAO(), DragSpeedDelta, 0.0f, 1.0f);
+			ImGui::DragFloat("Metallic", &mat->GetMetallic(), DragSpeedDelta, 0.0f, 1.0f);
+			ImGui::DragFloat("Roughness", &mat->GetRoughness(), DragSpeedDelta, 0.0f, 1.0f);
 			BaseMatParam& baseParam = mat->GetBaseParam();
 			// Color or Texture selectable
 			{

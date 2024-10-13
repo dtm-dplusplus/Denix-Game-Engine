@@ -66,7 +66,9 @@ namespace Denix
 					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
 						base.Color.r, base.Color.g, base.Color.b);
 
-
+					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.AO"), mat->GetAO());
+					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Metallic"), mat->GetMetallic());
+					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Roughness"), mat->GetRoughness());
 					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
 					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
 				}
@@ -346,6 +348,8 @@ namespace Denix
 			glUniform1f(program->GetUniform("u_DirLight.Base.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
 			glUniform3f(program->GetUniform("u_DirLight.Direction"), lightDir.x, lightDir.y, lightDir.z);
 			glUniform1i(program->GetUniform("u_DirLight.IsValid"), true);
+			const glm::vec3& transform = dirLight->GetTransformComponent()->GetPosition();
+			glUniform3f(program->GetUniform("u_DirLight.Base.Position"), transform.x, transform.y, transform.z);
 		}
 		else
 		{
@@ -365,6 +369,7 @@ namespace Denix
 
 			const glm::vec3& pos = m_ActiveScene->m_PointLights[i]->GetTransformComponent()->GetPosition();
 			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Position"), pos.x, pos.y, pos.z);
+			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Position"), pos.x, pos.y, pos.z); // Temp to keep legacy code owrking for now
 			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Constant"), m_ActiveScene->m_PointLights[i]->GetConstant());
 			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Linear"), m_ActiveScene->m_PointLights[i]->GetLinear());
 			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Exponent"), m_ActiveScene->m_PointLights[i]->GetExponent());
@@ -379,6 +384,7 @@ namespace Denix
 
 			const glm::vec3& pos = m_ActiveScene->m_SpotLights[i]->GetTransformComponent()->GetPosition();
 			glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Position"), pos.x, pos.y, pos.z);
+			glUniform3f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Position"), pos.x, pos.y, pos.z); // Temp to keep legacy code owrking for now
 			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Constant"), m_ActiveScene->m_SpotLights[i]->GetConstant());
 			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Linear"), m_ActiveScene->m_SpotLights[i]->GetLinear());
 			glUniform1f(program->GetUniform("u_SpotLight[" + std::to_string(i) + "].Base.Exponent"), m_ActiveScene->m_SpotLights[i]->GetExponent());

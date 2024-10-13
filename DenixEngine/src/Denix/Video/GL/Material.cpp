@@ -3,12 +3,13 @@
 
 namespace Denix
 {
-	Material::Material(const ObjectInitializer& _objInit) : Object({ _objInit })
+	Material::Material(const ObjectInitializer& _objInit) : Object({_objInit}), AO(0), Metallic(0), Roughness(0)
 	{
 		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 		m_BaseParam = BaseMatParam();
 		m_NormalParam = NormalMatParam();
 	}
+
 	Material::Material(Ref<Material> _other)
 	{
 		m_Shader = _other->m_Shader;
