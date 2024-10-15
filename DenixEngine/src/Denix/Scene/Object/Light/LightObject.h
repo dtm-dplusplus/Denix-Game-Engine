@@ -37,6 +37,10 @@ namespace Denix
 		float& GetDiffuseIntensity() { return m_DiffuseIntensity; }
 		void SetDiffuseIntensity(const float _intensity) { m_DiffuseIntensity = _intensity; }
 
+		float GetSpecularIntensity() const { return m_SpecularIntensity; }
+		float& GetSpecularIntensity() { return m_SpecularIntensity; }
+		void SetSpecularIntensity(const float _intensity) { m_SpecularIntensity = _intensity; }
+
 		// Constraints to test in ImGui
 		glm::vec2 m_AmbientConstraints = { 0.0f, 1.0f };
 		glm::vec2 m_DiffuseConstraints = { 0.0f, 3.0f };
@@ -49,6 +53,8 @@ namespace Denix
 		float m_AmbientIntensity;
 
 		float m_DiffuseIntensity;
+
+		float m_SpecularIntensity;
 	};
 
 	class DirectionalLight : public Light

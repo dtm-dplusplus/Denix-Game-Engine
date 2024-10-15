@@ -206,15 +206,12 @@ namespace Denix
 		ImGui::SeparatorText("Scene Properties");
 
 		// Viewport Mode
-		if (ImGui::Combo("Viewport Mode", &RendererSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collision\0\0"))
+		ImGui::Combo("Viewport Mode", &RendererSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collision\0\0");
+		
+
+		if (ImGui::TreeNode("Scene Settings"))
 		{
-
-		}
-
-		// Subsystems
-		ImGui::Checkbox("Render Subsystem", &s_RendererSubsystem->IsEnabled());
-
-		// Scene gravity
+			// Scene gravity
 		ImGui::DragFloat("Scene Gravity", &s_SceneSubsystem->m_ActiveScene->GetGravity(), DragSpeedDelta, -FLT_MAX, FLT_MAX);
 
 		// Camera Properties
@@ -260,6 +257,7 @@ namespace Denix
 			ImGui::DragFloat("Far Plane", &m_ActiveScene->m_ViewportCamera->GetFarPlane(), DragSpeedDelta); ImGui::SameLine();
 			if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetFarPlane(100.f);
 			ImGui::SetItemTooltip("Reset");
+		}
 		}
 	}
 
@@ -424,6 +422,7 @@ namespace Denix
 			ImGui::ColorEdit3("Light Color", &light->GetLightColor()[0]);
 			ImGui::DragFloat("Ambient Intensity", &light->GetAmbientIntensity(), DragSpeedDelta);
 			ImGui::DragFloat("Diffuse Intensity", &light->GetDiffuseIntensity(), DragSpeedDelta);
+			ImGui::DragFloat("Specular Intensity", &light->GetSpecularIntensity(), DragSpeedDelta);
 
 			if (const Ref<DirectionalLight> dirLight = CastRef<DirectionalLight>(_selectedObject))
 			{

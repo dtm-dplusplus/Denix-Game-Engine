@@ -346,6 +346,7 @@ namespace Denix
 			glUniform3f(program->GetUniform("u_DirLight.Base.Color"), lightColor.r, lightColor.g, lightColor.b);
 			glUniform1f(program->GetUniform("u_DirLight.Base.AmbientIntensity"), dirLight->GetAmbientIntensity());
 			glUniform1f(program->GetUniform("u_DirLight.Base.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
+			glUniform1f(program->GetUniform("u_DirLight.Base.SpecularIntensity"), dirLight->GetSpecularIntensity());
 			glUniform3f(program->GetUniform("u_DirLight.Direction"), lightDir.x, lightDir.y, lightDir.z);
 			glUniform1i(program->GetUniform("u_DirLight.IsValid"), true);
 			const glm::vec3& transform = dirLight->GetTransformComponent()->GetPosition();
@@ -366,7 +367,8 @@ namespace Denix
 			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Color"), lightCol.r, lightCol.g, lightCol.b);
 			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.AmbientIntensity"), m_ActiveScene->m_PointLights[i]->GetAmbientIntensity());
 			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.DiffuseIntensity"), m_ActiveScene->m_PointLights[i]->GetDiffuseIntensity());
-
+			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.SpecularIntensity"), m_ActiveScene->m_PointLights[i]->GetSpecularIntensity());
+			
 			const glm::vec3& pos = m_ActiveScene->m_PointLights[i]->GetTransformComponent()->GetPosition();
 			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Position"), pos.x, pos.y, pos.z);
 			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Position"), pos.x, pos.y, pos.z); // Temp to keep legacy code owrking for now
