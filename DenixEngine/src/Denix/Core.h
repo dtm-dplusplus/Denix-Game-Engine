@@ -5,6 +5,7 @@
 
 namespace Denix
 {
+	// Smart Pointers
 	template <typename T>
 	using Ref = std::shared_ptr<T>;
 
@@ -28,4 +29,13 @@ namespace Denix
 	{
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
+
+	// Pointer validation
+	template<typename T>
+	constexpr bool IsValid(const Ref<T>& _ref)
+	{
+		return _ref.get() != nullptr;
+	}
+
+	
 }

@@ -69,8 +69,8 @@ namespace Denix
 		{
 			Ref<Material> defaultMaterial = MakeRef<Material>(ObjectInitializer("MAT_Default"));
 			defaultMaterial->SetShader(GetShader("DefaultShader"));
-			defaultMaterial->GetBaseParam().IsTexture = true;
-			defaultMaterial->GetBaseParam().Texture = GetTexture("DefaultTexture");
+			defaultMaterial->SetBaseColor(GetTexture("DefaultTexture"));
+			if(!defaultMaterial->CheckBaseType()) throw std::runtime_error("Default Material Base Texture not loaded");
 			AddMaterial(defaultMaterial);
 
 			Ref<Material> unlitMaterial = MakeRef<Material>(ObjectInitializer("MAT_Unlit"));

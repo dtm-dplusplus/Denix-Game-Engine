@@ -48,29 +48,29 @@ namespace Denix
 				mat->m_Shader->Bind();
 
 				// Upload the material
-				const BaseMatParam& base = mat->GetBaseParam();
-				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.AO"), mat->GetAO());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Metallic"), mat->GetMetallic());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Roughness"), mat->GetRoughness());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
 
-				if (base.IsTexture && base.Texture)
+				// Base color/texture specific settings
+				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.IsBaseTexture"), mat->CheckBaseType());
+
+				if (mat->IsBaseTexture)
 				{
-					base.Texture->Bind();
+					mat->BaseTexture->Bind();
 
 					// Texture Settings need to move to the material/texture
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
+					glTexParameteri(mat->BaseTexture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(mat->BaseTexture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(mat->BaseTexture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
+					glTexParameteri(mat->BaseTexture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
 				}
 				else
 				{
-					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
-						base.Color.r, base.Color.g, base.Color.b);
-
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.AO"), mat->GetAO());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Metallic"), mat->GetMetallic());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Roughness"), mat->GetRoughness());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.BaseColor"),
+						mat->BaseColor.r, mat->BaseColor.g, mat->BaseColor.b);
 				}
 				
 				// Upload the camera matrices relative to Object
@@ -117,7 +117,7 @@ namespace Denix
 
 	void RendererSubsystem::RenderUnlitViewport()
 	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		/*glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		ResourceSubsystem::GetShader("UnlitShader")->Bind();
 
@@ -134,11 +134,10 @@ namespace Denix
 			if (const Ref<Material> mat = renderComp->m_Material; renderComp->IsVisible())
 			{
 				mat->m_Shader->Bind();
-
+				mat->CheckBaseType();
+				
 				// Upload the material
-				const BaseMatParam& base = mat->GetBaseParam();
-
-				if (base.IsTexture && base.Texture)
+				if (mat->IsBaseTexture)
 				{
 					base.Texture->Bind();
 
@@ -152,8 +151,6 @@ namespace Denix
 				{
 					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
 						base.Color.r, base.Color.g, base.Color.b);
-
-					glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
 
 					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
 					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
@@ -198,7 +195,7 @@ namespace Denix
 
 			// Draw Collision over gameobject if set to visible
 			if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
-		}
+		}*/
 	}
 
 	void RendererSubsystem::RenderWireframeViewport()

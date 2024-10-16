@@ -3,8 +3,8 @@
 m_SceneObjects:
   -  # Object Data
     m_Object:
-      m_Name: 40_Plane
-      m_FriendlyName: Plane
+      m_Name: 40_Cube
+      m_FriendlyName: Cube
 # Render Component
     m_RenderComponent:
       m_IsVisible: true
@@ -19,12 +19,11 @@ m_SceneObjects:
         m_SpecularIntensity: 0.5
         m_SpecularPower: 4
         m_Shader: DefaultShader
-        m_BaseParam:
-          Color:
-            - 0.596309066
-            - 1
-            - 0.450980365
-          IsTexture: false
+        BaseColor:
+          - -431602080
+          - -431602080
+          - -431602080
+        BaseTexture: ""
 # Transform Component
     m_TransformComponent:
       m_Position:
@@ -36,9 +35,9 @@ m_SceneObjects:
         - 0
         - 0
       m_Scale:
-        - 30
-        - 0.00999999978
-        - 30
+        - 1
+        - 1
+        - 1
       m_Moveability: 0
 # Physics Component
     m_PhysicsComponent:
@@ -56,7 +55,7 @@ m_SceneObjects:
       m_AngularDrag: 0.5
 # Mesh Component
     m_MeshComponent:
-      m_Mesh: SM_Plane
+      m_Mesh: SM_Cube
   -  # Object Data
     m_Object:
       m_Name: 52_DirectionalLight
@@ -75,12 +74,11 @@ m_SceneObjects:
         m_SpecularIntensity: 0.5
         m_SpecularPower: 4
         m_Shader: DefaultShader
-        m_BaseParam:
-          Color:
-            - 1
-            - 1
-            - 0
-          IsTexture: false
+        BaseColor:
+          - 1
+          - 1
+          - 0
+        BaseTexture: ""
 # Transform Component
     m_TransformComponent:
       m_Position:

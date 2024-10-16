@@ -6,6 +6,7 @@
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
 #include "Denix/Video/GL/Shader.h"
+#include "Denix/Video/Renderer/RenderComponent.h"
 
 namespace Denix
 {
@@ -52,7 +53,7 @@ namespace Denix
 
 		void RenderWidget(const Ref<GameObject>& _selectedObject);
 		void MaterialWidget(const Ref<GameObject>& _selectedObject);
-		void MaterialSelectionWidget(Ref<Material>& _material);
+		void MaterialSelectionWidget(Ref<RenderComponent>& _rendComp);
 		void TextureSelectionWidget(Ref<Material>& _material);
 		void ShaderSelectionWidget(Ref<Material>& _material);
 		void MeshWidget(const Ref<GameObject>& _selectedObject);

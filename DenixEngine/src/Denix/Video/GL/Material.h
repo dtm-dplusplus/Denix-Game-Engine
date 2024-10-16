@@ -6,26 +6,6 @@
 
 namespace Denix
 {
-	struct BaseMatParam
-	{
-		BaseMatParam() : Color(glm::vec3(1.0f)), IsTexture(false), Texture(nullptr) {}
-		BaseMatParam(const glm::vec3& _color) : Color(_color), IsTexture(false), Texture(nullptr) {}
-		BaseMatParam(const Ref<Texture>& _texture) : Color(glm::vec3(1.0f)), IsTexture(true), Texture(_texture) {}
-
-		glm::vec3 Color;
-		bool IsTexture;
-		Ref<Texture> Texture;
-	};
-
-	struct NormalMatParam
-	{
-		NormalMatParam() : IsTexture(false), Texture(nullptr) {}
-		NormalMatParam(const Ref<Texture>& _texture) : IsTexture(true), Texture(_texture) {}
-
-		bool IsTexture;
-		Ref<Texture> Texture;
-	};
-
 	class Material: public Object
 	{
 	public:
@@ -35,10 +15,22 @@ namespace Denix
 		Ref<Shader> GetShader() const { return m_Shader; }
 		void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
 
-		BaseMatParam GetBaseParam() const { return m_BaseParam; }
-		BaseMatParam& GetBaseParam() { return m_BaseParam; }
-		void SetBaseParam(const BaseMatParam& _param) { m_BaseParam = _param; }
+		// Albedo color or texture
+		void SetBaseColor(const glm::vec3& _color) { BaseColor = _color; IsBaseTexture = false;}
+		void SetBaseColor(const Ref<Texture>& _texture) { BaseTexture = _texture; IsBaseTexture = true; }
+		Ref<Texture> GetBaseTexture() const { return BaseTexture; }
+		Ref<Texture>& GetBaseTexture() { return BaseTexture; }
+		glm::vec3 GetBaseColor() const { return BaseColor; }
+		glm::vec3& GetBaseColor() { return BaseColor; }
 
+		
+		bool CheckBaseType() { IsBaseTexture = IsValid(BaseTexture); return IsBaseTexture;}
+
+		/**
+		 *  @brief Get the base type of the material
+		 * @return true if the base is a texture, false if it is a color
+		 */
+		bool IsBaseATexture() const { return IsBaseTexture; }
 
 		float GetSpecularPower() const { return m_SpecularPower; }
 		float& GetSpecularPower() { return m_SpecularPower; }
@@ -61,10 +53,11 @@ namespace Denix
 		void SetRoughness(const float _roughness) { Roughness = _roughness; }
 		
 	private:
-		BaseMatParam m_BaseParam;
-
-		NormalMatParam m_NormalParam;
-
+		// Base color or texture
+		glm::vec3 BaseColor = glm::vec3(0.0f);
+		Ref<Texture> BaseTexture;
+		bool IsBaseTexture = false;
+		
 		Ref<Shader> m_Shader;
 
 		float m_SpecularIntensity = 0.5f;

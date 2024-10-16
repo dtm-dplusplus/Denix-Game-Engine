@@ -41,6 +41,7 @@ namespace Denix
 		void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
 
 		Ref<Material> GetMaterial() const { return m_Material; }
+		Ref<Material>& GetMaterial() { return m_Material; }
 		void SetMaterial(const Ref<Material>& _material) { m_Material = _material; }
 		
 		bool IsVisible() const { return m_IsVisible; }

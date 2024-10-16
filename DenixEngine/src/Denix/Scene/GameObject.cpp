@@ -100,12 +100,10 @@ namespace Denix
                     _out << YAML::Key << "m_Shader" << YAML::Value << mat->GetShader()->GetFriendlyName();
                 
                 // Base Param
-                _out << YAML::Key << "m_BaseParam" << YAML::Value << YAML::BeginMap;
-                _out << YAML::Key << "Color" << YAML::Value << EmitVec3(mat->GetBaseParam().Color);
-                _out << YAML::Key << "IsTexture" << YAML::Value << mat->GetBaseParam().IsTexture;
-                if(mat->GetBaseParam().Texture) // Temp until asset scraper built
-                    _out << YAML::Key << "Texture" << YAML::Value << mat->GetBaseParam().Texture->GetTextureName();
-                _out << YAML::EndMap;
+                _out << YAML::Key << "BaseColor" << YAML::Value << EmitVec3(mat->GetBaseColor());
+                std::string texName;
+                if(const Ref<Texture>& texture = mat->GetBaseTexture()) {texName = texture->GetTextureName();} // Temp until asset scraper built
+                    _out << YAML::Key << "BaseTexture" << YAML::Value << texName;
                 _out << YAML::EndMap;
             }
         }
@@ -180,38 +178,29 @@ namespace Denix
                 m_RenderComponent->SetTextureSettings(texSet);
             }
 
-            if (const YAML::Node material = renderComp["m_Material"]; material)
+            // Material
+            if (const YAML::Node matNode = renderComp["m_Material"]; matNode)
             {
                 Ref<Material> mat = MakeRef<Material>();
-                mat->SetSpecularIntensity(material["m_SpecularIntensity"].as<float>());
-                mat->SetSpecularPower(material["m_SpecularPower"].as<float>());
+                mat->SetSpecularIntensity(matNode["m_SpecularIntensity"].as<float>());
+                mat->SetSpecularPower(matNode["m_SpecularPower"].as<float>());
 
-                if (const Ref<Shader> shader = ResourceSubsystem::GetShader(material["m_Shader"].as<std::string>()))
+                if (const Ref<Shader> shader = ResourceSubsystem::GetShader(matNode["m_Shader"].as<std::string>()))
                 {
                     mat->SetShader(shader); // Temp until asset scraper built
                 }
 
-                if (const YAML::Node baseParam = material["m_BaseParam"]; baseParam)
+                mat->SetBaseColor(matNode["BaseColor"].as<glm::vec3>());
+                if(const std::string texName = matNode["BaseTexture"].as<std::string>(); !texName.empty())
                 {
-                    BaseMatParam base;
-                    base.Color = baseParam["Color"].as<glm::vec3>();
-                    base.IsTexture = baseParam["IsTexture"].as<bool>();
-                    if(baseParam["Texture"])
-                    {
-                        if (const Ref<Texture> tex = ResourceSubsystem::GetTexture(baseParam["Texture"].as<std::string>()))
-                        {
-                            base.Texture = tex; // Temp until asset scraper built
-                        }
-                    }
-                   
-                    mat->SetBaseParam(base);
+                    mat->SetBaseColor(ResourceSubsystem::GetTexture(texName));    
                 }
-
+                mat->CheckBaseType();
+                
                 m_RenderComponent->SetMaterial(mat);
             }
         }
 
-        // Material
         
         
         // Transform Component

@@ -32,10 +32,8 @@ public:
 
 		// Hack to serialize the dev scene  until reflection is implemented
 		std::string contentPath = FileSubsystem::GetContentRoot();
-		if(Ref<Scene> newScene = SceneSubsystem::DeserializeScene<DevScene>(MakeRef<Asset>(contentPath + "Scene\\DevScene.asset")))
-		{
-			SceneSubsystem::OpenScene(newScene);
-		}
+		SceneSubsystem::OpenScene(SceneSubsystem::DeserializeScene<DevScene>(MakeRef<Asset>(contentPath + "Scene\\DevScene.asset")));
+		//SceneSubsystem::OpenScene(MakeRef<DevScene>());
 	}
 };
 

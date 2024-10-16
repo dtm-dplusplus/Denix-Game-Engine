@@ -628,35 +628,28 @@ namespace Denix
 
 	void EditorSubsystem::MaterialWidget(const Ref<GameObject>& _selectedObject)
 	{
-		const Ref<RenderComponent> rendComp = _selectedObject->GetRenderComponent();
+		Ref<RenderComponent> rendComp = _selectedObject->GetRenderComponent();
 
 		ImGui::SeparatorText("Material");
 
 		// Material Settings
-		if (Ref<Material> mat = rendComp->GetMaterial())
+		if (Ref<Material>& mat = rendComp->GetMaterial())
 		{
-			MaterialSelectionWidget(mat);
+			MaterialSelectionWidget(rendComp);
 	
 			// Material Properties
 			ImGui::DragFloat("AO", &mat->GetAO(), DragSpeedDelta, 0.0f, 1.0f);
 			ImGui::DragFloat("Metallic", &mat->GetMetallic(), DragSpeedDelta, 0.0f, 1.0f);
 			ImGui::DragFloat("Roughness", &mat->GetRoughness(), DragSpeedDelta, 0.0f, 1.0f);
-			BaseMatParam& baseParam = mat->GetBaseParam();
 			// Color or Texture selectable
 			{
-				int currItem = baseParam.IsTexture ? 1 : 0;
-				if (ImGui::Combo("Base or Texture", &currItem, "Color\0Texture\0\0"))
-				{
-					baseParam.IsTexture = currItem == 1;
-				}
-
-				if (baseParam.IsTexture)
+				if (mat->CheckBaseType())
 				{
 					TextureSelectionWidget(mat);
 				}
 				else
 				{
-					ImGui::ColorEdit3("Base Color", &baseParam.Color[0]);
+					ImGui::ColorEdit3("Base Color", &mat->GetBaseColor()[0]);
 				}
 			}
 
@@ -705,16 +698,16 @@ namespace Denix
 		}
 	}
 
-	void EditorSubsystem::MaterialSelectionWidget(Ref<Material>& _material)
+	void EditorSubsystem::MaterialSelectionWidget(Ref<RenderComponent>& _rendComp)
 	{
-		if (ImGui::BeginCombo("##MaterialName", _material->GetFriendlyName().c_str()))
+		if (ImGui::BeginCombo("##MaterialName", _rendComp->GetMaterial()->GetFriendlyName().c_str()))
 		{
 			for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
 			{
 				ImGui::PushID(fst.c_str());
 				if (ImGui::Selectable(fst.c_str()))
 				{
-					_material = snd;
+					_rendComp->SetMaterial(snd);
 				}
 				ImGui::PopID();
 			}
@@ -724,7 +717,7 @@ namespace Denix
 
 	void EditorSubsystem::TextureSelectionWidget(Ref<Material>& _material)
 	{
-		Ref<Texture>& texture = _material->GetBaseParam().Texture;
+		Ref<Texture>& texture = _material->GetBaseTexture();
 		std::string preview = "None";
 
 		// Texture Preview

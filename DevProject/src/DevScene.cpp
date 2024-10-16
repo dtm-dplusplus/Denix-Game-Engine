@@ -53,9 +53,10 @@ void DevScene::Update(float _deltaTime)
 	Scene::Update(_deltaTime);
 
 	ImGui::Begin("Dev Scene");
+	if(m_SceneObjects[0]) ImGui::Text(m_SceneObjects[0]->GetRenderComponent()->GetMaterial()->GetName().c_str());
 	if(ImGui::CollapsingHeader("Graphics"))
 	{
-		EditorSubsystem::Get()->LightWidget(m_DirectionalLight);
+		//EditorSubsystem::Get()->LightWidget(m_DirectionalLight);
 	}
 	
 	if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
