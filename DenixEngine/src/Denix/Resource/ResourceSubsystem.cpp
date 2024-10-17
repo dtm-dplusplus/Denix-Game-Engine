@@ -31,8 +31,6 @@ namespace Denix
 		Subsystem::Initialize();
 		DE_LOG(LogResource, Warn, "Resource Subsystem Initializing")
 
-		
-		
 		// Iniatlize Default Assets
 		// SHADERS
 		{
@@ -85,6 +83,14 @@ namespace Denix
 				Ref<Asset> asset = MakeRef<Asset>(entry.path().string());
 
 				// Scene Check
+				if (entry.path().string().find(".asset") != std::string::npos)
+				{
+					const std::string sceneData = FileSubsystem::ReadFile(entry.path().string());
+					if (sceneData.find("DE_ASSET_SCENE") != std::string::npos)
+					{
+						m_SceneStore.push_back(asset);
+					}
+				}
 				// Material Check - Not a safe check
 				if(entry.path().string().find("MAT") != std::string::npos)
 				{
@@ -131,6 +137,19 @@ namespace Denix
 		DE_LOG(LogResource, Trace, "Resource Subsystem Deinitialized")
 	}
 
+
+	Ref<Asset> ResourceSubsystem::GetSceneAsset(const std::string& _path)
+	{
+		for (const auto& asset : s_ResourceSubsystem->m_SceneStore)
+		{
+			if (asset->GetAssetPath() == _path)
+			{
+				return asset;
+			}
+		}
+
+		return nullptr;
+	}
 
 	////////////////////////  SHADERS ///////////////////////////////
 	void ResourceSubsystem::AddShader(const Ref<Shader>& _shader)

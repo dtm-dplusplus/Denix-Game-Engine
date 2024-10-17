@@ -12,6 +12,7 @@ namespace Denix
 	class Shader;
 	class Material;
 	class Texture;
+    class Scene;
 
     class ResourceSubsystem : public Subsystem
     {
@@ -27,8 +28,11 @@ namespace Denix
             s_ResourceSubsystem = nullptr;
         }
 
+        // Scenes
+        static std::vector<Ref<Asset>>  GetSceneStore() { return s_ResourceSubsystem->m_SceneStore; }
+        static Ref<Asset> GetSceneAsset(const std::string& _path);
+        
         // Shaders
-
         static std::unordered_map<std::string, Ref<Shader>> GetShaderStore() 
         {
             return s_ResourceSubsystem->m_ShaderStore;
@@ -98,5 +102,7 @@ namespace Denix
 		std::unordered_map<std::string, Ref<Model>> m_ModelStore;
 
         std::vector<Ref<Asset>> m_AssetStore;
+
+        std::vector<Ref<Asset>> m_SceneStore;
     };
 }

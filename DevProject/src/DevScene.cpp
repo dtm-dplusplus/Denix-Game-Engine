@@ -86,6 +86,16 @@ void DevScene::Update(float _deltaTime)
 			ImGui::TreeNode(mat.second->GetAsset()->GetAssetName().c_str());
 		}
 	}
+
+	if (ImGui::CollapsingHeader("Scenes", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		for (const auto& scene : ResourceSubsystem::GetSceneStore())
+		{
+			ImGui::TreeNode(scene->GetAssetName().c_str());
+			ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
+		}
+	}
+	
 	if (ImGui::CollapsingHeader("Assets", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		// Stupidly slow way to display assets

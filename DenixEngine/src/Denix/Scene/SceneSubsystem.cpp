@@ -249,7 +249,7 @@ namespace Denix
 			YAML::Emitter SceneEmitter;
 
 			// Serialize the scene attributes
-			SceneEmitter << YAML::Comment("DE_ASSET: Scene");
+			SceneEmitter << YAML::Comment("DE_ASSET_SCENE");
 			SceneEmitter << YAML::Newline << YAML::Comment( _scene->m_SceneName + " Scene Data");
 			SceneEmitter << YAML::BeginMap;
 			SceneEmitter << YAML::Key << "m_SceneObjects" << YAML::BeginSeq;
