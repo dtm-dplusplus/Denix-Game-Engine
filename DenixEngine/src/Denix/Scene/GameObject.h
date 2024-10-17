@@ -2,6 +2,7 @@
 
 #include <ranges>
 
+#include "BaseObject.h"
 #include "Denix/Scene/Object.h"
 #include "Denix/Scene/Component.h"
 
@@ -14,6 +15,8 @@ namespace YAML
 {
 	class Node;
 	class Emitter;
+
+	//static Node EmitVec3(const glm::vec3& _vec);
 }
 
 namespace Denix
@@ -27,7 +30,7 @@ namespace Denix
 	/*	Base class for all game objects
 	*
 	*/
-	class GameObject : public Object
+	class GameObject : public BaseObject
 	{
 	public:
 		// Constructors
@@ -37,8 +40,9 @@ namespace Denix
 		~GameObject() override = default;
 
 		// Reflection
-		virtual void Serialize(YAML::Emitter& _out);
-		virtual void Deserialize(const YAML::Node& _in);
+		void Serialize(YAML::Emitter& _out) override;
+		void Deserialize(const YAML::Node& _in) override;
+		
 		Ref<Component> AddComponent(const Ref<Component>& _component)
 		{
 			m_Components[_component->GetName()] = _component;
@@ -82,7 +86,7 @@ namespace Denix
 	public:
 		void BeginScene() override
 		{
-			Object::BeginScene();
+			BaseObject::BeginScene();
 
 			for (const auto& component : m_Components | std::views::values)
 			{
@@ -97,13 +101,13 @@ namespace Denix
 				component->EndScene();
 			}
 
-			Object::EndScene();
+			BaseObject::EndScene();
 		}
 
 
 		void BeginPlay() override
 		{
-			Object::BeginPlay();
+			BaseObject::BeginPlay();
 
 			for (const auto& component : m_Components | std::views::values)
 			{
@@ -118,28 +122,18 @@ namespace Denix
 				component->EndPlay();
 			}
 
-			Object::EndPlay();
+			BaseObject::EndPlay();
 		}
 
 		void Update(float _deltaTime) override
 		{
-			Object::Update(_deltaTime);
+			BaseObject::Update(_deltaTime);
 
 			for(const auto& component : m_Components | std::views::values)
 			{
 			    component->Update(_deltaTime);
             }
 		}
-		
-		virtual void GameUpdate(float _deltaTime) override
-		{
-            Object::GameUpdate(_deltaTime);
-
-			for (const auto& component : m_Components | std::views::values)
-			{
-                component->GameUpdate(_deltaTime);
-            }
-        }
 
 	protected:
 		LayerType m_Layer = LayerType::Default;

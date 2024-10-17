@@ -221,7 +221,7 @@ namespace Denix
 
 		// Scene update implementation 
 		m_ActiveScene->Update(_deltaTime);
-		if(m_ActiveScene->IsPlaying()) m_ActiveScene->GameUpdate(_deltaTime);
+		if(m_ActiveScene->IsPlaying()) m_ActiveScene->Update(_deltaTime);
 	}
 
 	bool SceneSubsystem::SerializeScene(const Scene* _scene)

@@ -54,11 +54,30 @@ void DevScene::Update(float _deltaTime)
 
 	ImGui::Begin("Dev Scene");
 	if(m_SceneObjects[0]) ImGui::Text(m_SceneObjects[0]->GetRenderComponent()->GetMaterial()->GetName().c_str());
-	if(ImGui::CollapsingHeader("Graphics"))
+
+	static std::string matPath = FileSubsystem::GetContentRoot() + "Material\\DevMaterial.asset";
+	if(ImGui::Button("Serialize Material"))
 	{
-		//EditorSubsystem::Get()->LightWidget(m_DirectionalLight);
+		Ref<Material> mat = m_SceneObjects[0]->GetRenderComponent()->GetMaterial();
+		m_SceneObjects[0]->GetRenderComponent()->GetMaterial()->SetAsset(MakeRef<Asset>(matPath));
+		YAML::Emitter out;
+
+		out << YAML::BeginMap;
+		out << YAML::Comment("DE_ASSET: Material");
+		mat->Serialize(out);
+		out << YAML::EndMap;
+
+		FileSubsystem::WriteFile(matPath, out.c_str());
+		DE_LOG(LogScene, Info, "Serialized Material");
 	}
-	
+	if (ImGui::Button("Deserialize Material"))
+	{
+		Ref<Asset> asset = MakeRef<Asset>(matPath);
+		
+		Ref<Material> mat = MakeRef<Material>(asset);
+		m_SceneObjects[0]->GetRenderComponent()->SetMaterial(mat);
+		DE_LOG(LogScene, Info, "Deserialized Material");
+	}
 	if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
 	{
 		ImGui::Text("Project Name: %s", FileSubsystem::GetProjectName().c_str());

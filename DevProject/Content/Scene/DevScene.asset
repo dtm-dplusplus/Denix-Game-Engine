@@ -1,5 +1,5 @@
 # DE_ASSET: Scene
-# Dev Scene Scene Data
+# DevScene.asset Scene Data
 m_SceneObjects:
   -  # Object Data
     m_Object:
@@ -16,14 +16,17 @@ m_SceneObjects:
         FilterMode: 9729
         FilterValue: 1
       m_Material:
+        m_Asset: 
+          m_AssetName: DefaultMaterial
+          m_AssetPath: C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\Build\DevProject\Content\Engine\Material\DefaultMaterial.asset
         m_SpecularIntensity: 0.5
-        m_SpecularPower: 4
+        m_SpecularPower: 0.5
         m_Shader: DefaultShader
-        BaseColor:
-          - -431602080
-          - -431602080
-          - -431602080
-        BaseTexture: ""
+        m_BaseColor:
+          - 1
+          - 0
+          - 0
+        m_BaseTexture: ""
 # Transform Component
     m_TransformComponent:
       m_Position:
@@ -71,14 +74,17 @@ m_SceneObjects:
         FilterMode: 9729
         FilterValue: 1
       m_Material:
+        m_Asset:
+          m_AssetName: ""
+          m_AssetPath: ""
         m_SpecularIntensity: 0.5
-        m_SpecularPower: 4
+        m_SpecularPower: 0.5
         m_Shader: DefaultShader
-        BaseColor:
-          - 1
-          - 1
+        m_BaseColor:
           - 0
-        BaseTexture: ""
+          - 0
+          - 0
+        m_BaseTexture: ""
 # Transform Component
     m_TransformComponent:
       m_Position:

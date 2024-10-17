@@ -3,7 +3,10 @@
 
 #include "Denix/Core/Logger.h"
 
+namespace Denix
+{
 class Asset
+    
 {
 public:
     Asset() = default;
@@ -17,28 +20,6 @@ public:
         m_AssetDirectory = _assetPath.substr(0, _assetPath.find_last_of("/\\"));
     }
     
-    /*Asset(const Asset& _other)
-    {
-    }
-
-    Asset(Asset&& _other) noexcept
-    {
-    }
-
-    Asset& operator=(const Asset& _other)
-    {
-        if (this == &_other)
-            return *this;
-        return *this;
-    }
-
-    Asset& operator=(Asset&& _other) noexcept
-    {
-        if (this == &_other)
-            return *this;
-        return *this;
-    }*/
-
     bool RenameAsset(const std::string& _newName)
     {
         // Add check for invalid characters
@@ -94,3 +75,4 @@ protected:
     std::string m_AssetDirectory;
     
 };
+}

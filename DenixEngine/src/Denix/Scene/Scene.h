@@ -5,10 +5,11 @@
 #include "Object/Light/LightObject.h"
 #include "Camera.h"
 
-class Asset;
 
 namespace Denix
 {
+	class Asset;
+
 	constexpr unsigned int MAX_POINT_LIGHTS = 100;
 	constexpr unsigned int MAX_SPOT_LIGHTS = 100;
 
@@ -111,7 +112,7 @@ namespace Denix
 			{
 				// Update the GameObject -  This will always be here
 				gameObject->Update(_deltaTime);
-				if (m_IsPlaying) gameObject->GameUpdate(_deltaTime);
+				if (m_IsPlaying) gameObject->Update(_deltaTime);
 			}
 		}
 

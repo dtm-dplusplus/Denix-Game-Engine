@@ -15,11 +15,11 @@ namespace Denix
 	};
 
 	/** Colliders act as basic volumes which can be scaled about their origin */
-	class Collider : public Object
+	class Collider : public BaseObject
 	{
 	public:
 
-		Collider() : Object({ "Collider" }) 
+		Collider() : BaseObject({ "Collider" }) 
 		{
 			m_TransformComponent = MakeRef<TransformComponent>();
 		    m_MeshComponent = MakeRef<MeshComponent>();

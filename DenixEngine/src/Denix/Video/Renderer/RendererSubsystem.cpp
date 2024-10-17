@@ -70,7 +70,7 @@ namespace Denix
 				else
 				{
 					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.BaseColor"),
-						mat->BaseColor.r, mat->BaseColor.g, mat->BaseColor.b);
+						mat->m_BaseColor.r, mat->m_BaseColor.g, mat->m_BaseColor.b);
 				}
 				
 				// Upload the camera matrices relative to Object
@@ -233,7 +233,7 @@ namespace Denix
 				GL_FALSE, glm::value_ptr(transformComp->GetModel()));
 
 			// Upload the material
-			glUniform3f(renderComp->m_Shader->GetUniform("u_Material.BaseColor"),1.0f, 1.0f, 1.0f);
+			glUniform3f(renderComp->m_Shader->GetUniform("u_Material.m_BaseColor"),1.0f, 1.0f, 1.0f);
 
 			// Draw Call
 			if (const Ref<Model> model = meshComp->GetModel())
