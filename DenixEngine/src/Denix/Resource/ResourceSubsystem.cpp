@@ -31,32 +31,7 @@ namespace Denix
 		Subsystem::Initialize();
 		DE_LOG(LogResource, Warn, "Resource Subsystem Initializing")
 
-		// Search Project directory for assets
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(FileSubsystem::GetContentRoot()))
-		{
-			if (entry.is_regular_file())
-			{
-				Ref<Asset> asset = MakeRef<Asset>(entry.path().string());
-
-				// Scene Check
-				// Material Check - Not a safe check
-				if(entry.path().string().find("MAT") != std::string::npos)
-				{
-					// We should check the material file to see if it is a valid asset - Skip for now
-					YAML::Node matNode = YAML::LoadFile(entry.path().string());
-					Ref<Material> material = MakeRef<Material>(asset);
-					m_MaterialStore[asset->GetAssetName()] = material; // Friendly name is redunant as we are checking by asset path now
-					
-					// We should do validation to check if the file is a valid asset - Skip for now
-				}
-				// Texture Check
-				// Shader Check
-				// Model Check
-
-				// We should do validation to check if the file is a valid asset - Skip for now
-				m_AssetStore.push_back(MakeRef<Asset>(entry.path().string()));
-			}
-		}
+		
 		
 		// Iniatlize Default Assets
 		// SHADERS
@@ -102,6 +77,33 @@ namespace Denix
 			LoadShader(textShaders, "TextShader");
 		}
 
+		// Search Project directory for assets
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(FileSubsystem::GetContentRoot()))
+		{
+			if (entry.is_regular_file())
+			{
+				Ref<Asset> asset = MakeRef<Asset>(entry.path().string());
+
+				// Scene Check
+				// Material Check - Not a safe check
+				if(entry.path().string().find("MAT") != std::string::npos)
+				{
+					// We should check the material file to see if it is a valid asset - Skip for now
+					YAML::Node matNode = YAML::LoadFile(entry.path().string());
+					Ref<Material> material = MakeRef<Material>(asset);
+					m_MaterialStore[asset->GetAssetName()] = material; // Friendly name is redunant as we are checking by asset path now
+					
+					// We should do validation to check if the file is a valid asset - Skip for now
+				}
+				// Texture Check
+				// Shader Check
+				// Model Check
+
+				// We should do validation to check if the file is a valid asset - Skip for now
+				m_AssetStore.push_back(asset);
+			}
+		}
+		
 		// TEXTURES
 		LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)", "DefaultTexture");
 

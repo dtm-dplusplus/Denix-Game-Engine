@@ -19,7 +19,6 @@ namespace Denix
         m_Components["Mesh"] = m_MeshComponent;
 
         m_RenderComponent = MakeRef<RenderComponent>(GetName());
-        m_RenderComponent->SetMaterial(MakeRef<Material>());
         m_Components["Render"] = m_RenderComponent;
 
         m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
@@ -64,16 +63,6 @@ namespace Denix
             {
                 _out << YAML::Newline << YAML::Comment("Material");
                 _out << YAML::Key << "m_Material" << YAML::Value << (mat->GetAsset() ? mat->GetAsset()->GetAssetPath() : "");
-
-                // Save Changes to asset - This should be done in the editor
-                YAML::Emitter matAsssetEmitter;
-                matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
-                matAsssetEmitter << YAML::BeginMap;
-                mat->Serialize(matAsssetEmitter);
-                matAsssetEmitter << YAML::EndMap;
-                
-                FileSubsystem::WriteFile(mat->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
-                DE_LOG(LogScene, Info, "Serialized Material");
             }
         }
         _out << YAML::EndMap;

@@ -108,6 +108,19 @@ void DevScene::Update(float _deltaTime)
 	if(ImGui::Button("Save Scene"))
 	{
 		SceneSubsystem::SerializeScene(this);
+
+		for(const auto& mat: ResourceSubsystem::GetMaterialStore())
+		{
+			// Save Changes to asset - This should be done in the editor
+			YAML::Emitter matAsssetEmitter;
+			matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
+			matAsssetEmitter << YAML::BeginMap;
+			mat.second->Serialize(matAsssetEmitter);
+			matAsssetEmitter << YAML::EndMap;
+                
+			FileSubsystem::WriteFile(mat.second->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
+			DE_LOG(LogScene, Info, "Serialized Material");
+		}
 	}
 
 	if (ImGui::Button("Load Scene"))

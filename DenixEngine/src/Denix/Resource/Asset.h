@@ -72,6 +72,5 @@ protected:
     std::string m_AssetPath;
     std::string m_AssetExtension;
     std::string m_AssetDirectory;
-    
 };
 }
