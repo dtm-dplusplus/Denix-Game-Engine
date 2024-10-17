@@ -700,19 +700,23 @@ namespace Denix
 
 	void EditorSubsystem::MaterialSelectionWidget(Ref<RenderComponent>& _rendComp)
 	{
-		if (ImGui::BeginCombo("##MaterialName", _rendComp->GetMaterial()->GetFriendlyName().c_str()))
+		if( ImGui::Button("Print Material"))
 		{
-			for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
-			{
-				ImGui::PushID(fst.c_str());
-				if (ImGui::Selectable(fst.c_str()))
-				{
-					_rendComp->SetMaterial(snd);
-				}
-				ImGui::PopID();
-			}
-			ImGui::EndCombo();
+		DE_LOG(Log, Info, "Material: {}", _rendComp->GetMaterial()->GetAsset()->GetAssetName());
 		}
+		/*if (ImGui::BeginCombo("##MaterialName", _rendComp->GetMaterial()->GetFriendlyName().c_str()))
+			{
+				for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
+				{
+					ImGui::PushID(fst.c_str());
+					if (ImGui::Selectable(fst.c_str()))
+					{
+						_rendComp->SetMaterial(snd);
+					}
+					ImGui::PopID();
+				}
+				ImGui::EndCombo();
+			}*/
 	}
 
 	void EditorSubsystem::TextureSelectionWidget(Ref<Material>& _material)

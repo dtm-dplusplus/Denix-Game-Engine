@@ -24,36 +24,18 @@ namespace Denix
 	{
 		m_Asset = _asset;
 		Deserialize(_asset);
+		CheckBaseType();
 	}
 
 	void Material::Serialize(YAML::Emitter& _out)
 	{
 		_out << YAML::Key << "m_Material" << YAML::BeginMap;
-
-		_out << YAML::Key << "m_Asset" << YAML::BeginMap;
-		if (m_Asset)
-		{
-			_out << YAML::Key << "m_AssetName" << YAML::Value << m_Asset->GetAssetName();
-			_out << YAML::Key << "m_AssetPath" << YAML::Value << m_Asset->GetAssetPath();
-		}
-		else
-		{
-			_out << YAML::Key << "m_AssetName" << YAML::Value << "";
-			_out << YAML::Key << "m_AssetPath" << YAML::Value << "";
-		}
-		_out << YAML::EndMap;
-
+		_out << YAML::Key << "m_Asset" << YAML::Value << (m_Asset? m_Asset->GetAssetPath() : "");
+		_out << YAML::Key << "m_BaseColor" << YAML::Value << EmitVec3(m_BaseColor);
+		_out << YAML::Key << "m_BaseTexture" << YAML::Value << (BaseTexture? BaseTexture->GetTextureName() : "");
+		_out << YAML::Key << "m_Shader" << YAML::Value << m_Shader->GetFriendlyName();
 		_out << YAML::Key << "m_SpecularIntensity" << YAML::Value << m_SpecularIntensity;
 		_out << YAML::Key << "m_SpecularPower" << YAML::Value << m_SpecularIntensity;
-
-		if(m_Shader) // Temp until asset scraper built
-			_out << YAML::Key << "m_Shader" << YAML::Value << m_Shader->GetFriendlyName();
-                
-		// Base Param
-		_out << YAML::Key << "m_BaseColor" << YAML::Value << EmitVec3(m_BaseColor);
-		std::string texName;
-		//if(BaseTexture) texName = BaseTexture->GetTextureName();// Temp until asset scraper built
-		_out << YAML::Key << "m_BaseTexture" << YAML::Value << texName;
 		_out << YAML::EndMap;
 	}
 

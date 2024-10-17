@@ -10,10 +10,10 @@ namespace Denix
     class BaseObject: public Object
     {
     public:
-        BaseObject(const ObjectInitializer& _objInit = ObjectInitializer::Get()){}
+        BaseObject(const ObjectInitializer& _objInit = ObjectInitializer::Get()): Object(_objInit){}
         ~BaseObject() override = default;
 
-        BaseObject(const BaseObject& _other)
+        /*BaseObject(const BaseObject& _other)
             : Object(_other)
         {
         }
@@ -37,7 +37,7 @@ namespace Denix
                 return *this;
             Object::operator =(_other);
             return *this;
-        }
+        }*/
 
       
         // Called each frame if the game is playing

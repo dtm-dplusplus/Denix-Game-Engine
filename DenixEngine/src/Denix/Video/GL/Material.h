@@ -64,6 +64,7 @@ namespace Denix
 		void SetRoughness(const float _roughness) { Roughness = _roughness; }
 
 		Ref<Asset> GetAsset() const { return m_Asset; }
+		Ref<Asset>& GetAsset() { return m_Asset; }
 		void SetAsset(const Ref<Asset>& _asset) { m_Asset = _asset; }
 	private:
 		// Base color or texture

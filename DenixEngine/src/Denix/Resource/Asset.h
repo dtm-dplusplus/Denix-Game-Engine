@@ -6,7 +6,6 @@
 namespace Denix
 {
 class Asset
-    
 {
 public:
     Asset() = default;

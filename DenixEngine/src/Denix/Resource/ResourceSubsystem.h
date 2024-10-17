@@ -5,6 +5,7 @@
 
 namespace Denix
 {
+    class Asset;
     class Mesh;
     class Model;
     struct ShaderSource;
@@ -48,7 +49,7 @@ namespace Denix
         // Materials
         static void AddMaterial(const Ref<Material>& _ref);
 
-        static Ref<Material> GetMaterial(const std::string& _name);
+        static Ref<Material> GetMaterial(const std::string& _path);
 
         static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_ResourceSubsystem->m_MaterialStore; }
 
@@ -73,6 +74,9 @@ namespace Denix
 		static std::unordered_map<std::string, Ref<Model>>& GetModelStore() { return s_ResourceSubsystem->m_ModelStore; }
 
         static std::unordered_map<std::string, Ref<Mesh>>& GetMeshStore() { return s_ResourceSubsystem->m_MeshStore; }
+
+        static std::vector<Ref<Asset>>& GetAssetStore() { return s_ResourceSubsystem->m_AssetStore; }
+        static Ref<Asset> GetAsset(const std::string& _path);
     public:
         void Initialize() override;
 
@@ -93,5 +97,6 @@ namespace Denix
 
 		std::unordered_map<std::string, Ref<Model>> m_ModelStore;
 
+        std::vector<Ref<Asset>> m_AssetStore;
     };
 }

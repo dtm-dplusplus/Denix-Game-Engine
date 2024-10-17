@@ -7,17 +7,57 @@
 #include "Denix/Video/GL/Material.h"
 #include "Denix/Video/GL/Mesh.h"
 #include "Denix/Video/GL/Model.h"
-
+#include "Denix/Resource/Asset.h"
 
 namespace Denix
 {
 	ResourceSubsystem* ResourceSubsystem::s_ResourceSubsystem = nullptr;
 
+	Ref<Asset> ResourceSubsystem::GetAsset(const std::string& _path)
+	{
+		for (const auto& asset : s_ResourceSubsystem->m_AssetStore)
+		{
+			if (asset->GetAssetPath() == _path)
+			{
+				return asset;
+			}
+		}
+
+		return nullptr;
+	}
+
 	void ResourceSubsystem::Initialize()
 	{
 		Subsystem::Initialize();
 		DE_LOG(LogResource, Warn, "Resource Subsystem Initializing")
-	
+
+		// Search Project directory for assets
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(FileSubsystem::GetContentRoot()))
+		{
+			if (entry.is_regular_file())
+			{
+				Ref<Asset> asset = MakeRef<Asset>(entry.path().string());
+
+				// Scene Check
+				// Material Check - Not a safe check
+				if(entry.path().string().find("MAT") != std::string::npos)
+				{
+					// We should check the material file to see if it is a valid asset - Skip for now
+					YAML::Node matNode = YAML::LoadFile(entry.path().string());
+					Ref<Material> material = MakeRef<Material>(asset);
+					m_MaterialStore[asset->GetAssetName()] = material; // Friendly name is redunant as we are checking by asset path now
+					
+					// We should do validation to check if the file is a valid asset - Skip for now
+				}
+				// Texture Check
+				// Shader Check
+				// Model Check
+
+				// We should do validation to check if the file is a valid asset - Skip for now
+				m_AssetStore.push_back(MakeRef<Asset>(entry.path().string()));
+			}
+		}
+		
 		// Iniatlize Default Assets
 		// SHADERS
 		{
@@ -66,18 +106,8 @@ namespace Denix
 		LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)", "DefaultTexture");
 
 		// MATERIALS
-		{
-			Ref<Material> defaultMaterial = MakeRef<Material>(ObjectInitializer("MAT_Default"));
-			defaultMaterial->SetShader(GetShader("DefaultShader"));
-			defaultMaterial->SetBaseColor(GetTexture("DefaultTexture"));
-			if(!defaultMaterial->CheckBaseType()) throw std::runtime_error("Default Material Base Texture not loaded");
-			AddMaterial(defaultMaterial);
-
-			Ref<Material> unlitMaterial = MakeRef<Material>(ObjectInitializer("MAT_Unlit"));
-			unlitMaterial->SetShader(GetShader("UnlitShader"));
-			AddMaterial(unlitMaterial);
-		}
-		m_MaterialStore["MAT_Default"] = MakeRef<Material>();
+		if(!GetMaterial(FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset"))
+			throw std::runtime_error("Default Material Asset not loaded");
 
 		// Models
 		LoadModel("SM_Plane", FileSubsystem::GetEngineContentRoot() + R"(models\Plane.obj)");
@@ -226,11 +256,14 @@ namespace Denix
 		DE_LOG(LogResource, Trace, "Material Loaded: {}", _ref->GetFriendlyName())
 	}
 
-	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _name)
+	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _path)
 	{
-		if (s_ResourceSubsystem->m_MaterialStore.contains(_name))
+		for (const auto& material : s_ResourceSubsystem->m_MaterialStore)
 		{
-			return s_ResourceSubsystem->m_MaterialStore[_name];
+			if (material.second->GetAsset()->GetAssetPath() == _path)
+			{
+				return material.second;
+			}
 		}
 
 		return nullptr;

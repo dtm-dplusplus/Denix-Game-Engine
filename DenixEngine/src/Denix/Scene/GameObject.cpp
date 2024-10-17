@@ -60,9 +60,20 @@ namespace Denix
             // End Texture Settings
 
             // Material
-            if (Ref<Material> mat = m_RenderComponent->GetMaterial())
+            if (const Ref<Material> mat = m_RenderComponent->GetMaterial())
             {
-                mat->Serialize(_out);
+                _out << YAML::Newline << YAML::Comment("Material");
+                _out << YAML::Key << "m_Material" << YAML::Value << (mat->GetAsset() ? mat->GetAsset()->GetAssetPath() : "");
+
+                // Save Changes to asset - This should be done in the editor
+                YAML::Emitter matAsssetEmitter;
+                matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
+                matAsssetEmitter << YAML::BeginMap;
+                mat->Serialize(matAsssetEmitter);
+                matAsssetEmitter << YAML::EndMap;
+                
+                FileSubsystem::WriteFile(mat->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
+                DE_LOG(LogScene, Info, "Serialized Material");
             }
         }
         _out << YAML::EndMap;
@@ -137,22 +148,9 @@ namespace Denix
             }
 
             // Material
-            if (YAML::Node matNode = renderCompNode["m_Material"]; matNode.IsDefined())
+            if (const std::string matPath = renderCompNode["m_Material"].as<std::string>(); !matPath.empty())
             {
-                Ref<Material> mat;
-                if(matNode["m_Asset"]["m_AssetPath"].as<std::string>() != "")
-                {
-                    Ref<Asset> asset = MakeRef<Asset>(matNode["m_Asset"]["m_AssetPath"].as<std::string>());
-                    mat = MakeRef<Material>(asset);
-                    //Ref<Asset> asset = MakeRef<Asset>(matNode["m_Asset"]["m_AssetPath"].as<std::string>());
-                    //mat->SetAsset(asset);
-                    //mat->Deserialize(asset);
-                }
-                else
-                {
-                 mat = MakeRef<Material>();
-                }
-                m_RenderComponent->SetMaterial(mat);
+                    m_RenderComponent->SetMaterial(ResourceSubsystem::GetMaterial(matPath));
             }
         }
 

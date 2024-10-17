@@ -17,7 +17,7 @@ namespace Denix
 	{
 		// Constructors
 		ObjectInitializer() = default;
-		ObjectInitializer(std::string _name) : Name{ std::move(_name) } {}
+		ObjectInitializer(const std::string& _name) : Name{ _name } {}
 
 		static ObjectInitializer Get() { return { "Object" }; }
 
@@ -29,12 +29,13 @@ namespace Denix
     class Object
 	{
 	public:
-    	Object(const ObjectInitializer& _object_init = ObjectInitializer::Get()) :
+    	Object() = default;
+    	Object(const ObjectInitializer& _object_init) :
 			m_ID{ CreateNewID() },
 			m_FriendlyName{ _object_init.Name },
 			m_Name{ std::to_string(m_ID) + "_" + m_FriendlyName } {}
     	
-		Object(const Object& _other)
+		/*Object(const Object& _other)
 			: m_ID(_other.m_ID),
 			  m_FriendlyName(_other.m_FriendlyName),
 			  m_Name(_other.m_Name),
@@ -70,7 +71,7 @@ namespace Denix
 			m_Name = std::move(_other.m_Name);
 			m_IsRubbish = _other.m_IsRubbish;
 			return *this;
-		}
+		}*/
 
 		// Create Object
 		static Ref<Object> Create()
