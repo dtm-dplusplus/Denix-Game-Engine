@@ -54,7 +54,7 @@ namespace Denix
 		void RenderWidget(const Ref<GameObject>& _selectedObject);
 		void MaterialWidget(const Ref<GameObject>& _selectedObject);
 		void MaterialSelectionWidget(Ref<RenderComponent>& _rendComp);
-		void TextureSelectionWidget(Ref<Material>& _material);
+		void TextureSelectionWidget(const Ref<Material>& _material);
 		void ShaderSelectionWidget(Ref<Material>& _material);
 		void MeshWidget(const Ref<GameObject>& _selectedObject);
 		void TransformWidget(const Ref<GameObject>& _object) const;

@@ -643,13 +643,12 @@ namespace Denix
 			ImGui::DragFloat("Roughness", &mat->GetRoughness(), DragSpeedDelta, 0.0f, 1.0f);
 			// Color or Texture selectable
 			{
-				if (mat->CheckBaseType())
+				ImGui::Text( "Base Color");
+				ImGui::ColorEdit3("Base Color", &mat->GetBaseColor()[0]);
+				TextureSelectionWidget(mat);
+				if(ImGui::Button("Clear Texture"))
 				{
-					TextureSelectionWidget(mat);
-				}
-				else
-				{
-					ImGui::ColorEdit3("Base Color", &mat->GetBaseColor()[0]);
+					mat->SetBaseTexture(nullptr);
 				}
 			}
 
@@ -717,9 +716,23 @@ namespace Denix
 				}
 				ImGui::EndCombo();
 			}*/
+
+		if (ImGui::BeginCombo("##MaterialName", _rendComp->GetMaterial()->GetFriendlyName().c_str(), ImGuiComboFlags_WidthFitPreview))
+		{
+			for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
+			{
+				ImGui::PushID(fst.c_str());
+				if (ImGui::Selectable(fst.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(250, 100)))
+				{
+					_rendComp->SetMaterial(snd);
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+		}
 	}
 
-	void EditorSubsystem::TextureSelectionWidget(Ref<Material>& _material)
+	void EditorSubsystem::TextureSelectionWidget(const Ref<Material>& _material)
 	{
 		Ref<Texture>& texture = _material->GetBaseTexture();
 		std::string preview = "None";
@@ -743,7 +756,7 @@ namespace Denix
 				ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
 				if (ImGui::Selectable(fst.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(250, 100)))
 				{
-					texture = snd;
+					_material->SetBaseTexture(snd);
 				}
 				ImGui::PopID();
 			}

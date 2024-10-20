@@ -104,5 +104,30 @@ namespace Denix
         std::vector<Ref<Asset>> m_AssetStore;
 
         std::vector<Ref<Asset>> m_SceneStore;
+
+        // TODO: Implement this
+        /*Ref<Asset> GetShaderType(const std::string& _source) const
+        {
+            if (const auto keywordIt = _source.find_first_of(g_SHADER_KEYWORD))
+            {
+                std::string type;
+
+                for (auto typeIt = keywordIt + g_SHADER_KEYWORD_OFFSET;
+                    _source[typeIt] != ' ' && _source[typeIt] != '\n'; typeIt++)
+                {
+                    type += _source[typeIt];
+                }
+
+                // Return the type if we find it
+                for (const auto& [StringType, EnumType] : g_SHADER_TYPES)
+                    if (type == StringType) return EnumType;
+
+            }
+
+            DE_LOG(LogShader, Error, "Shader Keyword DE_SHADER not found or invalid type")
+
+            return GL_FALSE;
+        }*/
+        
     };
 }

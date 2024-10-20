@@ -67,4 +67,16 @@ namespace Denix
 
 		return matNode;
 	}
+
+	void Material::SetBaseTexture(const Ref<Texture>& _texture)
+	{
+		// Check if the texture is valid
+		if(!_texture)
+		{
+			DE_LOG(LogResource, Error, "Texture is not valid");
+		}
+
+		BaseTexture = _texture;
+		IsBaseTexture = true;
+	}
 }

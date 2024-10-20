@@ -110,6 +110,10 @@ vec3 CalcDiffuseReflectance(vec3 _n,vec3 _l)
 	return directColor * u_Material.BaseColor;
 }
 
+vec4 GetMaterialBaseColor()
+{
+	return u_Material.IsBaseTexture? texture(u_Texture, TexCoord) : vec4(u_Material.BaseColor, 1.0f);
+}
 
 void main()
 {
@@ -134,6 +138,7 @@ void main()
 	// Get base from color or texture
 	//totalColor *= u_Material.Base.IsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.Base.Color, 1.0f);
 	
+	
 	// Output Frag Color
-	Color = vec4(u_Material.BaseColor, 1.0f);
+	Color = GetMaterialBaseColor();
 }

@@ -42,8 +42,8 @@ namespace Denix
 
 		Ref<Material> GetMaterial() const { return m_Material; }
 		Ref<Material>& GetMaterial() { return m_Material; }
-		void SetMaterial(const Ref<Material>& _material) { m_Material = _material; }
-		
+		void SetMaterial(const Ref<Material>& _material);
+
 		bool IsVisible() const { return m_IsVisible; }
 		bool& IsVisible() { return m_IsVisible; }
 		void SetIsVisible(const bool _visible) { m_IsVisible = _visible; }

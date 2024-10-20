@@ -137,8 +137,8 @@ namespace Denix
 			glGetProgramiv(m_GL_ID, GL_LINK_STATUS, &result);
 			if (!result)
 			{
-				GLchar infoLog[512];
-				glGetProgramInfoLog(m_GL_ID, 512, NULL, infoLog);
+				GLchar infoLog[1024];
+				glGetProgramInfoLog(m_GL_ID, 1024, NULL, infoLog);
 				DE_LOG(LogShader, Error, "GLShader Program Link Fail: {}", infoLog)
 					return false;
 			}
@@ -175,8 +175,8 @@ namespace Denix
 				glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
 				if (!result)
 				{
-					GLchar infoLog[512];
-					glGetShaderInfoLog(shader, 512, NULL, infoLog);
+					GLchar infoLog[1024];
+					glGetShaderInfoLog(shader, 1024, NULL, infoLog);
 					DE_LOG(LogShader, Error, "GLShader Error: {}", infoLog)
 					return false;
 				}

@@ -28,7 +28,7 @@ namespace Denix
 
 		// Albedo color or texture
 		void SetBaseColor(const glm::vec3& _color) { m_BaseColor = _color; IsBaseTexture = false;}
-		void SetBaseColor(const Ref<Texture>& _texture) { BaseTexture = _texture; IsBaseTexture = true; }
+		void SetBaseTexture(const Ref<Texture>& _texture);
 		Ref<Texture> GetBaseTexture() const { return BaseTexture; }
 		Ref<Texture>& GetBaseTexture() { return BaseTexture; }
 		glm::vec3 GetBaseColor() const { return m_BaseColor; }
