@@ -36,8 +36,18 @@ void DevScene::Update(float _deltaTime)
 	Scene::Update(_deltaTime);
 
 	ImGui::Begin("Dev Scene");
-	//if(m_SceneObjects[0]) ImGui::Text(m_SceneObjects[0]->GetRenderComponent()->GetMaterial()->GetName().c_str());
-
+	static bool depthTestEnabled = false;
+	if(ImGui::Checkbox("Depth Test", &depthTestEnabled))
+	{
+		if(depthTestEnabled)
+		{
+			glEnable(GL_DEPTH_TEST);
+		}
+		else
+		{
+			glDisable(GL_DEPTH_TEST);
+		}
+	}
 	static std::string matPath = FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset";
 	if(ImGui::Button("Serialize Material"))
 	{

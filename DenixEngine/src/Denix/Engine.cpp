@@ -122,7 +122,7 @@ namespace Denix
 
 			viewport->m_FrameBuffer->Bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			FrameBuffer::Unbind();
+			//FrameBuffer::Unbind();
 			
 			m_PhysicsSubSystem->PreUpdate(deltaTime);
 			
@@ -134,11 +134,11 @@ namespace Denix
 			
 			m_PhysicsSubSystem->Update(deltaTime);
 			
-			viewport->m_FrameBuffer->Bind();
+			//viewport->m_FrameBuffer->Bind();
 			m_RendererSubSystem->RenderScene();
 			FrameBuffer::Unbind();
 			
-			// Draw the framebuffer texture
+			// Draw the framebuffer texture to the screen
 			viewport->m_Mesh->GetVertexArray()->Bind();
 			viewport->m_Mesh->GetIndexBuffer()->Bind();
 			viewport->m_Shader->Bind();
