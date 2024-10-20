@@ -27,21 +27,21 @@ namespace Denix
 		void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
 
 		// Albedo color or texture
-		void SetBaseColor(const glm::vec3& _color) { m_BaseColor = _color; IsBaseTexture = false;}
+		void SetBaseColor(const glm::vec3& _color) { m_BaseColor = _color; m_IsBaseTexture = false;}
 		void SetBaseTexture(const Ref<Texture>& _texture);
-		Ref<Texture> GetBaseTexture() const { return BaseTexture; }
-		Ref<Texture>& GetBaseTexture() { return BaseTexture; }
+		Ref<Texture> GetBaseTexture() const { return m_BaseTexture; }
+		Ref<Texture>& GetBaseTexture() { return m_BaseTexture; }
 		glm::vec3 GetBaseColor() const { return m_BaseColor; }
 		glm::vec3& GetBaseColor() { return m_BaseColor; }
 
 		
-		bool CheckBaseType() { IsBaseTexture = IsValid(BaseTexture); return IsBaseTexture;}
+		bool CheckBaseType() { m_IsBaseTexture = IsValid(m_BaseTexture); return m_IsBaseTexture;}
 
 		/**
 		 *  @brief Get the base type of the material
 		 * @return true if the base is a texture, false if it is a color
 		 */
-		bool IsBaseATexture() const { return IsBaseTexture; }
+		bool IsBaseATexture() const { return m_IsBaseTexture; }
 
 		float GetSpecularPower() const { return m_SpecularPower; }
 		float& GetSpecularPower() { return m_SpecularPower; }
@@ -66,11 +66,13 @@ namespace Denix
 		Ref<Asset> GetAsset() const { return m_Asset; }
 		Ref<Asset>& GetAsset() { return m_Asset; }
 		void SetAsset(const Ref<Asset>& _asset) { m_Asset = _asset; }
+		void ClearBaseTexture() { m_BaseTexture = nullptr; m_IsBaseTexture = false; }
+
 	private:
 		// Base color or texture
 		glm::vec3 m_BaseColor = glm::vec3(0.0f);
-		Ref<Texture> BaseTexture;
-		bool IsBaseTexture = false;
+		Ref<Texture> m_BaseTexture;
+		bool m_IsBaseTexture = false;
 		
 		Ref<Shader> m_Shader;
 		Ref<Asset> m_Asset;

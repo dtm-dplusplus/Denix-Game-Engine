@@ -106,13 +106,10 @@ namespace Denix
 		// Tempory Fix until Serializer is built
 		PostInitialize();
 		
-		Ref<Viewport> viewport = m_WindowSubsystem->m_DefaultViewport;
-		viewport->m_Shader = ResourceSubsystem::GetShader("FBShader");
+		m_WindowSubsystem->m_DefaultViewport->m_Shader = ResourceSubsystem::GetShader("FBShader");
 
 		while(m_WindowSubsystem->m_Window->IsOpen())
 		{
-			float deltaTime =  m_TimerSubSystem->m_DeltaTime;
-
 			m_TimerSubSystem->BeginFrame();
 
 			m_InputSubsystem->Poll();
@@ -120,40 +117,38 @@ namespace Denix
 			m_UISubsystem->NewFrame();
 			m_WindowSubsystem->m_Window->ClearBuffer();
 
-			viewport->m_FrameBuffer->Bind();
+			// Bind viewport framebuffer
+			m_WindowSubsystem->m_DefaultViewport->m_FrameBuffer->Bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			//FrameBuffer::Unbind();
 			
-			m_PhysicsSubSystem->PreUpdate(deltaTime);
+			m_PhysicsSubSystem->PreUpdate(m_TimerSubSystem->m_DeltaTime);
 			
-			m_UISubsystem->Update(deltaTime);
+			m_UISubsystem->Update(m_TimerSubSystem->m_DeltaTime);
 			
-			m_EditorSubSystem->Update(deltaTime);
+			m_EditorSubSystem->Update(m_TimerSubSystem->m_DeltaTime);
 			
-			m_SceneSubSystem->Update(deltaTime);
+			m_SceneSubSystem->Update(m_TimerSubSystem->m_DeltaTime);
 			
-			m_PhysicsSubSystem->Update(deltaTime);
-			
-			//viewport->m_FrameBuffer->Bind();
+			m_PhysicsSubSystem->Update(m_TimerSubSystem->m_DeltaTime);
+
+			// Draw to viewport framebuffer
 			m_RendererSubSystem->RenderScene();
 			FrameBuffer::Unbind();
 			
-			// Draw the framebuffer texture to the screen
-			viewport->m_Mesh->GetVertexArray()->Bind();
-			viewport->m_Mesh->GetIndexBuffer()->Bind();
-			viewport->m_Shader->Bind();
-			
-			glBindTexture(GL_TEXTURE_2D, viewport->m_FrameBuffer->m_TexID);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			// Draw the framebuffer texture to the default screen buffer
+			m_WindowSubsystem->m_DefaultViewport->DrawViewport();
 
+			// Swap buffers and render UI
 			m_UISubsystem->RenderUI();
 			m_WindowSubsystem->m_Window->SwapBuffers();
 			m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
-			
+
+			// Run the garbage collector
 			m_SceneSubSystem->CleanRubbish();
 
 			m_TimerSubSystem->EndFrame();
 		}
+		
 		Deinitialize();
 	}
 

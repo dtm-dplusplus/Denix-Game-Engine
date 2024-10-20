@@ -57,15 +57,15 @@ namespace Denix
 				// Base color/texture specific settings
 				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.IsBaseTexture"), mat->CheckBaseType());
 
-				if (mat->IsBaseTexture)
+				if (mat->m_IsBaseTexture)
 				{
-					mat->BaseTexture->Bind();
+					mat->m_BaseTexture->Bind();
 
 					// Texture Settings need to move to the material/texture
-					glTexParameteri(mat->BaseTexture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(mat->BaseTexture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(mat->BaseTexture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
-					glTexParameteri(mat->BaseTexture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
+					glTexParameteri(mat->m_BaseTexture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(mat->m_BaseTexture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(mat->m_BaseTexture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
+					glTexParameteri(mat->m_BaseTexture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
 				}
 				else
 				{

@@ -648,7 +648,7 @@ namespace Denix
 				TextureSelectionWidget(mat);
 				if(ImGui::Button("Clear Texture"))
 				{
-					mat->SetBaseTexture(nullptr);
+					mat->ClearBaseTexture();
 				}
 			}
 

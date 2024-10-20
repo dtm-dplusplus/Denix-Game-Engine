@@ -13,18 +13,11 @@ namespace Denix
     class Viewport
     {
     public:
-        Viewport(const int _width, const int _height)
-        {
-            m_Width = _width;
-            m_Height = _height;
-            m_FrameBuffer = MakeRef<FrameBuffer>(_width, _height);
-            m_Mesh = MakeRef<Mesh>();
-            m_Mesh->CreateViewportMesh();
-        }
+        Viewport(const int _width, const int _height);
 
         ~Viewport() = default;
 
-
+        void DrawViewport() const;
         int GetWidth() const { return m_Width; }
         int GetHeight() const { return m_Height; }
 

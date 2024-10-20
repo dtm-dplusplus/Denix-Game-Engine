@@ -14,7 +14,7 @@ namespace Denix
 	{
 		m_Shader = _other->m_Shader;
 		m_BaseColor = _other->m_BaseColor;
-		BaseTexture = _other->BaseTexture;
+		m_BaseTexture = _other->m_BaseTexture;
 		CheckBaseType();
 		m_SpecularIntensity = _other->m_SpecularIntensity;
 		m_SpecularPower = _other->m_SpecularPower;
@@ -32,7 +32,7 @@ namespace Denix
 		_out << YAML::Key << "m_Material" << YAML::BeginMap;
 		_out << YAML::Key << "m_Asset" << YAML::Value << (m_Asset? m_Asset->GetAssetPath() : "");
 		_out << YAML::Key << "m_BaseColor" << YAML::Value << EmitVec3(m_BaseColor);
-		_out << YAML::Key << "m_BaseTexture" << YAML::Value << (BaseTexture? BaseTexture->GetTextureName() : "");
+		_out << YAML::Key << "m_BaseTexture" << YAML::Value << (m_BaseTexture? m_BaseTexture->GetTextureName() : "");
 		_out << YAML::Key << "m_Shader" << YAML::Value << m_Shader->GetFriendlyName();
 		_out << YAML::Key << "m_SpecularIntensity" << YAML::Value << m_SpecularIntensity;
 		_out << YAML::Key << "m_SpecularPower" << YAML::Value << m_SpecularIntensity;
@@ -76,7 +76,7 @@ namespace Denix
 			DE_LOG(LogResource, Error, "Texture is not valid");
 		}
 
-		BaseTexture = _texture;
-		IsBaseTexture = true;
+		m_BaseTexture = _texture;
+		m_IsBaseTexture = true;
 	}
 }
