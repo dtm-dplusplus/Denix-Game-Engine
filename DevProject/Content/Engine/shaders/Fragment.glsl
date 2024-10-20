@@ -43,6 +43,7 @@ struct SpotLight
 struct Material
 {
 	vec3 BaseColor;
+	sampler2D BaseTexture;
 	bool IsBaseTexture;
 	float SpecularIntensity;
 	float SpecularPower;
@@ -57,7 +58,7 @@ uniform int u_SpotLightCount;
 uniform SpotLight u_SpotLight[MAX_SPOT_LIGHTS];
 
 
-uniform sampler2D u_Texture;
+//uniform sampler2D u_Texture;
 uniform bool u_AffectsLighting;
 
 uniform Material u_Material;
@@ -112,7 +113,7 @@ vec3 CalcDiffuseReflectance(vec3 _n,vec3 _l)
 
 vec4 GetMaterialBaseColor()
 {
-	return u_Material.IsBaseTexture? texture(u_Texture, TexCoord) : vec4(u_Material.BaseColor, 1.0f);
+	return u_Material.IsBaseTexture? texture(u_Material.BaseTexture, TexCoord) : vec4(u_Material.BaseColor, 1.0f);
 }
 
 void main()
@@ -121,7 +122,7 @@ void main()
 	// Usa
 	if (!u_AffectsLighting)
 	{
-		Color = u_Material.IsBaseTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.BaseColor, 1.0f);
+		Color = GetMaterialBaseColor();
 		return;
 	}
 
