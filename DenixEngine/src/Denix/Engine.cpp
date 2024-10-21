@@ -103,11 +103,10 @@ namespace Denix
 	{
 		Initialize();
 
-		// Tempory Fix until Serializer is built
+		// Tempory Fix until Reflection  is built. Passes the derived scene class to the scene subsystem
 		PostInitialize();
-		
-		m_WindowSubsystem->m_DefaultViewport->m_Shader = ResourceSubsystem::GetShader("FBShader");
 
+		// Engine Loop
 		while(m_WindowSubsystem->m_Window->IsOpen())
 		{
 			m_TimerSubSystem->BeginFrame();
@@ -118,7 +117,7 @@ namespace Denix
 			m_WindowSubsystem->m_Window->ClearBuffer();
 
 			// Bind viewport framebuffer
-			m_WindowSubsystem->m_DefaultViewport->m_FrameBuffer->Bind();
+			m_SceneSubSystem->m_ActiveScene->m_ActiveCamera->m_Viewport->m_FrameBuffer->Bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
 			m_PhysicsSubSystem->PreUpdate(m_TimerSubSystem->m_DeltaTime);
@@ -136,7 +135,7 @@ namespace Denix
 			FrameBuffer::Unbind();
 			
 			// Draw the framebuffer texture to the default screen buffer
-			m_WindowSubsystem->m_DefaultViewport->DrawViewport();
+			m_SceneSubSystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
 
 			// Swap buffers and render UI
 			m_UISubsystem->RenderUI();

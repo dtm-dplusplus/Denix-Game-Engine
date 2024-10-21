@@ -215,7 +215,7 @@ namespace Denix
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
-			cam->SetAspect(WindowSubsystem::GetWindow()->GetWindowSize());
+			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
 			cam->Update(_deltaTime);
 		}
 

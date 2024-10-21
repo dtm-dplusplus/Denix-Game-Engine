@@ -38,7 +38,12 @@ namespace Denix
 		}   
 
 		static Ref<SDL_GLWindow> GetWindow() { return s_WindowSubSystem->m_Window; }
-
+		static Ref<Viewport> GetDefaultViewport() { return s_WindowSubSystem->m_DefaultViewport; }
+		/**
+		 * 
+		 * @return 
+		 */
+		static glm::vec2 GetWindowSize() { return s_WindowSubSystem->m_Window? s_WindowSubSystem->m_Window->GetWindowSize() : glm::vec2(0.0f); }
 	private:
 		static WindowSubsystem* s_WindowSubSystem;
 

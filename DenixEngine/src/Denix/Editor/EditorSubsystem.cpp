@@ -212,52 +212,12 @@ namespace Denix
 		if (ImGui::TreeNode("Scene Settings"))
 		{
 			// Scene gravity
-		ImGui::DragFloat("Scene Gravity", &s_SceneSubsystem->m_ActiveScene->GetGravity(), DragSpeedDelta, -FLT_MAX, FLT_MAX);
+			ImGui::DragFloat("Scene Gravity", &s_SceneSubsystem->m_ActiveScene->GetGravity(), DragSpeedDelta, -FLT_MAX, FLT_MAX);
 
-		// Camera Properties
-		{
-			ImGui::SeparatorText("Camera Properties");
+			// Viewport Camera Properties
+			CameraWidget(m_ActiveScene->m_ViewportCamera);
 
-			ImGui::DragFloat3("Viewport Position", &m_ActiveScene->m_ViewportCamera->GetTransformComponent()->GetPosition()[0], DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->GetTransformComponent()->SetPosition(glm::vec3(0.f));
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat3("Viewport Rotation", &m_ActiveScene->m_ViewportCamera->GetTransformComponent()->GetRotation()[0], DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->GetTransformComponent()->SetRotation(glm::vec3(0.f));
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat("Rotation Factor", &m_ActiveScene->m_ViewportCamera->GetRotationFactor(), DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetRotationFactor", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetRotationFactor(0.01f);
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat("Pitch Rotation Rate", &m_ActiveScene->m_ViewportCamera->GetPitchRotationRate(), DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetPitchRotationRate", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetPitchRotationRate(0.1f);
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat("Yaw Rotation Rate", &m_ActiveScene->m_ViewportCamera->GetYawRotationRate(), DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetYawRotationRate", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetYawRotationRate(0.1f);
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat("m_MoveSpeed", &m_ActiveScene->m_ViewportCamera->GetMoveSpeed(), DragSpeedDelta, 1.f, 10.f); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetMoveSpeed(0.5f);
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat("Scoll Wheel Speed", &m_ActiveScene->m_ViewportCamera->GetMouseScrollSpeed(), DragSpeedDelta, 0.1f, 10.f);
-
-			ImGui::Checkbox("Perspective Projection", &m_ActiveScene->m_ViewportCamera->IsPerspective());
-
-			ImGui::DragFloat("m_Fov", &m_ActiveScene->m_ViewportCamera->GetFov(), DragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetFov(45.f);
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat("Near Plane", &m_ActiveScene->m_ViewportCamera->GetNearPlane(), DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetNearPlane(0.1f);
-			ImGui::SetItemTooltip("Reset");
-
-			ImGui::DragFloat("Far Plane", &m_ActiveScene->m_ViewportCamera->GetFarPlane(), DragSpeedDelta); ImGui::SameLine();
-			if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->SetFarPlane(100.f);
-			ImGui::SetItemTooltip("Reset");
-		}
+			ImGui::TreePop();
 		}
 	}
 
@@ -507,6 +467,8 @@ namespace Denix
 					}
 					ImGui::EndCombo();
 				}
+
+				ImGui::TreePop();
 			}
 
 			// Viewable Properties
@@ -829,31 +791,61 @@ namespace Denix
 			ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
 			if (ImGui::CollapsingHeader("Camera Component"))
 			{
-				ImGui::Checkbox("Perspective Projection", &camera->IsPerspective());
+				ImGui::Checkbox("Perspective Projection", &camera->m_IsPerspective);
 
-				ImGui::DragFloat("Fov", &camera->GetFov(), DragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) camera->SetFov(45.f);
+				ImGui::DragFloat("Fov", &camera->m_Fov, DragSpeedDelta, 1.f, 170.f); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) camera->m_Fov = 45.f;
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::DragFloat("Rotation Factor", &camera->GetRotationFactor(), DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetRotationFactor", ImGuiDir_Left)) camera->SetRotationFactor(0.01f);
+				ImGui::DragFloat("Rotation Factor", &camera->m_RotationFactor, DragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetRotationFactor", ImGuiDir_Left)) camera->m_RotationFactor = 0.1f;
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::DragFloat("Pitch Rotation Rate", &camera->GetPitchRotationRate(), DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetPitchRotationRate", ImGuiDir_Left)) camera->SetPitchRotationRate(0.1f);
+				ImGui::DragFloat("Pitch Rotation Rate", &camera->m_PitchRotationRate, DragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetPitchRotationRate", ImGuiDir_Left)) camera->m_PitchRotationRate = 0.1f;
+
+				ImGui::DragFloat("Yaw Rotation Rate", &camera->m_YawRotationRate, DragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetYawRotationRate", ImGuiDir_Left)) camera->m_YawRotationRate = 0.1f;
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::DragFloat("Yaw Rotation Rate", &camera->GetYawRotationRate(), DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetYawRotationRate", ImGuiDir_Left)) camera->SetYawRotationRate(0.1f);
+				ImGui::DragFloat("Near Plane", &camera->m_NearPlane, DragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) camera->m_NearPlane = 0.1f;
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::DragFloat("Near Plane", &camera->GetNearPlane(), DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) camera->SetNearPlane(0.1f);
+				ImGui::DragFloat("Far Plane", &camera->m_FarPlane, DragSpeedDelta); ImGui::SameLine();
+				if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) camera->m_FarPlane = 100.f;
 				ImGui::SetItemTooltip("Reset");
 
-				ImGui::DragFloat("Far Plane", &camera->GetFarPlane(), DragSpeedDelta); ImGui::SameLine();
-				if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) camera->SetFarPlane(10000.f);
-				ImGui::SetItemTooltip("Reset");
+				if (ImGui::TreeNode("Advance Camera Settings"))
+				{
+					ImGui::DragFloat3("Camera Position",
+					                  &m_ActiveScene->m_ViewportCamera->GetTransformComponent()->GetPosition()[0],
+					                  DragSpeedDelta);
+					ImGui::SameLine();
+					if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->
+						GetTransformComponent()->SetPosition(glm::vec3(0.f));
+					ImGui::SetItemTooltip("Reset");
+
+					ImGui::DragFloat3("Viewport Rotation",
+					                  &m_ActiveScene->m_ViewportCamera->GetTransformComponent()->GetRotation()[0],
+					                  DragSpeedDelta);
+					ImGui::SameLine();
+					if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->
+						GetTransformComponent()->SetRotation(glm::vec3(0.f));
+					ImGui::SetItemTooltip("Reset");
+
+					ImGui::DragFloat("m_MoveSpeed", &m_ActiveScene->m_ViewportCamera->m_MoveSpeed, DragSpeedDelta, 1.f,
+					                 10.f);
+					ImGui::SameLine();
+					if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) m_ActiveScene->m_ViewportCamera->
+						m_MoveSpeed;
+					ImGui::SetItemTooltip("Reset");
+
+					ImGui::DragFloat("Scoll Wheel Speed", &m_ActiveScene->m_ViewportCamera->m_MouseScrollSpeed,
+					                 DragSpeedDelta, 0.1f, 10.f);
+
+					ImGui::TreePop();
+				}
 			}
 		}
 	}
