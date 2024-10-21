@@ -9,6 +9,8 @@
 #include "Denix/Video/GL/Model.h"
 #include "Denix/Resource/Asset.h"
 
+namespace fs = std::filesystem;
+
 namespace Denix
 {
 	ResourceSubsystem* ResourceSubsystem::s_ResourceSubsystem = nullptr;
@@ -78,25 +80,27 @@ namespace Denix
 		// Search Project directory for assets
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(FileSubsystem::GetContentRoot()))
 		{
+			const std::string& path = entry.path().string();
 			if (entry.is_regular_file())
 			{
-				Ref<Asset> asset = MakeRef<Asset>(entry.path().string());
+				Ref<Asset> asset = MakeRef<Asset>(path);
 
 				// Scene Check
-				if (entry.path().string().find(".asset") != std::string::npos)
+				if (path.find(".asset") != std::string::npos)
 				{
-					const std::string sceneData = FileSubsystem::ReadFile(entry.path().string());
+					const std::string sceneData = FileSubsystem::ReadFile(path);
 					if (sceneData.find("DE_ASSET_SCENE") != std::string::npos)
 					{
 						m_SceneStore.push_back(asset);
 					}
 				}
 				// Material Check - Not a safe check
-				if(entry.path().string().find("MAT") != std::string::npos)
+				if(path.find("MAT") != std::string::npos)
 				{
 					// We should check the material file to see if it is a valid asset - Skip for now
-					YAML::Node matNode = YAML::LoadFile(entry.path().string());
+					YAML::Node matNode = YAML::LoadFile(path);
 					Ref<Material> material = MakeRef<Material>(asset);
+					// Check Texture
 					m_MaterialStore[asset->GetAssetName()] = material; // Friendly name is redunant as we are checking by asset path now
 					
 					// We should do validation to check if the file is a valid asset - Skip for now
@@ -111,7 +115,7 @@ namespace Denix
 		}
 		
 		// TEXTURES
-		LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)", "DefaultTexture");
+		LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)");
 
 		// MATERIALS
 		if(!GetMaterial(FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset"))
@@ -233,9 +237,22 @@ namespace Denix
 	////////////////////////  TEXTURES ///////////////////////////////
 	void ResourceSubsystem::AddTexture(const Ref<Texture>& _texture)
 	{
+		if (s_ResourceSubsystem->m_TextureStore.contains(_texture->GetFileLocation()))
+		{
+			DE_LOG(LogResource, Error, "Add Texture: A texture name: {} is already loaded", _texture->GetTextureName())
+				return;
+		}
+
+		if (!_texture->LoadTexture())
+		{
+			DE_LOG(LogResource, Error, "Add Texture: Failed to load texture: {}", _texture->GetTextureName())
+				return;
+		}
+		
+		s_ResourceSubsystem->m_TextureStore[_texture->GetFileLocation()] = _texture;
 	}
 
-	Ref<Texture> ResourceSubsystem::LoadTexture(const std::string& _path, const std::string& _name)
+	Ref<Texture> ResourceSubsystem::LoadTexture(const std::string& _path)
 	{
 		// Check it isn't already loaded
 		if (s_ResourceSubsystem->m_TextureStore.contains(_path))
@@ -244,21 +261,21 @@ namespace Denix
 				return nullptr;
 		}
 
-		Ref<Texture> texture = MakeRef<Texture>(_path, _name);
+		Ref<Texture> texture = MakeRef<Texture>(_path);
 
 		if (!texture->LoadTexture()) return nullptr;
 
-		s_ResourceSubsystem->m_TextureStore[_name] = texture;
-		DE_LOG(LogResource, Trace, "Texture loaded: {}", _name)
+		s_ResourceSubsystem->m_TextureStore[_path] = texture;
+		DE_LOG(LogResource, Trace, "Texture loaded: {}", _path)
 
-			return GetTexture(_name);
+		return texture;
 	}
 	
-	Ref<Texture> ResourceSubsystem::GetTexture(const std::string& _name)
+	Ref<Texture> ResourceSubsystem::GetTexture(const std::string& _path)
 	{
-		if (s_ResourceSubsystem->m_TextureStore.contains(_name))
+		if (s_ResourceSubsystem->m_TextureStore.contains(_path))
 		{
-			return s_ResourceSubsystem->m_TextureStore[_name];
+			return s_ResourceSubsystem->m_TextureStore[_path];
 		}
 
 		return nullptr;

@@ -14,11 +14,11 @@ namespace Denix
 	constexpr unsigned int MAX_SPOT_LIGHTS = 100;
 
 	// Basic Scene class
-	class Scene: public Object
+	class Scene: public BaseObject
 	{
 	public:
 
-		Scene(const std::string& _name = "Scene") : Object(ObjectInitializer(_name)),
+		Scene(const std::string& _name = "Scene") : BaseObject(ObjectInitializer(_name)),
 			m_SceneName{ _name },
 			m_ViewportCamera{ nullptr },
 			m_ActiveCamera{ nullptr },

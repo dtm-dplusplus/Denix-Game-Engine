@@ -1,10 +1,22 @@
 #include "Texture.h"
 
+#include <filesystem>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 namespace Denix
 {
+	Texture::Texture(const std::string& _path)
+	{
+		std::filesystem::path path = _path;
+		m_TextureID = 0;
+		m_TextureName = path.filename().string();
+		m_Width = 0;
+		m_Height = 0;
+		m_BitDepth = 0;
+		m_FilePath = _path;
+	}
+
     bool Texture::LoadTexture()
 	{
 		unsigned char* texData = stbi_load(m_FilePath.c_str(), &m_Width, &m_Height, &m_BitDepth, 0);

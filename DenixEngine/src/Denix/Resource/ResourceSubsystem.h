@@ -1,5 +1,7 @@
 #pragma once
 
+#include <yaml-cpp/node/node.h>
+
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
 
@@ -27,6 +29,7 @@ namespace Denix
         {
             s_ResourceSubsystem = nullptr;
         }
+
 
         // Scenes
         static std::vector<Ref<Asset>>  GetSceneStore() { return s_ResourceSubsystem->m_SceneStore; }
@@ -59,9 +62,10 @@ namespace Denix
 
         // Textures
         static void AddTexture(const Ref<Texture>& _texture);
-        static Ref<Texture> LoadTexture(const std::string& _path, const std::string& _name);
+        static Ref<Texture> LoadTexture(const std::string& _path);
 
-        static Ref<Texture> GetTexture(const std::string& _name);
+        static Ref<Texture> GetTexture(const std::string& _path);
+        static Ref<Texture> GetTextureByPath(const std::string& _path);
 
         static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_ResourceSubsystem->m_TextureStore; }
 
@@ -93,7 +97,6 @@ namespace Denix
 
 		std::unordered_map<std::string, Ref<Shader>> m_ShaderStore;
 
-        std::unordered_map<std::string, Ref<Texture>> m_TextureStore;
 
         std::unordered_map<std::string, Ref<Material>> m_MaterialStore;
 
@@ -101,6 +104,8 @@ namespace Denix
 
 		std::unordered_map<std::string, Ref<Model>> m_ModelStore;
 
+        std::unordered_map<std::string, Ref<Texture>> m_TextureStore;
+        
         std::vector<Ref<Asset>> m_AssetStore;
 
         std::vector<Ref<Asset>> m_SceneStore;

@@ -79,10 +79,7 @@ namespace Denix
 			}
 		}
 			
-
 		DE_LOG(LogEngine, Info, "Engine Initialized")
-
-		PostInitialize();
 	}
 
 	void Engine::Deinitialize()
@@ -102,8 +99,6 @@ namespace Denix
 	void Engine::Run()
 	{
 		Initialize();
-
-		// Tempory Fix until Reflection  is built. Passes the derived scene class to the scene subsystem
 		PostInitialize();
 
 		// Engine Loop

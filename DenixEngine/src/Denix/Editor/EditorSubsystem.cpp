@@ -714,9 +714,9 @@ namespace Denix
 		{
 			for (auto& [fst, snd] : ResourceSubsystem::GetTextureStore())
 			{
-				ImGui::PushID(fst.c_str());
+				ImGui::PushID(snd->GetTextureName().c_str());
 				ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100)); ImGui::SameLine();
-				if (ImGui::Selectable(fst.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(250, 100)))
+				if (ImGui::Selectable(snd->GetTextureName().c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(250, 100)))
 				{
 					_material->SetBaseTexture(snd);
 				}

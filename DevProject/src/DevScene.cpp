@@ -28,6 +28,7 @@ DevScene::DevScene(const Ref<Asset>& _sceneAsset): Scene(_sceneAsset)
 	ShowEngineContent = false;
 	std::string contentPath = FileSubsystem::GetContentRoot();
 	m_SceneAsset = MakeRef<Asset>(contentPath + "Scene\\DevScene.asset");
+
 	
 }
 
@@ -37,29 +38,12 @@ void DevScene::Update(float _deltaTime)
 
 	if(ImGui::Begin("Dev Scene"))
 	{
-		static std::string matPath = FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset";
-		if(ImGui::Button("Serialize Material"))
+		ImGui::SeparatorText("Reflection");
+		for (const auto& key : Factory::Instance().GetCreateFuncs() | std::views::keys)
 		{
-			Ref<Material> mat = m_SceneObjects[0]->GetRenderComponent()->GetMaterial();
-			m_SceneObjects[0]->GetRenderComponent()->GetMaterial()->SetAsset(MakeRef<Asset>(matPath));
-			YAML::Emitter out;
-
-			out << YAML::BeginMap;
-			out << YAML::Comment("DE_ASSET: Material");
-			mat->Serialize(out);
-			out << YAML::EndMap;
-
-			FileSubsystem::WriteFile(matPath, out.c_str());
-			DE_LOG(LogScene, Info, "Serialized Material");
+			ImGui::Text(key.c_str());
 		}
-		if (ImGui::Button("Deserialize Material"))
-		{
-			Ref<Asset> asset = MakeRef<Asset>(matPath);
 		
-			Ref<Material> mat = MakeRef<Material>(asset);
-			m_SceneObjects[0]->GetRenderComponent()->SetMaterial(mat);
-			DE_LOG(LogScene, Info, "Deserialized Material");
-		}
 		if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
 		{
 			ImGui::Text("Project Name: %s", FileSubsystem::GetProjectName().c_str());
@@ -71,47 +55,31 @@ void DevScene::Update(float _deltaTime)
 			{
 				Engine::Get().SaveConfig();
 
-			}
+			} ImGui::SameLine();
 			if (ImGui::Button("Load Config"))
 			{
 				Engine::Get().LoadConfig();
 			}
 		}
 
-		if (ImGui::CollapsingHeader("Materials", ImGuiTreeNodeFlags_DefaultOpen))
+		ImGui::SeparatorText("Assets");
+		if (ImGui::TreeNode("Materials"))
 		{
 			for (const auto& mat : ResourceSubsystem::GetMaterialStore())
 			{
-				ImGui::TreeNode(mat.second->GetAsset()->GetAssetName().c_str());
+				ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
 			}
+			ImGui::TreePop();
 		}
 
-		if (ImGui::CollapsingHeader("Scenes", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::TreeNode("Scenes"))
 		{
 			for (const auto& scene : ResourceSubsystem::GetSceneStore())
 			{
-				ImGui::TreeNode(scene->GetAssetName().c_str());
+				ImGui::Text(scene->GetAssetName().c_str());
 				ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
 			}
-		}
-	
-		if (ImGui::CollapsingHeader("Assets", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			// Stupidly slow way to display assets
-			for (const auto& asset : ResourceSubsystem::GetAssetStore())
-			{
-				if(!ShowEngineContent &&
-					asset->GetAssetDirectory().find(FileSubsystem::GetEngineContentRoot()) != std::string::npos)
-				{
-					continue;
-				}
-			
-				ImGui::TreeNode(asset->GetAssetName().c_str());
-				ImGui::Text("Asset Name: %s", asset->GetAssetName().c_str());
-				ImGui::Text("Asset Path: %s", asset->GetAssetPath().c_str());
-				ImGui::Text("Asset Directory: %s", asset->GetAssetDirectory().c_str());
-				ImGui::Text("Asset Extension: %s", asset->GetAssetExtension().c_str());
-			}
+			ImGui::TreePop();
 		}
 	
 		if(ImGui::Button("Save Scene"))

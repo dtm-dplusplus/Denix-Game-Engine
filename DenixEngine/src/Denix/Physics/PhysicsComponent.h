@@ -362,14 +362,14 @@ namespace Denix
 
 		void ToggleCollisionDetection()
 		{
-			if (m_CollisionDetectionEnabled)
+			/*if (m_CollisionDetectionEnabled)
 			{
 				DE_LOG(LogPhysics, Trace, "Collision detection enabled")
 			}
 			else
 			{
 				DE_LOG(LogPhysics, Trace, "Collision detection disabled")
-			}
+			}*/
 		}
 
 		// Getters
@@ -379,14 +379,14 @@ namespace Denix
 		{
 			m_SimulatePhysics = _simulatePhysics;
 
-			if (m_SimulatePhysics)
+			/*if (m_SimulatePhysics)
 			{
 				DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
 			}
 			else
 			{
 				DE_LOG(LogPhysics, Trace, "Physics simulation disabled")
-			}
+			}*/
 		}
 
 		bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
@@ -416,9 +416,7 @@ namespace Denix
 		void SetStepMethod(const StepMethod _method)
 		{
 			m_StepMethod = _method;
-
-
-			DE_LOG(LogPhysics, Trace, "Physics step method set to: {}", GetStepMethod(_method))
+			//DE_LOG(LogPhysics, Trace, "Physics step method set to: {}", GetStepMethod(_method))
 		}
 		StepMethod GetStepMethod() const { return m_StepMethod; }
 		std::string GetStepMethod(StepMethod _method) const

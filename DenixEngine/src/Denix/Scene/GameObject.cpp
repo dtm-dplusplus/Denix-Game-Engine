@@ -63,6 +63,12 @@ namespace Denix
             {
                 _out << YAML::Newline << YAML::Comment("Material");
                 _out << YAML::Key << "m_Material" << YAML::Value << (mat->GetAsset() ? mat->GetAsset()->GetAssetPath() : "");
+
+                // Save Material - Should be done in the editor.
+                YAML::Emitter matAsssetEmitter;
+                mat->Serialize(matAsssetEmitter);
+                FileSubsystem::WriteFile(mat->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
+                DE_LOG(LogScene, Info, "Saved Material: {}", mat->GetAsset()->GetAssetFileName())
             }
         }
         _out << YAML::EndMap;
@@ -137,9 +143,9 @@ namespace Denix
             }
 
             // Material
-            if (const std::string matPath = renderCompNode["m_Material"].as<std::string>(); !matPath.empty())
+            if (const YAML::Node matNode = renderCompNode["m_Material"]; !matNode.IsDefined())
             {
-                    m_RenderComponent->SetMaterial(ResourceSubsystem::GetMaterial(matPath));
+                m_RenderComponent->SetMaterial(ResourceSubsystem::GetMaterial(matNode["m_Material"].as<std::string>()));
             }
         }
 

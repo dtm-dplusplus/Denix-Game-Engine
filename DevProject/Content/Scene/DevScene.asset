@@ -1,10 +1,10 @@
-# DE_ASSET: Scene
+# DE_ASSET_SCENE
 # Dev Scene Scene Data
 m_SceneObjects:
   -  # Object Data
     m_Object:
-      m_Name: 40_Object
-      m_FriendlyName: Object
+      m_Name: 38_Cube
+      m_FriendlyName: Cube
 # Render Component
     m_RenderComponent:
       m_IsVisible: true

@@ -30,17 +30,9 @@ namespace Denix
 			m_FilePath = "";
 		}
 
-		Texture(const std::string& _path, const std::string& _name)
-		{
-			m_TextureID = 0;
-			m_TextureName = _name;
-			m_Width = 0;
-			m_Height = 0;
-			m_BitDepth = 0;
-			m_FilePath = _path;
-		}
+		Texture(const std::string& _path);
 
-        bool LoadTexture();
+		bool LoadTexture();
 
 		void Bind() const
 		{

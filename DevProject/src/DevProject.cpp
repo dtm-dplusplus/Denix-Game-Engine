@@ -1,4 +1,4 @@
-#include "Denix.h"
+ #include "Denix.h"
 #include "DevScene.h"
 
 using namespace Denix;
@@ -12,6 +12,7 @@ public:
 		DE_LOG_CREATE(LogDevProject)
 
 		m_ProjectName = "DevProject";
+		Factory::Instance().Register("DevScene", []() { return std::make_unique<DevScene>(); });
 
 		DE_LOG(LogDevProject, Trace, "DevProject Created")
 	}
@@ -30,10 +31,7 @@ public:
 	{
 		Engine::PostInitialize();
 
-		// Hack to serialize the dev scene  until reflection is implemented
-		std::string contentPath = FileSubsystem::GetContentRoot();
-		SceneSubsystem::OpenScene(SceneSubsystem::DeserializeScene<DevScene>(MakeRef<Asset>(contentPath + "Scene\\DevScene.asset")));
-		//SceneSubsystem::OpenScene(MakeRef<DevScene>());
+		// Add any client code once the engine has been initialized
 	}
 };
 
