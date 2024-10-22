@@ -8,6 +8,7 @@
 #include "Denix/Scene/SceneSubsystem.h"
 #include "yaml-cpp/yaml.h"
 #include "Denix/Editor/EditorSubsystem.h"
+#include "Denix/Reflection/ReflectionSubsystem.h"
 
 using namespace Denix;
 
@@ -39,7 +40,7 @@ void DevScene::Update(float _deltaTime)
 	if(ImGui::Begin("Dev Scene"))
 	{
 		ImGui::SeparatorText("Reflection");
-		for (const auto& key : Factory::Instance().GetCreateFuncs() | std::views::keys)
+		for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)
 		{
 			ImGui::Text(key.c_str());
 		}

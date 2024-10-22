@@ -25,7 +25,7 @@ namespace Denix
         }
         DE_LOG(LogWindow, Trace, "glewInit(): success")
         
-        m_DefaultViewport = MakeRef<Viewport>(m_Window->GetWidth(), m_Window->GetHeight());
+        //m_DefaultViewport = MakeRef<Viewport>(m_Window->GetWidth(), m_Window->GetHeight());
 
         DE_LOG(LogWindow, Info, "Window Subsystem Initialized")
     }

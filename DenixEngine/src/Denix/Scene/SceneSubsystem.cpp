@@ -5,8 +5,8 @@
 #include "Denix/Video/Renderer/RendererSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
-#include "Denix/Engine.h" // TEMP
 #include "Denix/Core/FileSubsystem.h"
+#include "Denix/Reflection/ReflectionSubsystem.h"
 #include "Denix/Resource/Asset.h"
 
 namespace Denix
@@ -30,7 +30,7 @@ namespace Denix
 		// Search Resources for scenes
 		else if (const Ref<Asset> sceneAsset = ResourceSubsystem::GetSceneStore()[0])
 		{
-			if(Ref<Scene> scene = CastRef<Scene>(Factory::Instance().Create(sceneAsset->GetAssetName())))
+			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(sceneAsset->GetAssetName())))
 			{
 				OpenScene(scene);
 				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
@@ -108,7 +108,7 @@ namespace Denix
 	void SceneSubsystem::OpenScene(const std::string& _name)
 	{
 		//if (const Ref<Scene> scene = s_SceneSubsystem->m_LoadedScenes[_name])
-		if (const Ref<Scene> scene = CastRef<Scene>(Factory::Instance().Create(_name)))
+		if (const Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(_name)))
 		{
 			OpenScene(scene);
 			return;
@@ -181,15 +181,15 @@ namespace Denix
 		if (m_ActiveScene)
 		{
 			m_ActiveScene->EndPlay();
-			m_ActiveScene->EndScene();
+			//m_ActiveScene->EndScene();
 
-			UnloadScene(m_ActiveScene->GetSceneName());
-			m_ActiveScene = nullptr;
+			//UnloadScene(m_ActiveScene->GetSceneName());
+			//m_ActiveScene = nullptr;
+
+			// Need to establish a better way of handling scenes
 			
 			DE_LOG(LogScene, Trace, "Scene Stopped")
 
-			// Temporary fix to reload scene until serializer built
-			Engine::Get().PostInitialize();
 		}
 	}
 

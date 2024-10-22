@@ -10,39 +10,7 @@
 
 namespace Denix
 {
-	class Factory {
-	public:
-		using CreateFunc = std::function<Ref<BaseObject>()>;
-		static Factory& Instance() {
-			static Factory instance;
-			return instance;
-		}
 
-		void Register(const std::string& className, CreateFunc createFunc) {
-			m_CreateFuncs[className] = createFunc;
-			DE_LOG(LogScene, Info, "Registered class: {}", className)
-		}
-
-		Ref<BaseObject> Create(const std::string& className) {
-			auto it = m_CreateFuncs.find(className);
-			if (it != m_CreateFuncs.end()) {
-				return it->second();
-			}
-			return nullptr;
-		}
-
-		Ref<BaseObject> GetType(const std::string& _className) {
-			auto it = m_CreateFuncs.find(_className);
-			if (it != m_CreateFuncs.end()) {
-				return it->second();
-			}
-			return nullptr;
-		}
-		std::map<std::string, CreateFunc>& GetCreateFuncs() { return m_CreateFuncs; }
-	private:
-		std::map<std::string, CreateFunc> m_CreateFuncs;
-//		std::map<std::string, std::type_index> m_TypeIds;
-	};
 	
 	/* Subsystem that manages the scenes
 	* A scene must always be loaded in order to render anything

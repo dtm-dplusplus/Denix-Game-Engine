@@ -3,7 +3,7 @@
 
 using namespace Denix;
 
-class DevProject: public Engine
+class DevProject final: public Engine
 {
 public:
 
@@ -12,30 +12,19 @@ public:
 		DE_LOG_CREATE(LogDevProject)
 
 		m_ProjectName = "DevProject";
-		Factory::Instance().Register("DevScene", []() { return std::make_unique<DevScene>(); });
-
-		DE_LOG(LogDevProject, Trace, "DevProject Created")
+		ReflectionSubsystem::Register<DevScene>();
 	}
 
-	~DevProject() override
+	void Initialize() override
 	{
-		DE_LOG(LogDevProject, Trace, "DevProject Destroyed")
-	}
-
-	void PreInitialize() override
-	{
-		Engine::PreInitialize();
-	}
-
-	void PostInitialize() override
-	{
-		Engine::PostInitialize();
+		Engine::Initialize();
 
 		// Add any client code once the engine has been initialized
+
 	}
 };
 
-Engine* Denix::CreateEngine()
+URef<Engine> Denix::CreateEngine()
 {
-	return new DevProject();
+	return MakeURef<DevProject>();
 }
