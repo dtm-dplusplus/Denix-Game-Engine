@@ -40,15 +40,11 @@ struct SpotLight
 	float Edge;
 };
 
-struct BaseMatParam
-{
-	vec3 Color;
-	bool IsTexture;
-};
-
 struct Material
 {
-	BaseMatParam Base;
+	vec3 BaseColor;
+	sampler2D BaseTexture;
+	bool IsBaseTexture;
 	float SpecularIntensity;
 	float SpecularPower;
 };
@@ -62,7 +58,7 @@ uniform int u_SpotLightCount;
 uniform SpotLight u_SpotLight[MAX_SPOT_LIGHTS];
 
 
-uniform sampler2D u_Texture;
+//uniform sampler2D u_Texture;
 uniform bool u_AffectsLighting;
 
 uniform Material u_Material;
@@ -112,9 +108,13 @@ vec3 CalcDiffuseReflectance(vec3 _n,vec3 _l)
 {
 	vec3 directColor = CalcDirLight();
 
-	return directColor * u_Material.Base.Color;
+	return directColor * u_Material.BaseColor;
 }
 
+vec4 GetMaterialBaseColor()
+{
+	return u_Material.IsBaseTexture? texture(u_Material.BaseTexture, TexCoord) : vec4(u_Material.BaseColor, 1.0f);
+}
 
 void main()
 {
@@ -122,7 +122,7 @@ void main()
 	// Usa
 	if (!u_AffectsLighting)
 	{
-		Color = u_Material.Base.IsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.Base.Color, 1.0f);
+		Color = GetMaterialBaseColor();
 		return;
 	}
 
@@ -131,14 +131,15 @@ void main()
 	if(u_DirLight.IsValid)
 	{
 
-		totalColor += vec4(CalcDiffuseReflectance(Normal, u_DirLight.Direction), 1.0f);
+		//totalColor += vec4(CalcDiffuseReflectance(Normal, u_DirLight.Direction), 1.0f);
 	}
 
 
 
 	// Get base from color or texture
 	//totalColor *= u_Material.Base.IsTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.Base.Color, 1.0f);
-
-	// Output Color
-	Color = totalColor;
+	
+	
+	// Output Frag Color
+	Color = GetMaterialBaseColor();
 }

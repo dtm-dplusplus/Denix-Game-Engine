@@ -1,19 +1,20 @@
 #pragma once
 
+#include "BaseObject.h"
 #include "Object.h"
 
 namespace Denix
 {
 	/*	Base class for all object components */
-	class Component : public Object
+	class Component : public BaseObject
 	{
 	public:
 		// Constructors
-		Component(const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer)
+		Component(const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : BaseObject(_objectInitializer)
 		{
 		}
 
-		Component(const std::string& _parentName, const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : Object(_objectInitializer), m_ParentObjectName{ _parentName }
+		Component(const std::string& _parentName, const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : BaseObject(_objectInitializer), m_ParentObjectName{ _parentName }
 		{
 		}
 

@@ -35,7 +35,7 @@ set_property(TARGET yaml-cpp-read PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 set_property(TARGET yaml-cpp-sandbox PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 set_property(TARGET uninstall PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 if(TARGET format)
-    set_property(TARGET uninstall PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+    set_property(TARGET format PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
 endif ()
 
 # Get all source files

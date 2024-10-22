@@ -5,8 +5,8 @@
 #include "Denix/Video/Renderer/RendererSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
-#include "Denix/Engine.h" // TEMP
 #include "Denix/Core/FileSubsystem.h"
+#include "Denix/Reflection/ReflectionSubsystem.h"
 #include "Denix/Resource/Asset.h"
 
 namespace Denix
@@ -16,6 +16,35 @@ namespace Denix
 	void SceneSubsystem::Initialize()
 	{
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
+
+		// Set the startup scene
+		bool foundStartupScene = false;
+		
+		// Check engine config for startup scene
+		if(false)
+		{
+			// Engine config stuff
+			foundStartupScene = true;
+		}
+
+		// Search Resources for scenes
+		else if (const Ref<Asset> sceneAsset = ResourceSubsystem::GetSceneStore()[0])
+		{
+			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(sceneAsset->GetAssetName())))
+			{
+				OpenScene(scene);
+				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
+				foundStartupScene = true;
+			}
+		}
+		
+		// Create a default scene
+		else
+		{
+			OpenScene(MakeRef<Scene>());
+			DE_LOG(LogScene, Warn, "No startup scene found. Created default scene")
+		}
+
 		DE_LOG(LogScene, Info, "Scene Subsystem Initialized")
 	}
 
@@ -45,14 +74,10 @@ namespace Denix
 			return false;
 		}
 
-		// Check it isn't already loaded - Skip until serializer is built
-		/*if (s_SceneSubsystem->m_LoadedScenes.contains(_scene->GetSceneName()))
-		{
-			DE_LOG(LogScene, Error, "Load Scene: A scene name {} is already loaded", _scene->GetSceneName())
-			return false;
-		}*/
-
-		// Load the scene
+		// Load the scene data
+		DeserializeScene(_scene);
+		
+		// Load the scene - This should probably be skipped now we have the deserialization
 		if (!_scene->Load())
 		{
 			DE_LOG(LogScene, Critical, "Failed to load scene")
@@ -60,7 +85,7 @@ namespace Denix
 		}
 
 		s_SceneSubsystem->m_LoadedScenes[_scene->GetSceneName()] = _scene;
-		DE_LOG(LogScene, Trace, "Scene loaded: ", _scene->GetSceneName())
+		DE_LOG(LogScene, Trace, "Scene loaded: {} ", _scene->GetSceneName())
 
 		return true;
 	}
@@ -82,7 +107,8 @@ namespace Denix
 
 	void SceneSubsystem::OpenScene(const std::string& _name)
 	{
-		if (const Ref<Scene> scene = s_SceneSubsystem->m_LoadedScenes[_name])
+		//if (const Ref<Scene> scene = s_SceneSubsystem->m_LoadedScenes[_name])
+		if (const Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(_name)))
 		{
 			OpenScene(scene);
 			return;
@@ -91,6 +117,17 @@ namespace Denix
 		DE_LOG(LogScene, Error, "Cound't find Scene: {}", _name)
 	}
 
+	void SceneSubsystem::OpenScene(const Ref<Asset>& _sceneAsset)
+	{
+		if (!_sceneAsset)
+		{
+			DE_LOG(LogScene, Error, "Invalid Scene Asset")
+			return;
+		}
+
+		OpenScene(_sceneAsset->GetAssetName());
+	}
+	
 	void SceneSubsystem::OpenScene(const Ref<Scene>& _scene)
 	{
 		if(!_scene)
@@ -101,7 +138,8 @@ namespace Denix
 
 		// Load the scene if it isn't already loaded
 		if(!_scene->IsLoaded()) LoadScene(_scene);
-		
+
+		// Set the active scene. Take ownership of the scene pointer
 		s_SceneSubsystem->m_ActiveScene = std::move(_scene);
 		
 		// Set dependencies with new scene pointer
@@ -143,15 +181,15 @@ namespace Denix
 		if (m_ActiveScene)
 		{
 			m_ActiveScene->EndPlay();
-			m_ActiveScene->EndScene();
+			//m_ActiveScene->EndScene();
 
-			UnloadScene(m_ActiveScene->GetSceneName());
-			m_ActiveScene = nullptr;
+			//UnloadScene(m_ActiveScene->GetSceneName());
+			//m_ActiveScene = nullptr;
+
+			// Need to establish a better way of handling scenes
 			
 			DE_LOG(LogScene, Trace, "Scene Stopped")
 
-			// Temporary fix to reload scene until serializer built
-			Engine::Get().PostInitialize();
 		}
 	}
 
@@ -215,13 +253,13 @@ namespace Denix
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
-			cam->SetAspect(WindowSubsystem::GetWindow()->GetWindowSize());
+			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
 			cam->Update(_deltaTime);
 		}
 
 		// Scene update implementation 
 		m_ActiveScene->Update(_deltaTime);
-		if(m_ActiveScene->IsPlaying()) m_ActiveScene->GameUpdate(_deltaTime);
+		if(m_ActiveScene->IsPlaying()) m_ActiveScene->Update(_deltaTime);
 	}
 
 	bool SceneSubsystem::SerializeScene(const Scene* _scene)
@@ -249,7 +287,7 @@ namespace Denix
 			YAML::Emitter SceneEmitter;
 
 			// Serialize the scene attributes
-			SceneEmitter << YAML::Comment("DE_ASSET: Scene");
+			SceneEmitter << YAML::Comment("DE_ASSET_SCENE");
 			SceneEmitter << YAML::Newline << YAML::Comment( _scene->m_SceneName + " Scene Data");
 			SceneEmitter << YAML::BeginMap;
 			SceneEmitter << YAML::Key << "m_SceneObjects" << YAML::BeginSeq;
@@ -275,6 +313,35 @@ namespace Denix
 			DE_LOG(LogScene, Error, "Failed to serialize scene: {}", e.what())
 			return false;
 		}
+	}
+
+	void SceneSubsystem::DeserializeScene(const Ref<Scene>& _scene)
+	{
+		// Check if the scene asset is valid
+		if (!_scene->m_SceneAsset)
+		{
+			DE_LOG(LogScene, Error, "Scene {} has no asset associated with it", _scene->GetSceneName())
+			return;
+		}
+		
+		// Load the scene data from the asset file
+		YAML::Node sceneNode = YAML::LoadFile(_scene->m_SceneAsset->GetAssetPath());
+
+		// Check if the scene data is valid
+		if (!sceneNode)
+		{
+			DE_LOG(LogScene, Error, "Failed to load scene asset data: {}", _scene->m_SceneAsset->GetAssetPath())
+			return;
+		}
+        	
+		// Load the scene objects
+		std::vector<Ref<GameObject>> sceneObjects;
+		DeserializeSceneObjects(sceneNode, sceneObjects);
+		
+		for (const auto& newGameObject : sceneObjects)
+			_scene->SpawnSceneObject(newGameObject);
+		
+		DE_LOG(LogScene, Info, "Deserialized scene: {}", _scene->GetFriendlyName())
 	}
 
 	bool SceneSubsystem::DeserializeSceneObjects(const YAML::Node& _sceneNode,

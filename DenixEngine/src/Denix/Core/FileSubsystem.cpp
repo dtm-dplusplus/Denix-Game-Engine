@@ -104,7 +104,7 @@ namespace Denix
 		// Create directory if it doesn't exist
 		if(!DirectoryExists(_path))
 		{
-			DE_LOG(LogFileSubsystem, Error, "Directory does not exist: {}", _path)
+			DE_LOG(LogFileSubsystem, Warn, "Directory does not exist: {}", _path)
 			CreateDirectoryA(_path);
 		}
 

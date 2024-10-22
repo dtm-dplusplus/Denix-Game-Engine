@@ -1,44 +1,47 @@
 #pragma once
 
+#include "Denix/Scene/BaseObject.h"
 #include "Denix/Scene/Object.h"
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Video/GL/Shader.h"
 
+
 namespace Denix
 {
-	struct BaseMatParam
-	{
-		BaseMatParam() : Color(glm::vec3(1.0f)), IsTexture(false), Texture(nullptr) {}
-		BaseMatParam(const glm::vec3& _color) : Color(_color), IsTexture(false), Texture(nullptr) {}
-		BaseMatParam(const Ref<Texture>& _texture) : Color(glm::vec3(1.0f)), IsTexture(true), Texture(_texture) {}
+	class Asset;
 
-		glm::vec3 Color;
-		bool IsTexture;
-		Ref<Texture> Texture;
-	};
-
-	struct NormalMatParam
-	{
-		NormalMatParam() : IsTexture(false), Texture(nullptr) {}
-		NormalMatParam(const Ref<Texture>& _texture) : IsTexture(true), Texture(_texture) {}
-
-		bool IsTexture;
-		Ref<Texture> Texture;
-	};
-
-	class Material: public Object
+	
+	class Material: public BaseObject
 	{
 	public:
 		Material(const ObjectInitializer& _objInit = { "Material" });
-		Material(Ref<Material> _other);
-
+		Material(const Ref<Material>& _other);
+		Material(const Ref<Asset>& _asset);
+		
+		// Serialization
+		void Serialize(YAML::Emitter& _out) override;
+		void Deserialize(const YAML::Node& _in) override;
+		YAML::Node Deserialize(const Ref<Asset>& _asset);
+		// Getters and Setters 
 		Ref<Shader> GetShader() const { return m_Shader; }
 		void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
 
-		BaseMatParam GetBaseParam() const { return m_BaseParam; }
-		BaseMatParam& GetBaseParam() { return m_BaseParam; }
-		void SetBaseParam(const BaseMatParam& _param) { m_BaseParam = _param; }
+		// Albedo color or texture
+		void SetBaseColor(const glm::vec3& _color) { m_BaseColor = _color; m_IsBaseTexture = false;}
+		void SetBaseTexture(const Ref<Texture>& _texture);
+		Ref<Texture> GetBaseTexture() const { return m_BaseTexture; }
+		Ref<Texture>& GetBaseTexture() { return m_BaseTexture; }
+		glm::vec3 GetBaseColor() const { return m_BaseColor; }
+		glm::vec3& GetBaseColor() { return m_BaseColor; }
 
+		
+		bool CheckBaseType() { m_IsBaseTexture = IsValid(m_BaseTexture); return m_IsBaseTexture;}
+
+		/**
+		 *  @brief Get the base type of the material
+		 * @return true if the base is a texture, false if it is a color
+		 */
+		bool IsBaseATexture() const { return m_IsBaseTexture; }
 
 		float GetSpecularPower() const { return m_SpecularPower; }
 		float& GetSpecularPower() { return m_SpecularPower; }
@@ -59,14 +62,22 @@ namespace Denix
 		float GetRoughness() const { return Roughness; }
 		float& GetRoughness() { return Roughness; }
 		void SetRoughness(const float _roughness) { Roughness = _roughness; }
-		
+
+		Ref<Asset> GetAsset() const { return m_Asset; }
+		Ref<Asset>& GetAsset() { return m_Asset; }
+		void SetAsset(const Ref<Asset>& _asset) { m_Asset = _asset; }
+		void ClearBaseTexture() { m_BaseTexture = nullptr; m_IsBaseTexture = false; }
+
 	private:
-		BaseMatParam m_BaseParam;
-
-		NormalMatParam m_NormalParam;
-
+		// Base color or texture
+		glm::vec3 m_BaseColor = glm::vec3(0.0f);
+		Ref<Texture> m_BaseTexture;
+		bool m_IsBaseTexture = false;
+		
 		Ref<Shader> m_Shader;
+		Ref<Asset> m_Asset;
 
+	private:
 		float m_SpecularIntensity = 0.5f;
 		float m_SpecularPower = 4.0f;
 

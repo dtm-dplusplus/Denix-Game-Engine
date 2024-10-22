@@ -1,24 +1,39 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include <unordered_map>
 #include <vector>
-
-#include "Denix/System/SubSystem.h"
 
 int main(int argc, char** argv);
 
 namespace Denix
 {
+    class Subsystem;
+    class ReflectionSubsystem;
+    class InputSubsystem;
+    class EditorSubsystem;
+    class RendererSubsystem;
+    class UISubsystem;
+    class PhysicsSubsystem;
+    class SceneSubsystem;
+    class ResourceSubsystem;
+    class FileSubsystem;
+    class WindowSubsystem;
+    class TimerSubsystem;
+
     class Engine
     {
     public:
-
         Engine();
         virtual  ~Engine();
 
-        void Initialize();
-        void Deinitialize();
+        // Delete copy and move constructors and assignment operators
+        Engine(const Engine& _other) = delete;
+        Engine(Engine&& _other) noexcept = delete;
+        Engine& operator=(const Engine& _other) = delete;
+        Engine& operator=(Engine&& _other) noexcept = delete;
+        
+        virtual void Initialize();
+        virtual void Deinitialize();
 
         void Run();
         void LoadConfig();
@@ -28,42 +43,60 @@ namespace Denix
 
         std::string GetProjectName() const { return m_ProjectName; }
 
-    public:
-        virtual void PreInitialize();
-        virtual void PostInitialize();
-
     protected:
         std::string m_ProjectName;
-
 
     private:
         static Engine* s_Engine;
 
-        std::vector<Subsystem*> m_Subsystems;
+        template<typename  T, typename ... Args>
+        URef<T> InitalizeSubsystem(Args&& ... _args)
+        {
+            URef<T> subsystem = MakeURef<T>(std::forward<Args>(_args)...); 
 
-        class TimerSubsystem* m_TimerSubSystem;
+            try
+            {
+                 subsystem->Initialize();
+            }
+            catch (const std::exception& e)
+            {
+                // Assert and terminate
+                DE_LOG(LogEngine, Critical, "Failed to Initialize Subsystem: {0}", e.what())
+                assert(false, e.what());
+            }
+            
+            m_Subsystems.push_back(subsystem.get());
+            return subsystem;
+        }
 
-        class WindowSubsystem* m_WindowSubsystem;
+    // Usufeul vector for deinitializing subsystems in reverse order
+    std::vector<Subsystem*> m_Subsystems;
 
-        class FileSubsystem* m_FileSubSystem;
+    URef<TimerSubsystem> m_TimerSubsystem;
 
-        class ResourceSubsystem* m_ResourceSubSystem;
+    URef<ReflectionSubsystem> m_ReflectionSubsystem;
 
-        class SceneSubsystem* m_SceneSubSystem;
+    URef<WindowSubsystem> m_WindowSubsystem;
 
-        class PhysicsSubsystem* m_PhysicsSubSystem;
+    URef<FileSubsystem> m_FileSubsystem;
 
-        class UISubsystem* m_UISubsystem;
+    URef<ResourceSubsystem> m_ResourceSubsystem;
 
-        class RendererSubsystem* m_RendererSubSystem;
+    URef<SceneSubsystem> m_SceneSubsystem;
 
-        class EditorSubsystem* m_EditorSubSystem;
+    URef<PhysicsSubsystem> m_PhysicsSubsystem;
 
-        class InputSubsystem* m_InputSubsystem;
+    URef<UISubsystem> m_UISubsystem;
 
-        friend int ::main(int argc, char** argv);
+    URef<RendererSubsystem> m_RendererSubsystem;
+
+    URef<EditorSubsystem> m_EditorSubsystem;
+
+    URef<InputSubsystem> m_InputSubsystem;
+
+    friend int ::main(int argc, char** argv);
     };
 
     // Defined in client
-    Engine* CreateEngine();
+    URef<Engine> CreateEngine();
 }

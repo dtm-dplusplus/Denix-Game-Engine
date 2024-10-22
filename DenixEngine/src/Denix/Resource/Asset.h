@@ -3,41 +3,15 @@
 
 #include "Denix/Core/Logger.h"
 
+namespace Denix
+{
 class Asset
 {
 public:
     Asset() = default;
     virtual ~Asset() = default;
     
-    Asset(const std::string& _assetPath)
-    {
-        m_AssetPath = _assetPath;
-        m_AssetName = _assetPath.substr(_assetPath.find_last_of("/\\") + 1);
-        m_AssetExtension = _assetPath.substr(_assetPath.find_last_of(".") + 1);
-        m_AssetDirectory = _assetPath.substr(0, _assetPath.find_last_of("/\\"));
-    }
-    
-    /*Asset(const Asset& _other)
-    {
-    }
-
-    Asset(Asset&& _other) noexcept
-    {
-    }
-
-    Asset& operator=(const Asset& _other)
-    {
-        if (this == &_other)
-            return *this;
-        return *this;
-    }
-
-    Asset& operator=(Asset&& _other) noexcept
-    {
-        if (this == &_other)
-            return *this;
-        return *this;
-    }*/
+    Asset(const std::string& _assetPath);
 
     bool RenameAsset(const std::string& _newName)
     {
@@ -66,21 +40,48 @@ public:
         return true;
     }
 
+    
+    /**
+     * 
+     * @return Asset name without extension
+     */
     std::string GetAssetName() const
     {
         return m_AssetName;
     }
 
+    /**
+     * 
+     * @return Asset file name with extension
+     */
+    std::string GetAssetFileName() const
+    {
+        return m_AssetFileName;
+    }
+    
+    /**
+     * 
+     * @return Asset file path 
+     */
     std::string GetAssetPath() const
     {
         return m_AssetPath;
     }
 
+    /**
+     * 
+     * @return Asset file extension
+     */
     std::string GetAssetExtension() const
     {
         return m_AssetExtension;
     }
 
+    
+    /**
+     * 
+     * @return Asset directory
+     */
     std::string GetAssetDirectory() const
     {
         return m_AssetDirectory;
@@ -88,9 +89,19 @@ public:
 
     
 protected:
+    // Asset name without extension
     std::string m_AssetName;
-    std::string m_AssetPath;
+
+    // Asset file name with extension
+    std::string m_AssetFileName;
+
+    // Asset file extension
     std::string m_AssetExtension;
-    std::string m_AssetDirectory;
     
+    // Asset file path
+    std::string m_AssetPath;
+
+    // Asset directory
+    std::string m_AssetDirectory;
 };
+}

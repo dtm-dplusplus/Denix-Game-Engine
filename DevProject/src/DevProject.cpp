@@ -1,9 +1,9 @@
-#include "Denix.h"
+ #include "Denix.h"
 #include "DevScene.h"
 
 using namespace Denix;
 
-class DevProject: public Engine
+class DevProject final: public Engine
 {
 public:
 
@@ -12,34 +12,19 @@ public:
 		DE_LOG_CREATE(LogDevProject)
 
 		m_ProjectName = "DevProject";
-
-		DE_LOG(LogDevProject, Trace, "DevProject Created")
+		ReflectionSubsystem::Register<DevScene>();
 	}
 
-	~DevProject() override
+	void Initialize() override
 	{
-		DE_LOG(LogDevProject, Trace, "DevProject Destroyed")
-	}
+		Engine::Initialize();
 
-	void PreInitialize() override
-	{
-		Engine::PreInitialize();
-	}
+		// Add any client code once the engine has been initialized
 
-	void PostInitialize() override
-	{
-		Engine::PostInitialize();
-
-		// Hack to serialize the dev scene  until reflection is implemented
-		std::string contentPath = FileSubsystem::GetContentRoot();
-		if(Ref<Scene> newScene = SceneSubsystem::DeserializeScene<DevScene>(MakeRef<Asset>(contentPath + "Scene\\DevScene.asset")))
-		{
-			SceneSubsystem::OpenScene(newScene);
-		}
 	}
 };
 
-Engine* Denix::CreateEngine()
+URef<Engine> Denix::CreateEngine()
 {
-	return new DevProject();
+	return MakeURef<DevProject>();
 }

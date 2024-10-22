@@ -8,6 +8,7 @@
 #include "Denix/Scene/SceneSubsystem.h"
 #include "yaml-cpp/yaml.h"
 #include "Denix/Editor/EditorSubsystem.h"
+#include "Denix/Reflection/ReflectionSubsystem.h"
 
 using namespace Denix;
 
@@ -19,15 +20,6 @@ DevScene::DevScene(): Scene("Dev Scene")
 	ShowEngineContent = false;
 	std::string contentPath = FileSubsystem::GetContentRoot();
 	m_SceneAsset = MakeRef<Asset>(contentPath + "Scene\\DevScene.asset");
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(contentPath))
-	{
-		if (entry.is_regular_file())
-		{
-			std::string filePath = entry.path().string();
-			Ref<Asset> asset = MakeRef<Asset>(filePath);
-			m_Assets.push_back(asset);
-		}
-	}
 }
 
 DevScene::DevScene(const Ref<Asset>& _sceneAsset): Scene(_sceneAsset)
@@ -37,77 +29,88 @@ DevScene::DevScene(const Ref<Asset>& _sceneAsset): Scene(_sceneAsset)
 	ShowEngineContent = false;
 	std::string contentPath = FileSubsystem::GetContentRoot();
 	m_SceneAsset = MakeRef<Asset>(contentPath + "Scene\\DevScene.asset");
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(contentPath))
-	{
-		if (entry.is_regular_file())
-		{
-			std::string filePath = entry.path().string();
-			Ref<Asset> asset = MakeRef<Asset>(filePath);
-			m_Assets.push_back(asset);
-		}
-	}
+
+	
 }
 
 void DevScene::Update(float _deltaTime)
 {
 	Scene::Update(_deltaTime);
 
-	ImGui::Begin("Dev Scene");
-	if(ImGui::CollapsingHeader("Graphics"))
+	if(ImGui::Begin("Dev Scene"))
 	{
-		EditorSubsystem::Get()->LightWidget(m_DirectionalLight);
-	}
-	
-	if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
-	{
-		ImGui::Text("Project Name: %s", FileSubsystem::GetProjectName().c_str());
-		ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
-		ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
-		ImGui::Checkbox("Show engine content", &ShowEngineContent);
+		ImGui::SeparatorText("Reflection");
+		for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)
+		{
+			ImGui::Text(key.c_str());
+		}
 		
-		if (ImGui::Button("Save Config"))
+		if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
 		{
-			Engine::Get().SaveConfig();
-
-		}
-		if (ImGui::Button("Load Config"))
-		{
-			Engine::Get().LoadConfig();
-		}
-	}
-	if (ImGui::CollapsingHeader("Assets", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		// Stupidly slow way to display assets
-		for (auto& asset : m_Assets)
-		{
-			if(!ShowEngineContent &&
-				asset->GetAssetDirectory().find(FileSubsystem::GetEngineContentRoot()) != std::string::npos)
+			ImGui::Text("Project Name: %s", FileSubsystem::GetProjectName().c_str());
+			ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
+			ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
+			ImGui::Checkbox("Show engine content", &ShowEngineContent);
+		
+			if (ImGui::Button("Save Config"))
 			{
-				continue;
-			}
-			
-			ImGui::CollapsingHeader(asset->GetAssetName().c_str());
-			ImGui::Text("Asset Name: %s", asset->GetAssetName().c_str());
-			ImGui::Text("Asset Path: %s", asset->GetAssetPath().c_str());
-			ImGui::Text("Asset Directory: %s", asset->GetAssetDirectory().c_str());
-			ImGui::Text("Asset Extension: %s", asset->GetAssetExtension().c_str());
-		}
-	}
-	
-	if(ImGui::Button("Save Scene"))
-	{
-		SceneSubsystem::SerializeScene(this);
-	}
+				Engine::Get().SaveConfig();
 
-	if (ImGui::Button("Load Scene"))
-	{
-		//if(Ref<Scene> newScene = SceneSubsystem::DeserializeScene<DevScene>(m_SceneAsset))
-		//{
-		//	SceneSubsystem::OpenScene(newScene);
-		//}
-	}
+			} ImGui::SameLine();
+			if (ImGui::Button("Load Config"))
+			{
+				Engine::Get().LoadConfig();
+			}
+		}
+
+		ImGui::SeparatorText("Assets");
+		if (ImGui::TreeNode("Materials"))
+		{
+			for (const auto& mat : ResourceSubsystem::GetMaterialStore())
+			{
+				ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
+			}
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("Scenes"))
+		{
+			for (const auto& scene : ResourceSubsystem::GetSceneStore())
+			{
+				ImGui::Text(scene->GetAssetName().c_str());
+				ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
+			}
+			ImGui::TreePop();
+		}
 	
-	ImGui::End();
+		if(ImGui::Button("Save Scene"))
+		{
+			SceneSubsystem::SerializeScene(this);
+
+			for(const auto& mat: ResourceSubsystem::GetMaterialStore())
+			{
+				// Save Changes to asset - This should be done in the editor
+				YAML::Emitter matAsssetEmitter;
+				matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
+				matAsssetEmitter << YAML::BeginMap;
+				mat.second->Serialize(matAsssetEmitter);
+				matAsssetEmitter << YAML::EndMap;
+                
+				FileSubsystem::WriteFile(mat.second->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
+				DE_LOG(LogScene, Info, "Serialized Material");
+			}
+		}
+
+		if (ImGui::Button("Load Scene"))
+		{
+			if(Ref<Scene> newScene = SceneSubsystem::DeserializeScene<DevScene>(m_SceneAsset))
+			{
+				SceneSubsystem::OpenScene(newScene);
+			}
+		}
+	
+		ImGui::End();
+	}
 }
 
 bool DevScene::Load()

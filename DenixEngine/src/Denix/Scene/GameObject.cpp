@@ -3,44 +3,14 @@
 #include "Denix/Resource/ResourceSubsystem.h"
 
 #include "yaml-cpp/yaml.h"
-
-namespace YAML {
-    template<>
-    struct convert<glm::vec3> {
-        static Node encode(const glm::vec3& rhs) {
-            Node node;
-            node.push_back(rhs.x);
-            node.push_back(rhs.y);
-            node.push_back(rhs.z);
-            return node;
-        }
-
-        static bool decode(const ::YAML::Node& node, glm::vec3& rhs) {
-            if(!node.IsSequence() || node.size() != 3) {
-                return false;
-            }
-
-            rhs.x = node[0].as<float>();
-            rhs.y = node[1].as<float>();
-            rhs.z = node[2].as<float>();
-            return true;
-        }
-    };
-}
-
-YAML::Node EmitVec3(const glm::vec3& vec) {
-    YAML::Node node;
-    node.push_back(vec.x);
-    node.push_back(vec.y);
-    node.push_back(vec.z);
-    return node;
-}
+#include "Denix/Core/YAMLHelper.h"
+#include "Denix/Resource/Asset.h"
 
 namespace Denix
 {
    
     
-    GameObject::GameObject(const ObjectInitializer& _object_init) : Object(_object_init)
+    GameObject::GameObject(const ObjectInitializer& _object_init) : BaseObject(_object_init)
     {
         m_TransformComponent = MakeRef<TransformComponent>(GetName());
         m_Components["Transform"] = m_TransformComponent;
@@ -49,7 +19,6 @@ namespace Denix
         m_Components["Mesh"] = m_MeshComponent;
 
         m_RenderComponent = MakeRef<RenderComponent>(GetName());
-        m_RenderComponent->SetMaterial(MakeRef<Material>());
         m_Components["Render"] = m_RenderComponent;
 
         m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
@@ -90,23 +59,16 @@ namespace Denix
             // End Texture Settings
 
             // Material
-            if (Ref<Material> mat = m_RenderComponent->GetMaterial())
+            if (const Ref<Material> mat = m_RenderComponent->GetMaterial())
             {
-                _out << YAML::Key << "m_Material" << YAML::BeginMap;
-                _out << YAML::Key << "m_SpecularIntensity" << YAML::Value << mat->GetSpecularIntensity();
-                _out << YAML::Key << "m_SpecularPower" << YAML::Value << mat->GetSpecularPower();
+                _out << YAML::Newline << YAML::Comment("Material");
+                _out << YAML::Key << "m_Material" << YAML::Value << (mat->GetAsset() ? mat->GetAsset()->GetAssetPath() : "");
 
-                if(mat->GetShader()) // Temp until asset scraper built
-                    _out << YAML::Key << "m_Shader" << YAML::Value << mat->GetShader()->GetFriendlyName();
-                
-                // Base Param
-                _out << YAML::Key << "m_BaseParam" << YAML::Value << YAML::BeginMap;
-                _out << YAML::Key << "Color" << YAML::Value << EmitVec3(mat->GetBaseParam().Color);
-                _out << YAML::Key << "IsTexture" << YAML::Value << mat->GetBaseParam().IsTexture;
-                if(mat->GetBaseParam().Texture) // Temp until asset scraper built
-                    _out << YAML::Key << "Texture" << YAML::Value << mat->GetBaseParam().Texture->GetTextureName();
-                _out << YAML::EndMap;
-                _out << YAML::EndMap;
+                // Save Material - Should be done in the editor.
+                YAML::Emitter matAsssetEmitter;
+                mat->Serialize(matAsssetEmitter);
+                FileSubsystem::WriteFile(mat->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
+                DE_LOG(LogScene, Info, "Saved Material: {}", mat->GetAsset()->GetAssetFileName())
             }
         }
         _out << YAML::EndMap;
@@ -118,7 +80,7 @@ namespace Denix
         {
             _out << YAML::Key << "m_Position" << YAML::Value << EmitVec3(m_TransformComponent->GetPosition());
             _out << YAML::Key << "m_Rotation" << YAML::Value << EmitVec3(m_TransformComponent->GetRotation());
-            _out << YAML::Key << "m_Scale" << YAML::Value << EmitVec3(m_TransformComponent->GetScale());
+            _out << YAML::Key << "m_Scale" << YAML::Value <<EmitVec3(m_TransformComponent->GetScale());
             _out << YAML::Key << "m_Moveability" << YAML::Value << static_cast<int>(m_TransformComponent->GetMoveability());
         }
         _out << YAML::EndMap;
@@ -164,13 +126,13 @@ namespace Denix
         }
         
         // Render Component
-        if(const YAML::Node renderComp = _in["m_RenderComponent"]; renderComp)
+        if(const YAML::Node renderCompNode = _in["m_RenderComponent"]; renderCompNode)
         {
-            m_RenderComponent->SetIsVisible(renderComp["m_IsVisible"].as<bool>());
-            m_RenderComponent->SetAffectsLighting(renderComp["m_AffectsLighting"].as<bool>());
+            m_RenderComponent->SetIsVisible(renderCompNode["m_IsVisible"].as<bool>());
+            m_RenderComponent->SetAffectsLighting(renderCompNode["m_AffectsLighting"].as<bool>());
 
             // Texture Settings
-            if (const YAML::Node texSettings = renderComp["m_TextureSettings"]; texSettings)
+            if (const YAML::Node texSettings = renderCompNode["m_TextureSettings"]; texSettings)
             {
                 TextureSettings texSet;
                 texSet.WrapMode = texSettings["WrapMode"].as<int>();
@@ -180,38 +142,13 @@ namespace Denix
                 m_RenderComponent->SetTextureSettings(texSet);
             }
 
-            if (const YAML::Node material = renderComp["m_Material"]; material)
+            // Material
+            if (const YAML::Node matNode = renderCompNode["m_Material"]; !matNode.IsDefined())
             {
-                Ref<Material> mat = MakeRef<Material>();
-                mat->SetSpecularIntensity(material["m_SpecularIntensity"].as<float>());
-                mat->SetSpecularPower(material["m_SpecularPower"].as<float>());
-
-                if (const Ref<Shader> shader = ResourceSubsystem::GetShader(material["m_Shader"].as<std::string>()))
-                {
-                    mat->SetShader(shader); // Temp until asset scraper built
-                }
-
-                if (const YAML::Node baseParam = material["m_BaseParam"]; baseParam)
-                {
-                    BaseMatParam base;
-                    base.Color = baseParam["Color"].as<glm::vec3>();
-                    base.IsTexture = baseParam["IsTexture"].as<bool>();
-                    if(baseParam["Texture"])
-                    {
-                        if (const Ref<Texture> tex = ResourceSubsystem::GetTexture(baseParam["Texture"].as<std::string>()))
-                        {
-                            base.Texture = tex; // Temp until asset scraper built
-                        }
-                    }
-                   
-                    mat->SetBaseParam(base);
-                }
-
-                m_RenderComponent->SetMaterial(mat);
+                m_RenderComponent->SetMaterial(ResourceSubsystem::GetMaterial(matNode["m_Material"].as<std::string>()));
             }
         }
 
-        // Material
         
         
         // Transform Component

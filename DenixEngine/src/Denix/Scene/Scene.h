@@ -5,19 +5,20 @@
 #include "Object/Light/LightObject.h"
 #include "Camera.h"
 
-class Asset;
 
 namespace Denix
 {
+	class Asset;
+
 	constexpr unsigned int MAX_POINT_LIGHTS = 100;
 	constexpr unsigned int MAX_SPOT_LIGHTS = 100;
 
 	// Basic Scene class
-	class Scene: public Object
+	class Scene: public BaseObject
 	{
 	public:
 
-		Scene(const std::string& _name = "Scene") : Object(ObjectInitializer(_name)),
+		Scene(const std::string& _name = "Scene") : BaseObject(ObjectInitializer(_name)),
 			m_SceneName{ _name },
 			m_ViewportCamera{ nullptr },
 			m_ActiveCamera{ nullptr },
@@ -33,8 +34,7 @@ namespace Denix
 
 		virtual bool Load()
 		{
-			m_ViewportCamera = MakeRef<ViewportCamera>();
-			m_ViewportCamera->GetTransformComponent()->SetPosition(glm::vec3(0.0f, 5.0f, 25.0f));
+			m_ViewportCamera = MakeRef<Camera>(ObjectInitializer("Viewport Camera"));
 
 			m_IsLoaded = true;
 
@@ -111,7 +111,7 @@ namespace Denix
 			{
 				// Update the GameObject -  This will always be here
 				gameObject->Update(_deltaTime);
-				if (m_IsPlaying) gameObject->GameUpdate(_deltaTime);
+				if (m_IsPlaying) gameObject->Update(_deltaTime);
 			}
 		}
 
@@ -132,7 +132,7 @@ namespace Denix
 		float GetGravity() const { return m_Gravity; }
 		float& GetGravity() { return m_Gravity; }
 
-		Ref<ViewportCamera> GetViewportCamera() { return m_ViewportCamera; }
+		Ref<Camera> GetViewportCamera() { return m_ViewportCamera; }
 
 		Ref<Camera> GetActiveCamera() { return m_ActiveCamera; }
 
@@ -205,7 +205,7 @@ namespace Denix
 		/** List of Objects in the scene */
 		std::vector<Ref<GameObject>> m_SceneObjects;
 
-		Ref<ViewportCamera> m_ViewportCamera;
+		Ref<Camera> m_ViewportCamera;
 
 		Ref<Camera> m_ActiveCamera;
 

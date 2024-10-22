@@ -1,30 +1,34 @@
 #pragma once
 
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "VertexBuffer.h"
 #include "FrameBuffer.h"
 #include "Shader.h"
 #include "Mesh.h"
-#include "Denix/Scene/MeshData.h"
 
 namespace Denix
 {
-    class Viewport
+    class Viewport: public Object
     {
     public:
-        Viewport(const int _width, const int _height)
-        {
-            m_Width = _width;
-            m_Height = _height;
-            m_FrameBuffer = MakeRef<FrameBuffer>(_width, _height);
-            m_Mesh = MakeRef<Mesh>();
-            m_Mesh->CreateViewportMesh();
-        }
 
-        ~Viewport() = default;
+        
+        /**
+         *  @brief Constructor for the Viewport class. Will create a viewport with the size of the window
+         * @param _objInit 
+         */
+        Viewport(const ObjectInitializer& _objInit = {"Viewport"});
 
+        
+        /**
+         *  @brief Constructor for the Viewport class. Will create a viewport with the specified size
+         * @param _width  
+         * @param _height 
+         * @param _objInit 
+         */
+        Viewport(int _width, int _height, const ObjectInitializer& _objInit = {"Viewport"});
 
+        ~Viewport() override = default;
+
+        void DrawViewport() const;
         int GetWidth() const { return m_Width; }
         int GetHeight() const { return m_Height; }
 

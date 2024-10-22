@@ -70,14 +70,13 @@ namespace Denix
 			return false;
 		}
 
-		// Set Viewport
-		//glViewport(0, 0, m_WinX, m_WinY);
-		//glEnable(GL_DEPTH_TEST);
+		// Enable Depth Test
+		glEnable(GL_DEPTH_TEST);
 		m_IsOpen = true;
 
 		DE_LOG(LogWindow, Trace, "Created Window: {} Res: {}x{}", m_Title, m_WinX, m_WinY)
 
-			return true;
+		return true;
 	}
 
 	void SDL_GLWindow::Deinitialize()
@@ -91,8 +90,8 @@ namespace Denix
 	void SDL_GLWindow::ClearBuffer()
 	{
 		// Clear buffer, move to renderer
-		//glClearColor(m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void SDL_GLWindow::SwapBuffers()

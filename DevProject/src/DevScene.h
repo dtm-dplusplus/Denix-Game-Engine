@@ -27,8 +27,6 @@ public:
     bool Load() override;
     void Unload() override;
 
-    std::vector<Ref<Asset> > m_Assets;
-
     Ref<DirectionalLight> m_DirectionalLight;
     bool ShowEngineContent;
 };

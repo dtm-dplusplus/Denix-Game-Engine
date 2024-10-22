@@ -48,29 +48,29 @@ namespace Denix
 				mat->m_Shader->Bind();
 
 				// Upload the material
-				const BaseMatParam& base = mat->GetBaseParam();
-				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.AO"), mat->GetAO());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Metallic"), mat->GetMetallic());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Roughness"), mat->GetRoughness());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
 
-				if (base.IsTexture && base.Texture)
+				// Base color/texture specific settings
+				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.IsBaseTexture"), mat->CheckBaseType());
+
+				if (mat->m_IsBaseTexture)
 				{
-					base.Texture->Bind();
+					mat->m_BaseTexture->Bind();
 
 					// Texture Settings need to move to the material/texture
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
-					glTexParameteri(base.Texture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
+					glTexParameteri(mat->m_BaseTexture->GetTarget(), GL_TEXTURE_WRAP_S, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(mat->m_BaseTexture->GetTarget(), GL_TEXTURE_WRAP_T, renderComp->m_TextureSettings.WrapMode);
+					glTexParameteri(mat->m_BaseTexture->GetTarget(), GL_TEXTURE_MIN_FILTER, renderComp->m_TextureSettings.FilterMode);
+					glTexParameteri(mat->m_BaseTexture->GetTarget(), GL_TEXTURE_MAG_FILTER, renderComp->m_TextureSettings.FilterMode);
 				}
 				else
 				{
-					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
-						base.Color.r, base.Color.g, base.Color.b);
-
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.AO"), mat->GetAO());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Metallic"), mat->GetMetallic());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Roughness"), mat->GetRoughness());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
-					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.BaseColor"),
+						mat->m_BaseColor.r, mat->m_BaseColor.g, mat->m_BaseColor.b);
 				}
 				
 				// Upload the camera matrices relative to Object
@@ -117,7 +117,7 @@ namespace Denix
 
 	void RendererSubsystem::RenderUnlitViewport()
 	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		/*glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		ResourceSubsystem::GetShader("UnlitShader")->Bind();
 
@@ -134,11 +134,10 @@ namespace Denix
 			if (const Ref<Material> mat = renderComp->m_Material; renderComp->IsVisible())
 			{
 				mat->m_Shader->Bind();
-
+				mat->CheckBaseType();
+				
 				// Upload the material
-				const BaseMatParam& base = mat->GetBaseParam();
-
-				if (base.IsTexture && base.Texture)
+				if (mat->IsBaseTexture)
 				{
 					base.Texture->Bind();
 
@@ -152,8 +151,6 @@ namespace Denix
 				{
 					glUniform3f(renderComp->m_Shader->GetUniform("u_Material.Base.Color"),
 						base.Color.r, base.Color.g, base.Color.b);
-
-					glUniform1i(renderComp->m_Shader->GetUniform("u_Material.Base.IsTexture"), base.IsTexture);
 
 					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
 					glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
@@ -198,7 +195,7 @@ namespace Denix
 
 			// Draw Collision over gameobject if set to visible
 			if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
-		}
+		}*/
 	}
 
 	void RendererSubsystem::RenderWireframeViewport()
@@ -236,7 +233,7 @@ namespace Denix
 				GL_FALSE, glm::value_ptr(transformComp->GetModel()));
 
 			// Upload the material
-			glUniform3f(renderComp->m_Shader->GetUniform("u_Material.BaseColor"),1.0f, 1.0f, 1.0f);
+			glUniform3f(renderComp->m_Shader->GetUniform("u_Material.m_BaseColor"),1.0f, 1.0f, 1.0f);
 
 			// Draw Call
 			if (const Ref<Model> model = meshComp->GetModel())
@@ -346,6 +343,7 @@ namespace Denix
 			glUniform3f(program->GetUniform("u_DirLight.Base.Color"), lightColor.r, lightColor.g, lightColor.b);
 			glUniform1f(program->GetUniform("u_DirLight.Base.AmbientIntensity"), dirLight->GetAmbientIntensity());
 			glUniform1f(program->GetUniform("u_DirLight.Base.DiffuseIntensity"), dirLight->GetDiffuseIntensity());
+			glUniform1f(program->GetUniform("u_DirLight.Base.SpecularIntensity"), dirLight->GetSpecularIntensity());
 			glUniform3f(program->GetUniform("u_DirLight.Direction"), lightDir.x, lightDir.y, lightDir.z);
 			glUniform1i(program->GetUniform("u_DirLight.IsValid"), true);
 			const glm::vec3& transform = dirLight->GetTransformComponent()->GetPosition();
@@ -366,7 +364,8 @@ namespace Denix
 			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Color"), lightCol.r, lightCol.g, lightCol.b);
 			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.AmbientIntensity"), m_ActiveScene->m_PointLights[i]->GetAmbientIntensity());
 			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.DiffuseIntensity"), m_ActiveScene->m_PointLights[i]->GetDiffuseIntensity());
-
+			glUniform1f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.SpecularIntensity"), m_ActiveScene->m_PointLights[i]->GetSpecularIntensity());
+			
 			const glm::vec3& pos = m_ActiveScene->m_PointLights[i]->GetTransformComponent()->GetPosition();
 			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Position"), pos.x, pos.y, pos.z);
 			glUniform3f(program->GetUniform("u_PointLight[" + std::to_string(i) + "].Base.Position"), pos.x, pos.y, pos.z); // Temp to keep legacy code owrking for now

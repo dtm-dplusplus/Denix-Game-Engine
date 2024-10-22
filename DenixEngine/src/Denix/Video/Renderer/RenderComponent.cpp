@@ -10,7 +10,7 @@ namespace Denix
 	{
 		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 		m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-		m_Material = ResourceSubsystem::GetMaterial("MAT_Default");
+		m_Material = ResourceSubsystem::GetMaterial(FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset");
 	}
 
 	RenderComponent::RenderComponent(Ref<RenderComponent> _other)
@@ -27,7 +27,19 @@ namespace Denix
 	{
 		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 		m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-		m_Material = ResourceSubsystem::GetMaterial("MAT_Default");
+		m_Material =  ResourceSubsystem::GetMaterial(FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset");
+	}
+
+	void RenderComponent::SetMaterial(const Ref<Material>& _material)
+	{
+		// Check if the material is valid
+		if (!IsValid(_material))
+		{
+			DE_LOG(LogRender, Error, "Material is not valid");
+			return;
+		}
+		
+		m_Material = _material;
 	}
 
 	void RenderComponent::BeginScene()
