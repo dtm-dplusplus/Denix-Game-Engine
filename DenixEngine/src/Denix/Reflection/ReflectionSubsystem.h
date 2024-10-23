@@ -11,7 +11,7 @@ namespace Denix
     class ReflectionSubsystem: public Subsystem
     {
     public:
-        ReflectionSubsystem()
+        ReflectionSubsystem(): m_CreateFuncs{}
         {
             s_ReflectionSubsystem = this;
             DE_LOG_CREATE(LogReflection)

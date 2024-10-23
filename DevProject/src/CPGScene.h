@@ -12,4 +12,6 @@ public:
 
     void Update(float _deltaTime) override;
     bool ShowEngineContent = false;
+
+    Ref<class Ray> m_Ray;
 };

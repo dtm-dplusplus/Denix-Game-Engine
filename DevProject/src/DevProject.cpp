@@ -23,7 +23,6 @@ public:
 		Engine::Initialize();
 
 		// Add any client code once the engine has been initialized
-		//SceneSubsystem::OpenScene(ResourceSubsystem:: GetSceneStore()[0]);
 	}
 };
 

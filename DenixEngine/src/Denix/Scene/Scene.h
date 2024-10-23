@@ -119,11 +119,75 @@ namespace Denix
 		bool IsOpen() const { return m_IsOpen; }
 		bool IsPlaying() const { return m_IsPlaying; }
 
-		void SpawnSceneObject(const Ref<GameObject>& _object);
-
-		void RemoveSceneObject(const Ref<GameObject>& _object)
+		template<class T, typename ... Args>
+	Ref<T> SpawnGameObject(Args&& ... _args)
+{
+	try
+	{
+		if (Ref<T> obj = MakeRef<T>(std::forward<Args>(_args)...))
 		{
-			if (const auto it = std::ranges::find(m_SceneObjects, _object); it != m_SceneObjects.end())
+			DE_LOG(LogScene, Info, "Spawning GameObject of type: {}", typeid(T).name());
+			
+			if (m_IsOpen)
+			{
+				obj->BeginScene();
+
+				if (m_IsPlaying)
+					obj->BeginPlay();
+			}
+
+			// Type Checking for lights
+			if (typeid(PointLight) == typeid(*obj))
+			{
+				if (m_PointLights.size() < MAX_POINT_LIGHTS)
+				{
+					m_PointLights.push_back(CastRef<PointLight>(obj));
+				}
+				else
+				{
+					DE_LOG(LogScene, Warn, "Max Point Lights Reached")
+				}
+			}
+			else if (typeid(SpotLight) == typeid(*obj))
+			{
+				if (m_SpotLights.size() < MAX_SPOT_LIGHTS)
+				{
+					m_SpotLights.push_back(CastRef<SpotLight>(obj));
+				}
+				else
+				{
+					DE_LOG(LogScene, Warn, "Max Spot Lights Reached")
+				}
+			}
+			else if (typeid(DirectionalLight) == typeid(*obj))
+			{
+				// Check if the scene already has a directional light
+				if (m_DirLight)
+				{
+					DE_LOG(LogEditor, Warn, "Scene already has a directional light")
+				}
+				m_DirLight = CastRef<DirectionalLight>(obj);
+			}
+		
+			m_SceneObjects.push_back(std::move(obj));
+			
+			return obj;
+		}
+		DE_LOG(LogScene, Error, "Failed to create object of type: {}", typeid(T).name());
+	}
+			catch (const std::exception& e)
+			{
+				DE_LOG(LogScene, Error, "Failed to spawn GameObject: {}", e.what());
+			}
+			
+			return nullptr;
+		}
+		
+		void SpawnGameObject(const Ref<GameObject>& _obj);
+
+		void RemoveSceneObject(const Ref<GameObject>& obj)
+		{
+			if (const auto it = std::ranges::find(m_SceneObjects, obj); it != m_SceneObjects.end())
 			{
 				m_SceneObjects.erase(it);
 			}

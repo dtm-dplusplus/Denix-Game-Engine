@@ -28,7 +28,7 @@ namespace Denix
 		s_InputSubsystem = InputSubsystem::Get();
 		s_RendererSubsystem = RendererSubsystem::Get();
 		s_UISubsystem = UISubsystem::Get();
-
+		m_ActiveScene =s_SceneSubsystem->GetActiveScene();
 		DE_LOG(LogEditor, Info, "Editor Subsystem Initialized")
 	}
 
@@ -207,6 +207,7 @@ namespace Denix
 		// Viewport Mode
 		ImGui::Combo("Viewport Mode", &RendererSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collision\0\0");
 		
+		CameraWidget(m_ActiveScene->m_ViewportCamera);
 
 		if (ImGui::TreeNode("Scene Settings"))
 		{
@@ -214,7 +215,6 @@ namespace Denix
 			ImGui::DragFloat("Scene Gravity", &s_SceneSubsystem->m_ActiveScene->GetGravity(), DragSpeedDelta, -FLT_MAX, FLT_MAX);
 
 			// Viewport Camera Properties
-			CameraWidget(m_ActiveScene->m_ViewportCamera);
 
 			ImGui::TreePop();
 		}
@@ -785,6 +785,8 @@ namespace Denix
 
 	void EditorSubsystem::CameraWidget(const Ref<GameObject>& _camera) const
 	{
+		if(!_camera) return;
+		
 		if (const Ref<Camera> camera = CastRef<Camera>(_camera))
 		{
 			ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
@@ -817,6 +819,10 @@ namespace Denix
 
 				if (ImGui::TreeNode("Advance Camera Settings"))
 				{
+					ImGui::DragFloat3("Forward", &camera->GetCameraFront()[0], DragSpeedDelta);
+					ImGui::DragFloat3("Right", &camera->m_CameraRight[0], DragSpeedDelta);
+					ImGui::DragFloat3("Up", &camera->m_CameraUp[0], DragSpeedDelta);
+					
 					ImGui::DragFloat3("Camera Position",
 					                  &m_ActiveScene->m_ViewportCamera->GetTransformComponent()->GetPosition()[0],
 					                  DragSpeedDelta);

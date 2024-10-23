@@ -119,7 +119,7 @@ namespace Denix
 			DeserializeSceneObjects(sceneNode, sceneObjects);
 			
 			for (const auto& newGameObject : sceneObjects)
-				newScene->SpawnSceneObject(newGameObject);
+				newScene->SpawnGameObject(newGameObject);
 			
 			DE_LOG(LogScene, Info, "Deserialized scene: {}", _sceneAsset->GetAssetName())
 

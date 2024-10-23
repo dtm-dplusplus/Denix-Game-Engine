@@ -1,6 +1,7 @@
 #include "CPGScene.h"
 
 #include "imgui.h"
+#include "CPG/Ray.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include "Denix/Engine.h"
 #include "Denix/Resource/ResourceSubsystem.h"
@@ -27,6 +28,16 @@ void CPGScene::Update(float _deltaTime)
 	
 	if(ImGui::Begin(m_SceneName.c_str()))
 	{
+		ImGui::SeparatorText("Ray Tracing");
+		if (ImGui::Button("Spawn Ray"))
+		{
+			const glm::vec3& camPos = m_ActiveCamera->GetTransformComponent()->GetPosition();
+			const glm::vec3& camForward = m_ActiveCamera->GetCameraFront();
+			const glm::vec3& camRight = m_ActiveCamera->m_CameraRight;
+			m_Ray = SpawnGameObject<Ray>(camPos, glm::degrees(camForward * camRight));
+		}
+		ImGui::DragFloat("Move Speed", &Ray::m_MoveSpeed);
+		
 		ImGui::SeparatorText("Reflection");
 		for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)
 		{

@@ -50,13 +50,18 @@ namespace Denix
 
 		m_UISubsystem = InitalizeSubsystem<UISubsystem>();
 
-		m_EditorSubsystem = InitalizeSubsystem<EditorSubsystem>();
 
 		m_PhysicsSubsystem = InitalizeSubsystem<PhysicsSubsystem>();
 
+
+
 		m_InputSubsystem = InitalizeSubsystem<InputSubsystem>();
 
+
 		m_SceneSubsystem = InitalizeSubsystem<SceneSubsystem>();
+
+		m_EditorSubsystem = InitalizeSubsystem<EditorSubsystem>();
+
 
 		DE_LOG(LogEngine, Info, "Engine Initialized")
 }

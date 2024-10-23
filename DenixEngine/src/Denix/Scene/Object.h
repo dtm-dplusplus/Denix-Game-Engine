@@ -16,8 +16,8 @@ namespace Denix
 	struct ObjectInitializer
 	{
 		// Constructors
-		ObjectInitializer() = default;
-		ObjectInitializer(const std::string& _name) : Name{ _name } {}
+		ObjectInitializer(): Name{ "Object" } {}
+		ObjectInitializer(std::string _name) : Name{std::move(_name)} {}
 
 		static ObjectInitializer Get() { return { "Object" }; }
 

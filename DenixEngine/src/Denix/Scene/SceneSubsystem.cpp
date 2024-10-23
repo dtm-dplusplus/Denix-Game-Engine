@@ -31,6 +31,8 @@ namespace Denix
 		{
 			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(sceneAsset->GetAssetName())))
 			{
+				scene->m_SceneName = sceneAsset->GetAssetName();
+				scene->m_SceneAsset = sceneAsset;
 				OpenScene(scene);
 				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
 				foundStartupScene = true;
@@ -150,7 +152,7 @@ namespace Denix
 		// Set dependencies with new scene pointer
 		RendererSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
 		PhysicsSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
-		EditorSubsystem::Get()->SetActiveScene(s_SceneSubsystem->m_ActiveScene);
+		if(EditorSubsystem::Get()) EditorSubsystem::Get()->SetActiveScene(s_SceneSubsystem->m_ActiveScene);
 
 		// Begin new scene
 		s_SceneSubsystem->m_ActiveScene->BeginScene();
@@ -344,7 +346,7 @@ namespace Denix
 		DeserializeSceneObjects(sceneNode, sceneObjects);
 		
 		for (const auto& newGameObject : sceneObjects)
-			_scene->SpawnSceneObject(newGameObject);
+			_scene->SpawnGameObject(newGameObject);
 		
 		DE_LOG(LogScene, Info, "Deserialized scene: {}", _scene->GetFriendlyName())
 	}
@@ -405,7 +407,7 @@ namespace Denix
 	{
 		if (s_SceneSubsystem->m_ActiveScene)
 		{
-			s_SceneSubsystem->m_ActiveScene->SpawnSceneObject(_object);
+			s_SceneSubsystem->m_ActiveScene->SpawnGameObject(_object);
 		}
 		else
 		{

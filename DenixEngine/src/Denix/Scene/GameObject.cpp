@@ -92,6 +92,9 @@ namespace Denix
         {
             _out << YAML::Key << "m_SimulatePhysics" << YAML::Value << m_PhysicsComponent->SimulatePhysics();
             _out << YAML::Key << "m_SimulateGravity" << YAML::Value << m_PhysicsComponent->GetSimulateGravity();
+            
+            _out << YAML::Key << "m_Collider" << YAML::Value <<  "Cube"; // Temp until asset scraper built
+            
             _out << YAML::Key << "m_ColliderVisible" << YAML::Value << m_PhysicsComponent->IsColliderVisible();
             _out << YAML::Key << "m_CollisionDetectionEnabled" << YAML::Value << m_PhysicsComponent->CollisionDetectionEnabled();
             _out << YAML::Key << "m_CollisonDimesionOverride" << YAML::Value << m_PhysicsComponent->CollisionDimensionOverride();
@@ -166,6 +169,7 @@ namespace Denix
         {
             m_PhysicsComponent->SetSimulatePhysics(physicsComp["m_SimulatePhysics"].as<bool>());
             m_PhysicsComponent->SetSimulateGravity(physicsComp["m_SimulateGravity"].as<bool>());
+            m_PhysicsComponent->m_Collider = MakeRef<CubeCollider>();
             m_PhysicsComponent->IsColliderVisible() = physicsComp["m_ColliderVisible"].as<bool>();
             m_PhysicsComponent->SetCollisionDetectionEnabled(physicsComp["m_CollisionDetectionEnabled"].as<bool>());
             m_PhysicsComponent->CollisionDimensionOverride() = physicsComp["m_CollisonDimesionOverride"].as<bool>();
