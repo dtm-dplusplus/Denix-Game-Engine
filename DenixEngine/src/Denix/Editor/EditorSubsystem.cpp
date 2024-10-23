@@ -1,4 +1,3 @@
-#include "depch.h"
 #include "EditorSubsystem.h"
 
 #include "imgui.h"

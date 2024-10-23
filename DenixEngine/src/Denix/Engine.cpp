@@ -1,4 +1,3 @@
-#include "depch.h"
 #include "Engine.h"
 
 #include "Denix/System/SubSystem.h"

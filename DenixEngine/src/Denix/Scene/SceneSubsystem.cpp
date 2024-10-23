@@ -1,4 +1,3 @@
-#include "depch.h"
 #include "SceneSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
 #include "Denix/Resource/ResourceSubsystem.h"

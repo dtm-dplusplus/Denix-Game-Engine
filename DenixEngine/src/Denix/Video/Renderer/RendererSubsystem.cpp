@@ -1,4 +1,3 @@
-#include "depch.h"
 #include "RendererSubsystem.h"
 
 #include "Denix/Resource/ResourceSubsystem.h"

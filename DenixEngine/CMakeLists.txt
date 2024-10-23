@@ -60,6 +60,10 @@ include_directories(${PROJECT_NAME}
 # Create the Engine library
 add_library(DenixEngine STATIC ${SOURCE_FILES})
 
+# Add Precompiled Header - We Can add multiple precompiled headers
+target_precompile_headers(DenixEngine PUBLIC ${SOURCE_DIR}/src/depch.h)
+
+
 # Set solution folder for DenixEngine
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
 
