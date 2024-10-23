@@ -84,8 +84,10 @@ namespace Denix
 		}
 
 		s_SceneSubsystem->m_LoadedScenes[_scene->GetSceneName()] = _scene;
-		DE_LOG(LogScene, Trace, "Scene loaded: {} ", _scene->GetSceneName())
 
+		if(_scene->m_SceneAsset) DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->m_SceneAsset->GetAssetName())
+		else DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->GetSceneName())
+		
 		return true;
 	}
 	
@@ -124,7 +126,11 @@ namespace Denix
 			return;
 		}
 
-		OpenScene(_sceneAsset->GetAssetName());
+		if (const Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(_sceneAsset->GetAssetName())))
+		{
+			scene->m_SceneAsset = _sceneAsset;
+			OpenScene(scene);
+		}
 	}
 	
 	void SceneSubsystem::OpenScene(const Ref<Scene>& _scene)

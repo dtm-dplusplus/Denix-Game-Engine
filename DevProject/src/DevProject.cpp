@@ -1,5 +1,7 @@
+#include "CPGScene.h"
  #include "Denix.h"
 #include "DevScene.h"
+#include "Denix/Resource/ResourceSubsystem.h"
 
 using namespace Denix;
 
@@ -13,6 +15,7 @@ public:
 
 		m_ProjectName = "DevProject";
 		ReflectionSubsystem::Register<DevScene>();
+		ReflectionSubsystem::Register<CPGScene>();
 	}
 
 	void Initialize() override
@@ -20,7 +23,7 @@ public:
 		Engine::Initialize();
 
 		// Add any client code once the engine has been initialized
-
+		//SceneSubsystem::OpenScene(ResourceSubsystem:: GetSceneStore()[0]);
 	}
 };
 
