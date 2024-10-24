@@ -8,22 +8,20 @@
 
 namespace Denix
 {
-   
-    
+    GameObject::GameObject()
+    {
+        m_TransformComponent = AddComponent<TransformComponent>();
+        m_MeshComponent = AddComponent<MeshComponent>();
+        m_RenderComponent = AddComponent<RenderComponent>();
+        m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
+    }
+
     GameObject::GameObject(const ObjectInitializer& _object_init) : BaseObject(_object_init)
     {
-        m_TransformComponent = MakeRef<TransformComponent>(GetName());
-        m_Components["Transform"] = m_TransformComponent;
-
-        m_MeshComponent = MakeRef<MeshComponent>(GetName());
-        m_Components["Mesh"] = m_MeshComponent;
-
-        m_RenderComponent = MakeRef<RenderComponent>(GetName());
-        m_Components["Render"] = m_RenderComponent;
-
-        m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
-        m_PhysicsComponent->m_ParentTransform = m_TransformComponent;
-        m_Components["Physics"] = m_PhysicsComponent;
+        m_TransformComponent = AddComponent<TransformComponent>();
+        m_MeshComponent = AddComponent<MeshComponent>();
+        m_RenderComponent = AddComponent<RenderComponent>();
+        m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
     }
 
     void GameObject::Serialize(YAML::Emitter& _out)
@@ -192,4 +190,13 @@ namespace Denix
             
         }
     }
+
+    void GameObject::OnTriggerEnter(Ref<GameObject> _other)
+    {}
+
+    void GameObject::OnTriggerStay(Ref<GameObject> _other)
+    {}
+
+    void GameObject::OnTriggerExit(Ref<GameObject> _other)
+    {}
 }

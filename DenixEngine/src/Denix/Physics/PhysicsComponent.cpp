@@ -11,6 +11,13 @@ namespace Denix
 		m_BroadCollider->GetRadius() = 2.0f;
     }
 
+    PhysicsComponent::PhysicsComponent(const Ref<TransformComponent>& _parentTransform)
+    {
+        m_ParentTransform = _parentTransform;
+        m_BroadCollider = MakeRef<SphereCollider>();
+        m_BroadCollider->GetRadius() = 2.0f;
+    }
+
     PhysicsComponent::PhysicsComponent(const std::string& _parentName): 
         Component(_parentName, ObjectInitializer("Physics Component")), m_Collider(nullptr)
     {
@@ -104,6 +111,39 @@ namespace Denix
 
         glm::vec3 angles = GetEulerAngles(m_ParentTransform->m_RotationMatrix);
         m_ParentTransform->GetRotation() += angles;
+    }
+
+    void PhysicsComponent::Update(float _deltaTime)
+    {
+        Component::Update(_deltaTime);
+
+        m_ParentTransform->m_PhysicsRotationOverride = m_SimulatePhysics;
+
+        if (m_Collider)
+        {
+            m_Collider->m_TransformComponent->SetPosition(m_ParentTransform->GetPosition());
+
+            switch (m_Collider->GetColliderType())
+            {
+            case ColliderType::Cube:
+                {
+                    if (!m_CollisonDimesionOverride)
+                    {
+                        CastRef<CubeCollider>(m_Collider)->GetDimensions() = m_ParentTransform->GetScale();
+                    }
+                } break;
+
+            case ColliderType::Sphere:
+                {
+                    Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
+                    m_MomentOfInertia = (2.0 / 5.0) * m_Mass * pow(sphereCol->GetRadius(), 2);
+                    m_ParentTransform->SetScale(glm::vec3(sphereCol->GetRadius() * 2.0f));
+                    m_Collider->GetTransformComponent()->SetScale(m_ParentTransform->GetScale());
+                } break;
+            }
+
+            m_Collider->Update(_deltaTime);
+        }
     }
 
     void PhysicsComponent::StepSimulation(float _deltaTime)
