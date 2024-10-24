@@ -24,7 +24,30 @@ namespace Denix
 		Logger::Initialize();
 
 		// We initialize the reflection subsystem here because it is used by the client engine constructor
+		// Register all classes that need to be reflected here. This will be moved to some kind of pre build event & parser in the future
 		m_ReflectionSubsystem = InitalizeSubsystem<ReflectionSubsystem>();
+
+		// Register classes
+		ReflectionSubsystem::Register<BaseObject>();
+		ReflectionSubsystem::Register<GameObject>();
+		ReflectionSubsystem::Register<Cube>();
+		ReflectionSubsystem::Register<Sphere>();
+		ReflectionSubsystem::Register<Plane>();
+		ReflectionSubsystem::Register<TransformComponent>();
+		ReflectionSubsystem::Register<RenderComponent>();
+		ReflectionSubsystem::Register<MeshComponent>();
+		
+		ReflectionSubsystem::Register<PhysicsComponent>();
+		ReflectionSubsystem::Register<Collider>();
+		ReflectionSubsystem::Register<CubeCollider>();
+		ReflectionSubsystem::Register<SphereCollider>();
+
+		ReflectionSubsystem::Register<Light>();
+		ReflectionSubsystem::Register<DirectionalLight>();
+		ReflectionSubsystem::Register<PointLight>();
+		ReflectionSubsystem::Register<SpotLight>();
+
+		ReflectionSubsystem::Register<Camera>();
 	}
 
 	Engine::~Engine()

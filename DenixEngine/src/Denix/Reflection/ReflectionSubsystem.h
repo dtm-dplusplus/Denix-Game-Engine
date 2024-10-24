@@ -30,7 +30,15 @@ namespace Denix
         static std::string GetDEClassName()
         {
             // Remove the first 5 characters of the string "Class "
-            return static_cast<std::string>(typeid(T).name()).substr(6); 
+            std::string className = static_cast<std::string>(typeid(T).name()).substr(6);
+
+            // Remove any namespaces
+            while(className.find("::") != std::string::npos)
+            {
+                className = className.substr(className.find("::") + 2);
+            }
+            
+            return className;
         }
         
         template<typename T>
@@ -67,7 +75,5 @@ namespace Denix
         static ReflectionSubsystem* s_ReflectionSubsystem;
         
         std::map<std::string, CreateFunc> m_CreateFuncs;
-
-        
     };
 };

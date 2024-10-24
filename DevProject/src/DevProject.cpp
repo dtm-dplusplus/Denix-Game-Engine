@@ -3,7 +3,7 @@
 #include "DevScene.h"
 #include "Denix/Resource/ResourceSubsystem.h"
 
-using namespace Denix;
+//using namespace Denix;
 
 class DevProject final: public Engine
 {

@@ -1,16 +1,28 @@
 ﻿#pragma once
 
 #include "Object.h"
-#include <yaml-cpp/node/node.h>
-#include <yaml-cpp/emitter.h>
-#include "Denix/Core/YAMLHelper.h"
+
+namespace YAML
+{
+     class Node;
+     class Emitter;
+}
 
 namespace Denix
 {
+    
+    /** 
+     *  BaseObject defines an object that can be serialized, deserialized, and reflected via th Reflection Subsystem
+     *  
+     */
     class BaseObject: public Object
     {
     public:
-        BaseObject(const ObjectInitializer& _objInit = ObjectInitializer::Get()): Object(_objInit){}
+        BaseObject() : Object(ObjectInitializer::Get())
+        {
+        }
+
+        BaseObject(const ObjectInitializer& _objInit): Object(_objInit){}
         ~BaseObject() override = default;
 
         /*BaseObject(const BaseObject& _other)
@@ -50,8 +62,11 @@ namespace Denix
         virtual void BeginScene() {}
         virtual void EndScene() {}
 
+        
         virtual void Serialize(YAML::Emitter& _out);
         virtual void Deserialize(const YAML::Node& _in);
-    
+
+    protected:
+        std::string m_ClassName;
     };
 }
