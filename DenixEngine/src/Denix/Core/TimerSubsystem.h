@@ -2,7 +2,10 @@
 
 #include "Denix/System/Subsystem.h"
 #include "Denix/Core/Logger.h"
-#include <chrono>
+#include "Timer.h"
+
+#include "Denix/Core.h"
+
 
 namespace Denix
 {
@@ -38,7 +41,8 @@ namespace Denix
 		float m_DeltaTime;
 		float m_GameTimeSpeed;
 
-
+		std::vector<Ref<Timer>> m_Timers;
+		
 		friend class Engine;
 	};
 }

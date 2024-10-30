@@ -20,7 +20,7 @@ namespace Denix
 	Engine::Engine()
 	{
 		s_Engine = this;
-
+		m_StartupScene = nullptr;
 		Logger::Initialize();
 
 		// We initialize the reflection subsystem here because it is used by the client engine constructor
@@ -65,6 +65,9 @@ namespace Denix
 
 		m_FileSubsystem = InitalizeSubsystem<FileSubsystem>(m_ProjectName);
 
+		// Check Engine Config
+		LoadConfig();
+
 		m_WindowSubsystem = InitalizeSubsystem<WindowSubsystem>();
 
 		m_RendererSubsystem = InitalizeSubsystem<RendererSubsystem>();
@@ -76,12 +79,10 @@ namespace Denix
 
 		m_PhysicsSubsystem = InitalizeSubsystem<PhysicsSubsystem>();
 
-
-
 		m_InputSubsystem = InitalizeSubsystem<InputSubsystem>();
 
 
-		m_SceneSubsystem = InitalizeSubsystem<SceneSubsystem>();
+		m_SceneSubsystem = InitalizeSubsystem<SceneSubsystem>(m_StartupScene);
 
 		m_EditorSubsystem = InitalizeSubsystem<EditorSubsystem>();
 
@@ -153,6 +154,14 @@ namespace Denix
 
 	void Engine::LoadConfig()
 	{
+		std::string cfgPath = m_FileSubsystem->m_ProjectRoot + "Config\\Engine.cfg";
+		if(YAML::Node cfg = YAML::LoadFile(cfgPath))
+		{
+			if(const std::string startupScene = cfg["Startup Scene"].as<std::string>(); !startupScene.empty())
+			{ 
+				m_StartupScene = MakeRef<Asset>(startupScene);
+			}
+		}
 	}
 
 	void Engine::SaveConfig()

@@ -9,15 +9,15 @@
 #include "yaml-cpp/yaml.h"
 #include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
+#include "Denix/Core/Timer.h"
 
 using namespace Denix;
 
 
 CPGScene::CPGScene(const Ref<Asset>& _sceneAsset): Scene(_sceneAsset)
 {
+	
 }
-
-
 
 void CPGScene::Update(float _deltaTime)
 {
@@ -25,9 +25,23 @@ void CPGScene::Update(float _deltaTime)
 
 	// This should be done on a timer to check for new assets
 	ShowEngineContent = false;
+
+	
 	
 	if(ImGui::Begin(m_SceneName.c_str()))
 	{
+		if(ImGui::Button("Start Timer"))
+		{
+			SceneTimer = MakeRef<Timer>(ObjectInitializer("SceneTimer"));
+			SceneTimer->Start();
+		}
+		
+		if(ImGui::Button("End Timer"))
+		{
+			SceneTimer->Stop();
+			DE_LOG(Log, Info, "Time Elapsed: {}", SceneTimer->m_Duration)
+		}
+	
 		ImGui::SeparatorText("Ray Tracing");
 		if (ImGui::Button("Spawn Ray"))
 		{

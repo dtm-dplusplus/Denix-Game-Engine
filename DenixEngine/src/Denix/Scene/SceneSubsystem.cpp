@@ -7,6 +7,7 @@
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
 #include "Denix/Resource/Asset.h"
+#include "Denix/Engine.h"
 
 namespace Denix
 {
@@ -16,14 +17,16 @@ namespace Denix
 	{
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
 
-		// Set the startup scene
-		bool foundStartupScene = false;
-		
 		// Check engine config for startup scene
-		if(false)
+		if(m_StartupScene && FileSubsystem::FileExists(m_StartupScene->GetAssetPath()))
 		{
-			// Engine config stuff
-			foundStartupScene = true;
+			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(m_StartupScene->GetAssetName())))
+			{
+				scene->m_SceneName = m_StartupScene->GetAssetName();
+				scene->m_SceneAsset =m_StartupScene;
+				OpenScene(scene);
+				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
+			}
 		}
 
 		// Search Resources for scenes
@@ -35,7 +38,6 @@ namespace Denix
 				scene->m_SceneAsset = sceneAsset;
 				OpenScene(scene);
 				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
-				foundStartupScene = true;
 			}
 		}
 		

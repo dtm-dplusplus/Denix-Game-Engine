@@ -35,55 +35,6 @@ namespace Denix
 			m_FriendlyName{ _object_init.Name },
 			m_Name{ std::to_string(m_ID) + "_" + m_FriendlyName } {}
     	
-		/*Object(const Object& _other)
-			: m_ID(_other.m_ID),
-			  m_FriendlyName(_other.m_FriendlyName),
-			  m_Name(_other.m_Name),
-			  m_IsRubbish(_other.m_IsRubbish)
-		{
-		}
-
-		Object(Object&& _other) noexcept
-			: m_ID(_other.m_ID),
-			  m_FriendlyName(std::move(_other.m_FriendlyName)),
-			  m_Name(std::move(_other.m_Name)),
-			  m_IsRubbish(_other.m_IsRubbish)
-		{
-		}
-
-		Object& operator=(const Object& _other)
-		{
-			if (this == &_other)
-				return *this;
-			m_ID = _other.m_ID;
-			m_FriendlyName = _other.m_FriendlyName;
-			m_Name = _other.m_Name;
-			m_IsRubbish = _other.m_IsRubbish;
-			return *this;
-		}
-
-		Object& operator=(Object&& _other) noexcept
-		{
-			if (this == &_other)
-				return *this;
-			m_ID = _other.m_ID;
-			m_FriendlyName = std::move(_other.m_FriendlyName);
-			m_Name = std::move(_other.m_Name);
-			m_IsRubbish = _other.m_IsRubbish;
-			return *this;
-		}*/
-
-		// Create Object
-		static Ref<Object> Create()
-		{
-			return MakeRef<Object>();
-		}
-
-		static Ref<Object> Create(const ObjectInitializer& _object_init = ObjectInitializer::Get())
-		{
-			return MakeRef<Object>(_object_init);
-		}
-
 		// Destructors
 		virtual ~Object() = default;
 

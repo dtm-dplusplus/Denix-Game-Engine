@@ -18,10 +18,10 @@ namespace Denix
 	class SceneSubsystem: public Subsystem
 	{
 	public:
-		SceneSubsystem()
+		SceneSubsystem(const Ref<Asset>& _startupScene = nullptr)
 		{
 			s_SceneSubsystem = this;
-
+			m_StartupScene = _startupScene;
 			DE_LOG_CREATE(LogScene)
 			DE_LOG_CREATE(LogScene)
 			DE_LOG_CREATE(LogObject)
@@ -83,6 +83,8 @@ namespace Denix
 	private:
 		static SceneSubsystem* s_SceneSubsystem;
 
+		Ref<Asset> m_StartupScene;
+		
 		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
 
 		Ref<Scene> m_ActiveScene;

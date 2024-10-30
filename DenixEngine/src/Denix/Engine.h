@@ -7,6 +7,7 @@ int main(int argc, char** argv);
 
 namespace Denix
 {
+    class Asset;
     class Subsystem;
     class ReflectionSubsystem;
     class InputSubsystem;
@@ -45,7 +46,8 @@ namespace Denix
 
     protected:
         std::string m_ProjectName;
-
+        Ref<Asset> m_StartupScene;
+        
     private:
         static Engine* s_Engine;
 
