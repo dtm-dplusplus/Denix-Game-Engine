@@ -26,30 +26,45 @@ void CPGScene::Update(float _deltaTime)
 
 	// This should be done on a timer to check for new assets
 	ShowEngineContent = false;
-
-	
 	
 	if(ImGui::Begin(m_SceneName.c_str()))
 	{
-		ImGui::SeparatorText("Profiler");
-		ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
-		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
-		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
-		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+		 if(ImGui::Button("Spawn Cube"))
+		 {
+		 	for (int i = 0; i < 25; ++i)
+		 	{
+		 		for (int j = 0; j < 25; ++j)
+		 		{
+		 			// Calculate the position for each cube
+		 			glm::vec3 position(i * 2.5, j * 2.5f, 0.0f);
+		 			
+		 			// Spawn the cube at the calculated position
+		 			SpawnGameObject<Cube>(position);
+		 		}
+		 	}
+		 }
 		
-		for (const auto& [name, profile] : ProfileSubsystem::Get()->GetProfiles())
+		if(ImGui::CollapsingHeader("Profiler"))
 		{
-			//ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-			if(ImGui::TreeNode(name.c_str()))
+			ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
+			ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
+			ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
+			ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+		
+			for (const auto& [name, profile] : ProfileSubsystem::Get()->GetProfiles())
 			{
-				ImGui::Text("Frame Percentage: %f", profile->m_FramePercentage);
-				ImGui::Text("Duration: %fms", profile->GetDuration());
-				ImGui::Text("Average Duration: %fms", profile->m_AverageDuration);
-				if(ImGui::DragInt("Average Duration Count", &profile->m_AverageDurationCount, 1.0f, 3, 100))
+				//ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+				if(ImGui::TreeNode(name.c_str()))
 				{
-					profile->m_DurationRecords.resize(profile->m_AverageDurationCount);
+					ImGui::Text("Frame Percentage: %f", profile->m_FramePercentage);
+					ImGui::Text("Duration: %fms", profile->GetDuration());
+					ImGui::Text("Average Duration: %fms", profile->m_AverageDuration);
+					if(ImGui::DragInt("Average Duration Count", &profile->m_AverageDurationCount, 1.0f, 3, 100))
+					{
+						profile->m_DurationRecords.resize(profile->m_AverageDurationCount);
+					}
+					ImGui::TreePop();
 				}
-				ImGui::TreePop();
 			}
 		}
 	
@@ -63,10 +78,12 @@ void CPGScene::Update(float _deltaTime)
 		}
 		ImGui::DragFloat("Move Speed", &Ray::m_MoveSpeed);*/
 		
-		ImGui::SeparatorText("Reflection");
-		for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)
+		if(ImGui::CollapsingHeader("Reflection"))
 		{
-			ImGui::Text(key.c_str());
+			for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)
+			{
+				ImGui::Text(key.c_str());
+			}
 		}
 		
 		if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
@@ -76,67 +93,60 @@ void CPGScene::Update(float _deltaTime)
 			ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
 			ImGui::Checkbox("Show engine content", &ShowEngineContent);
 
-		if (ImGui::Button("Save Config"))
-		{
-			Engine::Get().SaveConfig();
-		} 
+			if (ImGui::Button("Save Config"))
+			{
+				Engine::Get().SaveConfig();
+			} 
 		}
 
-		ImGui::SeparatorText("Assets");
-		if (ImGui::TreeNode("Materials"))
+		if(ImGui::CollapsingHeader("Assets"))
 		{
-			for (const auto& mat : ResourceSubsystem::GetMaterialStore())
+			if (ImGui::TreeNode("Materials"))
 			{
-				ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
-			}
-			ImGui::TreePop();
-		}
-
-		if (ImGui::TreeNode("Scenes"))
-		{
-			for (const auto& scene : ResourceSubsystem::GetSceneStore())
-			{
-				ImGui::Text(scene->GetAssetName().c_str());
-
-				if(ImGui::Button("Set as startup scene"))
+				for (const auto& mat : ResourceSubsystem::GetMaterialStore())
 				{
-					Engine::Get().SetStartupScene(m_SceneAsset);
+					ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
 				}
-				if (ImGui::Button("Open"))
-				{
-					SceneSubsystem::OpenScene(scene);
-				}
-				ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
+				ImGui::TreePop();
 			}
-			ImGui::TreePop();
-		}
-	
-		if(ImGui::Button("Save Scene"))
-		{
-			SceneSubsystem::SerializeScene(this);
 
-			for(const auto& mat: ResourceSubsystem::GetMaterialStore())
+			if (ImGui::TreeNode("Scenes"))
 			{
-				// Save Changes to asset - This should be done in the editor
-				YAML::Emitter matAsssetEmitter;
-				matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
-				matAsssetEmitter << YAML::BeginMap;
-				mat.second->Serialize(matAsssetEmitter);
-				matAsssetEmitter << YAML::EndMap;
+				if(ImGui::Button("Save Scene"))
+				{
+					SceneSubsystem::SerializeScene(this);
+
+					for(const auto& mat: ResourceSubsystem::GetMaterialStore())
+					{
+						// Save Changes to asset - This should be done in the editor
+						YAML::Emitter matAsssetEmitter;
+						matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
+						matAsssetEmitter << YAML::BeginMap;
+						mat.second->Serialize(matAsssetEmitter);
+						matAsssetEmitter << YAML::EndMap;
                 
-				FileSubsystem::WriteFile(mat.second->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
-				DE_LOG(LogScene, Info, "Serialized Material");
+						FileSubsystem::WriteFile(mat.second->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
+						DE_LOG(LogScene, Info, "Serialized Material");
+					}
+				}
+				for (const auto& scene : ResourceSubsystem::GetSceneStore())
+				{
+					ImGui::Text(scene->GetAssetName().c_str());
+
+					if(ImGui::Button("Set as startup scene"))
+					{
+						Engine::Get().SetStartupScene(m_SceneAsset);
+					}
+					if (ImGui::Button("Open"))
+					{
+						SceneSubsystem::OpenScene(scene);
+					}
+					ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
+				}
+				ImGui::TreePop();
 			}
 		}
 
-		if (ImGui::Button("Load Scene"))
-		{
-			if(Ref<Scene> newScene = SceneSubsystem::DeserializeScene<CPGScene>(m_SceneAsset))
-			{
-				SceneSubsystem::OpenScene(newScene);
-			}
-		}
-	
 		ImGui::End();
 	}
 }
