@@ -97,7 +97,7 @@ namespace Denix
 
 		// Timer
 		bool m_IsTimerSettingsOpen = false;
-		void TimerSettings();
+		static void TimerSettings();
 
 		// Menu Bar
 		void MenuBar();

@@ -20,7 +20,8 @@ namespace Denix
     class FileSubsystem;
     class WindowSubsystem;
     class TimerSubsystem;
-
+    class ProfileSubsystem;
+    
     class Engine
     {
     public:
@@ -39,6 +40,8 @@ namespace Denix
         void Run();
         void LoadConfig();
         void SaveConfig();
+        Ref<Asset> GetStartupScene() const;
+        void SetStartupScene(const Ref<Asset>& _ref);
 
         static Engine& Get() { return *s_Engine; }
 
@@ -71,32 +74,33 @@ namespace Denix
             return subsystem;
         }
 
-    // Usufeul vector for deinitializing subsystems in reverse order
-    std::vector<Subsystem*> m_Subsystems;
+        // Usufeul vector for deinitializing subsystems in reverse order
+        std::vector<Subsystem*> m_Subsystems;
 
-    URef<TimerSubsystem> m_TimerSubsystem;
+        URef<TimerSubsystem> m_TimerSubsystem;
 
-    URef<ReflectionSubsystem> m_ReflectionSubsystem;
+        URef<ReflectionSubsystem> m_ReflectionSubsystem;
 
-    URef<WindowSubsystem> m_WindowSubsystem;
+        URef<FileSubsystem> m_FileSubsystem;
+        URef<ProfileSubsystem> m_ProfileSubsystem;
 
-    URef<FileSubsystem> m_FileSubsystem;
+        URef<WindowSubsystem> m_WindowSubsystem;
 
-    URef<ResourceSubsystem> m_ResourceSubsystem;
+        URef<ResourceSubsystem> m_ResourceSubsystem;
 
-    URef<SceneSubsystem> m_SceneSubsystem;
+        URef<SceneSubsystem> m_SceneSubsystem;
 
-    URef<PhysicsSubsystem> m_PhysicsSubsystem;
+        URef<PhysicsSubsystem> m_PhysicsSubsystem;
 
-    URef<UISubsystem> m_UISubsystem;
+        URef<UISubsystem> m_UISubsystem;
 
-    URef<RendererSubsystem> m_RendererSubsystem;
+        URef<RendererSubsystem> m_RendererSubsystem;
 
-    URef<EditorSubsystem> m_EditorSubsystem;
+        URef<EditorSubsystem> m_EditorSubsystem;
 
-    URef<InputSubsystem> m_InputSubsystem;
+        URef<InputSubsystem> m_InputSubsystem;
 
-    friend int ::main(int argc, char** argv);
+        friend int ::main(int argc, char** argv);
     };
 
     // Defined in client

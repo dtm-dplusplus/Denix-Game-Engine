@@ -51,26 +51,6 @@ void DevScene::Update(float _deltaTime)
 			ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
 			ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
 			ImGui::Checkbox("Show engine content", &ShowEngineContent);
-		
-			if (ImGui::Button("Save Config"))
-			{
-				Engine::Get().SaveConfig();
-
-				std::string path = FileSubsystem::GetContentRoot() + "Scene\\CPGScene.asset";
-				std::string cfgPath = FileSubsystem::GetProjectRoot() + "Config\\Engine.cfg";
-				
-				YAML::Emitter cfgEmitter;
-				cfgEmitter << YAML::Comment("DENIX ENGINE CONFIGURATION");
-				cfgEmitter << YAML::BeginMap;
-				cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << path;
-				cfgEmitter << YAML::EndMap;
-				FileSubsystem::WriteFile(cfgPath, cfgEmitter.c_str());
-				
-			} ImGui::SameLine();
-			if (ImGui::Button("Load Config"))
-			{
-				Engine::Get().LoadConfig();
-			}
 		}
 
 		ImGui::SeparatorText("Assets");

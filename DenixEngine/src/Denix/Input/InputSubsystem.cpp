@@ -25,6 +25,13 @@ namespace Denix
 		Subsystem::Deinitialize();
 	}
 
+	void InputSubsystem::Update(float _deltaTime)
+	{
+		Subsystem::Update(_deltaTime);
+
+		Poll();
+	}
+
 	void InputSubsystem::Poll()
 	{
 		//m_Event = SDL_Event();

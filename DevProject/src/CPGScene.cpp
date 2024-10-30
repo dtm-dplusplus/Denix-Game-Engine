@@ -7,9 +7,10 @@
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "yaml-cpp/yaml.h"
-#include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
+#include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Core/Timer.h"
+#include "Denix/Core/TimerSubsystem.h"
 
 using namespace Denix;
 
@@ -30,19 +31,29 @@ void CPGScene::Update(float _deltaTime)
 	
 	if(ImGui::Begin(m_SceneName.c_str()))
 	{
-		if(ImGui::Button("Start Timer"))
-		{
-			SceneTimer = MakeRef<Timer>(ObjectInitializer("SceneTimer"));
-			SceneTimer->Start();
-		}
+		ImGui::SeparatorText("Profiler");
+		ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
+		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
+		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
+		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
 		
-		if(ImGui::Button("End Timer"))
+		for (const auto& [name, profile] : ProfileSubsystem::Get()->GetProfiles())
 		{
-			SceneTimer->Stop();
-			DE_LOG(Log, Info, "Time Elapsed: {}", SceneTimer->m_Duration)
+			//ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+			if(ImGui::TreeNode(name.c_str()))
+			{
+				ImGui::Text("Frame Percentage: %f", profile->m_FramePercentage);
+				ImGui::Text("Duration: %fms", profile->GetDuration());
+				ImGui::Text("Average Duration: %fms", profile->m_AverageDuration);
+				if(ImGui::DragInt("Average Duration Count", &profile->m_AverageDurationCount, 1.0f, 3, 100))
+				{
+					profile->m_DurationRecords.resize(profile->m_AverageDurationCount);
+				}
+				ImGui::TreePop();
+			}
 		}
 	
-		ImGui::SeparatorText("Ray Tracing");
+		/*ImGui::SeparatorText("Ray Tracing");
 		if (ImGui::Button("Spawn Ray"))
 		{
 			const glm::vec3& camPos = m_ActiveCamera->GetTransformComponent()->GetPosition();
@@ -50,7 +61,7 @@ void CPGScene::Update(float _deltaTime)
 			const glm::vec3& camRight = m_ActiveCamera->m_CameraRight;
 			m_Ray = SpawnGameObject<Ray>(camPos, glm::degrees(camForward * camRight));
 		}
-		ImGui::DragFloat("Move Speed", &Ray::m_MoveSpeed);
+		ImGui::DragFloat("Move Speed", &Ray::m_MoveSpeed);*/
 		
 		ImGui::SeparatorText("Reflection");
 		for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)
@@ -64,16 +75,11 @@ void CPGScene::Update(float _deltaTime)
 			ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
 			ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
 			ImGui::Checkbox("Show engine content", &ShowEngineContent);
-		
-			if (ImGui::Button("Save Config"))
-			{
-				Engine::Get().SaveConfig();
 
-			} ImGui::SameLine();
-			if (ImGui::Button("Load Config"))
-			{
-				Engine::Get().LoadConfig();
-			}
+		if (ImGui::Button("Save Config"))
+		{
+			Engine::Get().SaveConfig();
+		} 
 		}
 
 		ImGui::SeparatorText("Assets");
@@ -91,7 +97,11 @@ void CPGScene::Update(float _deltaTime)
 			for (const auto& scene : ResourceSubsystem::GetSceneStore())
 			{
 				ImGui::Text(scene->GetAssetName().c_str());
-				
+
+				if(ImGui::Button("Set as startup scene"))
+				{
+					Engine::Get().SetStartupScene(m_SceneAsset);
+				}
 				if (ImGui::Button("Open"))
 				{
 					SceneSubsystem::OpenScene(scene);

@@ -27,6 +27,7 @@ namespace Denix
 		void EndFrame();
 
 		static int GetFPS();
+		static int& GetMaxFPS() { return s_TimerSubsystem->m_MaxFPS; }
 		static float GetFrameTime();
 		static float GetFrameTimeMs();
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
@@ -41,6 +42,12 @@ namespace Denix
 		float m_DeltaTime;
 		float m_GameTimeSpeed;
 
+		
+		/**
+		 * Maximum frames per second
+		 */
+		int m_MaxFPS;
+		
 		std::vector<Ref<Timer>> m_Timers;
 		
 		friend class Engine;

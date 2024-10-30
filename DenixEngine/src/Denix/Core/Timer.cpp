@@ -15,11 +15,6 @@ namespace Denix
     void Timer::Stop()
     {
         m_EndTime = std::chrono::system_clock::now();
-       m_Duration = std::chrono::duration<float>(m_EndTime - m_StartTime).count();
-    }
-
-    float Timer::GetElapsedTime()
-    {
-       return m_Duration;
+       m_Duration = std::chrono::duration<float>(m_EndTime - m_StartTime);
     }
 }

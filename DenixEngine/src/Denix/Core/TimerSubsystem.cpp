@@ -4,10 +4,15 @@ namespace Denix
 {
 	TimerSubsystem* TimerSubsystem::s_TimerSubsystem{ nullptr };
 
-	TimerSubsystem::TimerSubsystem() : m_FrameTimeS{ 0.33f }, m_FramesPerSecond{ 30 }, m_GameTimeSpeed{ 1.0f }
+	TimerSubsystem::TimerSubsystem()
 	{
+		s_TimerSubsystem = this;
 		DE_LOG_CREATE(LogTimer)
-			s_TimerSubsystem = this;
+
+		m_FrameTimeS = 0.33f;
+		m_FramesPerSecond = 30;
+		m_GameTimeSpeed = 1.0f;
+		m_MaxFPS = 60;
 	}
 
 	TimerSubsystem::~TimerSubsystem()
@@ -34,8 +39,9 @@ namespace Denix
 
 	void TimerSubsystem::EndFrame()
 	{
+		// This really needs to be tidied up
 		end = std::chrono::system_clock::now();
-		std::chrono::duration<double> duration = end - start;
+		std::chrono::duration<float> duration = end - start;
 		m_FrameTimeS = duration.count();
 		m_FrameTimeMs = m_FrameTimeS * 1000.0f;
 		m_DeltaTime = m_GameTimeSpeed * m_FrameTimeS;
@@ -45,13 +51,19 @@ namespace Denix
 
 		static float timeInFrame = 0.0f;
 		timeInFrame += m_FrameTimeS;
-
+		
 		if (timeInFrame >= 1.0f)
 		{
 			m_FramesPerSecond = frameCounter;
 			frameCounter = 0;
 			timeInFrame = 0.0f;
 		}
+
+		// Enforce a maximum frame rate
+		//if (frameCounter > m_MaxFPS && m_MaxFPS > 0 && timeInFrame < 1.0f) 
+		//{
+		//	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((1.0f - timeInFrame) * 1000.0f)));
+		//}
 	}
 
 	int TimerSubsystem::GetFPS()
