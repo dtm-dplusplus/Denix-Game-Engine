@@ -18,14 +18,7 @@ namespace Denix
 	class SceneSubsystem: public Subsystem
 	{
 	public:
-		SceneSubsystem(const Ref<Asset>& _startupScene = nullptr)
-		{
-			s_SceneSubsystem = this;
-			m_StartupScene = _startupScene;
-			DE_LOG_CREATE(LogScene)
-			DE_LOG_CREATE(LogScene)
-			DE_LOG_CREATE(LogObject)
-		}
+		SceneSubsystem(const Ref<Asset>& _startupScene = nullptr);
 
 		~SceneSubsystem() override
 		{
@@ -36,12 +29,14 @@ namespace Denix
 
 		
 		void CleanRubbish();
+		bool m_SceneThreaded = false;
 
 	public:
 		void Initialize() override;
 
 		void Deinitialize() override;
 
+		void ThreadedSceneUpdate(float _deltaTime);
 		void Update(float _deltaTime) override;
 
 		static bool SerializeScene(const Scene* _scene);

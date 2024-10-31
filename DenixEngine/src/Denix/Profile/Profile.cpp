@@ -7,6 +7,9 @@ namespace Denix
     {
         m_Timer = MakeRef<Timer>(_objInit);
         m_DurationCount = 0;
+        m_AverageDuration = 0.0f;
+        m_MinimumDuration = 0.0f;
+        m_MaximumDuration = 0.0f;
         m_AverageDurationCount = 60;
         m_DurationRecords.assign(m_AverageDurationCount, 0.0f);
     }
@@ -19,8 +22,18 @@ namespace Denix
     void Profile::End()
     {
         m_Timer->Stop();
-        m_DurationRecords[m_DurationCount++] = m_Timer->GetDuration<std::milli>();
 
+        // Record the duration
+        m_DurationRecords[m_DurationCount] = m_Timer->GetDuration<std::milli>();
+
+        // Update the minimum and maximum durations
+        if (m_DurationRecords[m_DurationCount] < m_MinimumDuration || m_MinimumDuration == 0.0f)
+            m_MinimumDuration = m_DurationRecords[m_DurationCount];
+
+        if (m_DurationRecords[m_DurationCount] > m_MaximumDuration)
+            m_MaximumDuration = m_DurationRecords[m_DurationCount];
+        
+        m_DurationCount++;
         // Calculate the average duration
         if (m_DurationCount >= m_AverageDurationCount)
         {
@@ -34,5 +47,6 @@ namespace Denix
 
     float Profile::GetDuration() const
     {
-        return m_DurationRecords[m_DurationCount]; }
+        return m_DurationRecords[m_DurationCount];
+    }
 }

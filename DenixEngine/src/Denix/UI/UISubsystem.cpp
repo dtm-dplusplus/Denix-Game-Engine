@@ -16,7 +16,7 @@ namespace Denix
 	{
 		s_UISubSystem = this;
 
-		DE_LOG_CREATE(LogUISubsystem)
+		DE_LOG_CREATE(LogUI)
 	}
 
 	UISubsystem::~UISubsystem()
@@ -28,11 +28,12 @@ namespace Denix
 	void UISubsystem::Initialize()
 	{
 		Subsystem::Initialize();
-		DE_LOG(LogUISubsystem, Warn, "Starting UI Subsystem")
+		DE_LOG(LogUI, Warn, "UI Subsystem Initializing")
 		
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
+		ImPlot::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -60,13 +61,14 @@ namespace Denix
 			throw std::runtime_error("ImGui_ImplOpenGL3_Init failed");
 		}
 		
-		DE_LOG(LogUISubsystem, Info, "UI Subsystem Initialized")
+		DE_LOG(LogUI, Info, "UI Subsystem Initialized")
 	}
 
 	void UISubsystem::Deinitialize()
 	{
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplSDL3_Shutdown();
+		ImPlot::DestroyContext();
 		ImGui::DestroyContext();
 	}
 	void UISubsystem::Update(float _deltaTime)

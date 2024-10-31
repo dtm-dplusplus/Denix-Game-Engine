@@ -24,6 +24,7 @@ namespace Denix
 	{
 		Subsystem::Initialize();
 		DE_LOG(LogTimer, Warn, "Initializing TimerSubsystem")
+		m_FrameTimer = MakeRef<Timer>(ObjectInitializer("FrameTimer"), true);
 		DE_LOG(LogTimer, Info, "TimerSubsystem Initialized")
 	}
 

@@ -1,11 +1,8 @@
 ﻿#pragma once
 
 #include "Denix/System/Subsystem.h"
-#include "Denix/Core/Logger.h"
-#include "Timer.h"
-
 #include "Denix/Core.h"
-
+#include "Timer.h"
 
 namespace Denix
 {
@@ -26,11 +23,19 @@ namespace Denix
 
 		void EndFrame();
 
+		template<typename Period = std::chrono::seconds>
+		static float GetProgramElapsedTime()
+		{
+			return s_TimerSubsystem->m_FrameTimer->GetElapsed<Period>();
+		}
+		
 		static int GetFPS();
 		static int& GetMaxFPS() { return s_TimerSubsystem->m_MaxFPS; }
 		static float GetFrameTime();
 		static float GetFrameTimeMs();
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
+
+		Ref<Timer> m_FrameTimer;
 	private:
 		static TimerSubsystem* s_TimerSubsystem;
 
@@ -47,6 +52,7 @@ namespace Denix
 		 * Maximum frames per second
 		 */
 		int m_MaxFPS;
+
 		
 		std::vector<Ref<Timer>> m_Timers;
 		

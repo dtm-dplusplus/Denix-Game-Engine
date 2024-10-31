@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "implot.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/Physics/Collider.h"
 #include "Denix/Resource/ResourceSubsystem.h"
@@ -150,6 +151,10 @@ namespace Denix
 			{
 				ImGui::Checkbox("Show Demo Window", &ShowDemoWindow);
 				if (ShowDemoWindow) ImGui::ShowDemoWindow(&ShowDemoWindow);
+
+				ImGui::Checkbox("Show Plot Demo Window", &ShowPlotDemoWindow);
+				if (ShowPlotDemoWindow) ImPlot::ShowDemoWindow(&ShowPlotDemoWindow);
+					
 				ImGui::DragFloat("UI Drag Speed", &DragSpeed, DragSpeed, 0.1f, 10.0f);
 
 				ImGui::ColorEdit4("Clear Color", &s_WindowSubsystem->GetWindow()->GetClearColor()[0]);

@@ -56,7 +56,6 @@ namespace Denix
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitialized")
 	}
 
-
 	Ref<Camera> SceneSubsystem::GetActiveCamera() const
 	{
 		if (m_ActiveScene)
@@ -207,6 +206,17 @@ namespace Denix
 		DE_LOG(LogScene, Trace, "Scene Paused")
 	}
 
+	SceneSubsystem::SceneSubsystem(const Ref<Asset>& _startupScene)
+	{
+		s_SceneSubsystem = this;
+		m_StartupScene = _startupScene;
+		m_SceneThreaded = true;
+		
+		DE_LOG_CREATE(LogScene)
+		DE_LOG_CREATE(LogScene)
+		DE_LOG_CREATE(LogObject)
+	}
+
 	void SceneSubsystem::CleanRubbish()
 	{
 		// Cleanup rubbish objects here. TEMP loop, will be moved to a queue
@@ -247,6 +257,13 @@ namespace Denix
 
 	void SceneSubsystem::Update(float _deltaTime)
 	{
+		// Validate Scene
+		if (!m_ActiveScene)
+		{
+			DE_LOG(LogScene, Error, "No active scene")
+			return;
+		}
+		
 		if (m_ActiveScene->m_RequestStop)
 		{
 			StopScene();
@@ -266,11 +283,60 @@ namespace Denix
 			cam->Update(_deltaTime);
 		}
 
-		// Scene update implementation 
+		// Scene update implementation
+		if (m_SceneThreaded)
+		{
+			// Threaded Scene Update
+			ThreadedSceneUpdate(_deltaTime);
+		}
+		else
+		{
+			// Single Threaded Scene Update
+			for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
+			{
+				// Update the GameObject -  This will always be here
+				gameObject->Update(_deltaTime);
+			}
+		}
+		
+		
+		// Client Scene Update
 		m_ActiveScene->Update(_deltaTime);
+		
 		if(m_ActiveScene->IsPlaying()) m_ActiveScene->Update(_deltaTime);
 	}
 
+	void SceneSubsystem::ThreadedSceneUpdate(float _deltaTime)
+	{
+		std::vector<Ref<GameObject>>& sceneObjects = m_ActiveScene->m_SceneObjects;
+		
+		auto updateFunction = [_deltaTime](const std::vector<Ref<GameObject>>::iterator& _begin, const std::vector<Ref<GameObject>>::iterator& _end)
+		{
+			for (auto it = _begin; it != _end; ++it)
+			{
+				// Render the GameObject
+				(*it)->Update(_deltaTime);
+			}
+		};
+
+		// Get number of threads
+		size_t threadCount = std::thread::hardware_concurrency();
+		if (threadCount == 0) threadCount = 2; // Fallback to 2 threads if hardware_concurrency() returns 0
+		
+		std::vector<std::thread> threads;
+		unsigned int chunkSize = (sceneObjects.size() + threadCount - 1) / threadCount; // Calculate chunk size
+
+		for (unsigned int i = 0; i < threadCount; ++i)
+		{
+			auto start = sceneObjects.begin() + i * chunkSize;
+			size_t chunkEnd = std::distance(sceneObjects.begin(), start) + chunkSize;
+			auto end = chunkEnd < sceneObjects.size()? sceneObjects.begin() + chunkEnd : sceneObjects.end();
+			if (start < end) threads.emplace_back(updateFunction, start, end);
+		}
+
+		for (std::thread &thread : threads) if (thread.joinable()) thread.join();
+	}
+	
 	bool SceneSubsystem::SerializeScene(const Scene* _scene)
 	{
 		// Check if the pointer is valid

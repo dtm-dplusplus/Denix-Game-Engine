@@ -75,6 +75,7 @@ namespace Denix
 		int m_ObjectSelection = 0;
 		bool ScenePanelOpen = true;
 		bool ShowDemoWindow = false;
+		bool ShowPlotDemoWindow = false;
 		float WinX = 0.0f;
 		float WinY = 0.0f;
 

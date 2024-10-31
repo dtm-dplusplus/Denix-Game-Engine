@@ -3,7 +3,6 @@
 #include <string>
 
 #include "Denix/Core.h"
-#include "Denix/Core/Logger.h"
 #include "GL/glew.h"
 
 namespace Denix
@@ -40,7 +39,7 @@ namespace Denix
 
 		GLint GetID() const { return m_ID; }
 
-		std::string GetName() { return m_Name; }
+		std::string GetName() const { return m_Name; }
 
 		std::string GetFriendlyName() { return m_FriendlyName; }
 

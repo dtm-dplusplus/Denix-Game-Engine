@@ -31,6 +31,9 @@ namespace Denix
          */
         float m_AverageDuration;
 
+        float m_MinimumDuration;
+
+        float m_MaximumDuration;
         /**
          * Number of durations to average.
          */
