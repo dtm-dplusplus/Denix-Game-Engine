@@ -51,6 +51,41 @@ struct ScrollingBuffer
     }
 };
 
+struct ScrollingBufferDE
+{
+    int MaxSize;
+    int Offset;
+    std::vector<glm::vec2> Data;
+
+    ScrollingBufferDE(int max_size = 2000)
+    {
+        MaxSize = max_size;
+        Offset = 0;
+        Data.reserve(MaxSize);
+    }
+
+    void AddPoint(float x, float y)
+    {
+        if (Data.size() < MaxSize)
+            Data.emplace_back(x, y);
+        else
+        {
+            Data[Offset] = glm::vec2(x, y);
+            Offset = (Offset + 1) % MaxSize;
+        }
+    }
+
+    void Erase()
+    {
+        if (Data.size() > 0)
+        {
+            Data.resize(0);
+            Offset = 0;
+        }
+    }
+};
+
+
 CPGScene::CPGScene(const Ref<Asset>& _sceneAsset): Scene(_sceneAsset)
 {
 }
@@ -103,9 +138,8 @@ void CPGScene::Update(float _deltaTime)
                 ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
 
                 static ImPlotAxisFlags flags;// ImPlotAxisFlags_AutoFit;
-                static ScrollingBuffer  buffer;
                 DE_LOG (LogScene, Info, "{}",profile->GetDuration());
-                buffer.AddPoint(elaspedTime, profile->GetDuration());
+                profile->m_Buffer.AddPoint(elaspedTime, profile->GetDuration());
 
                 
                 if (ImPlot::BeginPlot("##Profiling", nullptr, nullptr,ImVec2(-1, 0), ImPlotFlags_None, ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
@@ -114,7 +148,7 @@ void CPGScene::Update(float _deltaTime)
                     ImPlot::SetupAxisLimits(ImAxis_X1,elaspedTime - history, elaspedTime, ImGuiCond_Always);
                     ImPlot::SetupAxisLimits(ImAxis_Y1,profile->m_AverageDuration * 0.5f,profile->m_MaximumDuration * 1.25f, ImGuiCond_Always);
                     ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
-                    ImPlot::PlotLine("Scene Update", &buffer.Data[0].x, &buffer.Data[0].y, buffer.Data.size(), 0, buffer.Offset, 2*sizeof(float));
+                    ImPlot::PlotLine("Scene Update", &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y, profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2*sizeof(float));
                     ImPlot::EndPlot();
                 }
             }

@@ -1,11 +1,46 @@
 ﻿#pragma once
+
 #include "Denix/Scene/Object.h"
 #include "Denix/Core/Timer.h"
+#include <glm/vec2.hpp>
 
 namespace Denix
 {
     class Timer;
 
+    struct ProfileBuffer
+    {
+        int MaxSize;
+        int Offset;
+        std::vector<glm::vec2> Data;
+
+        ProfileBuffer(int max_size = 2000)
+        {
+            MaxSize = max_size;
+            Offset = 0;
+            Data.reserve(MaxSize);
+        }
+
+        void AddPoint(float x, float y)
+        {
+            if (Data.size() < MaxSize)
+                Data.emplace_back(x, y);
+            else
+            {
+                Data[Offset] = glm::vec2(x, y);
+                Offset = (Offset + 1) % MaxSize;
+            }
+        }
+
+        void Erase()
+        {
+            if (Data.size() > 0)
+            {
+                Data.resize(0);
+                Offset = 0;
+            }
+        }
+    };
     
     /**
      * Profile class for profiling code.
@@ -44,7 +79,8 @@ namespace Denix
         * Updated by the ProfileSubsystem.
         */
         float m_FramePercentage;
-        
+
+        ProfileBuffer m_Buffer;
     private:
         /**
          * The number of durations recorded before averaging.

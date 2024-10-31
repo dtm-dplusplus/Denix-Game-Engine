@@ -29,7 +29,7 @@ namespace Denix
 		front.z = sin(glm::radians(rot.y)) * cos(glm::radians(rot.x));
 		m_CameraFront = glm::normalize(front);
 
-		m_CameraRight = glm::normalize(glm::cross(m_CameraFront, m_CameraUp));
+		m_CameraRight = glm::normalize(glm::cross(m_CameraFront, {0.0f, 1.0f, 0.0f})); // World up
 		m_CameraUp = glm::normalize(glm::cross(m_CameraRight, m_CameraFront));
 
 		// Calculate the view matrix
