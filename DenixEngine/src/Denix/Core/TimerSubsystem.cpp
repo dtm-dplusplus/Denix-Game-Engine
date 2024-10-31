@@ -1,5 +1,8 @@
 ﻿#include "TimerSubsystem.h"
 
+#include "Denix/Profile/Profile.h"
+#include "Denix/Profile/ProfileSubsystem.h"
+
 namespace Denix
 {
 	TimerSubsystem* TimerSubsystem::s_TimerSubsystem{ nullptr };
@@ -9,7 +12,7 @@ namespace Denix
 		s_TimerSubsystem = this;
 		DE_LOG_CREATE(LogTimer)
 
-		m_FrameTimeS = 0.33f;
+		m_FrameTime = 0.33f;
 		m_FramesPerSecond = 30;
 		m_GameTimeSpeed = 1.0f;
 		m_MaxFPS = 60;
@@ -25,6 +28,7 @@ namespace Denix
 		Subsystem::Initialize();
 		DE_LOG(LogTimer, Warn, "Initializing TimerSubsystem")
 		m_FrameTimer = MakeRef<Timer>(ObjectInitializer("FrameTimer"), true);
+		m_TimerProfile = MakeRef<Profile>(ObjectInitializer("TimerProfile"));
 		DE_LOG(LogTimer, Info, "TimerSubsystem Initialized")
 	}
 
@@ -35,16 +39,17 @@ namespace Denix
 
 	void TimerSubsystem::BeginFrame()
 	{
-		start = std::chrono::system_clock::now();
+		m_TimerProfile->Start();
 	}
 
 	void TimerSubsystem::EndFrame()
 	{
-		// This really needs to be tidied up
-		end = std::chrono::system_clock::now();
-		std::chrono::duration<float> duration = end - start;
-		m_FrameTimeS = duration.count();
-		m_FrameTimeMs = m_FrameTimeS * 1000.0f;
+		// Calculate the time taken for the frame to complete
+		m_TimerProfile->End();
+		m_FrameTime = m_TimerProfile->GetDuration();
+		m_FrameTimeS = m_FrameTime * 0.001f;
+
+		// Calculate the delta time, accounting for the game time speed which can be used to slow down or speed up the game.
 		m_DeltaTime = m_GameTimeSpeed * m_FrameTimeS;
 
 		static int frameCounter = 0;
@@ -52,19 +57,14 @@ namespace Denix
 
 		static float timeInFrame = 0.0f;
 		timeInFrame += m_FrameTimeS;
-		
+
+		// Calculate the frames per second. When a second has passed, reset the frame counter and update the frames per second.
 		if (timeInFrame >= 1.0f)
 		{
 			m_FramesPerSecond = frameCounter;
 			frameCounter = 0;
 			timeInFrame = 0.0f;
 		}
-
-		// Enforce a maximum frame rate
-		//if (frameCounter > m_MaxFPS && m_MaxFPS > 0 && timeInFrame < 1.0f) 
-		//{
-		//	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((1.0f - timeInFrame) * 1000.0f)));
-		//}
 	}
 
 	int TimerSubsystem::GetFPS()
@@ -72,9 +72,9 @@ namespace Denix
 		return s_TimerSubsystem->m_FramesPerSecond;
 	}
 
-	float TimerSubsystem::GetFrameTime() { return s_TimerSubsystem->m_FrameTimeS; }
+	float TimerSubsystem::GetFrameTime() { return s_TimerSubsystem->m_FrameTime; }
 	float TimerSubsystem::GetFrameTimeMs()
 	{
-		return s_TimerSubsystem->m_FrameTimeMs;
+		return s_TimerSubsystem->m_FrameTimeS;
 	}
 }

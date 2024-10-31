@@ -115,7 +115,7 @@ namespace Denix
 		{
 			// Setup timer system for the new frame.
 			m_TimerSubsystem->BeginFrame();
-			m_ProfileSubsystem->Update(m_TimerSubsystem->m_FrameTimeMs);
+			m_ProfileSubsystem->Update(m_TimerSubsystem->m_FrameTime);
 			
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
 			DE_PROFILE(Input Poll)
@@ -162,9 +162,7 @@ namespace Denix
 			DE_PROFILE(Draw Viewport)
 			FrameBuffer::Unbind();
 			m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
-
-			// Swap buffers and render UI
-			m_UISubsystem->RenderUI();
+			m_UISubsystem->RenderUI(); // Swap buffers and render UI
 			m_WindowSubsystem->m_Window->SwapBuffers();
 			m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
 			DE_PROFILE_END(Draw Viewport)

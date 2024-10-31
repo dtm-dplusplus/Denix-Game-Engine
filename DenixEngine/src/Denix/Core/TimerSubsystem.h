@@ -6,6 +6,8 @@
 
 namespace Denix
 {
+	class Profile;
+
 	class TimerSubsystem : public Subsystem
 	{
 	public:
@@ -36,15 +38,31 @@ namespace Denix
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
 
 		Ref<Timer> m_FrameTimer;
+		Ref<Profile> m_TimerProfile;
+
 	private:
 		static TimerSubsystem* s_TimerSubsystem;
 
-		std::chrono::time_point<std::chrono::system_clock> start, end;
-
 		int m_FramesPerSecond;
+
+		/**
+		 * Time taken for frame to complete in milliseconds
+		 */
+		float m_FrameTime;
+		
+		/**
+		 * Time taken for frame to complete in seconds
+		 */
 		float m_FrameTimeS;
-		float m_FrameTimeMs;
+
+		/**
+		 * Game specifc frame time
+		 */
 		float m_DeltaTime;
+		
+		/**
+		 * 
+		 */
 		float m_GameTimeSpeed;
 
 		

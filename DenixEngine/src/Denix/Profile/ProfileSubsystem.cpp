@@ -33,9 +33,8 @@ namespace Denix
     {
         Subsystem::Update(_deltaTime);
 
-        for (auto& [name, profile] : m_Profiles)
+        for (const auto& profile : m_Profiles | std::views::values)
         {
-            // Not so accurate as we use the average duration
             profile->m_FramePercentage = profile->m_AverageDuration / _deltaTime;
         }
     }

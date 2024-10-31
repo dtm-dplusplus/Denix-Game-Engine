@@ -99,22 +99,6 @@ void CPGScene::Update(float _deltaTime)
 
     if (ImGui::Begin(m_SceneName.c_str()))
     {
-        /*if(ImGui::Button("Spawn Cube"))
-        {
-            for (int i = 0; i < 25; ++i)
-            {
-                for (int j = 0; j < 25; ++j)
-                {
-                    // Calculate the position for each cube
-                    glm::vec3 position(i * 2.5, j * 2.5f, 0.0f);
-                    
-                    // Spawn the cube at the calculated position
-                    SpawnGameObject<Cube>(position);
-                }
-            }
-        }*/
-
-
         if (ImGui::CollapsingHeader("Thread", ImGuiTreeNodeFlags_DefaultOpen))
         {
             ImGui::Text("Thread Count: %d", std::thread::hardware_concurrency());
@@ -125,41 +109,43 @@ void CPGScene::Update(float _deltaTime)
         if (ImGui::CollapsingHeader("Profiler", ImGuiTreeNodeFlags_DefaultOpen))
         {
             const auto& profiles = ProfileSubsystem::Get()->GetProfiles();
-            const float elaspedTime = TimerSubsystem::Get()->m_FrameTimer->GetElapsed();
+            const float elaspedTime = TimerSubsystem::GetProgramElapsedTime();
 
             ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
-            ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
+            ImGui::Text("Program time: %fms", TimerSubsystem::GetProgramElapsedTime());
+            ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTime());
             ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
 
 
-            if(const Ref<Profile> profile = profiles.at("Scene Update"))
+            static float history = 5.0f;
+            ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
+            
+            const Ref<Profile>& profile = TimerSubsystem::Get()->m_TimerProfile;
+            
+            if (ImPlot::BeginPlot("##Profiling", nullptr, "Frame Time (ms)",ImVec2(-1, 0), ImPlotFlags_None, ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
             {
-                static float history = 5.0f;
-                ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
-
-                static ImPlotAxisFlags flags;// ImPlotAxisFlags_AutoFit;
-                DE_LOG (LogScene, Info, "{}",profile->GetDuration());
-                profile->m_Buffer.AddPoint(elaspedTime, profile->GetDuration());
-
-                
-                if (ImPlot::BeginPlot("##Profiling", nullptr, nullptr,ImVec2(-1, 0), ImPlotFlags_None, ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
-                {
-                    ImPlot::SetupAxes(nullptr, nullptr, flags, flags);
-                    ImPlot::SetupAxisLimits(ImAxis_X1,elaspedTime - history, elaspedTime, ImGuiCond_Always);
-                    ImPlot::SetupAxisLimits(ImAxis_Y1,profile->m_AverageDuration * 0.5f,profile->m_MaximumDuration * 1.25f, ImGuiCond_Always);
-                    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
-                    ImPlot::PlotLine("Scene Update", &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y, profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2*sizeof(float));
-                    ImPlot::EndPlot();
-                }
+                ImPlot::SetupAxisLimits(ImAxis_X1,elaspedTime - history, elaspedTime, ImGuiCond_Always);
+                ImPlot::SetupAxisLimits(ImAxis_Y1,profile->m_AverageDuration * 0.5f,profile->m_MaximumDuration * 1.25f, ImGuiCond_Always);
+                ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
+                ImPlot::PlotLine("Engine", &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y, profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2*sizeof(float));
+                ImPlot::EndPlot();
             }
             
-
             for (const auto& [name, profile] : profiles)
             {
-                //ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+                profile->m_Buffer.AddPoint(elaspedTime, profile->GetDuration());
+
                 if (ImGui::TreeNode(name.c_str()))
                 {
-                    ImGui::Text("Frame Percentage: %.2f%%", profile->m_FramePercentage);
+                    if (ImPlot::BeginPlot("##Profiling", nullptr, "Frame Time (ms)",ImVec2(-1, 0), ImPlotFlags_None, ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
+                    {
+                        ImPlot::SetupAxisLimits(ImAxis_X1,elaspedTime - history, elaspedTime, ImGuiCond_Always);
+                        ImPlot::SetupAxisLimits(ImAxis_Y1,profile->m_AverageDuration * 0.5f,profile->m_MaximumDuration * 1.25f, ImGuiCond_Always);
+                        ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
+                        ImPlot::PlotLine(name.c_str(), &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y, profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2*sizeof(float));
+                        ImPlot::EndPlot();
+                    }
+                    ImGui::Text("Frame Percentage: %.2f%%", profile->m_FramePercentage * 100.0f);
                     ImGui::Text("Duration: %fms", profile->GetDuration());
                     ImGui::Text("Minimum Duration: %fms", profile->m_MinimumDuration);
                     ImGui::Text("Maximum Duration: %fms", profile->m_MaximumDuration);

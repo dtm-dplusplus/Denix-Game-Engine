@@ -1,6 +1,8 @@
 ﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
 #include "Profile.h"
 
+#include "Denix/Core/TimerSubsystem.h"
+
 namespace Denix
 {
     Profile::Profile(const ObjectInitializer& _objInit): Object(_objInit)
@@ -25,7 +27,8 @@ namespace Denix
 
         // Record the duration
         m_DurationRecords[m_DurationCount] = m_Timer->GetDuration<std::milli>();
-
+        m_Buffer.AddPoint(TimerSubsystem::GetProgramElapsedTime(),  m_DurationRecords[m_DurationCount]);
+        
         // Update the minimum and maximum durations
         if (m_DurationRecords[m_DurationCount] < m_MinimumDuration || m_MinimumDuration == 0.0f)
             m_MinimumDuration = m_DurationRecords[m_DurationCount];
