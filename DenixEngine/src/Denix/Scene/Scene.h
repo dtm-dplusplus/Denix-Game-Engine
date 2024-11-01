@@ -120,14 +120,16 @@ namespace Denix
 		bool IsPlaying() const { return m_IsPlaying; }
 
 		template <class T = GameObject, typename... Args>
-		Ref<T> SpawnGameObject(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f))
+		Ref<T> SpawnGameObject(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f))
 		{
 			try
 			{
 				if (Ref<GameObject> obj = MakeRef<T>(std::forward<Args>(_args)...))
 				{
-					// Set Transform
-					obj->GetTransformComponent()->SetPosition(_position);
+					// Set Transform Component
+					obj->m_TransformComponent->SetPosition(_position);
+					obj->m_TransformComponent->SetRotation(_rotation);
+					
 					if (m_IsOpen)
 					{
 						obj->BeginScene();

@@ -145,5 +145,6 @@ namespace Denix
 		Ref<RenderComponent> m_RenderComponent;
 
 		friend class SceneSubsystem;
+		friend class Scene;
 	};
 }

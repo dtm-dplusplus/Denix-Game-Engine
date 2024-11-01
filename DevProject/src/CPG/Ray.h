@@ -8,7 +8,6 @@ class Ray: public Cube
 {
 public:
     Ray();
-    Ray(const glm::vec3& _origin, const glm::vec3& _direction);
 
     void OnCollision(Ref<GameObject>& _other, CollisionData& _collision) override;
     void EndPlay() override;

@@ -99,6 +99,20 @@ void CPGScene::Update(float _deltaTime)
 
     if (ImGui::Begin(m_SceneName.c_str()))
     {
+        if(ImGui::CollapsingHeader("Dev Stuff", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            ImGui::SeparatorText("Ray Tracing");
+            if (ImGui::Button("Spawn Ray"))
+            {
+                const glm::vec3& camPos = m_ActiveCamera->GetTransformComponent()->GetPosition();
+                const glm::vec3& camForward = m_ActiveCamera->GetCameraFront();
+                const glm::vec3& camRight = m_ActiveCamera->m_CameraRight;
+                glm::vec3 rot = m_ActiveCamera->GetTransformComponent()->GetRotation();
+                rot  = {rot.x, -rot.y, 90.0f};
+                m_Ray = SpawnGameObject<Ray>(camPos, rot);
+            }
+        }
+        
         if (ImGui::CollapsingHeader("Thread", ImGuiTreeNodeFlags_DefaultOpen))
         {
             ImGui::Text("Thread Count: %d", std::thread::hardware_concurrency());
@@ -119,18 +133,36 @@ void CPGScene::Update(float _deltaTime)
 
             static float history = 5.0f;
             ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
-            
-            const Ref<Profile>& profile = TimerSubsystem::Get()->m_TimerProfile;
-            
-            if (ImPlot::BeginPlot("##Profiling", nullptr, "Frame Time (ms)",ImVec2(-1, 0), ImPlotFlags_None, ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
+
+            static bool showOtherProfiles = false;
+            ImGui::Checkbox("Show Other Profiles", &showOtherProfiles);
+            const Ref<Profile>& engprofile = TimerSubsystem::Get()->m_TimerProfile;
+            engprofile->m_Buffer.AddPoint(elaspedTime, engprofile->GetDuration());
+
+            if (showOtherProfiles)
             {
-                ImPlot::SetupAxisLimits(ImAxis_X1,elaspedTime - history, elaspedTime, ImGuiCond_Always);
-                ImPlot::SetupAxisLimits(ImAxis_Y1,profile->m_AverageDuration * 0.5f,profile->m_MaximumDuration * 1.25f, ImGuiCond_Always);
-                ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
-                ImPlot::PlotLine("Engine", &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y, profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2*sizeof(float));
-                ImPlot::EndPlot();
+                if (ImPlot::BeginPlot("##Profiling", nullptr, "Frame Time (ms)",ImVec2(-1, 0), ImPlotFlags_None, ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
+                {
+                    ImPlot::SetupAxisLimits(ImAxis_X1,elaspedTime - history, elaspedTime, ImGuiCond_Always);
+                    ImPlot::SetupAxisLimits(ImAxis_Y1,0.0f,engprofile->m_AverageDuration * 1.5f, ImGuiCond_Always);
+                    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
+                    for (const auto& [name, profile] : profiles)
+                        ImPlot::PlotLine(name.c_str(), &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y, profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2*sizeof(float));
+                    ImPlot::EndPlot();
+                }
             }
-            
+            else
+            {
+                if (ImPlot::BeginPlot("##Profiling", nullptr, "Frame Time (ms)",ImVec2(-1, 0), ImPlotFlags_None, ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
+                {
+                    ImPlot::SetupAxisLimits(ImAxis_X1,elaspedTime - history, elaspedTime, ImGuiCond_Always);
+                    ImPlot::SetupAxisLimits(ImAxis_Y1,0.0f,engprofile->m_AverageDuration * 1.5f, ImGuiCond_Always);
+                    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
+                    ImPlot::PlotLine("Engine", &engprofile->m_Buffer.Data[0].x, &engprofile->m_Buffer.Data[0].y, engprofile->m_Buffer.Data.size(), 0, engprofile->m_Buffer.Offset, 2*sizeof(float));
+                    ImPlot::EndPlot();
+                }
+            }
+
             for (const auto& [name, profile] : profiles)
             {
                 profile->m_Buffer.AddPoint(elaspedTime, profile->GetDuration());
@@ -157,87 +189,77 @@ void CPGScene::Update(float _deltaTime)
                     ImGui::TreePop();
                 }
             }
-        }
-
-        /*ImGui::SeparatorText("Ray Tracing");
-        if (ImGui::Button("Spawn Ray"))
-        {
-            const glm::vec3& camPos = m_ActiveCamera->GetTransformComponent()->GetPosition();
-            const glm::vec3& camForward = m_ActiveCamera->GetCameraFront();
-            const glm::vec3& camRight = m_ActiveCamera->m_CameraRight;
-            m_Ray = SpawnGameObject<Ray>(camPos, glm::degrees(camForward * camRight));
-        }
-        ImGui::DragFloat("Move Speed", &Ray::m_MoveSpeed);*/
-
-        if (ImGui::CollapsingHeader("Reflection"))
-        {
-            for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)
+            
+            if (ImGui::CollapsingHeader("Reflection"))
             {
-                ImGui::Text(key.c_str());
-            }
-        }
-
-        if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
-        {
-            ImGui::Text("Project Name: %s", FileSubsystem::GetProjectName().c_str());
-            ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
-            ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
-            ImGui::Checkbox("Show engine content", &ShowEngineContent);
-
-            if (ImGui::Button("Save Config"))
-            {
-                Engine::Get().SaveConfig();
-            }
-        }
-
-        if (ImGui::CollapsingHeader("Assets"))
-        {
-            if (ImGui::TreeNode("Materials"))
-            {
-                for (const auto& mat : ResourceSubsystem::GetMaterialStore())
+                for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)
                 {
-                    ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
+                    ImGui::Text(key.c_str());
                 }
-                ImGui::TreePop();
             }
 
-            if (ImGui::TreeNode("Scenes"))
+            if (ImGui::CollapsingHeader("Engine Config"), ImGuiTreeNodeFlags_DefaultOpen)
             {
-                if (ImGui::Button("Save Scene"))
-                {
-                    SceneSubsystem::SerializeScene(this);
+                ImGui::Text("Project Name: %s", FileSubsystem::GetProjectName().c_str());
+                ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
+                ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
+                ImGui::Checkbox("Show engine content", &ShowEngineContent);
 
+                if (ImGui::Button("Save Config"))
+                {
+                    Engine::Get().SaveConfig();
+                }
+            }
+
+            if (ImGui::CollapsingHeader("Assets"))
+            {
+                if (ImGui::TreeNode("Materials"))
+                {
                     for (const auto& mat : ResourceSubsystem::GetMaterialStore())
                     {
-                        // Save Changes to asset - This should be done in the editor
-                        YAML::Emitter matAsssetEmitter;
-                        matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
-                        matAsssetEmitter << YAML::BeginMap;
-                        mat.second->Serialize(matAsssetEmitter);
-                        matAsssetEmitter << YAML::EndMap;
-
-                        FileSubsystem::WriteFile(mat.second->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
-                        DE_LOG(LogScene, Info, "Serialized Material");
+                        ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
                     }
+                    ImGui::TreePop();
                 }
-                for (const auto& scene : ResourceSubsystem::GetSceneStore())
+
+                if (ImGui::TreeNode("Scenes"))
                 {
-                    ImGui::Text(scene->GetAssetName().c_str());
+                    if (ImGui::Button("Save Scene"))
+                    {
+                        SceneSubsystem::SerializeScene(this);
 
-                    if (ImGui::Button("Set as startup scene"))
-                    {
-                        Engine::Get().SetStartupScene(m_SceneAsset);
+                        for (const auto& mat : ResourceSubsystem::GetMaterialStore())
+                        {
+                            // Save Changes to asset - This should be done in the editor
+                            YAML::Emitter matAsssetEmitter;
+                            matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
+                            matAsssetEmitter << YAML::BeginMap;
+                            mat.second->Serialize(matAsssetEmitter);
+                            matAsssetEmitter << YAML::EndMap;
+
+                            FileSubsystem::WriteFile(mat.second->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
+                            DE_LOG(LogScene, Info, "Serialized Material");
+                        }
                     }
-                    if (ImGui::Button("Open"))
+                    for (const auto& scene : ResourceSubsystem::GetSceneStore())
                     {
-                        SceneSubsystem::OpenScene(scene);
+                        ImGui::Text(scene->GetAssetName().c_str());
+
+                        if (ImGui::Button("Set as startup scene"))
+                        {
+                            Engine::Get().SetStartupScene(m_SceneAsset);
+                        }
+                        if (ImGui::Button("Open"))
+                        {
+                            SceneSubsystem::OpenScene(scene);
+                        }
+                        ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
                     }
-                    ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
+                    ImGui::TreePop();
                 }
-                ImGui::TreePop();
             }
-        }
 
-        ImGui::End();
+            ImGui::End();
+        }
     }
 }

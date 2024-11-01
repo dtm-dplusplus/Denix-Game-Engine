@@ -8,12 +8,15 @@ float Ray::m_MoveSpeed = 0.1f;
 
 Ray::Ray(): Cube({"Ray"})
 {
- InitRay();
-}
-
-Ray::Ray(const glm::vec3& _origin, const glm::vec3& _direction): Cube({"Ray"})
-{
-    InitRay(_origin, _direction);
+    m_TransformComponent->SetPosition(m_Origin);
+    m_TransformComponent->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+    m_TransformComponent->SetScale(glm::vec3(0.1f, 1.0f, 0.1f));
+    m_TransformComponent->SetMoveability(Moveability::Dynamic);
+    m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Cylinder"));
+    m_RenderComponent->SetMaterial([]
+    {
+        Ref<Material> mat = MakeRef<Material>(); mat->SetBaseColor(glm::vec3(1.0f)); return mat;
+    }());
 }
 
 void Ray::OnCollision(Ref<GameObject>& _other, CollisionData& _collision)
@@ -31,17 +34,4 @@ void Ray::EndPlay()
 {
     Cube::EndPlay();
     m_RenderComponent->GetMaterial()->SetBaseColor(glm::vec3(1.0f));
-}
-
-void Ray::InitRay(const glm::vec3& _origin, const glm::vec3& _direction)
-{
-    m_Origin = _origin;
-    m_Direction = _direction;
-    m_TransformComponent->SetPosition(m_Origin);
-    m_TransformComponent->SetRotation(m_Direction);
-    m_TransformComponent->SetMoveability(Moveability::Dynamic);
-    m_RenderComponent->SetMaterial([]
-    {
-        Ref<Material> mat = MakeRef<Material>(); mat->SetBaseColor(glm::vec3(1.0f)); return mat;
-    }());
 }
