@@ -1,7 +1,8 @@
-#include "CPGScene.h"
  #include "Denix.h"
-#include "DevScene.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+
+#include "Scene/CPGScene.h"
+#include "Scene/DevScene.h"
+#include "Scene/BenchmarkScene.h"
 
 //using namespace Denix;
 
@@ -16,6 +17,7 @@ public:
 		m_ProjectName = "DevProject";
 		ReflectionSubsystem::Register<DevScene>();
 		ReflectionSubsystem::Register<CPGScene>();
+		ReflectionSubsystem::Register<BenchmarkScene>();
 	}
 
 	void Initialize() override

@@ -43,7 +43,7 @@ namespace Denix
         Ref<Asset> GetStartupScene() const;
         void SetStartupScene(const Ref<Asset>& _ref);
 
-        static Engine& Get() { return *s_Engine; }
+        static Engine* Get() { return s_Engine; }
 
         std::string GetProjectName() const { return m_ProjectName; }
 

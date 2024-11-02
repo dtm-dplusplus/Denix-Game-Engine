@@ -1,6 +1,8 @@
 ﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
 #include "ProfileSubsystem.h"
 
+#include "Denix/Core/TimerSubsystem.h"
+
 namespace Denix
 {
     ProfileSubsystem* ProfileSubsystem::s_ProfileSubsystem = nullptr;
@@ -19,7 +21,20 @@ namespace Denix
     void ProfileSubsystem::Initialize()
     {
         Subsystem::Initialize();
+
         DE_LOG(LogProfile, Warn, "Profile Subsystem Initializing")
+
+        // Get the engine timer profile
+        if(const Ref<Profile>& timerProfile = TimerSubsystem::Get()->m_EngineProfile)
+        {
+            m_Profiles[timerProfile->m_FriendlyName] = timerProfile;
+            DE_LOG(LogProfile, Info, "Added Timer Profile to Profile Subsystem")
+        }
+        else
+        {
+            throw std::runtime_error("Timer Profile not found in Timer Subsystem");
+        }
+
         DE_LOG(LogProfile, Info, "Profile Subsystem Initialized")
     }
 

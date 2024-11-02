@@ -30,7 +30,6 @@ namespace Denix
             s_ResourceSubsystem = nullptr;
         }
 
-
         // Scenes
         static std::vector<Ref<Asset>>  GetSceneStore() { return s_ResourceSubsystem->m_SceneStore; }
         static Ref<Asset> GetSceneAsset(const std::string& _path);

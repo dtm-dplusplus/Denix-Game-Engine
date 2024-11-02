@@ -28,7 +28,8 @@ namespace Denix
 		Subsystem::Initialize();
 		DE_LOG(LogTimer, Warn, "Initializing TimerSubsystem")
 		m_FrameTimer = MakeRef<Timer>(ObjectInitializer("FrameTimer"), true);
-		m_TimerProfile = MakeRef<Profile>(ObjectInitializer("TimerProfile"));
+		m_EngineProfile = MakeRef<Profile>(ObjectInitializer("EngineProfile"));
+		m_EngineProfile->m_Visualize = true;
 		DE_LOG(LogTimer, Info, "TimerSubsystem Initialized")
 	}
 
@@ -39,14 +40,15 @@ namespace Denix
 
 	void TimerSubsystem::BeginFrame()
 	{
-		m_TimerProfile->Start();
+		m_EngineProfile->Start();
 	}
 
 	void TimerSubsystem::EndFrame()
 	{
 		// Calculate the time taken for the frame to complete
-		m_TimerProfile->End();
-		m_FrameTime = m_TimerProfile->GetDuration();
+		m_EngineProfile->End();
+		
+		m_FrameTime = m_EngineProfile->GetDuration();
 		m_FrameTimeS = m_FrameTime * 0.001f;
 
 		// Calculate the delta time, accounting for the game time speed which can be used to slow down or speed up the game.

@@ -81,6 +81,11 @@ namespace Denix
         float m_FramePercentage;
 
         ProfileBuffer m_Buffer;
+
+        /**
+         * Lets the profile know if it should visualize itself in the ProfileSubsystem.
+         */
+        bool m_Visualize = false;
     private:
         /**
          * The number of durations recorded before averaging.

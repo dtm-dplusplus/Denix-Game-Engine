@@ -141,7 +141,7 @@ namespace Denix
 
 		DE_LOG(LogResource, Trace, "Resource Subsystem Deinitialized")
 	}
-
+	
 
 	Ref<Asset> ResourceSubsystem::GetSceneAsset(const std::string& _path)
 	{

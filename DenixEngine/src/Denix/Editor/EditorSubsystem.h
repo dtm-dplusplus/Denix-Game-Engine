@@ -81,7 +81,15 @@ namespace Denix
 
 		float DragSpeed = 10.0f;
 		float DragSpeedDelta;
+		bool m_IsAssetBrowserOpen = false;
 
+		// Assets
+		void AssetBrowser();
+
+		// Profiler
+		bool m_IsProfilerOpen = true;
+		void Profiler();
+		
 		// UI
 		void ScenePanel();
 		bool m_IsScenePanelOpen = true;

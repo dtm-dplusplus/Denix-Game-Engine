@@ -107,6 +107,8 @@ namespace Denix
 		}
 		virtual void Update(float _deltaTime)
 		{
+			DebugUI(_deltaTime);
+			
 			for (const auto& gameObject : m_SceneObjects)
 			{
 				// Update the GameObject -  This will always be here
@@ -246,6 +248,9 @@ namespace Denix
 
 			return nullptr;
 		}
+
+		virtual void DebugUI(float _deltaTime){}
+
 	protected:
 
 		/** Name of the scene. Must be uniqiue */

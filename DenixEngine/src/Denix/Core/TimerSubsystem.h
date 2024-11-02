@@ -38,7 +38,7 @@ namespace Denix
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
 
 		Ref<Timer> m_FrameTimer;
-		Ref<Profile> m_TimerProfile;
+		Ref<Profile> m_EngineProfile;
 
 	private:
 		static TimerSubsystem* s_TimerSubsystem;
@@ -75,5 +75,6 @@ namespace Denix
 		std::vector<Ref<Timer>> m_Timers;
 		
 		friend class Engine;
+		friend class ProfileSubsystem;
 	};
 }

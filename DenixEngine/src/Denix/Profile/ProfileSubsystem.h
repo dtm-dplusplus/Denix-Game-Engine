@@ -1,9 +1,8 @@
 ﻿#pragma once
 
-#include "Profile.h"
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
-#include "Denix/Core/Timer.h"
+#include "Profile.h"
 
 #define DE_PROFILE(name) ProfileSubsystem::StartProfile(#name);
 #define DE_PROFILE_END(name) ProfileSubsystem::EndProfile(#name);

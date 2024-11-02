@@ -368,11 +368,11 @@ namespace Denix
 
 			if (m_CollisionDetectionEnabled)
 			{
-				DE_LOG(LogPhysics, Trace, "Collision detection enabled")
+				//DE_LOG(LogPhysics, Trace, "Collision detection enabled")
 			}
 			else
 			{
-				DE_LOG(LogPhysics, Trace, "Collision detection disabled")
+				//DE_LOG(LogPhysics, Trace, "Collision detection disabled")
 			}
 		}
 
