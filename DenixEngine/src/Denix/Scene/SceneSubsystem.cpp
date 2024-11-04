@@ -284,7 +284,7 @@ namespace Denix
 		}
 
 		// Scene update implementation
-		if (m_SceneThreaded && m_ActiveScene->m_SceneObjects.size() > 1)
+		if (m_SceneThreaded && m_ActiveScene->m_SceneObjects.size() > 6)
 		{
 			// Threaded Scene Update
 			ThreadedSceneUpdate(_deltaTime);

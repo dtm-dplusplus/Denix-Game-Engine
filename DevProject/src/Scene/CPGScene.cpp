@@ -174,7 +174,7 @@ void CPGScene::DebugUI(float _deltaTime)
     static unsigned char* pixel_data = new unsigned char[width * height * 3];
     static const std::string rayImage = FileSubsystem::GetContentRoot() + "ray.png";
     static Ref<FrameBuffer> rayFB = MakeRef<FrameBuffer>(width, height);
-    static int interval = 5000;
+    static int interval = 500;
     static int intCount = 0;
     if (ImGui::Begin(m_SceneName.c_str()))
     {
@@ -210,7 +210,7 @@ void CPGScene::DebugUI(float _deltaTime)
                     float dir_x = (pix % width + 0.5) - width / 2.;
                     float dir_y = -(pix / width + 0.5) + height / 2.; // this flips the image at the same time
                     float dir_z = -height / (2. * tan(fov / 2.));
-                    const vec3& color = cast_ray(vec3{0, camPos.y, 0}, vec3{dir_x, dir_y, dir_z}.normalized());
+                    const vec3& color = cast_ray({camPos.x, camPos.y, camPos.z}, vec3{dir_x, dir_y, dir_z}.normalized());
                     float max = std::max(1.f, std::max(color[0], std::max(color[1], color[2])));
                     pixel_data[pix * 3] = static_cast<unsigned char>(255 * color[0] / max);
                     pixel_data[pix * 3 + 1] = static_cast<unsigned char>(255 * color[1] / max);

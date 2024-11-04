@@ -402,24 +402,15 @@ namespace Denix
 						createdObject = true;
 						if (name == "Plane")
 						{
-							const Ref<Plane> plane = MakeRef<Plane>();
-							plane->BeginScene();
-							if (m_ActiveScene->IsPlaying()) plane->BeginPlay();
-							m_ActiveScene->m_SceneObjects.push_back(plane);
+							m_ActiveScene->SpawnGameObject<Plane>();
 						}
 						else if (name == "Cube")
 						{
-							const Ref<Cube> cube = MakeRef<Cube>();
-							cube->BeginScene();
-							if (m_ActiveScene->IsPlaying()) cube->BeginPlay();
-							m_ActiveScene->m_SceneObjects.push_back(cube);
+							m_ActiveScene->SpawnGameObject<Cube>();
 						}
 						else if (name == "Sphere")
 						{
-							const Ref<Sphere> sphere = MakeRef<Sphere>();
-							sphere->BeginScene();
-							if (m_ActiveScene->IsPlaying()) sphere->BeginPlay();
-							m_ActiveScene->m_SceneObjects.push_back(sphere);
+							m_ActiveScene->SpawnGameObject<Sphere>();
 						}
 					}
 				}
