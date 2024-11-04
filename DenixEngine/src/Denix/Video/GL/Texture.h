@@ -30,7 +30,7 @@ namespace Denix
 			m_FilePath = "";
 		}
 
-		Texture(const std::string& _path);
+		Texture(const std::string& _path, bool _load = false);
 
 		bool LoadTexture();
 

@@ -35,6 +35,8 @@ namespace Denix
 		static int& GetMaxFPS() { return s_TimerSubsystem->m_MaxFPS; }
 		static float GetFrameTime();
 		static float GetFrameTimeMs();
+
+		static float GetDeltaTime() {return s_TimerSubsystem->m_DeltaTime; }
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
 
 		Ref<Timer> m_FrameTimer;

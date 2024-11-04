@@ -6,7 +6,7 @@
 
 namespace Denix
 {
-	Texture::Texture(const std::string& _path)
+	Texture::Texture(const std::string& _path, bool _load)
 	{
 		std::filesystem::path path = _path;
 		m_TextureID = 0;
@@ -15,6 +15,7 @@ namespace Denix
 		m_Height = 0;
 		m_BitDepth = 0;
 		m_FilePath = _path;
+		if(_load) LoadTexture();
 	}
 
     bool Texture::LoadTexture()
@@ -28,7 +29,23 @@ namespace Denix
 
 		glGenTextures(1, &m_TextureID);
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+		GLint internalFormat;
+		if (m_BitDepth == 4)
+		{
+			internalFormat = GL_RGBA;
+			m_Target = GL_TEXTURE_2D;
+		}
+		else if (m_BitDepth == 3)
+		{
+			internalFormat = GL_RGB;
+			m_Target = GL_TEXTURE_2D;
+		}
+		else
+		{
+			DE_LOG(LogRenderer, Error, "Unsupported Bit Depth: {}", m_BitDepth)
+			return false;
+		}
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, internalFormat, GL_UNSIGNED_BYTE, texData);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		// Apply Defualt Settings
