@@ -164,31 +164,30 @@ namespace Denix
 
 	void SceneSubsystem::PlayScene()
 	{
-		if (m_ActiveScene)
+		if (!s_SceneSubsystem->m_ActiveScene) return;
+
+		s_SceneSubsystem->m_ActiveScene->BeginPlay();
+
+		// Check for Game Camera
+		if(const Ref<Camera> camera = s_SceneSubsystem->m_ActiveScene->GetGameCamera())
 		{
-			m_ActiveScene->BeginPlay();
-
-			// Check for Game Camera
-			if(const Ref<Camera> camera = m_ActiveScene->GetGameCamera())
-			{
-				// Set the camera as the active camera
-				m_ActiveScene->m_ActiveCamera = camera;
-				DE_LOG(LogScene, Info, "Game Camera Found: {}", camera->GetName())
-			}
-			else
-			{
-				DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
-			}
-
-			DE_LOG(LogScene, Trace, "Started Playing Scene: {}", m_ActiveScene->GetSceneName())
+			// Set the camera as the active camera
+			s_SceneSubsystem->m_ActiveScene->m_ActiveCamera = camera;
+			DE_LOG(LogScene, Info, "Game Camera Found: {}", camera->GetName())
 		}
+		else
+		{
+			DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
+		}
+
+		DE_LOG(LogScene, Trace, "Started Playing Scene: {}", s_SceneSubsystem->m_ActiveScene->GetSceneName())
 	}
 
 	void SceneSubsystem::StopScene()
 	{
-		if (m_ActiveScene)
+		if (s_SceneSubsystem->m_ActiveScene)
 		{
-			m_ActiveScene->EndPlay();
+			s_SceneSubsystem->m_ActiveScene->EndPlay();
 			//m_ActiveScene->EndScene();
 
 			//UnloadScene(m_ActiveScene->GetSceneName());
@@ -197,7 +196,6 @@ namespace Denix
 			// Need to establish a better way of handling scenes
 			
 			DE_LOG(LogScene, Trace, "Scene Stopped")
-
 		}
 	}
 
@@ -335,6 +333,11 @@ namespace Denix
 		}
 
 		for (std::thread &thread : threads) if (thread.joinable()) thread.join();
+	}
+
+	void SceneSubsystem::SerializeScene()
+	{
+		SerializeScene(s_SceneSubsystem->m_ActiveScene.get());
 	}
 	
 	bool SceneSubsystem::SerializeScene(const Scene* _scene)

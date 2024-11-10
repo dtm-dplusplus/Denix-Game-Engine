@@ -4,21 +4,25 @@
 #include "Denix/Editor/Widget/Scene/GameObjectDetailsWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneOrganizerWidget.h"
 #include "Denix/Editor/Widget/AssetBrowserWidget.h"
-#include "Widget/InputDebuggerWidget.h"
+#include "Denix/Editor/Widget/EngineProfilerWidget.h"
+#include "Denix/Editor/Widget/InputDebuggerWidget.h"
+#include "Widget/PerformanceSettingsWidget.h"
 
 namespace Denix
 {
 	EditorSubsystem* EditorSubsystem::s_EditorSubsystem{ nullptr };
 
+	EditorSubsystem::EditorSubsystem()
+	{
+		s_EditorSubsystem = this;
+		DE_LOG_CREATE(LogEditor)
+	}
+	
 	void EditorSubsystem::Initialize()
 	{
 		Subsystem::Initialize();
 		DE_LOG(LogEditor, Warn, "Initializing Editor Subsystem")
-		// Get Engine Subsystems
-		s_WindowSubsystem = WindowSubsystem::Get();
-		s_SceneSubsystem = SceneSubsystem::Get();
-		s_UISubsystem = UISubsystem::Get();
-		m_ActiveScene =s_SceneSubsystem->GetActiveScene();
+		m_ActiveScene = SceneSubsystem::GetActiveScene();
 
 		// Init Editor Widgets
 		m_SceneOrganizerWidget = MakeRef<SceneOrganizerWidget>(m_ActiveScene);
@@ -35,22 +39,19 @@ namespace Denix
 	void EditorSubsystem::Update(float _deltaTime)
 	{
 		if(!m_Enabled) return;
-
-		EditorWidget::m_DragSpeed = DragSpeed * _deltaTime;
-		DragSpeedDelta = EditorWidget::m_DragSpeed;
-		
-		const glm::vec2 winSize = s_WindowSubsystem->GetWindow()->GetWindowSize();
-		WinX = winSize.x;
-		WinY = winSize.y;
-
-		MenuBar();
 		if (!m_ActiveScene) return;
+
+		EditorWidget::m_DragSpeed = EditorWidget::m_DragSensitivity * _deltaTime;
+		m_DragSpeed = EditorWidget::m_DragSpeed;
+
+		MainMenuBar();
 		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_F5))
 		{
-			if(m_ActiveScene->IsPlaying()) s_SceneSubsystem->StopScene();
-            else s_SceneSubsystem->PlayScene();
+			if(m_ActiveScene->IsPlaying()) SceneSubsystem::StopScene();
+            else SceneSubsystem::PlayScene();
 		}
-		
+
+		// Asset Browser
 		if(m_AssetBrowserWidget)
 		{
 			m_AssetBrowserWidget->Update(_deltaTime);
@@ -58,13 +59,20 @@ namespace Denix
 			if(m_AssetBrowserWidget->IsRubbish()) m_AssetBrowserWidget.reset();
 		}
 
-		SceneWidgets();
-		if(m_IsTimerSettingsOpen) TimerSettings();
+		// Scene Widgets
+		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->Update(0.0f);
+		if (m_GameObjectDetailsWidget)
+		{
+			m_GameObjectDetailsWidget->m_GameObjectRef = m_SceneOrganizerWidget->GetSelectedObject();
+			m_GameObjectDetailsWidget->Update(0.0f);
+		}
+		
+		if(m_PerformanceSettingsWidget) m_PerformanceSettingsWidget->Update(_deltaTime);
 		if(m_InputDebuggerWidget) m_InputDebuggerWidget->Update(_deltaTime);
-		if (m_IsProfilerOpen) Profiler();
+		if (m_EngineProfilerWidget) m_EngineProfilerWidget->Update(_deltaTime);
 	}
 	
-	void EditorSubsystem::MenuBar()
+	void EditorSubsystem::MainMenuBar()
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
@@ -76,7 +84,7 @@ namespace Denix
 					{
 						if (ImGui::MenuItem(levelAsset->GetAssetName().c_str()))
 						{
-							s_SceneSubsystem->OpenScene(levelAsset);
+							SceneSubsystem::OpenScene(levelAsset);
 							break;
 						}
 					}
@@ -85,7 +93,7 @@ namespace Denix
 
 				if (ImGui::Button("Save Scene"))
 				{
-					SceneSubsystem::SerializeScene(m_ActiveScene.get());
+					SceneSubsystem::SerializeScene();
 
 					// Temp method to save any changes to materials
 					for (const auto& mat : ResourceSubsystem::GetMaterialStore())
@@ -104,7 +112,7 @@ namespace Denix
 				
 				if (ImGui::MenuItem("Quit", "Alt+F4")) 
 				{
-					s_WindowSubsystem->GetWindow()->RequestClose();
+					WindowSubsystem::GetWindow()->RequestClose();
 				}
 
 				ImGui::EndMenu();
@@ -127,7 +135,7 @@ namespace Denix
 			{
 				if(ImGui::MenuItem("Set as Startup Scene"))
 				{
-					Engine::Get()->SetStartupScene(m_ActiveScene->m_SceneAsset);
+					Engine::SetStartupScene(m_ActiveScene->m_SceneAsset);
 				}
 				ImGui::EndMenu();
 			}
@@ -138,8 +146,15 @@ namespace Denix
 				{
 					if(!m_AssetBrowserWidget) m_AssetBrowserWidget = MakeRef<AssetBrowserWidget>();
 				}
-				ImGui::Checkbox("Timer Settings", &m_IsTimerSettingsOpen);
-				ImGui::Checkbox("Profiler", &m_IsProfilerOpen);
+				if(ImGui::MenuItem("Performance Settings", nullptr))
+				{
+					if(!m_PerformanceSettingsWidget) m_PerformanceSettingsWidget = MakeRef<PerformanceSettingsWidget>();
+				}
+				
+				if (ImGui::MenuItem("Profiler", nullptr))
+				{
+					if(!m_EngineProfilerWidget) m_EngineProfilerWidget = MakeRef<EngineProfilerWidget>();
+				}
 				if (ImGui::MenuItem("Input Debugger", nullptr))
 				{
 					if (!m_InputDebuggerWidget) m_InputDebuggerWidget = MakeRef<InputDebuggerWidget>();
@@ -151,32 +166,30 @@ namespace Denix
 			{
 				if (ImGui::MenuItem("Toggle Fullscreen", "F11"))
 				{
-					s_WindowSubsystem->GetWindow()->ToggleFullscreen();
+					WindowSubsystem::ToggleFullscreen();
 				}
 
 				ImGui::EndMenu();
 			}
 
-			
-
 			if (!m_ActiveScene->IsPlaying())
 			{
 				if (ImGui::Button("Play"))
 				{
-					s_SceneSubsystem->PlayScene();
+					SceneSubsystem::PlayScene();
 				}
 			}
 			else
 			{
 				if (ImGui::Button("Pause"))
 				{
-					s_SceneSubsystem->PauseScene();
+					SceneSubsystem::PauseScene();
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Stop"))
 				{
 					if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->ResetSelection();
-					s_SceneSubsystem->StopScene();
+					SceneSubsystem::StopScene();
 				}
 			}
 
@@ -198,137 +211,20 @@ namespace Denix
 				ImGui::Checkbox("Show Plot Demo Window", &ShowPlotDemoWindow);
 				if (ShowPlotDemoWindow) ImPlot::ShowDemoWindow(&ShowPlotDemoWindow);
 					
-				ImGui::DragFloat("UI Drag Speed", &DragSpeed, DragSpeed, 0.1f, 10.0f);
+				ImGui::DragFloat("UI Drag Sensitivity", &EditorWidget::m_DragSensitivity, m_DragSpeed, 0.1f, 10.0f);
 
-				ImGui::ColorEdit4("Clear Color", &s_WindowSubsystem->GetWindow()->GetClearColor()[0]);
+				ImGui::ColorEdit4("Clear Color", &WindowSubsystem::GetWindow()->GetClearColor()[0]);
 				ImGui::EndMenu();
 			}
 
 			ImGui::EndMainMenuBar();
 		}
 	}
-	
+
 	void EditorSubsystem::SetActiveScene(const Ref<Scene>& _scene)
 	{
 		m_ActiveScene = _scene;
 		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->SceneChangedEvent(_scene);
 		if (m_GameObjectDetailsWidget) m_GameObjectDetailsWidget->m_GameObjectRef.reset();
 	}
-
-	void EditorSubsystem::TimerSettings()
-	{
-		ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
-		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
-		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
-		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
-	}
-
-	void EditorSubsystem::Profiler()
-	{
-		ImGui::Begin("Profiler", &m_IsProfilerOpen);
-		{
-			if (ImGui::CollapsingHeader("Thread", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
-			{
-				ImGui::Text("Thread Count: %d", std::thread::hardware_concurrency());
-				ImGui::SeparatorText("Scene Thread");
-				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_SceneThreaded);
-			}
-
-			const auto& profiles = ProfileSubsystem::Get()->GetProfiles();
-			const float elaspedTime = TimerSubsystem::GetProgramElapsedTime();
-
-			ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
-			ImGui::Text("Program time: %fms", TimerSubsystem::GetProgramElapsedTime());
-			ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTime());
-			ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
-
-
-			static float history = 5.0f;
-			ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
-
-			const Ref<Profile>& engprofile = TimerSubsystem::Get()->m_EngineProfile;
-
-			if (ImPlot::BeginPlot("Profile Visualizer", nullptr, "Frame Time (ms)", ImVec2(-1, 0), ImPlotFlags_None,
-								  ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
-			{
-				ImPlot::SetupAxisLimits(ImAxis_X1, elaspedTime - history, elaspedTime, ImGuiCond_Always);
-				ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0f, engprofile->m_AverageDuration * 1.5f, ImGuiCond_Always);
-				ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
-				for (const auto& [name, profile] : profiles)
-				{
-					if (profile->m_Buffer.Data.size() > 0)
-						ImPlot::PlotLine(name.c_str(), &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y,
-										 profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2 * sizeof(float));
-				}
-				ImPlot::EndPlot();
-			}
-
-			for (const auto& [name, profile] : profiles)
-			{
-				if (ImGui::TreeNode(name.c_str()))
-				{
-					if (ImPlot::BeginPlot("##Profiling", nullptr, "Frame Time (ms)",ImVec2(-1, 0), ImPlotFlags_None, ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
-					{
-						ImPlot::SetupAxisLimits(ImAxis_X1,elaspedTime - history, elaspedTime, ImGuiCond_Always);
-						ImPlot::SetupAxisLimits(ImAxis_Y1,profile->m_AverageDuration * 0.5f,profile->m_MaximumDuration * 1.25f, ImGuiCond_Always);
-						ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
-						ImPlot::PlotLine(name.c_str(), &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y, profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2*sizeof(float));
-						ImPlot::EndPlot();
-					}
-					ImGui::Text("Frame Percentage: %.2f%%", profile->m_FramePercentage * 100.0f);
-					ImGui::Text("Duration: %fms", profile->GetDuration());
-					ImGui::Text("Minimum Duration: %fms", profile->m_MinimumDuration);
-					ImGui::Text("Maximum Duration: %fms", profile->m_MaximumDuration);
-					ImGui::Text("Average Duration: %fms", profile->m_AverageDuration);
-					if (ImGui::DragInt("Average Duration Count", &profile->m_AverageDurationCount, 1.0f, 3, 100))
-					{
-						profile->m_DurationRecords.resize(profile->m_AverageDurationCount);
-					}
-					ImGui::TreePop();
-				}
-			}
-			ImGui::End();
-		}
-	}
-
-	void EditorSubsystem::SceneWidgets()
-	{
-		//ImGui::SetNextWindowSize(ImVec2((WinX / 6), WinY), ImGuiCond_Appearing);
-		//ImGui::SetNextWindowPos(ImVec2(0, MenuBarHeight), ImGuiCond_Appearing); // + ViewportBarHeight
-		//ImGui::SetNextItemOpen(&ScenePanelOpen, ImGuiCond_Appearing);
-
-		//ImGui::SetNextWindowDockID(s_UISubsystem->DockLeftID, ImGuiCond_FirstUseEver);
-		//ImGui::Begin("Scene Panel", &ScenePanelOpen);
-		//ScenePropertiesWidget();
-		//SceneAddObjectWidget();
-		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->Update(0.0f);
-		if (m_GameObjectDetailsWidget)
-		{
-			m_GameObjectDetailsWidget->m_GameObjectRef = m_SceneOrganizerWidget->GetSelectedObject();
-			m_GameObjectDetailsWidget->Update(0.0f);
-		}
-		//ImGui::End();
-	}
-
-	/////////////// WIDGETS //////////////////////////////
-	void EditorSubsystem::ScenePropertiesWidget() const
-	{
-		ImGui::SeparatorText("Scene Properties");
-
-		// Viewport Mode
-		ImGui::Combo("Viewport Mode", &RendererSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collision\0\0");
-		
-		//CameraWidget(m_ActiveScene->m_ViewportCamera);
-
-		if (ImGui::TreeNode("Scene Settings"))
-		{
-			// Scene gravity
-			ImGui::DragFloat("Scene Gravity", &s_SceneSubsystem->m_ActiveScene->GetGravity(), DragSpeedDelta, -FLT_MAX, FLT_MAX);
-
-			// Viewport Camera Properties
-
-			ImGui::TreePop();
-		}
-	}
-	
 }

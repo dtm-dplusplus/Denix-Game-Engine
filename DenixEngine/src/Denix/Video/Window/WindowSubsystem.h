@@ -16,15 +16,17 @@ namespace Denix
 	public:
 		WindowSubsystem()
 		{
-			s_WindowSubSystem = this;
+			s_WindowSubsystem = this;
 		}
 
 		~WindowSubsystem() override
 		{
-			s_WindowSubSystem = nullptr;
+			s_WindowSubsystem = nullptr;
 		}
 
-		static WindowSubsystem* Get() { return s_WindowSubSystem; }
+		static void ToggleFullscreen();
+
+		static WindowSubsystem* Get() { return s_WindowSubsystem; }
 
 		void Initialize() override;
 
@@ -37,15 +39,15 @@ namespace Denix
 			DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
 		}   
 
-		static Ref<SDL_GLWindow> GetWindow() { return s_WindowSubSystem->m_Window; }
-		static Ref<Viewport> GetDefaultViewport() { return s_WindowSubSystem->m_DefaultViewport; }
+		static Ref<SDL_GLWindow> GetWindow() { return s_WindowSubsystem->m_Window; }
+		static Ref<Viewport> GetDefaultViewport() { return s_WindowSubsystem->m_DefaultViewport; }
 		/**
 		 * 
 		 * @return 
 		 */
-		static glm::vec2 GetWindowSize() { return s_WindowSubSystem->m_Window? s_WindowSubSystem->m_Window->GetWindowSize() : glm::vec2(0.0f); }
+		static glm::vec2 GetWindowSize() { return s_WindowSubsystem->m_Window? s_WindowSubsystem->m_Window->GetWindowSize() : glm::vec2(0.0f); }
 	private:
-		static WindowSubsystem* s_WindowSubSystem;
+		static WindowSubsystem* s_WindowSubsystem;
 
 		Ref<SDL_GLWindow> m_Window;
 

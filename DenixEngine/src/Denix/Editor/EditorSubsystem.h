@@ -2,29 +2,22 @@
 
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
-
+#include "Denix/Editor/EditorWidget.h"
 
 namespace Denix
 {
-	struct ShaderSource;
-	class ShaderEditor;
-	class Camera;
-	class GameObject;
 	class Scene;
-	class Material;
 	class SceneOrganizerWidget;
 	class GameObjectDetailsWidget;
 	class AssetBrowserWidget;
 	class InputDebuggerWidget;
-
+	class EngineProfilerWidget;
+	class PerformanceSettingsWidget;
+	
 	class EditorSubsystem : public Subsystem
 	{
 	public:
-		EditorSubsystem()
-		{
-			s_EditorSubsystem = this;
-			DE_LOG_CREATE(LogEditor)
-		}
+		EditorSubsystem();
 
 		~EditorSubsystem() override
 		{
@@ -39,48 +32,29 @@ namespace Denix
 		void Initialize() override;
 		void Deinitialize() override;
 
-		// Scene Viewer
-		void ScenePropertiesWidget() const;
-
 	private:
 		static EditorSubsystem* s_EditorSubsystem;
-		class WindowSubsystem* s_WindowSubsystem;
-		class SceneSubsystem* s_SceneSubsystem;
-		class InputSubsystem* s_InputSubsystem;
-		class UISubsystem* s_UISubsystem;
 
+		void MainMenuBar();
+
+		bool ShowDemoWindow = false;
+		bool ShowPlotDemoWindow = false;
+
+		float m_DragSpeed;
+		
 		Ref<Scene> m_ActiveScene;
 
+
 		Ref<SceneOrganizerWidget> m_SceneOrganizerWidget;
+		
 		Ref<GameObjectDetailsWidget> m_GameObjectDetailsWidget;
 
 		Ref<AssetBrowserWidget> m_AssetBrowserWidget;
-		
-		bool ShowDemoWindow = false;
-		bool ShowPlotDemoWindow = false;
-		float WinX = 0.0f;
-		float WinY = 0.0f;
 
-		float DragSpeed = 10.0f;
-		float DragSpeedDelta;
+		Ref<PerformanceSettingsWidget> m_PerformanceSettingsWidget;
 
-		// Profiler
-		bool m_IsProfilerOpen = false;
-		void Profiler();
-		
-		// UI
-		void SceneWidgets();
+		Ref<EngineProfilerWidget> m_EngineProfilerWidget;
 
-		// Input
 		Ref<InputDebuggerWidget> m_InputDebuggerWidget;
-
-		// Timer
-		bool m_IsTimerSettingsOpen = false;
-		static void TimerSettings();
-
-		// Menu Bar
-		void MenuBar();
-		float MenuBarHeight = 15.f;
-		float ViewportBarHeight = 15.f;
 	};
 }

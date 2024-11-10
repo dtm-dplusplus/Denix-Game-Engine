@@ -41,7 +41,7 @@ namespace Denix
         void LoadConfig();
         void SaveConfig();
         Ref<Asset> GetStartupScene() const;
-        void SetStartupScene(const Ref<Asset>& _ref);
+        static void SetStartupScene(const Ref<Asset>& _ref);
 
         static Engine* Get() { return s_Engine; }
 

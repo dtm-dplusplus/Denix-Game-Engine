@@ -234,9 +234,9 @@ namespace Denix
 	{
 		if(_ref)
 		{
-			m_StartupScene = _ref;
+			s_Engine->m_StartupScene = _ref;
 			DE_LOG(LogEngine, Info, "Set Startup Scene: {0}", _ref->GetAssetPath())
-			SaveConfig();
+			s_Engine->SaveConfig();
 		}
 	}
 }

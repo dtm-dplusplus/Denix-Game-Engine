@@ -3,7 +3,12 @@
 
 namespace Denix
 {
-    WindowSubsystem* WindowSubsystem::s_WindowSubSystem{ nullptr };
+    WindowSubsystem* WindowSubsystem::s_WindowSubsystem{ nullptr };
+
+    void WindowSubsystem::ToggleFullscreen()
+    {
+        s_WindowSubsystem->m_Window->ToggleFullscreen();
+    }
 
     void WindowSubsystem::Initialize()
     {

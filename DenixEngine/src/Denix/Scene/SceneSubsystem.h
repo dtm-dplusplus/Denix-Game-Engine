@@ -39,6 +39,7 @@ namespace Denix
 		void ThreadedSceneUpdate(float _deltaTime);
 		void Update(float _deltaTime) override;
 
+		static void SerializeScene();
 		static bool SerializeScene(const Scene* _scene);
 
 		// Template function to deserialize a scene with derived scene class type.
@@ -65,15 +66,20 @@ namespace Denix
 		static void UnloadScene(const std::string& _name);
 
 		// Open Scene Methods. The string & asset overloads are wrappers for the pass by seen method.
-		
 		static void OpenScene(const std::string& _name);
 		static void OpenScene(const Ref<Asset>& _sceneAsset);
 		static void OpenScene(const Ref<Scene>& _scene);
-		void PlayScene();
 
-		void StopScene();
+		
+		/**
+		 * Start the scene. This is called by the editor when the play button is pressed.
+		 * If this is a shipped game, this function should be called when the game starts.
+		 */
+		static void PlayScene();
 
-		void PauseScene();
+		static void StopScene();
+
+		static void PauseScene();
 
 	private:
 		static SceneSubsystem* s_SceneSubsystem;
