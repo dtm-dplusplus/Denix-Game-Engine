@@ -94,7 +94,7 @@ namespace Denix
 			return *this;
 		}
 
-		Shader(const ObjectInitializer& _objInit): Object(_objInit)
+		Shader(const ObjectInit& _objInit): Object(_objInit)
 		{
 			CreateProgram();
 		}

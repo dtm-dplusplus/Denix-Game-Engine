@@ -16,7 +16,7 @@ namespace Denix
 		 * @param _position Option to set the position of the camera 
 		 * @param _objInit ObjectInitializer for the GameObject 
 		 */
-		Camera(const ObjectInitializer& _objInit = {"Camera"}, const glm::vec3 _position = {0.0f, 5.0f, 25.0f}) : GameObject(ObjectInitializer(_objInit))
+		Camera(const ObjectInit& _objInit = {"Camera"}, const glm::vec3 _position = {0.0f, 5.0f, 25.0f}) : GameObject(ObjectInit(_objInit))
 		{
 			m_TransformComponent->SetPosition(_position);
 			m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));

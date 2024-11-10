@@ -16,7 +16,7 @@ namespace Denix
         m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
     }
 
-    GameObject::GameObject(const ObjectInitializer& _object_init) : BaseObject(_object_init)
+    GameObject::GameObject(const ObjectInit& _object_init) : BaseObject(_object_init)
     {
         m_TransformComponent = AddComponent<TransformComponent>();
         m_MeshComponent = AddComponent<MeshComponent>();
@@ -31,7 +31,6 @@ namespace Denix
         _out << YAML::Key << "m_Object" << YAML::BeginMap;
         {
             _out << YAML::Key << "m_Name" << YAML::Value << GetName();
-            _out << YAML::Key << "m_FriendlyName" << YAML::Value << GetFriendlyName();
         }
         _out << YAML::EndMap;
         // End Object Data
@@ -111,7 +110,7 @@ namespace Denix
         _out << YAML::Newline << YAML::Comment("Mesh Component");
         _out << YAML::Key << "m_MeshComponent" << YAML::BeginMap;
         {
-            _out << YAML::Key << "m_Mesh" << YAML::Value << m_MeshComponent->GetModel()->GetFriendlyName(); // Temp until asset scraper built
+            _out << YAML::Key << "m_Mesh" << YAML::Value << m_MeshComponent->GetModel()->GetName(); // Temp until asset scraper built
         }
         _out << YAML::EndMap;
         // End Mesh Component
@@ -123,7 +122,6 @@ namespace Denix
         if (const YAML::Node object = _in["m_Object"]; object)
         {
             m_Name = object["m_Name"].as<std::string>();
-            m_FriendlyName = object["m_FriendlyName"].as<std::string>();
         }
         
         // Render Component

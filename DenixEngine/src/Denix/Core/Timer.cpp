@@ -3,7 +3,7 @@
 
 namespace Denix
 {
-    Timer::Timer(const ObjectInitializer& _objInit, bool _start): Object(_objInit)
+    Timer::Timer(const ObjectInit& _objInit, bool _start): Object(_objInit)
     {
         if (_start) Start();
     }

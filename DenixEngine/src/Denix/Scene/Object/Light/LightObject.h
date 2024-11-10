@@ -15,7 +15,7 @@ namespace Denix
 	class Light : public GameObject
 	{
 	public:
-		Light(const ObjectInitializer& _objInit = {"Light"});
+		Light(const ObjectInit& _objInit = {"Light"});
 
 		void Update(float _deltaTime) override
 		{
@@ -80,7 +80,7 @@ namespace Denix
 	class PointLight : public Light
 	{
 	public:
-		PointLight(const ObjectInitializer& _objInit = ObjectInitializer("PointLight")) : Light(_objInit), constant(0.3f), linear(0.2f), exponent(0.1f)
+		PointLight(const ObjectInit& _objInit = ObjectInit("PointLight")) : Light(_objInit), constant(0.3f), linear(0.2f), exponent(0.1f)
 		{
 			m_LightType = (int)LightType::Point;
 		}
@@ -107,7 +107,7 @@ namespace Denix
 	class SpotLight : public PointLight
 	{
 	public:
-		SpotLight(const ObjectInitializer& _objInit = ObjectInitializer("SpotLight")) : PointLight(_objInit), m_Direction(0.0f, -1.0f,0.0f), m_Edge(5), m_ProcessedEdge(0)
+		SpotLight(const ObjectInit& _objInit = ObjectInit("SpotLight")) : PointLight(_objInit), m_Direction(0.0f, -1.0f,0.0f), m_Edge(5), m_ProcessedEdge(0)
 		{
 			m_LightType = (int)LightType::Spot;
 			m_ProcessedEdge = cosf(glm::radians(m_Edge));

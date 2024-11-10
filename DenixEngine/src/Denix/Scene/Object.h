@@ -12,16 +12,13 @@ namespace Denix
 	 * Only implents the name for now, will be expanded later
 	 * e.g. class to construct
 	*/
-	struct ObjectInitializer
+	struct ObjectInit
 	{
 		// Constructors
-		ObjectInitializer(): Name{ "Object" } {}
-		ObjectInitializer(std::string _name) : Name{std::move(_name)} {}
-
-		static ObjectInitializer Get() { return { "Object" }; }
+		ObjectInit(): Name{ "Object" } {}
+		ObjectInit(std::string _name) : Name{std::move(_name)} {}
 
 		std::string Name;
-
 	};
 
 	// Base class for all objects in the game
@@ -29,19 +26,16 @@ namespace Denix
 	{
 	public:
     	Object() = default;
-    	Object(const ObjectInitializer& _object_init) :
-			m_ID{ CreateNewID() },
-			m_FriendlyName{ _object_init.Name },
-			m_Name{ std::to_string(m_ID) + "_" + m_FriendlyName } {}
+    	Object(ObjectInit _object_init) :
+			m_ID{ CreateNewID() }, m_ObjectData{std::move(_object_init)} {}
     	
 		// Destructors
 		virtual ~Object() = default;
 
 		GLint GetID() const { return m_ID; }
 
-		std::string GetName() const { return m_Name; }
+		std::string GetName() const { return m_ObjectData.Name; }
 
-		std::string GetFriendlyName() { return m_FriendlyName; }
 
 		bool IsRubbish() const { return m_IsRubbish; }
 		void SetIsRubbish() { m_IsRubbish = true; }
@@ -50,9 +44,6 @@ namespace Denix
 		/* Name and ID should be hashed in some way in the future */
 		/* Unique Identifier */
 		GLint m_ID;
-
-		/* Friendly name of the object displayed to user */
-		std::string m_FriendlyName;
 
 		/* Name of the object */
 		std::string m_Name;
@@ -64,5 +55,7 @@ namespace Denix
 		/* Used to assign object IDs. Represents the tota number of objects created */
 		static GLint m_CountID;
 		static GLint CreateNewID() { return m_CountID++; }
+
+    	ObjectInit m_ObjectData;
 	};
 }

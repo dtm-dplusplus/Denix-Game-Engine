@@ -3,7 +3,7 @@
 #include "Denix/Physics/Collider.h"
 namespace Denix
 {
-    Plane::Plane(const ObjectInitializer& _objInit) : GameObject(_objInit)
+    Plane::Plane(const ObjectInit& _objInit) : GameObject(_objInit)
     {
         m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Plane"));
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
@@ -17,7 +17,7 @@ namespace Denix
         
     }
 
-    Cube::Cube(const ObjectInitializer& _objInit) : GameObject(_objInit)
+    Cube::Cube(const ObjectInit& _objInit) : GameObject(_objInit)
     {
 		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Cube"));
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
@@ -28,7 +28,7 @@ namespace Denix
         GameObject::Update(_deltaTime);
     }
 
-	Sphere::Sphere(const ObjectInitializer& _objInit) : GameObject(_objInit)
+	Sphere::Sphere(const ObjectInit& _objInit) : GameObject(_objInit)
 	{
 		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Sphere"));
 		m_PhysicsComponent->SetCollider(MakeRef<SphereCollider>());

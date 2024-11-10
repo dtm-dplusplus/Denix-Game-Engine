@@ -8,7 +8,7 @@ namespace Denix
     class Timer: public Object
     {
     public:
-        Timer(const ObjectInitializer& _objInit, bool _start = false);
+        Timer(const ObjectInit& _objInit, bool _start = false);
 
         void Start();
         void Stop();

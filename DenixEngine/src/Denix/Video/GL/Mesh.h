@@ -11,13 +11,13 @@ namespace Denix
     class Mesh: public Object
     {
     public:
-        Mesh(const ObjectInitializer& _objInit = { "Mesh" }) : Object(_objInit), 
+        Mesh(const ObjectInit& _objInit = { "Mesh" }) : Object(_objInit), 
 			m_VAO{ MakeRef<VertexArray>() },
 			m_VBO{ MakeRef<VertexBuffer>() },
 			m_IBO{ MakeRef<IndexBuffer>() } {}
 
 		Mesh(const float* _vertices, const unsigned int* _indices, const unsigned int _verticesCount,
-		     const unsigned int _numOfIndices, const ObjectInitializer& _objInit = {"Mesh"}) : Object(_objInit),
+		     const unsigned int _numOfIndices, const ObjectInit& _objInit = {"Mesh"}) : Object(_objInit),
 			m_VAO{ MakeRef<VertexArray>() },
 			m_VBO{ MakeRef<VertexBuffer>() },
 			m_IBO{ MakeRef<IndexBuffer>() } 

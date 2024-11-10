@@ -767,7 +767,7 @@ namespace Denix
 			ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
 
 			ImGui::Separator();
-			ImGui::Text(mat->GetShader()->GetFriendlyName().c_str());
+			ImGui::Text(mat->GetShader()->GetName().c_str());
 			ImGui::SameLine();
 			if (ImGui::Button("Edit Shader"))
 			{
@@ -828,7 +828,7 @@ namespace Denix
 				ImGui::EndCombo();
 			}*/
 
-		if (ImGui::BeginCombo("##MaterialName", _rendComp->GetMaterial()->GetFriendlyName().c_str(), ImGuiComboFlags_WidthFitPreview))
+		if (ImGui::BeginCombo("##MaterialName", _rendComp->GetMaterial()->GetName().c_str(), ImGuiComboFlags_WidthFitPreview))
 		{
 			for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
 			{
@@ -906,7 +906,7 @@ namespace Denix
 
 			const Ref<MeshComponent> meshComp = _selectedObject->GetMeshComponent();
 			std::string preview = "Empty";
-			if (const Ref<Model> model = meshComp->GetModel()) preview = model->GetFriendlyName();
+			if (const Ref<Model> model = meshComp->GetModel()) preview = model->GetName();
 
 			if (ImGui::BeginCombo("##ModelName", preview.c_str()))
 			{
@@ -916,7 +916,7 @@ namespace Denix
 					if (ImGui::Selectable(fst.c_str()))
 					{
 						meshComp->SetModel(snd);
-						DE_LOG(LogEditor, Info, "Model on {} set to: {}", _selectedObject->GetFriendlyName(), snd->GetName())
+						DE_LOG(LogEditor, Info, "Model on {} set to: {}", _selectedObject->GetName(), snd->GetName())
 					}
 					ImGui::PopID();
 				}
@@ -926,7 +926,7 @@ namespace Denix
 			ImGui::SameLine();
 			if (ImGui::ArrowButton("##ResetModel", ImGuiDir_Left))
 			{
-				DE_LOG(LogEditor, Info, "Model on {} reset", _selectedObject->GetFriendlyName())
+				DE_LOG(LogEditor, Info, "Model on {} reset", _selectedObject->GetName())
 					meshComp->SetModel(nullptr);
 			}
 			ImGui::SetItemTooltip("Reset");

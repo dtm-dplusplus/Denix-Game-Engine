@@ -14,7 +14,7 @@ namespace Denix
 	class Material: public BaseObject
 	{
 	public:
-		Material(const ObjectInitializer& _objInit = { "Material" });
+		Material(const ObjectInit& _objInit = { "Material" });
 		Material(const Ref<Material>& _other);
 		Material(const Ref<Asset>& _asset);
 		

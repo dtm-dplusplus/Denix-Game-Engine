@@ -5,7 +5,7 @@
 
 namespace Denix
 {
-    PhysicsComponent::PhysicsComponent(): Component(ObjectInitializer("Physics Component")), m_Collider(nullptr)
+    PhysicsComponent::PhysicsComponent(): Component(ObjectInit("Physics Component")), m_Collider(nullptr)
     {
 		m_BroadCollider = MakeRef<SphereCollider>();
 		m_BroadCollider->GetRadius() = 2.0f;
@@ -19,7 +19,7 @@ namespace Denix
     }
 
     PhysicsComponent::PhysicsComponent(const std::string& _parentName): 
-        Component(_parentName, ObjectInitializer("Physics Component")), m_Collider(nullptr)
+        Component(_parentName, ObjectInit("Physics Component")), m_Collider(nullptr)
     {
         m_BroadCollider = MakeRef<SphereCollider>();
         m_BroadCollider->GetRadius() = 2.0f;

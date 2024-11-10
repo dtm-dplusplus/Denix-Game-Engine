@@ -24,7 +24,7 @@
 #include "Denix/Core/TimerSubsystem.h"
 #include "Denix/Profile/ProfileSubsystem.h"
 
-#include "Denix/Editor/ShaderEditor.h"
+#include "Denix/Editor/Widget/ShaderEditor.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"

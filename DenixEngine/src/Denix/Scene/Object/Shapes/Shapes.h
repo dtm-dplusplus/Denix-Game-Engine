@@ -7,14 +7,14 @@ namespace Denix
 	class Plane : public GameObject
 	{
 	public:
-		Plane(const ObjectInitializer& _objInit = { "Plane" });
+		Plane(const ObjectInit& _objInit = { "Plane" });
 		void Update(float _deltaTime) override;
 	};
 
 	class Cube : public GameObject
 	{
 	public:
-		Cube(const ObjectInitializer& _objInit = { "Cube" });
+		Cube(const ObjectInit& _objInit = { "Cube" });
 
 		void Update(float _deltaTime) override;
 
@@ -23,7 +23,7 @@ namespace Denix
 	class Sphere : public GameObject
 	{
 	public:
-		Sphere(const ObjectInitializer& _objInit = { "Sphere" });
+		Sphere(const ObjectInit& _objInit = { "Sphere" });
 
 		void Update(float _deltaTime) override;
 

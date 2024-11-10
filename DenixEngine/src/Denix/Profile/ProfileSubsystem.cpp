@@ -27,7 +27,7 @@ namespace Denix
         // Get the engine timer profile
         if(const Ref<Profile>& timerProfile = TimerSubsystem::Get()->m_EngineProfile)
         {
-            m_Profiles[timerProfile->m_FriendlyName] = timerProfile;
+            m_Profiles[timerProfile->GetName()] = timerProfile;
             DE_LOG(LogProfile, Info, "Added Timer Profile to Profile Subsystem")
         }
         else
@@ -59,7 +59,7 @@ namespace Denix
         // Check if profile exists - This usually only happens when the profile is created in the DE_PROFILE macro
         if (!s_ProfileSubsystem->m_Profiles.contains(_name))
         {
-           s_ProfileSubsystem-> m_Profiles[_name] = MakeRef<Profile>(ObjectInitializer(_name));
+           s_ProfileSubsystem-> m_Profiles[_name] = MakeRef<Profile>(ObjectInit(_name));
         }
 
         if(const Ref<Profile>& profile = s_ProfileSubsystem->m_Profiles[_name])

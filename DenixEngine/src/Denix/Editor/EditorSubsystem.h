@@ -1,7 +1,6 @@
 #pragma once
 
-#include "imgui.h"
-#include "misc/cpp/imgui_stdlib.h"
+#include "Denix/UI/UISubsystem.h"
 
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
@@ -10,16 +9,12 @@
 
 namespace Denix
 {
-	class ShaderEditor;
-}
-
-namespace Denix
-{
 	struct ShaderSource;
 	class Camera;
 	class GameObject;
 	class Scene;
 	class Material;
+	class ShaderEditor;
 
 	class EditorSubsystem : public Subsystem
 	{

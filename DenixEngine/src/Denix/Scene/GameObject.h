@@ -20,7 +20,7 @@ namespace Denix
 	public:
 		// Constructors
 		GameObject();
-		GameObject(const ObjectInitializer& _object_init);
+		GameObject(const ObjectInit& _object_init);
 
 		// Destructors
 		~GameObject() override = default;

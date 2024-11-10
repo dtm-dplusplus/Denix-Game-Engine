@@ -18,10 +18,10 @@ namespace Denix
 	class Model : public Object
 	{
 	public:
-		Model(const ObjectInitializer& _objInit = {"Model"}): Object(_objInit) {}
+		Model(const ObjectInit& _objInit = {"Model"}): Object(_objInit) {}
 
 		Model(const std::string& _name, const std::string& _path) :
-			Object(ObjectInitializer(_name)), m_Path(_path) 
+			Object(ObjectInit(_name)), m_Path(_path) 
 		{
 			LoadModel(_path);
 		}

@@ -18,11 +18,11 @@ namespace Denix
     class BaseObject: public Object
     {
     public:
-        BaseObject() : Object(ObjectInitializer::Get()), m_ClassName("BaseObject")
+        BaseObject() : Object(ObjectInit()), m_ClassName("BaseObject")
         {
         }
 
-        BaseObject(const ObjectInitializer& _objInit): Object(_objInit), m_ClassName("BaseObject") {}
+        BaseObject(const ObjectInit& _objInit): Object(_objInit), m_ClassName("BaseObject") {}
         ~BaseObject() override = default;
 
         

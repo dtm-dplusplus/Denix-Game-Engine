@@ -49,7 +49,7 @@ namespace Denix
     class Profile: public Object
     {
     public:
-        Profile(const ObjectInitializer& _objInit);
+        Profile(const ObjectInit& _objInit);
 
         Ref<Timer> m_Timer;
 

@@ -15,7 +15,7 @@ namespace Denix
          *  @brief Constructor for the Viewport class. Will create a viewport with the size of the window
          * @param _objInit 
          */
-        Viewport(const ObjectInitializer& _objInit = {"Viewport"});
+        Viewport(const ObjectInit& _objInit = {"Viewport"});
 
         
         /**
@@ -24,7 +24,7 @@ namespace Denix
          * @param _height 
          * @param _objInit 
          */
-        Viewport(int _width, int _height, const ObjectInitializer& _objInit = {"Viewport"});
+        Viewport(int _width, int _height, const ObjectInit& _objInit = {"Viewport"});
 
         ~Viewport() override = default;
 

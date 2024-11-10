@@ -10,13 +10,13 @@ namespace Denix
 	MeshComponent final : public Component
 	{
 	public:
-		MeshComponent() : Component(ObjectInitializer("Mesh Component")),
+		MeshComponent() : Component(ObjectInit("Mesh Component")),
 			m_Model{ nullptr } {}
 
-		MeshComponent(const std::string& _parentName) : Component(_parentName, ObjectInitializer("Mesh Component")),
+		MeshComponent(const std::string& _parentName) : Component(_parentName, ObjectInit("Mesh Component")),
 			m_Model{ nullptr } {}
 
-		MeshComponent(const std::string& _parentName, const Ref<Model>& _model) : Component(_parentName, ObjectInitializer("Mesh Component")),
+		MeshComponent(const std::string& _parentName, const Ref<Model>& _model) : Component(_parentName, ObjectInit("Mesh Component")),
 			m_Model{ nullptr } {}
 
 		Ref<Model> GetModel() const { return m_Model; }

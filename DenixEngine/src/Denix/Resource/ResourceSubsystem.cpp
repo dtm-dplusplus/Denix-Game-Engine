@@ -159,18 +159,18 @@ namespace Denix
 	////////////////////////  SHADERS ///////////////////////////////
 	void ResourceSubsystem::AddShader(const Ref<Shader>& _shader)
 	{
-		if (s_ResourceSubsystem->ShaderExists(_shader->GetFriendlyName()))
+		if (s_ResourceSubsystem->ShaderExists(_shader->GetName()))
 		{
-			DE_LOG(LogShader, Error, "GLShader already exists: {}", _shader->GetFriendlyName())
+			DE_LOG(LogShader, Error, "GLShader already exists: {}", _shader->GetName())
 				return;
 		}
 
-		s_ResourceSubsystem->m_ShaderStore[_shader->GetFriendlyName()] = _shader;
+		s_ResourceSubsystem->m_ShaderStore[_shader->GetName()] = _shader;
 	}
 
 	bool ResourceSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
 	{
-		if (const Ref<Shader> program = MakeRef<Shader>(ObjectInitializer(_name)))
+		if (const Ref<Shader> program = MakeRef<Shader>(ObjectInit(_name)))
 		{
 			if (!program->GetGL_ID()) return false;
 
@@ -192,7 +192,7 @@ namespace Denix
 	bool ResourceSubsystem::ReloadShader(Ref<Shader>& _shader)
 	{
 		// Create a new shader to check if it compiles
-		const Ref<Shader> testShader = MakeRef<Shader>(ObjectInitializer(_shader->GetFriendlyName() + "_temp"));
+		const Ref<Shader> testShader = MakeRef<Shader>(ObjectInit(_shader->GetName() + "_temp"));
 		
 		if (!testShader->GetGL_ID()) return false;
 
@@ -201,7 +201,7 @@ namespace Denix
 		// Compile the new shader
 		if (!testShader->CompileProgram(false))
 		{
-			DE_LOG(LogResource, Error, "Shader Recompile failed: {}", _shader->GetFriendlyName())
+			DE_LOG(LogResource, Error, "Shader Recompile failed: {}", _shader->GetName())
 			return false;
 		}
 
@@ -217,7 +217,7 @@ namespace Denix
 
 		// Reassign the new shader ID to the old shader
 		_shader->m_GL_ID = testShader->m_GL_ID;
-		DE_LOG(LogResource, Info, "Shader Recompiled successfully: {}", _shader->GetFriendlyName())
+		DE_LOG(LogResource, Info, "Shader Recompiled successfully: {}", _shader->GetName())
 		
 		return true;
 	}
@@ -285,14 +285,14 @@ namespace Denix
 	////////////////////////  MATERIALS ///////////////////////////////
 	void ResourceSubsystem::AddMaterial(const Ref<Material>& _ref)
 	{
-		if (s_ResourceSubsystem->m_MaterialStore.contains(_ref->GetFriendlyName()))
+		if (s_ResourceSubsystem->m_MaterialStore.contains(_ref->GetName()))
 		{
 			DE_LOG(LogResource, Error, "Add Material: A material name: {} is already loaded", _ref->GetName())
 			return;
 		}
 
-		s_ResourceSubsystem->m_MaterialStore[_ref->GetFriendlyName()] = _ref;
-		DE_LOG(LogResource, Trace, "Material Loaded: {}", _ref->GetFriendlyName())
+		s_ResourceSubsystem->m_MaterialStore[_ref->GetName()] = _ref;
+		DE_LOG(LogResource, Trace, "Material Loaded: {}", _ref->GetName())
 	}
 
 	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _path)
@@ -313,14 +313,14 @@ namespace Denix
 	////////////////////////  MESHES ///////////////////////////////
 	bool ResourceSubsystem::AddMesh(const Ref<Mesh>& _mesh)
 	{
-		if (s_ResourceSubsystem->m_MeshStore.contains(_mesh->GetFriendlyName()))
+		if (s_ResourceSubsystem->m_MeshStore.contains(_mesh->GetName()))
 		{
 			DE_LOG(LogResource, Error, "Load Mesh: A Mesh name: {} is already loaded", _mesh->GetName())
 				return false;
 		}
 
-		DE_LOG(LogResource, Trace, "Mesh Loaded: {}", _mesh->GetFriendlyName())
-			s_ResourceSubsystem->m_MeshStore[_mesh->GetFriendlyName()] = _mesh;
+		DE_LOG(LogResource, Trace, "Mesh Loaded: {}", _mesh->GetName())
+			s_ResourceSubsystem->m_MeshStore[_mesh->GetName()] = _mesh;
 
 		return true;
 	}
@@ -334,8 +334,8 @@ namespace Denix
 				return false;
 		}
 
-		const Ref<Mesh> mesh = MakeRef<Mesh>(_vertices, _indices, _verticesCount, _numOfIndices, ObjectInitializer(_name));
-		DE_LOG(LogResource, Trace, "Mesh Loaded: {}", mesh->GetFriendlyName())
+		const Ref<Mesh> mesh = MakeRef<Mesh>(_vertices, _indices, _verticesCount, _numOfIndices, ObjectInit(_name));
+		DE_LOG(LogResource, Trace, "Mesh Loaded: {}", mesh->GetName())
 		s_ResourceSubsystem->m_MeshStore[_name] = mesh;
 
 		return true;
@@ -378,7 +378,7 @@ namespace Denix
 			}
 		}
 
-		DE_LOG(LogResource, Trace, "Model Loaded: {}", model->GetFriendlyName())
+		DE_LOG(LogResource, Trace, "Model Loaded: {}", model->GetName())
 			s_ResourceSubsystem->m_ModelStore[_name] = model;
 
 		return true;

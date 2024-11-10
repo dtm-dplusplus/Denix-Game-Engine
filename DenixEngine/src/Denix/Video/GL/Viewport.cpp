@@ -3,7 +3,7 @@
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
 
-Denix::Viewport::Viewport(const ObjectInitializer& _objInit): Object(_objInit)
+Denix::Viewport::Viewport(const ObjectInit& _objInit): Object(_objInit)
 {
     const glm::vec2 size = WindowSubsystem::GetWindowSize();
     m_Width = size.x;
@@ -14,7 +14,7 @@ Denix::Viewport::Viewport(const ObjectInitializer& _objInit): Object(_objInit)
     m_Shader = ResourceSubsystem::GetShader("FBShader");
 }
 
-Denix::Viewport::Viewport(const int _width, const int _height, const ObjectInitializer& _objInit) : Object(_objInit)
+Denix::Viewport::Viewport(const int _width, const int _height, const ObjectInit& _objInit) : Object(_objInit)
 {
     m_Width = _width;
     m_Height = _height;

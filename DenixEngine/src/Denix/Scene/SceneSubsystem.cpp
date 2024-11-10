@@ -416,7 +416,7 @@ namespace Denix
 		for (const auto& newGameObject : sceneObjects)
 			_scene->SpawnGameObject(newGameObject);
 		
-		DE_LOG(LogScene, Info, "Deserialized scene: {}", _scene->GetFriendlyName())
+		DE_LOG(LogScene, Info, "Deserialized scene: {}", _scene->GetName())
 	}
 
 	bool SceneSubsystem::DeserializeSceneObjects(const YAML::Node& _sceneNode,

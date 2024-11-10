@@ -18,7 +18,7 @@ namespace Denix
 	{
 	public:
 
-		Scene(const std::string& _name = "Scene") : BaseObject(ObjectInitializer(_name)),
+		Scene(const std::string& _name = "Scene") : BaseObject(ObjectInit(_name)),
 			m_SceneName{ _name },
 			m_ViewportCamera{ nullptr },
 			m_ActiveCamera{ nullptr },
@@ -34,7 +34,7 @@ namespace Denix
 
 		virtual bool Load()
 		{
-			m_ViewportCamera = MakeRef<Camera>(ObjectInitializer("Viewport Camera"));
+			m_ViewportCamera = MakeRef<Camera>(ObjectInit("Viewport Camera"));
 
 			m_IsLoaded = true;
 

@@ -5,7 +5,7 @@
 
 namespace Denix
 {
-    Profile::Profile(const ObjectInitializer& _objInit): Object(_objInit)
+    Profile::Profile(const ObjectInit& _objInit): Object(_objInit)
     {
         m_Timer = MakeRef<Timer>(_objInit);
         m_DurationCount = 0;

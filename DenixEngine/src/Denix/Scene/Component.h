@@ -11,11 +11,11 @@ namespace Denix
 	{
 	public:
 		// Constructors
-		Component(const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : BaseObject(_objectInitializer)
+		Component(const ObjectInit& _objectInitializer = ObjectInit()) : BaseObject(_objectInitializer)
 		{
 		}
 
-		Component(const std::string& _parentName, const ObjectInitializer& _objectInitializer = ObjectInitializer::Get()) : BaseObject(_objectInitializer), m_ParentObjectName{ _parentName }
+		Component(const std::string& _parentName, const ObjectInit& _objectInitializer = ObjectInit()) : BaseObject(_objectInitializer), m_ParentObjectName{ _parentName }
 		{
 		}
 

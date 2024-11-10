@@ -4,7 +4,7 @@
 
 namespace Denix
 {
-    Scene::Scene(const Ref<Asset>& _sceneAsset): BaseObject(ObjectInitializer(_sceneAsset->GetAssetName())),
+    Scene::Scene(const Ref<Asset>& _sceneAsset): BaseObject(ObjectInit(_sceneAsset->GetAssetName())),
                                                  m_SceneName{ _sceneAsset->GetAssetName() },
                                                  m_SceneAsset{ _sceneAsset },
                                                  m_ViewportCamera{ nullptr },

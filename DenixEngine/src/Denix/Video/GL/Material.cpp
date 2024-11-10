@@ -5,7 +5,7 @@
 
 namespace Denix
 {
-	Material::Material(const ObjectInitializer& _objInit) : BaseObject({_objInit}), AO(0), Metallic(0), Roughness(0)
+	Material::Material(const ObjectInit& _objInit) : BaseObject({_objInit}), AO(0), Metallic(0), Roughness(0)
 	{
 		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 	}
@@ -34,7 +34,7 @@ namespace Denix
 		_out << YAML::Key << "m_Asset" << YAML::Value << (m_Asset? m_Asset->GetAssetPath() : "");
 		_out << YAML::Key << "m_BaseTexture" << YAML::Value << (m_BaseTexture? m_BaseTexture->GetFileLocation() : "");
 		_out << YAML::Key << "m_BaseColor" << YAML::Value << EmitVec3(m_BaseColor);
-		_out << YAML::Key << "m_Shader" << YAML::Value << m_Shader->GetFriendlyName();
+		_out << YAML::Key << "m_Shader" << YAML::Value << m_Shader->GetName();
 		_out << YAML::Key << "m_SpecularIntensity" << YAML::Value << m_SpecularIntensity;
 		_out << YAML::Key << "m_SpecularPower" << YAML::Value << m_SpecularIntensity;
 		_out << YAML::EndMap;

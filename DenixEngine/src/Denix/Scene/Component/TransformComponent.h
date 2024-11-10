@@ -28,8 +28,8 @@ namespace Denix
 	{
 	public:
 		// Constructors
-		TransformComponent() : Component(ObjectInitializer("Transform Component")) {}
-		TransformComponent(const std::string& _parentName) : Component(_parentName, ObjectInitializer("Transform Component")) {}
+		TransformComponent() : Component(ObjectInit("Transform Component")) {}
+		TransformComponent(const std::string& _parentName) : Component(_parentName, ObjectInit("Transform Component")) {}
 
 		// Destructors
 		~TransformComponent() override = default;

@@ -6,7 +6,7 @@
 namespace Denix
 {
 
-	RenderComponent::RenderComponent(): Component(ObjectInitializer("Render Component"))
+	RenderComponent::RenderComponent(): Component(ObjectInit("Render Component"))
 	{
 		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 		m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
@@ -23,7 +23,7 @@ namespace Denix
 		m_AffectsLighting = _other->m_AffectsLighting;
 	}
 
-	RenderComponent::RenderComponent(const std::string& _parentName): Component(_parentName, ObjectInitializer("Render Component"))
+	RenderComponent::RenderComponent(const std::string& _parentName): Component(_parentName, ObjectInit("Render Component"))
 	{
 		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
 		m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
