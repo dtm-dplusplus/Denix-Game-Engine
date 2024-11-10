@@ -1,4 +1,3 @@
-#include "depch.h"
 #include "SceneSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
 #include "Denix/Resource/ResourceSubsystem.h"
@@ -8,6 +7,7 @@
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
 #include "Denix/Resource/Asset.h"
+#include "Denix/Engine.h"
 
 namespace Denix
 {
@@ -17,14 +17,16 @@ namespace Denix
 	{
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
 
-		// Set the startup scene
-		bool foundStartupScene = false;
-		
 		// Check engine config for startup scene
-		if(false)
+		if(m_StartupScene && FileSubsystem::FileExists(m_StartupScene->GetAssetPath()))
 		{
-			// Engine config stuff
-			foundStartupScene = true;
+			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(m_StartupScene->GetAssetName())))
+			{
+				scene->m_SceneName = m_StartupScene->GetAssetName();
+				scene->m_SceneAsset =m_StartupScene;
+				OpenScene(scene);
+				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
+			}
 		}
 
 		// Search Resources for scenes
@@ -32,9 +34,10 @@ namespace Denix
 		{
 			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(sceneAsset->GetAssetName())))
 			{
+				scene->m_SceneName = sceneAsset->GetAssetName();
+				scene->m_SceneAsset = sceneAsset;
 				OpenScene(scene);
 				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
-				foundStartupScene = true;
 			}
 		}
 		
@@ -52,7 +55,6 @@ namespace Denix
 	{
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitialized")
 	}
-
 
 	Ref<Camera> SceneSubsystem::GetActiveCamera() const
 	{
@@ -85,8 +87,10 @@ namespace Denix
 		}
 
 		s_SceneSubsystem->m_LoadedScenes[_scene->GetSceneName()] = _scene;
-		DE_LOG(LogScene, Trace, "Scene loaded: {} ", _scene->GetSceneName())
 
+		if(_scene->m_SceneAsset) DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->m_SceneAsset->GetAssetName())
+		else DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->GetSceneName())
+		
 		return true;
 	}
 	
@@ -125,7 +129,11 @@ namespace Denix
 			return;
 		}
 
-		OpenScene(_sceneAsset->GetAssetName());
+		if (const Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(_sceneAsset->GetAssetName())))
+		{
+			scene->m_SceneAsset = _sceneAsset;
+			OpenScene(scene);
+		}
 	}
 	
 	void SceneSubsystem::OpenScene(const Ref<Scene>& _scene)
@@ -145,7 +153,7 @@ namespace Denix
 		// Set dependencies with new scene pointer
 		RendererSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
 		PhysicsSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
-		EditorSubsystem::Get()->SetActiveScene(s_SceneSubsystem->m_ActiveScene);
+		if(EditorSubsystem::Get()) EditorSubsystem::Get()->SetActiveScene(s_SceneSubsystem->m_ActiveScene);
 
 		// Begin new scene
 		s_SceneSubsystem->m_ActiveScene->BeginScene();
@@ -198,6 +206,17 @@ namespace Denix
 		DE_LOG(LogScene, Trace, "Scene Paused")
 	}
 
+	SceneSubsystem::SceneSubsystem(const Ref<Asset>& _startupScene)
+	{
+		s_SceneSubsystem = this;
+		m_StartupScene = _startupScene;
+		m_SceneThreaded = true;
+		
+		DE_LOG_CREATE(LogScene)
+		DE_LOG_CREATE(LogScene)
+		DE_LOG_CREATE(LogObject)
+	}
+
 	void SceneSubsystem::CleanRubbish()
 	{
 		// Cleanup rubbish objects here. TEMP loop, will be moved to a queue
@@ -238,6 +257,13 @@ namespace Denix
 
 	void SceneSubsystem::Update(float _deltaTime)
 	{
+		// Validate Scene
+		if (!m_ActiveScene)
+		{
+			DE_LOG(LogScene, Error, "No active scene")
+			return;
+		}
+		
 		if (m_ActiveScene->m_RequestStop)
 		{
 			StopScene();
@@ -257,11 +283,60 @@ namespace Denix
 			cam->Update(_deltaTime);
 		}
 
-		// Scene update implementation 
+		// Scene update implementation
+		if (m_SceneThreaded && m_ActiveScene->m_SceneObjects.size() > 6)
+		{
+			// Threaded Scene Update
+			ThreadedSceneUpdate(_deltaTime);
+		}
+		else
+		{
+			// Single Threaded Scene Update
+			for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
+			{
+				// Update the GameObject -  This will always be here
+				gameObject->Update(_deltaTime);
+			}
+		}
+		
+		
+		// Client Scene Update
 		m_ActiveScene->Update(_deltaTime);
+		
 		if(m_ActiveScene->IsPlaying()) m_ActiveScene->Update(_deltaTime);
 	}
 
+	void SceneSubsystem::ThreadedSceneUpdate(float _deltaTime)
+	{
+		std::vector<Ref<GameObject>>& sceneObjects = m_ActiveScene->m_SceneObjects;
+		
+		auto updateFunction = [_deltaTime](const std::vector<Ref<GameObject>>::iterator& _begin, const std::vector<Ref<GameObject>>::iterator& _end)
+		{
+			for (auto it = _begin; it != _end; ++it)
+			{
+				// Render the GameObject
+				(*it)->Update(_deltaTime);
+			}
+		};
+
+		// Get number of threads
+		size_t threadCount = std::thread::hardware_concurrency();
+		if (threadCount == 0) threadCount = 2; // Fallback to 2 threads if hardware_concurrency() returns 0
+		
+		std::vector<std::thread> threads;
+		unsigned int chunkSize = (sceneObjects.size() + threadCount - 1) / threadCount; // Calculate chunk size
+
+		for (unsigned int i = 0; i < threadCount; ++i)
+		{
+			auto start = sceneObjects.begin() + i * chunkSize;
+			size_t chunkEnd = std::distance(sceneObjects.begin(), start) + chunkSize;
+			auto end = chunkEnd < sceneObjects.size()? sceneObjects.begin() + chunkEnd : sceneObjects.end();
+			if (start < end) threads.emplace_back(updateFunction, start, end);
+		}
+
+		for (std::thread &thread : threads) if (thread.joinable()) thread.join();
+	}
+	
 	bool SceneSubsystem::SerializeScene(const Scene* _scene)
 	{
 		// Check if the pointer is valid
@@ -339,7 +414,7 @@ namespace Denix
 		DeserializeSceneObjects(sceneNode, sceneObjects);
 		
 		for (const auto& newGameObject : sceneObjects)
-			_scene->SpawnSceneObject(newGameObject);
+			_scene->SpawnGameObject(newGameObject);
 		
 		DE_LOG(LogScene, Info, "Deserialized scene: {}", _scene->GetFriendlyName())
 	}
@@ -400,7 +475,7 @@ namespace Denix
 	{
 		if (s_SceneSubsystem->m_ActiveScene)
 		{
-			s_SceneSubsystem->m_ActiveScene->SpawnSceneObject(_object);
+			s_SceneSubsystem->m_ActiveScene->SpawnGameObject(_object);
 		}
 		else
 		{

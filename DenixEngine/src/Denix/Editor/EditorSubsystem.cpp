@@ -1,20 +1,6 @@
-#include "depch.h"
 #include "EditorSubsystem.h"
 
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "Denix/Input/InputSubsystem.h"
-#include "Denix/Physics/Collider.h"
-#include "Denix/Resource/ResourceSubsystem.h"
-#include "Denix/Scene/SceneSubsystem.h"
-#include "Denix/Video/Window/WindowSubsystem.h"
-#include "Denix/UI/UISubsystem.h"
-#include "Denix/Video/Renderer/RendererSubSystem.h"
-#include "Denix/Scene/Scene.h"
-#include "Denix/Scene/Object/Shapes/Shapes.h"
-#include "Denix/Physics/PhysicsSubsystem.h"
-#include "Denix/Core/TimerSubsystem.h"
-#include "Denix/Editor/ShaderEditor.h"
+#include "Denix.h"
 
 namespace Denix
 {
@@ -29,7 +15,7 @@ namespace Denix
 		s_InputSubsystem = InputSubsystem::Get();
 		s_RendererSubsystem = RendererSubsystem::Get();
 		s_UISubsystem = UISubsystem::Get();
-
+		m_ActiveScene =s_SceneSubsystem->GetActiveScene();
 		DE_LOG(LogEditor, Info, "Editor Subsystem Initialized")
 	}
 
@@ -60,39 +46,48 @@ namespace Denix
 		if(m_IsTimerSettingsOpen) TimerSettings();
 		if(m_IsInputPanelOpen) s_InputSubsystem->InputPanel();
 		if (m_IsPhysicsSettingsOpen) PhysicsSettings();
+		if (m_IsAssetBrowserOpen) AssetBrowser();
+		if (m_IsProfilerOpen) Profiler();
 	}
-
-	void EditorSubsystem::SetActiveScene(const Ref<Scene>& _scene)
-	{
-		m_ActiveScene = _scene;
-	}
-
-	void EditorSubsystem::PhysicsSettings()
-	{
-		ImGui::SetNextWindowSize(ImVec2((WinX / 5), WinY), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2((WinX / 2), WinY / 2), ImGuiCond_Appearing);
-
-		if (ImGui::Begin("Physics Settings", &m_IsPhysicsSettingsOpen))
-		{
-			ImGui::Checkbox("Collision Detection", &PhysicsSubsystem::CollisionDetectionEnabledRef());
-			ImGui::Checkbox("Collision Response", &PhysicsSubsystem::CollisionResponseEnabledRef());
-			ImGui::End();
-		}
-	}
-
-	void EditorSubsystem::TimerSettings()
-	{
-		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
-		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
-		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
-	}
-
-	void EditorSubsystem::MenuBar()
+	
+		void EditorSubsystem::MenuBar()
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+				if (ImGui::BeginMenu("Open Scene", "Alt+F4"))
+				{ 
+					for (const auto& levelAsset : ResourceSubsystem::GetSceneStore())
+					{
+						if (ImGui::MenuItem(levelAsset->GetAssetName().c_str()))
+						{
+							s_SceneSubsystem->OpenScene(levelAsset);
+							break;
+						}
+					}
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::Button("Save Scene"))
+				{
+					SceneSubsystem::SerializeScene(m_ActiveScene.get());
+
+					// Temp method to save any changes to materials
+					for (const auto& mat : ResourceSubsystem::GetMaterialStore())
+					{
+						// Save Changes to asset - This should be done in the editor
+						YAML::Emitter matAsssetEmitter;
+						matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
+						matAsssetEmitter << YAML::BeginMap;
+						mat.second->Serialize(matAsssetEmitter);
+						matAsssetEmitter << YAML::EndMap;
+
+						FileSubsystem::WriteFile(mat.second->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
+						DE_LOG(LogScene, Info, "Serialized Material");
+					}
+				}
+				
 				if (ImGui::MenuItem("Quit", "Alt+F4")) 
 				{
 					s_WindowSubsystem->GetWindow()->RequestClose();
@@ -100,15 +95,39 @@ namespace Denix
 
 				ImGui::EndMenu();
 			}
-			
+
+			if (ImGui::BeginMenu("Edit"))
+			{
+				if (ImGui::MenuItem("Undo", "Ctrl+Z", false, false)) {}
+				if (ImGui::MenuItem("Redo", "Ctrl+Y", false, false)) {}
+				ImGui::Separator();
+				if (ImGui::MenuItem("Cut", "Ctrl+X", false, false)) {}
+				if (ImGui::MenuItem("Copy", "Ctrl+C", false, false)) {}
+				if (ImGui::MenuItem("Paste", "Ctrl+V", false, false)) {}
+
+				ImGui::Text("Project Settings");
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Scene"))
+			{
+				if(ImGui::MenuItem("Set as Startup Scene"))
+				{
+					Engine::Get()->SetStartupScene(m_ActiveScene->m_SceneAsset);
+				}
+				ImGui::EndMenu();
+			}
+				
 			if (ImGui::BeginMenu("Window"))
 			{
 				ImGui::SeparatorText("Panels");
 				ImGui::Checkbox("Scene Panel", &m_IsScenePanelOpen);
 				ImGui::Checkbox("Details Panel", &m_IsDetailsPanelOpen);
 				ImGui::Checkbox("Timer Settings", &m_IsTimerSettingsOpen);
+				ImGui::Checkbox("Profiler", &m_IsProfilerOpen);
 				ImGui::Checkbox("Physics Settings", &m_IsPhysicsSettingsOpen);
 				ImGui::Checkbox("Input Debugger", &m_IsInputPanelOpen);
+				ImGui::Checkbox("Asset Browser", &m_IsAssetBrowserOpen);
 				ImGui::EndMenu();
 			}
 
@@ -148,8 +167,21 @@ namespace Denix
 			// Scene Properties
 			if (ImGui::BeginMenu("Tools"))
 			{
+				if(ImGui::BeginMenu("Reflection"))
+				{
+					for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)
+					{
+						ImGui::MenuItem(key.c_str());
+					}
+					ImGui::EndMenu();
+				}
+				
 				ImGui::Checkbox("Show Demo Window", &ShowDemoWindow);
 				if (ShowDemoWindow) ImGui::ShowDemoWindow(&ShowDemoWindow);
+
+				ImGui::Checkbox("Show Plot Demo Window", &ShowPlotDemoWindow);
+				if (ShowPlotDemoWindow) ImPlot::ShowDemoWindow(&ShowPlotDemoWindow);
+					
 				ImGui::DragFloat("UI Drag Speed", &DragSpeed, DragSpeed, 0.1f, 10.0f);
 
 				ImGui::ColorEdit4("Clear Color", &s_WindowSubsystem->GetWindow()->GetClearColor()[0]);
@@ -157,6 +189,132 @@ namespace Denix
 			}
 
 			ImGui::EndMainMenuBar();
+		}
+	}
+	
+	void EditorSubsystem::SetActiveScene(const Ref<Scene>& _scene)
+	{
+		m_ActiveScene = _scene;
+	}
+
+	void EditorSubsystem::PhysicsSettings()
+	{
+		ImGui::SetNextWindowSize(ImVec2((WinX / 5), WinY), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2((WinX / 2), WinY / 2), ImGuiCond_Appearing);
+
+		if (ImGui::Begin("Physics Settings", &m_IsPhysicsSettingsOpen))
+		{
+			ImGui::Checkbox("Collision Detection", &PhysicsSubsystem::CollisionDetectionEnabledRef());
+			ImGui::Checkbox("Collision Response", &PhysicsSubsystem::CollisionResponseEnabledRef());
+			ImGui::End();
+		}
+	}
+
+	void EditorSubsystem::TimerSettings()
+	{
+		ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
+		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
+		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
+		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+	}
+
+
+
+	void EditorSubsystem::AssetBrowser()
+	{
+		if (ImGui::CollapsingHeader("Assets"))
+        {
+			ImGui::Text("Project Name: %s", FileSubsystem::GetProjectName().c_str());
+			ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
+			ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
+			
+            if (ImGui::TreeNode("Materials"))
+            {
+                for (const auto& mat : ResourceSubsystem::GetMaterialStore())
+                {
+                    ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
+                }
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Scenes"))
+            {
+                
+                for (const auto& scene : ResourceSubsystem::GetSceneStore())
+                {
+                    ImGui::Text(scene->GetAssetName().c_str());
+                    ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
+                }
+                ImGui::TreePop();
+            }
+        }
+	}
+
+	void EditorSubsystem::Profiler()
+	{
+		ImGui::Begin("Profiler", &m_IsProfilerOpen);
+		{
+			if (ImGui::CollapsingHeader("Thread", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
+			{
+				ImGui::Text("Thread Count: %d", std::thread::hardware_concurrency());
+				ImGui::SeparatorText("Scene Thread");
+				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_SceneThreaded);
+			}
+
+			const auto& profiles = ProfileSubsystem::Get()->GetProfiles();
+			const float elaspedTime = TimerSubsystem::GetProgramElapsedTime();
+
+			ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
+			ImGui::Text("Program time: %fms", TimerSubsystem::GetProgramElapsedTime());
+			ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTime());
+			ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+
+
+			static float history = 5.0f;
+			ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
+
+			const Ref<Profile>& engprofile = TimerSubsystem::Get()->m_EngineProfile;
+
+			if (ImPlot::BeginPlot("Profile Visualizer", nullptr, "Frame Time (ms)", ImVec2(-1, 0), ImPlotFlags_None,
+								  ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
+			{
+				ImPlot::SetupAxisLimits(ImAxis_X1, elaspedTime - history, elaspedTime, ImGuiCond_Always);
+				ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0f, engprofile->m_AverageDuration * 1.5f, ImGuiCond_Always);
+				ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+				for (const auto& [name, profile] : profiles)
+				{
+					if (profile->m_Buffer.Data.size() > 0)
+						ImPlot::PlotLine(name.c_str(), &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y,
+										 profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2 * sizeof(float));
+				}
+				ImPlot::EndPlot();
+			}
+
+			for (const auto& [name, profile] : profiles)
+			{
+				if (ImGui::TreeNode(name.c_str()))
+				{
+					if (ImPlot::BeginPlot("##Profiling", nullptr, "Frame Time (ms)",ImVec2(-1, 0), ImPlotFlags_None, ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
+					{
+						ImPlot::SetupAxisLimits(ImAxis_X1,elaspedTime - history, elaspedTime, ImGuiCond_Always);
+						ImPlot::SetupAxisLimits(ImAxis_Y1,profile->m_AverageDuration * 0.5f,profile->m_MaximumDuration * 1.25f, ImGuiCond_Always);
+						ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
+						ImPlot::PlotLine(name.c_str(), &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y, profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2*sizeof(float));
+						ImPlot::EndPlot();
+					}
+					ImGui::Text("Frame Percentage: %.2f%%", profile->m_FramePercentage * 100.0f);
+					ImGui::Text("Duration: %fms", profile->GetDuration());
+					ImGui::Text("Minimum Duration: %fms", profile->m_MinimumDuration);
+					ImGui::Text("Maximum Duration: %fms", profile->m_MaximumDuration);
+					ImGui::Text("Average Duration: %fms", profile->m_AverageDuration);
+					if (ImGui::DragInt("Average Duration Count", &profile->m_AverageDurationCount, 1.0f, 3, 100))
+					{
+						profile->m_DurationRecords.resize(profile->m_AverageDurationCount);
+					}
+					ImGui::TreePop();
+				}
+			}
+			ImGui::End();
 		}
 	}
 
@@ -208,6 +366,7 @@ namespace Denix
 		// Viewport Mode
 		ImGui::Combo("Viewport Mode", &RendererSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collision\0\0");
 		
+		CameraWidget(m_ActiveScene->m_ViewportCamera);
 
 		if (ImGui::TreeNode("Scene Settings"))
 		{
@@ -215,7 +374,6 @@ namespace Denix
 			ImGui::DragFloat("Scene Gravity", &s_SceneSubsystem->m_ActiveScene->GetGravity(), DragSpeedDelta, -FLT_MAX, FLT_MAX);
 
 			// Viewport Camera Properties
-			CameraWidget(m_ActiveScene->m_ViewportCamera);
 
 			ImGui::TreePop();
 		}
@@ -244,24 +402,15 @@ namespace Denix
 						createdObject = true;
 						if (name == "Plane")
 						{
-							const Ref<Plane> plane = MakeRef<Plane>();
-							plane->BeginScene();
-							if (m_ActiveScene->IsPlaying()) plane->BeginPlay();
-							m_ActiveScene->m_SceneObjects.push_back(plane);
+							m_ActiveScene->SpawnGameObject<Plane>();
 						}
 						else if (name == "Cube")
 						{
-							const Ref<Cube> cube = MakeRef<Cube>();
-							cube->BeginScene();
-							if (m_ActiveScene->IsPlaying()) cube->BeginPlay();
-							m_ActiveScene->m_SceneObjects.push_back(cube);
+							m_ActiveScene->SpawnGameObject<Cube>();
 						}
 						else if (name == "Sphere")
 						{
-							const Ref<Sphere> sphere = MakeRef<Sphere>();
-							sphere->BeginScene();
-							if (m_ActiveScene->IsPlaying()) sphere->BeginPlay();
-							m_ActiveScene->m_SceneObjects.push_back(sphere);
+							m_ActiveScene->SpawnGameObject<Sphere>();
 						}
 					}
 				}
@@ -786,6 +935,8 @@ namespace Denix
 
 	void EditorSubsystem::CameraWidget(const Ref<GameObject>& _camera) const
 	{
+		if(!_camera) return;
+		
 		if (const Ref<Camera> camera = CastRef<Camera>(_camera))
 		{
 			ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
@@ -818,6 +969,10 @@ namespace Denix
 
 				if (ImGui::TreeNode("Advance Camera Settings"))
 				{
+					ImGui::DragFloat3("Forward", &camera->GetCameraFront()[0], DragSpeedDelta);
+					ImGui::DragFloat3("Right", &camera->m_CameraRight[0], DragSpeedDelta);
+					ImGui::DragFloat3("Up", &camera->m_CameraUp[0], DragSpeedDelta);
+					
 					ImGui::DragFloat3("Camera Position",
 					                  &m_ActiveScene->m_ViewportCamera->GetTransformComponent()->GetPosition()[0],
 					                  DragSpeedDelta);

@@ -1,7 +1,10 @@
  #include "Denix.h"
-#include "DevScene.h"
 
-using namespace Denix;
+#include "Scene/CPGScene.h"
+#include "Scene/DevScene.h"
+#include "Scene/BenchmarkScene.h"
+
+//using namespace Denix;
 
 class DevProject final: public Engine
 {
@@ -13,6 +16,8 @@ public:
 
 		m_ProjectName = "DevProject";
 		ReflectionSubsystem::Register<DevScene>();
+		ReflectionSubsystem::Register<CPGScene>();
+		ReflectionSubsystem::Register<BenchmarkScene>();
 	}
 
 	void Initialize() override
@@ -20,7 +25,6 @@ public:
 		Engine::Initialize();
 
 		// Add any client code once the engine has been initialized
-
 	}
 };
 

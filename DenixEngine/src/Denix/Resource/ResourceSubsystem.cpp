@@ -8,6 +8,7 @@
 #include "Denix/Video/GL/Mesh.h"
 #include "Denix/Video/GL/Model.h"
 #include "Denix/Resource/Asset.h"
+#include "yaml-cpp/yaml.h"
 
 namespace fs = std::filesystem;
 
@@ -140,7 +141,7 @@ namespace Denix
 
 		DE_LOG(LogResource, Trace, "Resource Subsystem Deinitialized")
 	}
-
+	
 
 	Ref<Asset> ResourceSubsystem::GetSceneAsset(const std::string& _path)
 	{

@@ -31,6 +31,11 @@ add_library(Imgui STATIC
         ${ENGINE_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_sdl3.cpp
         ${ENGINE_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_sdl3.h
         ${ENGINE_SOURCE_DIR}/contrib/imgui/backends/imgui_impl_opengl3.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/implot.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/implot.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/implot_internal.h
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/implot_items.cpp
+        ${ENGINE_SOURCE_DIR}/contrib/imgui/implot_demo.cpp
 )
 
 # Add Dependency to support the SDL3 Backend

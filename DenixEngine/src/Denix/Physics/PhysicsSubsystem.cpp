@@ -1,5 +1,4 @@
-﻿#include "depch.h"
-#include "PhysicsSubsystem.h"
+﻿#include "PhysicsSubsystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Physics/PhysicsComponent.h"
 #include "Denix/Physics/Collider.h"

@@ -1,4 +1,3 @@
-#include "depch.h"
 #include "InputSubsystem.h"
 
 #include "backends/imgui_impl_sdl3.h"
@@ -24,6 +23,13 @@ namespace Denix
 		m_Window = nullptr;
         m_SDL_KeyboardState = nullptr;
 		Subsystem::Deinitialize();
+	}
+
+	void InputSubsystem::Update(float _deltaTime)
+	{
+		Subsystem::Update(_deltaTime);
+
+		Poll();
 	}
 
 	void InputSubsystem::Poll()

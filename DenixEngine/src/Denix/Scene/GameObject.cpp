@@ -8,22 +8,20 @@
 
 namespace Denix
 {
-   
-    
+    GameObject::GameObject()
+    {
+        m_TransformComponent = AddComponent<TransformComponent>();
+        m_MeshComponent = AddComponent<MeshComponent>();
+        m_RenderComponent = AddComponent<RenderComponent>();
+        m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
+    }
+
     GameObject::GameObject(const ObjectInitializer& _object_init) : BaseObject(_object_init)
     {
-        m_TransformComponent = MakeRef<TransformComponent>(GetName());
-        m_Components["Transform"] = m_TransformComponent;
-
-        m_MeshComponent = MakeRef<MeshComponent>(GetName());
-        m_Components["Mesh"] = m_MeshComponent;
-
-        m_RenderComponent = MakeRef<RenderComponent>(GetName());
-        m_Components["Render"] = m_RenderComponent;
-
-        m_PhysicsComponent = MakeRef<PhysicsComponent>(GetName());
-        m_PhysicsComponent->m_ParentTransform = m_TransformComponent;
-        m_Components["Physics"] = m_PhysicsComponent;
+        m_TransformComponent = AddComponent<TransformComponent>();
+        m_MeshComponent = AddComponent<MeshComponent>();
+        m_RenderComponent = AddComponent<RenderComponent>();
+        m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
     }
 
     void GameObject::Serialize(YAML::Emitter& _out)
@@ -92,6 +90,9 @@ namespace Denix
         {
             _out << YAML::Key << "m_SimulatePhysics" << YAML::Value << m_PhysicsComponent->SimulatePhysics();
             _out << YAML::Key << "m_SimulateGravity" << YAML::Value << m_PhysicsComponent->GetSimulateGravity();
+            
+            _out << YAML::Key << "m_Collider" << YAML::Value <<  "Cube"; // Temp until asset scraper built
+            
             _out << YAML::Key << "m_ColliderVisible" << YAML::Value << m_PhysicsComponent->IsColliderVisible();
             _out << YAML::Key << "m_CollisionDetectionEnabled" << YAML::Value << m_PhysicsComponent->CollisionDetectionEnabled();
             _out << YAML::Key << "m_CollisonDimesionOverride" << YAML::Value << m_PhysicsComponent->CollisionDimensionOverride();
@@ -166,6 +167,7 @@ namespace Denix
         {
             m_PhysicsComponent->SetSimulatePhysics(physicsComp["m_SimulatePhysics"].as<bool>());
             m_PhysicsComponent->SetSimulateGravity(physicsComp["m_SimulateGravity"].as<bool>());
+            m_PhysicsComponent->m_Collider = MakeRef<CubeCollider>();
             m_PhysicsComponent->IsColliderVisible() = physicsComp["m_ColliderVisible"].as<bool>();
             m_PhysicsComponent->SetCollisionDetectionEnabled(physicsComp["m_CollisionDetectionEnabled"].as<bool>());
             m_PhysicsComponent->CollisionDimensionOverride() = physicsComp["m_CollisonDimesionOverride"].as<bool>();
@@ -188,4 +190,13 @@ namespace Denix
             
         }
     }
+
+    void GameObject::OnTriggerEnter(Ref<GameObject> _other)
+    {}
+
+    void GameObject::OnTriggerStay(Ref<GameObject> _other)
+    {}
+
+    void GameObject::OnTriggerExit(Ref<GameObject> _other)
+    {}
 }

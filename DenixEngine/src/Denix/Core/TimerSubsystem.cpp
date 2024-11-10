@@ -1,13 +1,21 @@
 ﻿#include "TimerSubsystem.h"
 
+#include "Denix/Profile/Profile.h"
+#include "Denix/Profile/ProfileSubsystem.h"
+
 namespace Denix
 {
 	TimerSubsystem* TimerSubsystem::s_TimerSubsystem{ nullptr };
 
-	TimerSubsystem::TimerSubsystem() : m_FrameTimeS{ 0.33f }, m_FramesPerSecond{ 30 }, m_GameTimeSpeed{ 1.0f }
+	TimerSubsystem::TimerSubsystem()
 	{
+		s_TimerSubsystem = this;
 		DE_LOG_CREATE(LogTimer)
-			s_TimerSubsystem = this;
+
+		m_FrameTime = 0.33f;
+		m_FramesPerSecond = 30;
+		m_GameTimeSpeed = 1.0f;
+		m_MaxFPS = 60;
 	}
 
 	TimerSubsystem::~TimerSubsystem()
@@ -19,6 +27,9 @@ namespace Denix
 	{
 		Subsystem::Initialize();
 		DE_LOG(LogTimer, Warn, "Initializing TimerSubsystem")
+		m_FrameTimer = MakeRef<Timer>(ObjectInitializer("FrameTimer"), true);
+		m_EngineProfile = MakeRef<Profile>(ObjectInitializer("EngineProfile"));
+		m_EngineProfile->m_Visualize = true;
 		DE_LOG(LogTimer, Info, "TimerSubsystem Initialized")
 	}
 
@@ -29,15 +40,18 @@ namespace Denix
 
 	void TimerSubsystem::BeginFrame()
 	{
-		start = std::chrono::system_clock::now();
+		m_EngineProfile->Start();
 	}
 
 	void TimerSubsystem::EndFrame()
 	{
-		end = std::chrono::system_clock::now();
-		std::chrono::duration<double> duration = end - start;
-		m_FrameTimeS = duration.count();
-		m_FrameTimeMs = m_FrameTimeS * 1000.0f;
+		// Calculate the time taken for the frame to complete
+		m_EngineProfile->End();
+		
+		m_FrameTime = m_EngineProfile->GetDuration();
+		m_FrameTimeS = m_FrameTime * 0.001f;
+
+		// Calculate the delta time, accounting for the game time speed which can be used to slow down or speed up the game.
 		m_DeltaTime = m_GameTimeSpeed * m_FrameTimeS;
 
 		static int frameCounter = 0;
@@ -46,6 +60,7 @@ namespace Denix
 		static float timeInFrame = 0.0f;
 		timeInFrame += m_FrameTimeS;
 
+		// Calculate the frames per second. When a second has passed, reset the frame counter and update the frames per second.
 		if (timeInFrame >= 1.0f)
 		{
 			m_FramesPerSecond = frameCounter;
@@ -59,9 +74,9 @@ namespace Denix
 		return s_TimerSubsystem->m_FramesPerSecond;
 	}
 
-	float TimerSubsystem::GetFrameTime() { return s_TimerSubsystem->m_FrameTimeS; }
+	float TimerSubsystem::GetFrameTime() { return s_TimerSubsystem->m_FrameTime; }
 	float TimerSubsystem::GetFrameTimeMs()
 	{
-		return s_TimerSubsystem->m_FrameTimeMs;
+		return s_TimerSubsystem->m_FrameTimeS;
 	}
 }

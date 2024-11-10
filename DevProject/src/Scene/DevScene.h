@@ -23,9 +23,7 @@ public:
     ~DevScene() override = default;
 
     void Update(float _deltaTime) override;
-
-    bool Load() override;
-    void Unload() override;
+    void DebugUI(float _deltaTime) override;
 
     Ref<DirectionalLight> m_DirectionalLight;
     bool ShowEngineContent;

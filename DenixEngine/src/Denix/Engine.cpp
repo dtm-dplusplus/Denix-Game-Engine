@@ -1,4 +1,3 @@
-#include "depch.h"
 #include "Engine.h"
 
 #include "Denix/System/SubSystem.h"
@@ -13,6 +12,7 @@
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Core/TimerSubsystem.h"
+#include "Profile/ProfileSubsystem.h"
 
 namespace Denix
 {
@@ -21,11 +21,34 @@ namespace Denix
 	Engine::Engine()
 	{
 		s_Engine = this;
-
+		m_StartupScene = nullptr;
 		Logger::Initialize();
 
 		// We initialize the reflection subsystem here because it is used by the client engine constructor
+		// Register all classes that need to be reflected here. This will be moved to some kind of pre build event & parser in the future
 		m_ReflectionSubsystem = InitalizeSubsystem<ReflectionSubsystem>();
+
+		// Register classes
+		ReflectionSubsystem::Register<BaseObject>();
+		ReflectionSubsystem::Register<GameObject>();
+		ReflectionSubsystem::Register<Cube>();
+		ReflectionSubsystem::Register<Sphere>();
+		ReflectionSubsystem::Register<Plane>();
+		ReflectionSubsystem::Register<TransformComponent>();
+		ReflectionSubsystem::Register<RenderComponent>();
+		ReflectionSubsystem::Register<MeshComponent>();
+		
+		ReflectionSubsystem::Register<PhysicsComponent>();
+		ReflectionSubsystem::Register<Collider>();
+		ReflectionSubsystem::Register<CubeCollider>();
+		ReflectionSubsystem::Register<SphereCollider>();
+
+		ReflectionSubsystem::Register<Light>();
+		ReflectionSubsystem::Register<DirectionalLight>();
+		ReflectionSubsystem::Register<PointLight>();
+		ReflectionSubsystem::Register<SpotLight>();
+
+		ReflectionSubsystem::Register<Camera>();
 	}
 
 	Engine::~Engine()
@@ -41,7 +64,12 @@ namespace Denix
 
 		m_TimerSubsystem = InitalizeSubsystem<TimerSubsystem>();
 
+		m_ProfileSubsystem = InitalizeSubsystem<ProfileSubsystem>();
+		
 		m_FileSubsystem = InitalizeSubsystem<FileSubsystem>(m_ProjectName);
+
+		// Check Engine Config
+		LoadConfig();
 
 		m_WindowSubsystem = InitalizeSubsystem<WindowSubsystem>();
 
@@ -51,13 +79,16 @@ namespace Denix
 
 		m_UISubsystem = InitalizeSubsystem<UISubsystem>();
 
-		m_EditorSubsystem = InitalizeSubsystem<EditorSubsystem>();
 
 		m_PhysicsSubsystem = InitalizeSubsystem<PhysicsSubsystem>();
 
 		m_InputSubsystem = InitalizeSubsystem<InputSubsystem>();
 
-		m_SceneSubsystem = InitalizeSubsystem<SceneSubsystem>();
+
+		m_SceneSubsystem = InitalizeSubsystem<SceneSubsystem>(m_StartupScene);
+
+		m_EditorSubsystem = InitalizeSubsystem<EditorSubsystem>();
+
 
 		DE_LOG(LogEngine, Info, "Engine Initialized")
 }
@@ -82,42 +113,65 @@ namespace Denix
 		// Engine Loop
 		while(m_WindowSubsystem->m_Window->IsOpen())
 		{
+			// Setup timer system for the new frame.
 			m_TimerSubsystem->BeginFrame();
+			m_ProfileSubsystem->Update(m_TimerSubsystem->m_FrameTime);
+			
+			// Poll input & Events. Events will be dispatched to the appropriate subsystems
+			DE_PROFILE(Input Poll)
+			m_InputSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			DE_PROFILE_END(Input Poll)
 
-			m_InputSubsystem->Poll();
 
+			// Clear the offscreen frame buffer
+			DE_PROFILE(New Window Buffer)
 			m_UISubsystem->NewFrame();
 			m_WindowSubsystem->m_Window->ClearBuffer();
-
-			// Bind viewport framebuffer
 			m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->m_FrameBuffer->Bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			DE_PROFILE_END(New Window Buffer)
 			
+			
+			// Prepare physics system for scene update
+			DE_PROFILE(Physics PreUpdate)
 			m_PhysicsSubsystem->PreUpdate(m_TimerSubsystem->m_DeltaTime);
+			DE_PROFILE_END(Physics PreUpdate)
 			
+			// Update the UI & Editor for any changes
+			DE_PROFILE(Editor Update)
 			m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			
 			m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			DE_PROFILE_END(Editor Update)
 			
+			// Update the scene. The majority of the client game logic will be here
+			DE_PROFILE(Scene Update)
 			m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			
+			DE_PROFILE_END(Scene Update)
+
+			// Update the physics system. Collision detection and resolution will be here
+			DE_PROFILE(Physics Update)
 			m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-
-			// Draw to viewport framebuffer
-			m_RendererSubsystem->RenderScene();
-			FrameBuffer::Unbind();
+			DE_PROFILE_END(Physics Update)
 			
-			// Draw the framebuffer texture to the default screen buffer
+			// Draw to viewport framebuffer
+			DE_PROFILE(Render Scene)
+			m_RendererSubsystem->RenderScene();
+			DE_PROFILE_END(Render Scene)
+			
+			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
+			DE_PROFILE(Draw Viewport)
+			FrameBuffer::Unbind();
 			m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
-
-			// Swap buffers and render UI
-			m_UISubsystem->RenderUI();
+			m_UISubsystem->RenderUI(); // Swap buffers and render UI
 			m_WindowSubsystem->m_Window->SwapBuffers();
 			m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
-
+			DE_PROFILE_END(Draw Viewport)
+			
 			// Run the garbage collector
+			DE_PROFILE(Clean Rubbish)
 			m_SceneSubsystem->CleanRubbish();
-
+			DE_PROFILE_END(Clean Rubbish)
+			
 			m_TimerSubsystem->EndFrame();
 		}
 		
@@ -126,9 +180,63 @@ namespace Denix
 
 	void Engine::LoadConfig()
 	{
+		try
+		{
+			std::string cfgPath = m_FileSubsystem->m_ProjectRoot + "Config\\Engine.cfg";
+			if(YAML::Node cfg = YAML::LoadFile(cfgPath))
+			{
+				if(const std::string startupScene = cfg["Startup Scene"].as<std::string>(); !startupScene.empty())
+				{ 
+					m_StartupScene = MakeRef<Asset>(startupScene);
+				}
+			}
+		}
+		catch(const std::exception& e)
+		{
+			DE_LOG(LogEngine, Error, "Failed to Load Engine Config: {0}", e.what())
+			DE_LOG(LogEngine, Info, "Generating New Engine Config")
+			
+			// Generate a new config file
+			SaveConfig();
+		}
+		
 	}
 
 	void Engine::SaveConfig()
 	{
+		try
+		{
+			static const std::string cfgPath = FileSubsystem::GetProjectRoot() + "Config\\Engine.cfg";
+				
+			YAML::Emitter cfgEmitter;
+			cfgEmitter << YAML::Comment("DENIX ENGINE CONFIGURATION");
+			cfgEmitter << YAML::BeginMap;
+			cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << (m_StartupScene? m_StartupScene->GetAssetPath() : "");
+			cfgEmitter << YAML::EndMap;
+			
+			if(FileSubsystem::WriteFile(cfgPath, cfgEmitter.c_str()))
+				DE_LOG(LogEngine, Info, "Saved Engine Config")
+		}
+		catch(const std::exception& e)
+		{
+			DE_LOG(LogEngine, Error, "Failed to Save Engine Config: {0}", e.what())
+
+			// Do some error handling
+		}
+	}
+
+	Ref<Asset> Engine::GetStartupScene() const
+	{
+		return (m_StartupScene? m_StartupScene : nullptr);
+	}
+
+	void Engine::SetStartupScene(const Ref<Asset>& _ref)
+	{
+		if(_ref)
+		{
+			m_StartupScene = _ref;
+			DE_LOG(LogEngine, Info, "Set Startup Scene: {0}", _ref->GetAssetPath())
+			SaveConfig();
+		}
 	}
 }

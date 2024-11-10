@@ -1,4 +1,3 @@
-#include "depch.h"
 #include "Window.h"
 
 #include <SDL3/SDL.h>

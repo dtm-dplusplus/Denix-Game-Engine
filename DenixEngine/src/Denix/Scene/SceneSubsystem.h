@@ -18,14 +18,7 @@ namespace Denix
 	class SceneSubsystem: public Subsystem
 	{
 	public:
-		SceneSubsystem()
-		{
-			s_SceneSubsystem = this;
-
-			DE_LOG_CREATE(LogScene)
-			DE_LOG_CREATE(LogScene)
-			DE_LOG_CREATE(LogObject)
-		}
+		SceneSubsystem(const Ref<Asset>& _startupScene = nullptr);
 
 		~SceneSubsystem() override
 		{
@@ -36,12 +29,14 @@ namespace Denix
 
 		
 		void CleanRubbish();
+		bool m_SceneThreaded = false;
 
 	public:
 		void Initialize() override;
 
 		void Deinitialize() override;
 
+		void ThreadedSceneUpdate(float _deltaTime);
 		void Update(float _deltaTime) override;
 
 		static bool SerializeScene(const Scene* _scene);
@@ -83,6 +78,8 @@ namespace Denix
 	private:
 		static SceneSubsystem* s_SceneSubsystem;
 
+		Ref<Asset> m_StartupScene;
+		
 		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
 
 		Ref<Scene> m_ActiveScene;
@@ -119,7 +116,7 @@ namespace Denix
 			DeserializeSceneObjects(sceneNode, sceneObjects);
 			
 			for (const auto& newGameObject : sceneObjects)
-				newScene->SpawnSceneObject(newGameObject);
+				newScene->SpawnGameObject(newGameObject);
 			
 			DE_LOG(LogScene, Info, "Deserialized scene: {}", _sceneAsset->GetAssetName())
 

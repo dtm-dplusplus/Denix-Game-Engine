@@ -2,8 +2,10 @@
 
 #include <functional>
 
+#include <map>
 #include "Denix/Scene/BaseObject.h"
 #include "Denix/System/SubSystem.h"
+#include "Denix/Reflection/ReflectionHelper.h"
 
 namespace Denix
 {
@@ -26,18 +28,13 @@ namespace Denix
         using CreateFunc = std::function<Ref<BaseObject>()>;
        
 
-        template <typename T>
-        static std::string GetDEClassName()
-        {
-            // Remove the first 5 characters of the string "Class "
-            return static_cast<std::string>(typeid(T).name()).substr(6); 
-        }
+       
         
         template<typename T>
         static void Register()
         {
             const CreateFunc _createFunc = [] { return MakeRef<T>(); };
-            const std::string className = GetDEClassName<T>();
+            const std::string className = ReflectionHelper::GetDEClassName<T>();
             s_ReflectionSubsystem->m_CreateFuncs[className] = _createFunc;
             DE_LOG(LogScene, Info, "Registered class: {}", className)
         }
@@ -45,7 +42,11 @@ namespace Denix
         static Ref<BaseObject> Create(const std::string& className)
         {
             if (const auto it = s_ReflectionSubsystem->m_CreateFuncs.find(className); it != s_ReflectionSubsystem->m_CreateFuncs.end()) {
-                return it->second();
+               if(Ref<BaseObject> obj = it->second())
+               {
+                   obj->m_ClassName = className;
+                   return obj;
+               }
             }
             return nullptr;
         }
@@ -67,7 +68,5 @@ namespace Denix
         static ReflectionSubsystem* s_ReflectionSubsystem;
         
         std::map<std::string, CreateFunc> m_CreateFuncs;
-
-        
     };
 };

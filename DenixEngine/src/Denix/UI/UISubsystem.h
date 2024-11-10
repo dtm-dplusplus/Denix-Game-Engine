@@ -5,7 +5,8 @@
 
 #include "imgui.h"
 #include "imgui_internal.h"
-
+#include "implot.h"
+#include "implot_internal.h"
 
 namespace Denix
 {

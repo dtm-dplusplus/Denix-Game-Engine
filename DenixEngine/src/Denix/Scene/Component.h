@@ -6,6 +6,7 @@
 namespace Denix
 {
 	/*	Base class for all object components */
+	// Super jank design, but it works for now
 	class Component : public BaseObject
 	{
 	public:
@@ -42,5 +43,10 @@ namespace Denix
 	protected:
 		/* Object this component is attacthed to */
 		std::string m_ParentObjectName;
+
+		BaseObject* m_Parent;
+
+		friend class GameObject;
+		friend class BaseObject;
 	};
 }

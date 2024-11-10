@@ -51,7 +51,7 @@ namespace Denix
 
 		void Initialize() override;
 		void Deinitialize() override;
-
+		void Update(float _deltaTime) override;
 		void Poll();
 
 		void InputPanel();

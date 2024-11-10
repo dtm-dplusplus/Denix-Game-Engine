@@ -37,42 +37,13 @@ namespace Denix
 	public:
 		PhysicsComponent();
 
+		PhysicsComponent(const Ref<TransformComponent>& _parentTransform);
+
 		PhysicsComponent(const std::string& _parentName);
 
 		~PhysicsComponent() override = default;
 
-		void Update(float _deltaTime) override
-		{
-			Component::Update(_deltaTime);
-
-			m_ParentTransform->m_PhysicsRotationOverride = m_SimulatePhysics;
-
-			if (m_Collider)
-			{
-				m_Collider->m_TransformComponent->SetPosition(m_ParentTransform->GetPosition());
-
-				switch (m_Collider->GetColliderType())
-				{
-				case ColliderType::Cube:
-				{
-					if (!m_CollisonDimesionOverride)
-					{
-						CastRef<CubeCollider>(m_Collider)->GetDimensions() = m_ParentTransform->GetScale();
-					}
-				} break;
-
-				case ColliderType::Sphere:
-				{
-					Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
-					m_MomentOfInertia = (2.0 / 5.0) * m_Mass * pow(sphereCol->GetRadius(), 2);
-					m_ParentTransform->SetScale(glm::vec3(sphereCol->GetRadius() * 2.0f));
-					m_Collider->GetTransformComponent()->SetScale(m_ParentTransform->GetScale());
-				} break;
-				}
-
-				m_Collider->Update(_deltaTime);
-			}
-		}
+		void Update(float _deltaTime) override;
 
 		void StepSimulation(float _deltaTime);
 
@@ -397,11 +368,11 @@ namespace Denix
 
 			if (m_CollisionDetectionEnabled)
 			{
-				DE_LOG(LogPhysics, Trace, "Collision detection enabled")
+				//DE_LOG(LogPhysics, Trace, "Collision detection enabled")
 			}
 			else
 			{
-				DE_LOG(LogPhysics, Trace, "Collision detection disabled")
+				//DE_LOG(LogPhysics, Trace, "Collision detection disabled")
 			}
 		}
 

@@ -75,12 +75,21 @@ namespace Denix
 		int m_ObjectSelection = 0;
 		bool ScenePanelOpen = true;
 		bool ShowDemoWindow = false;
+		bool ShowPlotDemoWindow = false;
 		float WinX = 0.0f;
 		float WinY = 0.0f;
 
 		float DragSpeed = 10.0f;
 		float DragSpeedDelta;
+		bool m_IsAssetBrowserOpen = false;
 
+		// Assets
+		void AssetBrowser();
+
+		// Profiler
+		bool m_IsProfilerOpen = true;
+		void Profiler();
+		
 		// UI
 		void ScenePanel();
 		bool m_IsScenePanelOpen = true;
@@ -97,7 +106,7 @@ namespace Denix
 
 		// Timer
 		bool m_IsTimerSettingsOpen = false;
-		void TimerSettings();
+		static void TimerSettings();
 
 		// Menu Bar
 		void MenuBar();

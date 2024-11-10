@@ -90,7 +90,11 @@ namespace Denix
 		float m_YawRotationRate = 1.0f;
 		float m_MoveSpeed = 10.0f;
 		float m_MouseScrollSpeed = 0.5f;
-
+	
+		glm::vec3 m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+		glm::vec3 m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec3 m_CameraRight = glm::vec3(1.0f, 0.0f, 0.0f);
+		
 	private:
 		// Viewport
 		Ref<Viewport> m_Viewport;
@@ -98,9 +102,7 @@ namespace Denix
 		// Matrices
 		glm::mat4 m_Projection = glm::mat4(1.0f);
 		glm::mat4 m_View = glm::mat4(1.0f);
-		glm::vec3 m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-		glm::vec3 m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		glm::vec3 m_CameraRight = glm::vec3(1.0f, 0.0f, 0.0f);
+		
 		friend class Engine;
 		friend class Scene;
 	};

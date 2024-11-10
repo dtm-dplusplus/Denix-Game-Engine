@@ -1,45 +1,31 @@
 ﻿#pragma once
 
 #include "Object.h"
-#include <yaml-cpp/node/node.h>
-#include <yaml-cpp/emitter.h>
-#include "Denix/Core/YAMLHelper.h"
+#include "Denix/Reflection/ReflectionHelper.h"
+
+namespace YAML
+{
+     class Node;
+     class Emitter;
+}
 
 namespace Denix
 {
+    /** 
+     *  BaseObject defines an object that can be serialized, deserialized, and reflected via th Reflection Subsystem
+     *  
+     */
     class BaseObject: public Object
     {
     public:
-        BaseObject(const ObjectInitializer& _objInit = ObjectInitializer::Get()): Object(_objInit){}
+        BaseObject() : Object(ObjectInitializer::Get()), m_ClassName("BaseObject")
+        {
+        }
+
+        BaseObject(const ObjectInitializer& _objInit): Object(_objInit), m_ClassName("BaseObject") {}
         ~BaseObject() override = default;
 
-        /*BaseObject(const BaseObject& _other)
-            : Object(_other)
-        {
-        }
-
-        BaseObject(BaseObject&& _other) noexcept
-            : Object(_other)
-        {
-        }
-
-        BaseObject& operator=(const BaseObject& _other)
-        {
-            if (this == &_other)
-                return *this;
-            Object::operator =(_other);
-            return *this;
-        }
-
-        BaseObject& operator=(BaseObject&& _other) noexcept
-        {
-            if (this == &_other)
-                return *this;
-            Object::operator =(_other);
-            return *this;
-        }*/
-
-      
+        
         // Called each frame if the game is playing
         virtual void BeginPlay() {}
         virtual void EndPlay() {}
@@ -50,8 +36,13 @@ namespace Denix
         virtual void BeginScene() {}
         virtual void EndScene() {}
 
+        
         virtual void Serialize(YAML::Emitter& _out);
         virtual void Deserialize(const YAML::Node& _in);
-    
+
+    protected:
+        std::string m_ClassName;
+
+        friend class ReflectionSubsystem;
     };
 }

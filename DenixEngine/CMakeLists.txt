@@ -12,6 +12,13 @@ file(COPY ${SOURCE_DIR} DESTINATION ${CMAKE_BINARY_DIR})
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+find_package(OpenMP)
+if(OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+
 # Create Imgui Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
 set_property(TARGET Imgui PROPERTY FOLDER DenixEngine/Depend/Imgui)
@@ -59,6 +66,10 @@ include_directories(${PROJECT_NAME}
 
 # Create the Engine library
 add_library(DenixEngine STATIC ${SOURCE_FILES})
+
+# Add Precompiled Header - We Can add multiple precompiled headers
+target_precompile_headers(DenixEngine PUBLIC ${SOURCE_DIR}/src/depch.h)
+
 
 # Set solution folder for DenixEngine
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
