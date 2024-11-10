@@ -7,7 +7,7 @@ namespace Denix
     class EditorWidget: public Object
     {
     public:
-        EditorWidget(const std::string& _objRef);
+        EditorWidget(const ObjectInit& _objInit);
         ~EditorWidget() override = default;
 
         virtual void Begin() {}

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Denix/Editor/EditorWidget.h"
+#include "Denix/Scene/Scene.h"
 
 namespace Denix
 {
@@ -30,7 +31,7 @@ namespace Denix
         void MeshWidget(const Ref<GameObject>& _selectedObject);
         void TransformWidget(const Ref<GameObject>& _object) const;
         void CameraWidget(const Ref<GameObject>& _camera) const;
-        
+
         WRef<GameObject> m_GameObjectRef;
         Ref<ShaderEditor> m_ShaderEditor;
     };

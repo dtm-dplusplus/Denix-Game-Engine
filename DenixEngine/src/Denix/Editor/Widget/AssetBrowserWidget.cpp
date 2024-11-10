@@ -8,7 +8,7 @@
 #include "Denix/Scene/Object/Light/LightObject.h"
 #include "Denix/Editor/Widget/ShaderEditor.h"
 
-Denix::AssetBrowserWidget::AssetBrowserWidget(): EditorWidget("GameObjectDetails")
+Denix::AssetBrowserWidget::AssetBrowserWidget(): EditorWidget({"AssetBrowser"})
 {
 }
 

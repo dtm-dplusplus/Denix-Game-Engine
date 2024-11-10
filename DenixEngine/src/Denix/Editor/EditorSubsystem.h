@@ -15,6 +15,7 @@ namespace Denix
 	class SceneOrganizerWidget;
 	class GameObjectDetailsWidget;
 	class AssetBrowserWidget;
+	class InputDebuggerWidget;
 
 	class EditorSubsystem : public Subsystem
 	{
@@ -71,11 +72,7 @@ namespace Denix
 		void SceneWidgets();
 
 		// Input
-		bool m_IsInputPanelOpen = false;
-
-		// Physics
-		bool m_IsPhysicsSettingsOpen = false;
-		void PhysicsSettings();
+		Ref<InputDebuggerWidget> m_InputDebuggerWidget;
 
 		// Timer
 		bool m_IsTimerSettingsOpen = false;

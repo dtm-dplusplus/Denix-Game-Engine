@@ -125,20 +125,6 @@ namespace Denix
 
 	void InputSubsystem::InputPanel()
 	{
-        ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Appearing);
-		ImGui::Begin("Input");
-        ImGui::SeparatorText("Mouse Motion");
-        ImGui::Text("Mouse Pos: %f %f", m_MouseData.X, m_MouseData.Y);
-        ImGui::Text("Mouse Rel: %f %f", m_MouseData.RelX, m_MouseData.RelY);
-        ImGui::Text("Mouse Wheel: %f", m_MouseData.WheelY);
-
-        ImGui::SeparatorText("Mouse Buttons");
-        ImGui::Text("Left: %s", m_MouseData.Left ? "True" : "False");
-        ImGui::Text("Right: %s", m_MouseData.Right ? "True" : "False");
-        ImGui::Text("Middle: %s", m_MouseData.Middle ? "True" : "False");
-        ImGui::Text("Side1: %s", m_MouseData.Side1 ? "True" : "False");
-        ImGui::Text("Side2: %s", m_MouseData.Side2 ? "True" : "False");
-
-		ImGui::End();
+        
 	}
 }

@@ -4,6 +4,7 @@
 #include "Denix/Editor/Widget/Scene/GameObjectDetailsWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneOrganizerWidget.h"
 #include "Denix/Editor/Widget/AssetBrowserWidget.h"
+#include "Widget/InputDebuggerWidget.h"
 
 namespace Denix
 {
@@ -16,7 +17,6 @@ namespace Denix
 		// Get Engine Subsystems
 		s_WindowSubsystem = WindowSubsystem::Get();
 		s_SceneSubsystem = SceneSubsystem::Get();
-		s_InputSubsystem = InputSubsystem::Get();
 		s_UISubsystem = UISubsystem::Get();
 		m_ActiveScene =s_SceneSubsystem->GetActiveScene();
 
@@ -34,7 +34,6 @@ namespace Denix
 
 	void EditorSubsystem::Update(float _deltaTime)
 	{
-		//if(InputSubsystem::IsKeyDown(SDL_SCANCODE_H)) m_Enabled = !m_Enabled;
 		if(!m_Enabled) return;
 
 		EditorWidget::m_DragSpeed = DragSpeed * _deltaTime;
@@ -61,8 +60,7 @@ namespace Denix
 
 		SceneWidgets();
 		if(m_IsTimerSettingsOpen) TimerSettings();
-		if(m_IsInputPanelOpen) s_InputSubsystem->InputPanel();
-		if (m_IsPhysicsSettingsOpen) PhysicsSettings();
+		if(m_InputDebuggerWidget) m_InputDebuggerWidget->Update(_deltaTime);
 		if (m_IsProfilerOpen) Profiler();
 	}
 	
@@ -142,8 +140,10 @@ namespace Denix
 				}
 				ImGui::Checkbox("Timer Settings", &m_IsTimerSettingsOpen);
 				ImGui::Checkbox("Profiler", &m_IsProfilerOpen);
-				ImGui::Checkbox("Physics Settings", &m_IsPhysicsSettingsOpen);
-				ImGui::Checkbox("Input Debugger", &m_IsInputPanelOpen);
+				if (ImGui::MenuItem("Input Debugger", nullptr))
+				{
+					if (!m_InputDebuggerWidget) m_InputDebuggerWidget = MakeRef<InputDebuggerWidget>();
+				}
 				ImGui::EndMenu();
 			}
 
@@ -211,25 +211,8 @@ namespace Denix
 	void EditorSubsystem::SetActiveScene(const Ref<Scene>& _scene)
 	{
 		m_ActiveScene = _scene;
-		if(m_SceneOrganizerWidget)
-		{
-			m_SceneOrganizerWidget->m_SceneRef = _scene;
-			m_SceneOrganizerWidget->ResetSelection();
-		}
+		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->SceneChangedEvent(_scene);
 		if (m_GameObjectDetailsWidget) m_GameObjectDetailsWidget->m_GameObjectRef.reset();
-	}
-
-	void EditorSubsystem::PhysicsSettings()
-	{
-		ImGui::SetNextWindowSize(ImVec2((WinX / 5), WinY), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2((WinX / 2), WinY / 2), ImGuiCond_Appearing);
-
-		if (ImGui::Begin("Physics Settings", &m_IsPhysicsSettingsOpen))
-		{
-			ImGui::Checkbox("Collision Detection", &PhysicsSubsystem::CollisionDetectionEnabledRef());
-			ImGui::Checkbox("Collision Response", &PhysicsSubsystem::CollisionResponseEnabledRef());
-			ImGui::End();
-		}
 	}
 
 	void EditorSubsystem::TimerSettings()

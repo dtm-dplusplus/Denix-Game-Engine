@@ -1,29 +1,30 @@
 ﻿#pragma once
 
-#include "Denix/Editor/EditorWidget.h"
+#include "Denix/Editor/Widget/SceneEditorWidget.h"
 
 namespace Denix
 {
     class Scene;
     class GameObject;
     class AddGameObjectWidget;
-    
-    class SceneOrganizerWidget: public EditorWidget
+    class SceneSettingsWidget;
+
+    class SceneOrganizerWidget: public SceneEditorWidget
     {
     public:
         SceneOrganizerWidget(const WRef<Scene>& _scene);
 
         void Update(float _deltaTime) override;
-
+        void SceneChangedEvent(const WRef<Scene>& _scene) override;
         void ResetSelection();
         void SetSelection(int _index);
         Ref<GameObject> GetSelectedObject() const;
-        WRef<Scene> m_SceneRef;
 
         bool ValidateSelection() const;
         int m_SelectionIndex;
 
     private:
         Ref<AddGameObjectWidget> m_AddGameObjectWidget;
+        Ref<SceneSettingsWidget> m_SceneSettingsWidget;
     };
 }

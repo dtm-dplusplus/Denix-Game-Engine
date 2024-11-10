@@ -14,7 +14,7 @@ namespace Denix
     class ShaderEditor;
 }
 
-Denix::GameObjectDetailsWidget::GameObjectDetailsWidget(): EditorWidget("GameObjectDetails")
+Denix::GameObjectDetailsWidget::GameObjectDetailsWidget(): EditorWidget({"GameObjectDetails"})
 {
 }
 

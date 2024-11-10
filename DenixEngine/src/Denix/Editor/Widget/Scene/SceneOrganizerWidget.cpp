@@ -5,14 +5,16 @@
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/GameObject.h"
 #include "Denix/Editor/Widget/Scene/AddGameObjectWidget.h"
+#include "Denix/Editor/Widget/Scene/SceneSettingsWidget.h"
 
 namespace Denix
 {
-    SceneOrganizerWidget::SceneOrganizerWidget(const WRef<Scene>& _scene) : EditorWidget("SceneOrganizer")
+    SceneOrganizerWidget::SceneOrganizerWidget(const WRef<Scene>& _scene) : SceneEditorWidget({"SceneOrganizer"}, _scene)
     {
         m_SceneRef = _scene;
         m_SelectionIndex = -1;
         m_AddGameObjectWidget = MakeRef<AddGameObjectWidget>(_scene);
+        m_SceneSettingsWidget = MakeRef<SceneSettingsWidget>(_scene);
     }
 
     void SceneOrganizerWidget::Update(float _deltaTime)
@@ -25,7 +27,7 @@ namespace Denix
         
         // Scene Objects
         ImGui::SetNextWindowDockID(UISubsystem::Get()->DockLeftID, ImGuiCond_Appearing);
-        ImGui::Begin("SceneOrganizer");
+        ImGui::Begin(GetName().c_str());
 
         // Update AddGameObjectWidget. Set the selected object to the last object created
         m_AddGameObjectWidget->Update(_deltaTime);
@@ -58,7 +60,17 @@ namespace Denix
                 ImGui::EndPopup();
             }
         }
+        
         ImGui::End();
+
+        // Scene Settings
+        m_SceneSettingsWidget->Update(_deltaTime);
+    }
+
+    void SceneOrganizerWidget::SceneChangedEvent(const WRef<Scene>& _scene)
+    {
+        SceneEditorWidget::SceneChangedEvent(_scene);
+        ResetSelection();
     }
 
     void SceneOrganizerWidget::ResetSelection()
