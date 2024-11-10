@@ -37,7 +37,7 @@ namespace Denix
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; 
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 		// Disable Ini file - stops window positions being saved
@@ -46,9 +46,7 @@ namespace Denix
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
 
-		// Setup SDL3 implementation
-		
-		// Setup Platform/Renderer backends
+		// Setup SDL3 Platform/Renderer backends
 		const WindowSubsystem* windowSystem = WindowSubsystem::Get();
 		if(!ImGui_ImplSDL3_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(),
 				SDL_GL_GetCurrentContext()))
@@ -93,7 +91,7 @@ namespace Denix
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
-			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+			ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 
 			static auto first_time = true;

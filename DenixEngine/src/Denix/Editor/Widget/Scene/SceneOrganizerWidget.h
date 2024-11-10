@@ -6,7 +6,8 @@ namespace Denix
 {
     class Scene;
     class GameObject;
-
+    class AddGameObjectWidget;
+    
     class SceneOrganizerWidget: public EditorWidget
     {
     public:
@@ -18,6 +19,10 @@ namespace Denix
         Ref<GameObject> GetSelectedObject() const;
         WRef<Scene> m_SceneRef;
 
+        bool ValidateSelectedObject() const;
         int m_SelectedObjectIndex;
+
+    private:
+        Ref<AddGameObjectWidget> m_AddGameObjectWidget;
     };
 }

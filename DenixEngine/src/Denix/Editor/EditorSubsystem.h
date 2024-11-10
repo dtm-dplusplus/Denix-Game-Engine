@@ -18,6 +18,7 @@ namespace Denix
 	class Scene;
 	class Material;
 	class SceneOrganizerWidget;
+	class GameObjectDetailsWidget;
 	
 	class EditorSubsystem : public Subsystem
 	{
@@ -43,20 +44,7 @@ namespace Denix
 
 		// Scene Viewer
 		void ScenePropertiesWidget() const;
-		void SceneAddObjectWidget();
-		//void SceneOrganizerWidget();
-		void LightWidget(const Ref<GameObject>& _selectedObject) const;
-		void PhysicsWidget(const Ref<GameObject>& _selectedObject) const;
-		void CollisionWidget(const Ref<GameObject>& _selectedObject) const;
 
-		void RenderWidget(const Ref<GameObject>& _selectedObject);
-		void MaterialWidget(const Ref<GameObject>& _selectedObject);
-		void MaterialSelectionWidget(Ref<RenderComponent>& _rendComp);
-		void TextureSelectionWidget(const Ref<Material>& _material);
-		void ShaderSelectionWidget(Ref<Material>& _material);
-		void MeshWidget(const Ref<GameObject>& _selectedObject);
-		void TransformWidget(const Ref<GameObject>& _object) const;
-		void CameraWidget(const Ref<GameObject>& _camera) const;
 	private:
 		static EditorSubsystem* s_EditorSubsystem;
 		class WindowSubsystem* s_WindowSubsystem;
@@ -69,7 +57,7 @@ namespace Denix
 
 		Ref<ShaderEditor> m_ShaderEditor;
 		Ref<SceneOrganizerWidget> m_SceneOrganizerWidget;
-		
+		Ref<GameObjectDetailsWidget> m_GameObjectDetailsWidget;
 		// TEMP ImGui
 		int m_ObjectSelection = 0;
 		bool ScenePanelOpen = true;
@@ -86,14 +74,13 @@ namespace Denix
 		void AssetBrowser();
 
 		// Profiler
-		bool m_IsProfilerOpen = true;
+		bool m_IsProfilerOpen = false;
 		void Profiler();
 		
 		// UI
 		void ScenePanel();
 		bool m_IsScenePanelOpen = true;
 
-		void DetailsPanel();
 		bool m_IsDetailsPanelOpen = true;
 
 		// Input
@@ -111,7 +98,5 @@ namespace Denix
 		void MenuBar();
 		float MenuBarHeight = 15.f;
 		float ViewportBarHeight = 15.f;
-
-	
 	};
 }

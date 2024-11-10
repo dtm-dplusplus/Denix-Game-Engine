@@ -13,5 +13,8 @@ namespace Denix
         virtual void Begin() {}
         virtual void Update(float _deltaTime) {}
         virtual void End() {}
+
+        static float m_DragSensitivity;
+        static float m_DragSpeed;
     };
 }

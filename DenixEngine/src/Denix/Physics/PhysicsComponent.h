@@ -477,7 +477,6 @@ namespace Denix
 		void SetCollider(const Ref<Collider>& _collider)
 		{
 			m_Collider = _collider;
-
 		}
 	};
 }

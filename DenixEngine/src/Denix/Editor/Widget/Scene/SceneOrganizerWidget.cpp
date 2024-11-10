@@ -2,10 +2,9 @@
 #include "SceneOrganizerWidget.h"
 
 #include "Denix/UI/UISubsystem.h"
-
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/GameObject.h"
-
+#include "Denix/Editor/Widget/Scene/AddGameObjectWidget.h"
 
 namespace Denix
 {
@@ -13,6 +12,7 @@ namespace Denix
     {
         m_SceneRef = _scene;
         m_SelectedObjectIndex = -1;
+        m_AddGameObjectWidget = MakeRef<AddGameObjectWidget>(_scene);
     }
 
     void SceneOrganizerWidget::Update(float _deltaTime)
@@ -24,18 +24,30 @@ namespace Denix
         std::vector<Ref<GameObject>>& sceneObjects = m_SceneRef.lock()->GetSceneObjects();
         
         // Scene Objects
-        ImGui::BeginChild("SceneOrganizer", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
+        ImGui::SetNextWindowDockID(UISubsystem::Get()->DockLeftID, ImGuiCond_Appearing);
+        ImGui::Begin("SceneOrganizer");
+
+        // Update AddGameObjectWidget. Set the selected object to the last object created
+        m_AddGameObjectWidget->Update(_deltaTime);
+        if (m_AddGameObjectWidget->m_CreatedGameObject)
+        {
+            m_AddGameObjectWidget->m_CreatedGameObject = false;
+            SetObjectSelection(sceneObjects.size() - 1);
+        }
+        
         for (int i = 0; i < sceneObjects.size(); i++)
         {
             // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
             if (ImGui::Selectable(sceneObjects[i]->GetName().c_str(), m_SelectedObjectIndex == i))
             {
                 m_SelectedObjectIndex = i;
+                DE_LOG(LogEditor, Trace, "Selected Object: {0}", sceneObjects[i]->GetName());
             }
 
             if (ImGui::BeginPopupContextItem()) //uses last item id as popup id
             {
                 m_SelectedObjectIndex = i;
+                DE_LOG(LogEditor, Trace, "Selected Object: {0}", sceneObjects[i]->GetName());
 
                 // Delete Button
                 if (ImGui::Button("Delete"))
@@ -46,7 +58,7 @@ namespace Denix
                 ImGui::EndPopup();
             }
         }
-        ImGui::EndChild();
+        ImGui::End();
     }
 
     void SceneOrganizerWidget::SetObjectSelection(int _index)
@@ -61,11 +73,16 @@ namespace Denix
 
     Ref<GameObject> SceneOrganizerWidget::GetSelectedObject() const
     {
-        if (m_SelectedObjectIndex < 0 || m_SelectedObjectIndex >= m_SceneRef.lock()->GetSceneObjects().size())
+        if (ValidateSelectedObject())
         {
-            return nullptr;
+            return m_SceneRef.lock()->GetSceneObjects()[m_SelectedObjectIndex];
         }
 
-        return m_SceneRef.lock()->GetSceneObjects()[m_SelectedObjectIndex];
+        return nullptr;
+    }
+
+    bool SceneOrganizerWidget::ValidateSelectedObject() const
+    {
+        return m_SelectedObjectIndex >= 0 && m_SceneRef.lock()->GetSceneObjects().size() -1;
     }
 }
