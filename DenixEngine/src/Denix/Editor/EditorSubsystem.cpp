@@ -3,6 +3,7 @@
 #include "Denix.h"
 #include "Denix/Editor/Widget/Scene/GameObjectDetailsWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneOrganizerWidget.h"
+#include "Denix/Editor/Widget/AssetBrowserWidget.h"
 
 namespace Denix
 {
@@ -16,13 +17,13 @@ namespace Denix
 		s_WindowSubsystem = WindowSubsystem::Get();
 		s_SceneSubsystem = SceneSubsystem::Get();
 		s_InputSubsystem = InputSubsystem::Get();
-		s_RendererSubsystem = RendererSubsystem::Get();
 		s_UISubsystem = UISubsystem::Get();
 		m_ActiveScene =s_SceneSubsystem->GetActiveScene();
 
 		// Init Editor Widgets
 		m_SceneOrganizerWidget = MakeRef<SceneOrganizerWidget>(m_ActiveScene);
 		m_GameObjectDetailsWidget = MakeRef<GameObjectDetailsWidget>();
+		m_AssetBrowserWidget = MakeRef<AssetBrowserWidget>();
 		DE_LOG(LogEditor, Info, "Editor Subsystem Initialized")
 	}
 
@@ -50,11 +51,18 @@ namespace Denix
 			if(m_ActiveScene->IsPlaying()) s_SceneSubsystem->StopScene();
             else s_SceneSubsystem->PlayScene();
 		}
-		if(m_IsScenePanelOpen) ScenePanel();
+		
+		if(m_AssetBrowserWidget)
+		{
+			m_AssetBrowserWidget->Update(_deltaTime);
+			// TEMP - Remove when AssetBrowser is set to close
+			if(m_AssetBrowserWidget->IsRubbish()) m_AssetBrowserWidget.reset();
+		}
+
+		SceneWidgets();
 		if(m_IsTimerSettingsOpen) TimerSettings();
 		if(m_IsInputPanelOpen) s_InputSubsystem->InputPanel();
 		if (m_IsPhysicsSettingsOpen) PhysicsSettings();
-		if (m_IsAssetBrowserOpen) AssetBrowser();
 		if (m_IsProfilerOpen) Profiler();
 	}
 	
@@ -128,14 +136,14 @@ namespace Denix
 				
 			if (ImGui::BeginMenu("Window"))
 			{
-				ImGui::SeparatorText("Panels");
-				ImGui::Checkbox("Scene Panel", &m_IsScenePanelOpen);
-				ImGui::Checkbox("Details Panel", &m_IsDetailsPanelOpen);
+				if(ImGui::MenuItem("AssetBrowser", nullptr))
+				{
+					if(!m_AssetBrowserWidget) m_AssetBrowserWidget = MakeRef<AssetBrowserWidget>();
+				}
 				ImGui::Checkbox("Timer Settings", &m_IsTimerSettingsOpen);
 				ImGui::Checkbox("Profiler", &m_IsProfilerOpen);
 				ImGui::Checkbox("Physics Settings", &m_IsPhysicsSettingsOpen);
 				ImGui::Checkbox("Input Debugger", &m_IsInputPanelOpen);
-				ImGui::Checkbox("Asset Browser", &m_IsAssetBrowserOpen);
 				ImGui::EndMenu();
 			}
 
@@ -167,7 +175,7 @@ namespace Denix
 				ImGui::SameLine();
 				if (ImGui::Button("Stop"))
 				{
-					m_ObjectSelection = -1;
+					if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->ResetSelection();
 					s_SceneSubsystem->StopScene();
 				}
 			}
@@ -203,6 +211,12 @@ namespace Denix
 	void EditorSubsystem::SetActiveScene(const Ref<Scene>& _scene)
 	{
 		m_ActiveScene = _scene;
+		if(m_SceneOrganizerWidget)
+		{
+			m_SceneOrganizerWidget->m_SceneRef = _scene;
+			m_SceneOrganizerWidget->ResetSelection();
+		}
+		if (m_GameObjectDetailsWidget) m_GameObjectDetailsWidget->m_GameObjectRef.reset();
 	}
 
 	void EditorSubsystem::PhysicsSettings()
@@ -224,38 +238,6 @@ namespace Denix
 		ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
 		ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
 		ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
-	}
-
-
-
-	void EditorSubsystem::AssetBrowser()
-	{
-		if (ImGui::CollapsingHeader("Assets"))
-        {
-			ImGui::Text("Project Name: %s", FileSubsystem::GetProjectName().c_str());
-			ImGui::Text("Project Root: %s", FileSubsystem::GetProjectRoot().c_str());
-			ImGui::Text("User Content Root: %s", FileSubsystem::GetContentRoot().c_str());
-			
-            if (ImGui::TreeNode("Materials"))
-            {
-                for (const auto& mat : ResourceSubsystem::GetMaterialStore())
-                {
-                    ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
-                }
-                ImGui::TreePop();
-            }
-
-            if (ImGui::TreeNode("Scenes"))
-            {
-                
-                for (const auto& scene : ResourceSubsystem::GetSceneStore())
-                {
-                    ImGui::Text(scene->GetAssetName().c_str());
-                    ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
-                }
-                ImGui::TreePop();
-            }
-        }
 	}
 
 	void EditorSubsystem::Profiler()
@@ -326,7 +308,7 @@ namespace Denix
 		}
 	}
 
-	void EditorSubsystem::ScenePanel()
+	void EditorSubsystem::SceneWidgets()
 	{
 		//ImGui::SetNextWindowSize(ImVec2((WinX / 6), WinY), ImGuiCond_Appearing);
 		//ImGui::SetNextWindowPos(ImVec2(0, MenuBarHeight), ImGuiCond_Appearing); // + ViewportBarHeight

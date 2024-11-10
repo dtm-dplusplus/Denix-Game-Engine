@@ -11,7 +11,7 @@ namespace Denix
     SceneOrganizerWidget::SceneOrganizerWidget(const WRef<Scene>& _scene) : EditorWidget("SceneOrganizer")
     {
         m_SceneRef = _scene;
-        m_SelectedObjectIndex = -1;
+        m_SelectionIndex = -1;
         m_AddGameObjectWidget = MakeRef<AddGameObjectWidget>(_scene);
     }
 
@@ -32,21 +32,21 @@ namespace Denix
         if (m_AddGameObjectWidget->m_CreatedGameObject)
         {
             m_AddGameObjectWidget->m_CreatedGameObject = false;
-            SetObjectSelection(sceneObjects.size() - 1);
+            SetSelection(sceneObjects.size() - 1);
         }
         
         for (int i = 0; i < sceneObjects.size(); i++)
         {
             // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
-            if (ImGui::Selectable(sceneObjects[i]->GetName().c_str(), m_SelectedObjectIndex == i))
+            if (ImGui::Selectable(sceneObjects[i]->GetName().c_str(), m_SelectionIndex == i))
             {
-                m_SelectedObjectIndex = i;
+                m_SelectionIndex = i;
                 DE_LOG(LogEditor, Trace, "Selected Object: {0}", sceneObjects[i]->GetName());
             }
 
             if (ImGui::BeginPopupContextItem()) //uses last item id as popup id
             {
-                m_SelectedObjectIndex = i;
+                m_SelectionIndex = i;
                 DE_LOG(LogEditor, Trace, "Selected Object: {0}", sceneObjects[i]->GetName());
 
                 // Delete Button
@@ -61,28 +61,35 @@ namespace Denix
         ImGui::End();
     }
 
-    void SceneOrganizerWidget::SetObjectSelection(int _index)
+    void SceneOrganizerWidget::ResetSelection()
+    {
+        m_SelectionIndex = -1;
+    }
+
+    void SceneOrganizerWidget::SetSelection(const int _index)
     {
         // Validate index
         if (_index < 0 || _index >= m_SceneRef.lock()->GetSceneObjects().size())
         {
-            m_SelectedObjectIndex = -1;
+            m_SelectionIndex = -1;
             return;
         }
+
+        m_SelectionIndex = _index;
     }
 
     Ref<GameObject> SceneOrganizerWidget::GetSelectedObject() const
     {
-        if (ValidateSelectedObject())
+        if (ValidateSelection())
         {
-            return m_SceneRef.lock()->GetSceneObjects()[m_SelectedObjectIndex];
+            return m_SceneRef.lock()->GetSceneObjects()[m_SelectionIndex];
         }
 
         return nullptr;
     }
 
-    bool SceneOrganizerWidget::ValidateSelectedObject() const
+    bool SceneOrganizerWidget::ValidateSelection() const
     {
-        return m_SelectedObjectIndex >= 0 && m_SceneRef.lock()->GetSceneObjects().size() -1;
+        return m_SelectionIndex >= 0 && m_SceneRef.lock()->GetSceneObjects().size() -1;
     }
 }

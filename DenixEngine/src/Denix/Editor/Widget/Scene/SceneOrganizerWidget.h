@@ -15,12 +15,13 @@ namespace Denix
 
         void Update(float _deltaTime) override;
 
-        void SetObjectSelection(int _index);
+        void ResetSelection();
+        void SetSelection(int _index);
         Ref<GameObject> GetSelectedObject() const;
         WRef<Scene> m_SceneRef;
 
-        bool ValidateSelectedObject() const;
-        int m_SelectedObjectIndex;
+        bool ValidateSelection() const;
+        int m_SelectionIndex;
 
     private:
         Ref<AddGameObjectWidget> m_AddGameObjectWidget;

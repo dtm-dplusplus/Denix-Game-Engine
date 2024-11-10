@@ -1,12 +1,7 @@
 #pragma once
 
-#include "imgui.h"
-#include "misc/cpp/imgui_stdlib.h"
-
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
-#include "Denix/Video/GL/Shader.h"
-#include "Denix/Video/Renderer/RenderComponent.h"
 
 
 namespace Denix
@@ -19,7 +14,8 @@ namespace Denix
 	class Material;
 	class SceneOrganizerWidget;
 	class GameObjectDetailsWidget;
-	
+	class AssetBrowserWidget;
+
 	class EditorSubsystem : public Subsystem
 	{
 	public:
@@ -50,17 +46,15 @@ namespace Denix
 		class WindowSubsystem* s_WindowSubsystem;
 		class SceneSubsystem* s_SceneSubsystem;
 		class InputSubsystem* s_InputSubsystem;
-		class RendererSubsystem* s_RendererSubsystem;
 		class UISubsystem* s_UISubsystem;
 
 		Ref<Scene> m_ActiveScene;
 
-		Ref<ShaderEditor> m_ShaderEditor;
 		Ref<SceneOrganizerWidget> m_SceneOrganizerWidget;
 		Ref<GameObjectDetailsWidget> m_GameObjectDetailsWidget;
-		// TEMP ImGui
-		int m_ObjectSelection = 0;
-		bool ScenePanelOpen = true;
+
+		Ref<AssetBrowserWidget> m_AssetBrowserWidget;
+		
 		bool ShowDemoWindow = false;
 		bool ShowPlotDemoWindow = false;
 		float WinX = 0.0f;
@@ -68,20 +62,13 @@ namespace Denix
 
 		float DragSpeed = 10.0f;
 		float DragSpeedDelta;
-		bool m_IsAssetBrowserOpen = false;
-
-		// Assets
-		void AssetBrowser();
 
 		// Profiler
 		bool m_IsProfilerOpen = false;
 		void Profiler();
 		
 		// UI
-		void ScenePanel();
-		bool m_IsScenePanelOpen = true;
-
-		bool m_IsDetailsPanelOpen = true;
+		void SceneWidgets();
 
 		// Input
 		bool m_IsInputPanelOpen = false;
