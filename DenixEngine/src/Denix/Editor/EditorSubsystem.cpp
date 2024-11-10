@@ -1,6 +1,7 @@
 #include "EditorSubsystem.h"
 
 #include "Denix.h"
+#include "Widget/SceneOrganizerWidget.h"
 
 namespace Denix
 {
@@ -10,12 +11,16 @@ namespace Denix
 	{
 		Subsystem::Initialize();
 		DE_LOG(LogEditor, Warn, "Initializing Editor Subsystem")
+		// Get Engine Subsystems
 		s_WindowSubsystem = WindowSubsystem::Get();
 		s_SceneSubsystem = SceneSubsystem::Get();
 		s_InputSubsystem = InputSubsystem::Get();
 		s_RendererSubsystem = RendererSubsystem::Get();
 		s_UISubsystem = UISubsystem::Get();
 		m_ActiveScene =s_SceneSubsystem->GetActiveScene();
+
+		// Init Editor Widgets
+		m_SceneOrganizerWidget = MakeRef<SceneOrganizerWidget>(m_ActiveScene);
 		DE_LOG(LogEditor, Info, "Editor Subsystem Initialized")
 	}
 
@@ -328,7 +333,7 @@ namespace Denix
 		ImGui::Begin("Scene Panel", &ScenePanelOpen);
 		ScenePropertiesWidget();
 		SceneAddObjectWidget();
-		SceneOrganizerWidget();
+		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->Update(0.0f);
 		ImGui::End();
 	}
 
@@ -462,37 +467,9 @@ namespace Denix
 			ImGui::EndPopup();
 		}
 
-		if (createdObject) m_ObjectSelection = m_ActiveScene->m_SceneObjects.size() - 1;
+		if (createdObject) m_SceneOrganizerWidget->SetObjectSelection(m_ActiveScene->m_SceneObjects.size() - 1);
 		ImGui::EndChild();
 		ImGui::Separator();
-	}
-
-	void EditorSubsystem::SceneOrganizerWidget()
-	{
-		// Scene Objects
-		ImGui::BeginChild("SceneOrganizerWidget", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
-		for (int i = 0; i < m_ActiveScene->m_SceneObjects.size(); i++)
-		{
-			// FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
-			if (ImGui::Selectable(m_ActiveScene->m_SceneObjects[i]->GetName().c_str(), m_ObjectSelection == i))
-			{
-				m_ObjectSelection = i;
-			}
-
-			if (ImGui::BeginPopupContextItem()) //uses last item id as popup id
-			{
-				m_ObjectSelection = i;
-
-				// Delete Button
-				if (ImGui::Button("Delete"))
-				{
-					m_ActiveScene->m_SceneObjects[i]->SetIsRubbish();
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::EndPopup();
-			}
-		}
-		ImGui::EndChild();
 	}
 
 	void EditorSubsystem::TransformWidget(const Ref<GameObject>& _object) const

@@ -220,8 +220,9 @@ namespace Denix
 		Ref<DirectionalLight> GetDirectionalLight() { return m_DirLight; }
 		void SetDirectionalLight(const Ref<DirectionalLight>& _dirLight) { m_DirLight = _dirLight; }
 
-		std::vector<Ref<GameObject>> GetSceneObjects()const { return m_SceneObjects; }
-
+		std::vector<Ref<GameObject>> GetSceneObjects() const { return m_SceneObjects; }
+		std::vector<Ref<GameObject>>& GetSceneObjects() { return m_SceneObjects; }
+		
 		Ref<GameObject> GetGameObject(const std::string& _name) const
 		{
 			for (const auto& obj : m_SceneObjects)

@@ -78,7 +78,7 @@ namespace Denix
 		void Destroy()
 		{
 			// Add more clean up code here
-			m_IsRubbish = true;
+			MarkRubbish();
 		}
 
 	public:

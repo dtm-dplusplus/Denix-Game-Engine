@@ -121,7 +121,7 @@ namespace Denix
         // Object Data
         if (const YAML::Node object = _in["m_Object"]; object)
         {
-            m_Name = object["m_Name"].as<std::string>();
+            SetName(object["m_Name"].as<std::string>());
         }
         
         // Render Component

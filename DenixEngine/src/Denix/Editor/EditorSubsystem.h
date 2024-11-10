@@ -1,21 +1,24 @@
 #pragma once
 
-#include "Denix/UI/UISubsystem.h"
+#include "imgui.h"
+#include "misc/cpp/imgui_stdlib.h"
 
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
 #include "Denix/Video/GL/Shader.h"
 #include "Denix/Video/Renderer/RenderComponent.h"
 
+
 namespace Denix
 {
 	struct ShaderSource;
+	class ShaderEditor;
 	class Camera;
 	class GameObject;
 	class Scene;
 	class Material;
-	class ShaderEditor;
-
+	class SceneOrganizerWidget;
+	
 	class EditorSubsystem : public Subsystem
 	{
 	public:
@@ -41,7 +44,7 @@ namespace Denix
 		// Scene Viewer
 		void ScenePropertiesWidget() const;
 		void SceneAddObjectWidget();
-		void SceneOrganizerWidget();
+		//void SceneOrganizerWidget();
 		void LightWidget(const Ref<GameObject>& _selectedObject) const;
 		void PhysicsWidget(const Ref<GameObject>& _selectedObject) const;
 		void CollisionWidget(const Ref<GameObject>& _selectedObject) const;
@@ -65,6 +68,7 @@ namespace Denix
 		Ref<Scene> m_ActiveScene;
 
 		Ref<ShaderEditor> m_ShaderEditor;
+		Ref<SceneOrganizerWidget> m_SceneOrganizerWidget;
 		
 		// TEMP ImGui
 		int m_ObjectSelection = 0;

@@ -47,20 +47,6 @@ namespace Denix
 	/**
 	 * 
 	 * @tparam T 
-	 * @tparam Args 
-	 * @param args 
-	 * @return 
-	 */
-	template<typename T, typename ... Args>
-	constexpr WRef<T> MakeWeakRef(Args&& ... args)
-	{
-		return std::make_shared<T>(std::forward<Args>(args)...);
-	}
-
-
-	/**
-	 * 
-	 * @tparam T 
 	 * @tparam Arg 
 	 * @param arg 
 	 * @return 

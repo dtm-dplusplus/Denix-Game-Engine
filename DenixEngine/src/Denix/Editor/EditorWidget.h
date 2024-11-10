@@ -8,10 +8,10 @@ namespace Denix
     {
     public:
         EditorWidget(const std::string& _objRef);
-        ~EditorWidget() = default;
+        ~EditorWidget() override = default;
 
         virtual void Begin() {}
-        virtual void Update() {}
+        virtual void Update(float _deltaTime) {}
         virtual void End() {}
     };
 }
