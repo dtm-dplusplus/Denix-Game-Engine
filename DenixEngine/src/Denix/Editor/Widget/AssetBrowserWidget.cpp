@@ -4,7 +4,7 @@
 
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Scene/Camera.h"
-#include "Denix/Scene/GameObject.h"
+#include "Denix/Scene/Actor.h"
 #include "Denix/Scene/Object/Light/LightObject.h"
 #include "Denix/Editor/Widget/ShaderEditor.h"
 

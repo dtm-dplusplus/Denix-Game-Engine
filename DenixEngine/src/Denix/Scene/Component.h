@@ -46,7 +46,7 @@ namespace Denix
 
 		BaseObject* m_Parent;
 
-		friend class GameObject;
+		friend class Actor;
 		friend class BaseObject;
 	};
 }

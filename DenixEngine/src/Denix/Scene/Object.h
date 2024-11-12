@@ -82,5 +82,9 @@ namespace Denix
 
 		/* Used to assign object IDs. Represents the tota number of objects created */
 		static unsigned int GenID();
+
+    	friend class Engine;
+    	friend class Scene;
+    	friend class SceneSubsystem;
 	};
 }

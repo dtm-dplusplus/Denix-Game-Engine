@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/Scene/GameObject.h"
+#include "Denix/Scene/Actor.h"
 
 namespace Denix
 {
@@ -12,14 +12,14 @@ namespace Denix
 		Spot
 	};
 
-	class Light : public GameObject
+	class Light : public Actor
 	{
 	public:
 		Light(const ObjectInit& _objInit = {"Light"});
 
 		void Update(float _deltaTime) override
 		{
-			GameObject::Update(_deltaTime);
+			Actor::Update(_deltaTime);
 		}
 
 		LightType GetLightType() const { return (LightType)m_LightType; }

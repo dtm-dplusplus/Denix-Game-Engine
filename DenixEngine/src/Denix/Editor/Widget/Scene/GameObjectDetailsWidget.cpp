@@ -4,7 +4,7 @@
 
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Scene/Camera.h"
-#include "Denix/Scene/GameObject.h"
+#include "Denix/Scene/Actor.h"
 #include "Denix/Scene/Object/Light/LightObject.h"
 #include "Denix/Editor/Widget/ShaderEditor.h"
 
@@ -26,26 +26,26 @@ void Denix::GameObjectDetailsWidget::Update(float _deltaTime)
     //ImGui::SetNextWindowPos(ImVec2((WinX / 6), MenuBarHeight), ImGuiCond_Appearing);
 
     ImGui::SetNextWindowDockID(UISubsystem::Get()->DockRightID, ImGuiCond_Appearing);
-    ImGui::Begin("GameObject Details");
+    ImGui::Begin("Actor Details");
     //ImGui::SetWindowDock(ImGui::GetCurrentWindow(), UISubsystem::Get()->DockRightID, ImGuiCond_Appearing);
 
-    if(const Ref<GameObject> gameObjectRef = m_GameObjectRef.lock())
+    if(const Ref<Actor> actorRef = m_GameObjectRef.lock())
     {
-        ImGui::SeparatorText(gameObjectRef->GetName().c_str());
+        ImGui::SeparatorText(actorRef->GetName().c_str());
 
-        TransformWidget(gameObjectRef);
-        CameraWidget(gameObjectRef);
-        LightWidget(gameObjectRef);
-        PhysicsWidget(gameObjectRef);
-        CollisionWidget(gameObjectRef);
-        RenderWidget(gameObjectRef);
-        MeshWidget(gameObjectRef);
+        TransformWidget(actorRef);
+        CameraWidget(actorRef);
+        LightWidget(actorRef);
+        PhysicsWidget(actorRef);
+        CollisionWidget(actorRef);
+        RenderWidget(actorRef);
+        MeshWidget(actorRef);
     }
 
     ImGui::End();
 }
 
-void Denix::GameObjectDetailsWidget::TransformWidget(const Ref<GameObject>& _object) const
+void Denix::GameObjectDetailsWidget::TransformWidget(const Ref<Actor>& _object) const
 {
     ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
     if (ImGui::CollapsingHeader("Transform Component"))
@@ -76,7 +76,7 @@ void Denix::GameObjectDetailsWidget::TransformWidget(const Ref<GameObject>& _obj
     }
 }
 
-void Denix::GameObjectDetailsWidget::LightWidget(const Ref<GameObject>& _selectedObject) const
+void Denix::GameObjectDetailsWidget::LightWidget(const Ref<Actor>& _selectedObject) const
 {
     if (const Ref<Light> light = CastRef<Light>(_selectedObject))
     {
@@ -114,7 +114,7 @@ void Denix::GameObjectDetailsWidget::LightWidget(const Ref<GameObject>& _selecte
     }
 }
 
-void Denix::GameObjectDetailsWidget::PhysicsWidget(const Ref<GameObject>& _selectedObject) const
+void Denix::GameObjectDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject) const
 {
     if (ImGui::CollapsingHeader("Physics", ImGuiTreeNodeFlags_DefaultOpen))
     {
@@ -189,7 +189,7 @@ void Denix::GameObjectDetailsWidget::PhysicsWidget(const Ref<GameObject>& _selec
     }
 }
 
-void Denix::GameObjectDetailsWidget::CollisionWidget(const Ref<GameObject>& _selectedObject) const
+void Denix::GameObjectDetailsWidget::CollisionWidget(const Ref<Actor>& _selectedObject) const
 {
     if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
     {
@@ -288,7 +288,7 @@ void Denix::GameObjectDetailsWidget::CollisionWidget(const Ref<GameObject>& _sel
     }
 }
 
-void Denix::GameObjectDetailsWidget::RenderWidget(const Ref<GameObject>& _selectedObject)
+void Denix::GameObjectDetailsWidget::RenderWidget(const Ref<Actor>& _selectedObject)
 {
     if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_DefaultOpen))
     {
@@ -300,7 +300,7 @@ void Denix::GameObjectDetailsWidget::RenderWidget(const Ref<GameObject>& _select
     }
 }
 
-void Denix::GameObjectDetailsWidget::MaterialWidget(const Ref<GameObject>& _selectedObject)
+void Denix::GameObjectDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject)
 {
     Ref<RenderComponent> rendComp = _selectedObject->GetRenderComponent();
 
@@ -450,7 +450,7 @@ void Denix::GameObjectDetailsWidget::ShaderSelectionWidget(Ref<Material>& _mater
     }
 }
 
-void Denix::GameObjectDetailsWidget::MeshWidget(const Ref<GameObject>& _selectedObject)
+void Denix::GameObjectDetailsWidget::MeshWidget(const Ref<Actor>& _selectedObject)
 {
     if (ImGui::CollapsingHeader("Mesh Component"))
     {
@@ -485,7 +485,7 @@ void Denix::GameObjectDetailsWidget::MeshWidget(const Ref<GameObject>& _selected
     }
 }
 
-void Denix::GameObjectDetailsWidget::CameraWidget(const Ref<GameObject>& _camera) const
+void Denix::GameObjectDetailsWidget::CameraWidget(const Ref<Actor>& _camera) const
 {
     if (!_camera) return;
 

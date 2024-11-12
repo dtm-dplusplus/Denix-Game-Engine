@@ -216,17 +216,17 @@ namespace Denix
 	void SceneSubsystem::CleanRubbish()
 	{
 		// Cleanup rubbish objects here. TEMP loop, will be moved to a queue
-		for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
+		for (const auto& actor : m_ActiveScene->m_SceneObjects)
 		{
-			if(!gameObject) continue;
-			if (gameObject->IsRubbish())
+			if(!actor) continue;
+			if (actor->IsRubbish())
 			{
 				// This will remove registered Components & other neccessary cleanups
-				if (m_ActiveScene->IsPlaying()) gameObject->EndPlay();
-				gameObject->EndScene();
+				if (m_ActiveScene->IsPlaying()) actor->EndPlay();
+				actor->EndScene();
 
 				// Check for scene types and remove from member lists
-				if (Ref<Light> light = CastRef<Light>(gameObject))
+				if (Ref<Light> light = CastRef<Light>(actor))
 				{
 					switch ((LightType)light->GetLightType())
 					{ 
@@ -246,7 +246,7 @@ namespace Denix
 						} break;
 					}
 				}
-				std::erase(m_ActiveScene->m_SceneObjects, gameObject);
+				std::erase(m_ActiveScene->m_SceneObjects, actor);
 			}
 		}
 	}
@@ -288,10 +288,10 @@ namespace Denix
 		else
 		{
 			// Single Threaded Scene Update
-			for (const auto& gameObject : m_ActiveScene->m_SceneObjects)
+			for (const auto& actor : m_ActiveScene->m_SceneObjects)
 			{
-				// Update the GameObject -  This will always be here
-				gameObject->Update(_deltaTime);
+				// Update the Actor -  This will always be here
+				actor->Update(_deltaTime);
 			}
 		}
 		
@@ -303,13 +303,13 @@ namespace Denix
 
 	void SceneSubsystem::ThreadedSceneUpdate(float _deltaTime)
 	{
-		std::vector<Ref<GameObject>>& sceneObjects = m_ActiveScene->m_SceneObjects;
+		std::vector<Ref<Actor>>& sceneObjects = m_ActiveScene->m_SceneObjects;
 		
-		auto updateFunction = [_deltaTime](const std::vector<Ref<GameObject>>::iterator& _begin, const std::vector<Ref<GameObject>>::iterator& _end)
+		auto updateFunction = [_deltaTime](const std::vector<Ref<Actor>>::iterator& _begin, const std::vector<Ref<Actor>>::iterator& _end)
 		{
 			for (auto it = _begin; it != _end; ++it)
 			{
-				// Render the GameObject
+				// Render the Actor
 				(*it)->Update(_deltaTime);
 			}
 		};
@@ -359,11 +359,11 @@ namespace Denix
 			SceneEmitter << YAML::BeginMap;
 			SceneEmitter << YAML::Key << "m_SceneObjects" << YAML::BeginSeq;
 
-			// Serialize the game objects
-			for(auto& gameObject : _scene->m_SceneObjects)
+			// Serialize the actors
+			for(auto& actor : _scene->m_SceneObjects)
 			{
 				SceneEmitter << YAML::BeginMap;
-				gameObject->Serialize(SceneEmitter);
+				actor->Serialize(SceneEmitter);
 				SceneEmitter << YAML::EndMap;
 			}
 
@@ -402,7 +402,7 @@ namespace Denix
 		}
         	
 		// Load the scene objects
-		std::vector<Ref<GameObject>> sceneObjects;
+		std::vector<Ref<Actor>> sceneObjects;
 		DeserializeSceneObjects(sceneNode, sceneObjects);
 		
 		for (const auto& newGameObject : sceneObjects)
@@ -412,7 +412,7 @@ namespace Denix
 	}
 
 	bool SceneSubsystem::DeserializeSceneObjects(const YAML::Node& _sceneNode,
-	                                             std::vector<Ref<GameObject>>& _gameObjects)
+	                                             std::vector<Ref<Actor>>& _actors)
 	{
 		// Load the scene objects
 		YAML::Node sceneObjectsNode = _sceneNode["m_SceneObjects"];
@@ -425,29 +425,56 @@ namespace Denix
 		
 		for (const auto& objNode : sceneObjectsNode)
 		{
-			// Create a new game object with class type
-			Ref<GameObject> newGameObject;
-			std::string objType = objNode["m_Object"]["m_ClassName"].as<std::string>();
-			if( ReflectionSubsystem::ClassExists(objType))
+			// Create an actor placeholder. 
+			Ref<Actor> newActor;
+
+			// Initialize the actor base object
+			if(const YAML::Node& objDataNode = objNode["m_Object"]; objDataNode.IsDefined())
 			{
-				newGameObject = ReflectionSubsystem::Create<GameObject>(objType);
-				DE_LOG(LogScene, Error, "Failed to load game object: Invalid class type")
-				continue;
-			}
-			else
-			{
-				newGameObject = MakeRef<GameObject>();
-			}
+				if(const YAML::Node& objClassNode = objDataNode["m_ClassName"]; objClassNode.IsDefined())
+				{
+					// Create the actor with the custom class. This will be used for custom actors
+					newActor = ReflectionSubsystem::Create<Actor>(objClassNode.as<std::string>());
+				}
+
+				// If reflection failed to find the class, create the actor with the default class
+				if(!newActor)
+				{
+					newActor = MakeRef<Actor>();
+					DE_LOG(LogScene, Warn, "Failed to create actor with custom class. Using default class")
+				}
+
+				// Set the object GUID
+				if(const YAML::Node& objGUIDNode = objDataNode["m_GUID"]; objGUIDNode.IsDefined())
+				{
+					newActor->m_GUID = objGUIDNode.as<unsigned int>();
+				}
+				else
+				{
+					DE_LOG(LogScene, Warn, "No object GUID found. Using default GUID")
+				}
 				
+				// Set the object name
+				if(const YAML::Node& objNameNode = objDataNode["m_Name"]; objNameNode.IsDefined())
+				{
+					newActor->SetName(objNameNode.as<std::string>());
+				}
+				else
+				{
+					newActor->SetName("New Actor");
+					DE_LOG(LogScene, Warn, "No object name found. Using default name")
+				}
+			}
+			
 			// Deserialize the game object
-			newGameObject->Deserialize(objNode);
-			_gameObjects.push_back(newGameObject);
+			newActor->Deserialize(objNode);
+			_actors.push_back(newActor);
 		}
 		
 		return true;
 	}
 
-	void SceneSubsystem::SpawnSceneObject(const Ref<GameObject>& _object)
+	void SceneSubsystem::SpawnSceneObject(const Ref<Actor>& _object)
 	{
 		if (s_SceneSubsystem->m_ActiveScene)
 		{

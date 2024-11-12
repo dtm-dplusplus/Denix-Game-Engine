@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/Scene/GameObject.h"
+#include "Denix/Scene/Actor.h"
 #include "Denix/Physics/PhysicsComponent.h"
 
 namespace Denix
@@ -10,12 +10,12 @@ namespace Denix
 
 	struct CollisionEvent
 	{
-		CollisionEvent() : IsCollision{false}, Actor(nullptr), Other(nullptr) {}
+		CollisionEvent() : IsCollision{false}, Owner(nullptr), Other(nullptr) {}
 		
 		bool IsCollision;
 		
-		Ref<GameObject> Actor;
-		Ref<GameObject> Other;
+		Ref<Actor> Owner;
+		Ref<Actor> Other;
 
 		CollisionData ColData;
 	};

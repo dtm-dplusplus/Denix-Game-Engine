@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Denix/Scene/GameObject.h"
+#include "Denix/Scene/Actor.h"
 
 namespace Denix
 {
-	class Plane : public GameObject
+	class Plane : public Actor
 	{
 	public:
 		Plane(const ObjectInit& _objInit = { "Plane" });
 		void Update(float _deltaTime) override;
 	};
 
-	class Cube : public GameObject
+	class Cube : public Actor
 	{
 	public:
 		Cube(const ObjectInit& _objInit = { "Cube" });
@@ -20,7 +20,7 @@ namespace Denix
 
 	};
 
-	class Sphere : public GameObject
+	class Sphere : public Actor
 	{
 	public:
 		Sphere(const ObjectInit& _objInit = { "Sphere" });

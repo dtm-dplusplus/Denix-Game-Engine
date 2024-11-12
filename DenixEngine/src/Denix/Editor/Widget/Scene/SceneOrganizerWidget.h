@@ -5,7 +5,7 @@
 namespace Denix
 {
     class Scene;
-    class GameObject;
+    class Actor;
     class AddGameObjectWidget;
     class SceneSettingsWidget;
 
@@ -18,7 +18,7 @@ namespace Denix
         void SceneChangedEvent(const WRef<Scene>& _scene) override;
         void ResetSelection();
         void SetSelection(int _index);
-        Ref<GameObject> GetSelectedObject() const;
+        Ref<Actor> GetSelectedObject() const;
 
         bool ValidateSelection() const;
         int m_SelectionIndex;

@@ -1,4 +1,4 @@
-#include "GameObject.h"
+#include "Actor.h"
 
 #include "Denix/Resource/ResourceSubsystem.h"
 
@@ -8,7 +8,7 @@
 
 namespace Denix
 {
-    GameObject::GameObject()
+    Actor::Actor()
     {
         m_TransformComponent = AddComponent<TransformComponent>();
         m_MeshComponent = AddComponent<MeshComponent>();
@@ -16,7 +16,7 @@ namespace Denix
         m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
     }
 
-    GameObject::GameObject(const ObjectInit& _object_init) : BaseObject(_object_init)
+    Actor::Actor(const ObjectInit& _object_init) : BaseObject(_object_init)
     {
         m_TransformComponent = AddComponent<TransformComponent>();
         m_MeshComponent = AddComponent<MeshComponent>();
@@ -24,12 +24,13 @@ namespace Denix
         m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
     }
 
-    void GameObject::Serialize(YAML::Emitter& _out)
+    void Actor::Serialize(YAML::Emitter& _out)
     {
-        // Object Data
+        // Object Data. We can  serialize the object data here without the need for reflection.
         _out << YAML::Comment("Object Data");
         _out << YAML::Key << "m_Object" << YAML::BeginMap;
         {
+            _out << YAML::Key << "m_GUID" << YAML::Value << GetGUID();
             _out << YAML::Key << "m_Name" << YAML::Value << GetName();
             _out << YAML::Key << "m_ClassName" << YAML::Value << m_ClassName;
         }
@@ -117,22 +118,18 @@ namespace Denix
         // End Mesh Component
     }
 
-    void GameObject::Deserialize(const YAML::Node& _in)
+    void Actor::Deserialize(const YAML::Node& _in)
     {
-        // Object Data
-        if (const YAML::Node object = _in["m_Object"]; object)
-        {
-            SetName(object["m_Name"].as<std::string>());
-        }
+        // Object instantiation is done in the SceneSubsystem so we don't need to do it here
         
-        // Render Component
-        if(const YAML::Node renderCompNode = _in["m_RenderComponent"]; renderCompNode)
+         // Render Component
+        if(const YAML::Node& renderCompNode = _in["m_RenderComponent"]; renderCompNode)
         {
             m_RenderComponent->SetIsVisible(renderCompNode["m_IsVisible"].as<bool>());
             m_RenderComponent->SetAffectsLighting(renderCompNode["m_AffectsLighting"].as<bool>());
 
             // Texture Settings
-            if (const YAML::Node texSettings = renderCompNode["m_TextureSettings"]; texSettings)
+            if (const YAML::Node& texSettings = renderCompNode["m_TextureSettings"]; texSettings)
             {
                 TextureSettings texSet;
                 texSet.WrapMode = texSettings["WrapMode"].as<int>();
@@ -190,12 +187,12 @@ namespace Denix
         }
     }
 
-    void GameObject::OnTriggerEnter(Ref<GameObject> _other)
+    void Actor::OnTriggerEnter(Ref<Actor> _other)
     {}
 
-    void GameObject::OnTriggerStay(Ref<GameObject> _other)
+    void Actor::OnTriggerStay(Ref<Actor> _other)
     {}
 
-    void GameObject::OnTriggerExit(Ref<GameObject> _other)
+    void Actor::OnTriggerExit(Ref<Actor> _other)
     {}
 }

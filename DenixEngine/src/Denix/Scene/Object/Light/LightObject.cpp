@@ -2,7 +2,7 @@
 #include "Denix/Resource/ResourceSubsystem.h"
 
 Denix::Light::Light(const ObjectInit& _objInit):
-    GameObject(_objInit),
+    Actor(_objInit),
     m_LightColor(1.0f, 1.0f, 1.0f),
     m_AmbientIntensity(1.0f),
     m_DiffuseIntensity(1.0f),

@@ -113,6 +113,13 @@ namespace Denix
         m_ParentTransform->GetRotation() += angles;
     }
 
+    void PhysicsComponent::BeginScene()
+    {
+        Component::BeginScene();
+        
+        RegisterComponent();
+    }
+
     void PhysicsComponent::Update(float _deltaTime)
     {
         Component::Update(_deltaTime);
@@ -175,7 +182,6 @@ namespace Denix
     {
         // Register the physics component with the physics subsystem
         Component::BeginPlay();
-        RegisterComponent();
 
 
         // Initialize the physics component

@@ -5,7 +5,7 @@
 namespace Denix
 {
     class Scene;
-    class GameObject;
+    class Actor;
 
     class AddGameObjectWidget
     {

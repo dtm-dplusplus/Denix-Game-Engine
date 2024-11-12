@@ -3,8 +3,9 @@
 #include "Denix/Physics/Collider.h"
 namespace Denix
 {
-    Plane::Plane(const ObjectInit& _objInit) : GameObject(_objInit)
+    Plane::Plane(const ObjectInit& _objInit) : Actor(_objInit)
     {
+        m_ClassName = "Plane";
         m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Plane"));
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
         CastRef<CubeCollider>(m_PhysicsComponent->GetCollider())->GetDimensions().y = 0.01f;
@@ -13,29 +14,31 @@ namespace Denix
 
     void Plane::Update(float _deltaTime)
     {
-        GameObject::Update(_deltaTime);
+        Actor::Update(_deltaTime);
         
     }
 
-    Cube::Cube(const ObjectInit& _objInit) : GameObject(_objInit)
+    Cube::Cube(const ObjectInit& _objInit) : Actor(_objInit)
     {
+        m_ClassName = "Cube";
 		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Cube"));
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
     }
 
     void Cube::Update(float _deltaTime)
     {
-        GameObject::Update(_deltaTime);
+        Actor::Update(_deltaTime);
     }
 
-	Sphere::Sphere(const ObjectInit& _objInit) : GameObject(_objInit)
+	Sphere::Sphere(const ObjectInit& _objInit) : Actor(_objInit)
 	{
+        m_ClassName = "Sphere";
 		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Sphere"));
 		m_PhysicsComponent->SetCollider(MakeRef<SphereCollider>());
 	}
 
     void Sphere::Update(float _deltaTime)
     {
-        GameObject::Update(_deltaTime);
+        Actor::Update(_deltaTime);
     }
 }

@@ -3,7 +3,7 @@
 
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Scene/GameObject.h"
+#include "Denix/Scene/Actor.h"
 #include "Denix/Editor/Widget/Scene/AddGameObjectWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneSettingsWidget.h"
 
@@ -23,7 +23,7 @@ namespace Denix
 
         if(!m_SceneRef.lock()) return;
 
-        std::vector<Ref<GameObject>>& sceneObjects = m_SceneRef.lock()->GetSceneObjects();
+        std::vector<Ref<Actor>>& sceneObjects = m_SceneRef.lock()->GetSceneObjects();
         
         // Scene Objects
         ImGui::SetNextWindowDockID(UISubsystem::Get()->DockLeftID, ImGuiCond_Appearing);
@@ -92,7 +92,7 @@ namespace Denix
         m_SelectionIndex = _index;
     }
 
-    Ref<GameObject> SceneOrganizerWidget::GetSelectedObject() const
+    Ref<Actor> SceneOrganizerWidget::GetSelectedObject() const
     {
         if (ValidateSelection())
         {

@@ -86,7 +86,7 @@ namespace Denix
 				{
 					if (CollisionEvent collision = CollisionDetection::NarrowCollisionDetection(dynamicComp, staticComp); collision.IsCollision)
 					{
-						if(!ColllisionExists(collision.Actor, collision.Other)) m_CollisionEvents.push_back(collision);
+						if(!ColllisionExists(collision.Owner, collision.Other)) m_CollisionEvents.push_back(collision);
 					}
 				}
 			}
@@ -100,7 +100,8 @@ namespace Denix
 				{
 					if (CollisionEvent collision = CollisionDetection::NarrowCollisionDetection(dynamicComp, otherDynamicComp); collision.IsCollision)
 					{
-						if (!ColllisionExists(collision.Actor, collision.Other)) m_CollisionEvents.push_back(collision);
+						DE_LOG(LogPhysics, Info, "Collision Detected")
+						if (!ColllisionExists(collision.Owner, collision.Other)) m_CollisionEvents.push_back(collision);
 					}
 				}
 
@@ -108,12 +109,15 @@ namespace Denix
 		}
 	}
 
-	bool PhysicsSubsystem::ColllisionExists(const Ref<GameObject>& _objectA, const Ref<GameObject>& _objectB)
+	bool PhysicsSubsystem::ColllisionExists(const Ref<Actor>& _objectA, const Ref<Actor>& _objectB)
 	{
 		for (const auto& col : m_CollisionEvents)
 		{
-			if (col.Actor == _objectA && col.Other == _objectB ||
-				col.Actor == _objectB && col.Other == _objectA) return true;
+			if (col.Owner == _objectA && col.Other == _objectB ||
+				col.Owner == _objectB && col.Other == _objectA)
+			{
+				return true;
+			}
 		}
 
 		return false;
@@ -123,14 +127,14 @@ namespace Denix
 	{
 		for (CollisionEvent& collisionEvent : m_CollisionEvents)
 		{
-			if (!collisionEvent.Actor || !collisionEvent.Other) continue;
+			if (!collisionEvent.Owner || !collisionEvent.Other) continue;
 			CollisionResponse(collisionEvent);
 		}
 	}
 
 	void PhysicsSubsystem::CollisionResponse(CollisionEvent& _collisionEvent)
 	{
-		Ref<PhysicsComponent> compActor  = _collisionEvent.Actor->GetPhysicsComponent();
+		Ref<PhysicsComponent> compActor  = _collisionEvent.Owner->GetPhysicsComponent();
 		Ref<PhysicsComponent> compOther = _collisionEvent.Other->GetPhysicsComponent();
 		// Update collision status for rendering
 		compActor->m_IsColliding = true;
@@ -180,10 +184,10 @@ namespace Denix
 
 		// Call client side implementation
 		if(compActor->GetParentTransform()->GetMoveability() == Moveability::Dynamic)
-			_collisionEvent.Actor->OnCollision(_collisionEvent.Other, _collisionEvent.ColData);
+			_collisionEvent.Owner->OnCollision(_collisionEvent.Other, _collisionEvent.ColData);
 
 		if (compOther->GetParentTransform()->GetMoveability() == Moveability::Dynamic)
-			_collisionEvent.Other->OnCollision(_collisionEvent.Actor, _collisionEvent.ColData);
+			_collisionEvent.Other->OnCollision(_collisionEvent.Owner, _collisionEvent.ColData);
 	}
 
 	void PhysicsSubsystem::CubeCollision(const Ref<PhysicsComponent>& _cubeCompA, const Ref<PhysicsComponent>& _cubeCompB, CollisionEvent& _collisionEvent)

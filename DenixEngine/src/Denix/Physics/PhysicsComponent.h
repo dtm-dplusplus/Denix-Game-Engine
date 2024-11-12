@@ -43,6 +43,7 @@ namespace Denix
 
 		~PhysicsComponent() override = default;
 
+		void BeginScene() override;
 		void Update(float _deltaTime) override;
 
 		void StepSimulation(float _deltaTime);
@@ -292,7 +293,7 @@ namespace Denix
 		friend class SceneSubsystem;
 		friend class PhysicsSubsystem;
 		friend class CollisionDetection;
-		friend class GameObject;
+		friend class Actor;
 
 	public:
 		void ToggleSimulation()

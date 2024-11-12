@@ -33,7 +33,7 @@ namespace Denix
 
 	private:
 		void CollisionDetectionPhase(float _deltaTime);
-		bool ColllisionExists(const Ref<GameObject>& _objectA, const Ref<GameObject>& _objectB);
+		bool ColllisionExists(const Ref<Actor>& _objectA, const Ref<Actor>& _objectB);
 		void CollisionResonsePhase(float _deltaTime);
 		void CollisionResponse(CollisionEvent& _collisionEvent);
 		void CubeCollision(const Ref<PhysicsComponent>& _cubeCompA, const Ref<PhysicsComponent>& _cubeCompB, CollisionEvent& _collisionEvent);
@@ -68,6 +68,10 @@ namespace Denix
 		{
 			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
 		}
+
+		std::vector<Ref<PhysicsComponent>>& GetPhysicsComponents() { return m_PhysicsComponents; }
+		
+		std::vector<CollisionEvent>& GetCollisionEvents() { return m_CollisionEvents; }
 	private:
 		static PhysicsSubsystem* s_PhysicsSubSystem;
 

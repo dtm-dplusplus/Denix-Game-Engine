@@ -19,7 +19,7 @@ Ray::Ray(): Cube({"Ray"})
     }());
 }
 
-void Ray::OnCollision(Ref<GameObject>& _other, CollisionData& _collision)
+void Ray::OnCollision(Ref<Actor>& _other, CollisionData& _collision)
 {
     Cube::OnCollision(_other, _collision);
 

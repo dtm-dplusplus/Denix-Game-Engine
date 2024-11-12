@@ -16,5 +16,5 @@ public:
     void DebugUI(float _deltaTime) override;
     
     glm::vec3 StartImpulse = { 35.0f, 0.0f, 0.0f };
-    std::vector<Ref<Sphere>> Spheres;
+    std::vector<Ref<Actor>> Spheres;
 };

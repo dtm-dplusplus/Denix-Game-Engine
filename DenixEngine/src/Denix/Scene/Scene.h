@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameObject.h"
+#include "Actor.h"
 #include "Object/Shapes/Shapes.h"
 #include "Object/Light/LightObject.h"
 #include "Camera.h"
@@ -104,16 +104,18 @@ namespace Denix
 			DebugUI(_deltaTime);
 		}
 
+		virtual void DebugUI(float _deltaTime){}
+
 		bool IsLoaded() const { return m_IsLoaded; }
 		bool IsOpen() const { return m_IsOpen; }
 		bool IsPlaying() const { return m_IsPlaying; }
 
-		template <class T = GameObject, typename... Args>
+		template <class T = Actor, typename... Args>
 		Ref<T> SpawnGameObject(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f))
 		{
 			try
 			{
-				if (Ref<GameObject> obj = MakeRef<T>(std::forward<Args>(_args)...))
+				if (Ref<Actor> obj = MakeRef<T>(std::forward<Args>(_args)...))
 				{
 					// Validate Name. We cannont have two objects with the same name
 					if (GetGameObject(obj->GetName()))
@@ -176,15 +178,15 @@ namespace Denix
 			}
 			catch (const std::exception& e)
 			{
-				DE_LOG(LogScene, Error, "Failed to spawn GameObject: {}", e.what());
+				DE_LOG(LogScene, Error, "Failed to spawn Actor: {}", e.what());
 			}
 
 			return nullptr;
 		}
 		
-		void SpawnGameObject(const Ref<GameObject>& _obj);
+		void SpawnGameObject(const Ref<Actor>& _obj);
 
-		void RemoveSceneObject(const Ref<GameObject>& obj)
+		void RemoveSceneObject(const Ref<Actor>& obj)
 		{
 			if (const auto it = std::ranges::find(m_SceneObjects, obj); it != m_SceneObjects.end())
 			{
@@ -215,10 +217,10 @@ namespace Denix
 		Ref<DirectionalLight> GetDirectionalLight() { return m_DirLight; }
 		void SetDirectionalLight(const Ref<DirectionalLight>& _dirLight) { m_DirLight = _dirLight; }
 
-		std::vector<Ref<GameObject>> GetSceneObjects() const { return m_SceneObjects; }
-		std::vector<Ref<GameObject>>& GetSceneObjects() { return m_SceneObjects; }
+		std::vector<Ref<Actor>> GetSceneObjects() const { return m_SceneObjects; }
+		std::vector<Ref<Actor>>& GetSceneObjects() { return m_SceneObjects; }
 		
-		Ref<GameObject> GetGameObject(const std::string& _name) const
+		Ref<Actor> GetGameObject(const std::string& _name) const
 		{
 			for (const auto& obj : m_SceneObjects)
 			{
@@ -232,7 +234,7 @@ namespace Denix
 		}
 
 		template<class T>
-		Ref<GameObject> GetGameObjectByClass()
+		Ref<Actor> GetGameObjectByClass()
 		{
 			for (const auto& obj : m_SceneObjects)
 			{
@@ -245,7 +247,22 @@ namespace Denix
 			return nullptr;
 		}
 
-		virtual void DebugUI(float _deltaTime){}
+		template<class T>
+		std::vector<Ref<Actor>> GetActorsOfClass()
+		{
+			std::vector<Ref<Actor>> actors;
+
+			for (const auto& obj : m_SceneObjects)
+			{
+				if (typeid(T) == typeid(*obj))
+				{
+					actors.push_back(obj);
+				}
+			}
+
+			return actors;
+		}
+		
 
 	protected:
 
@@ -270,7 +287,7 @@ namespace Denix
 		float m_Gravity = 9.81f;
 
 		/** List of Objects in the scene */
-		std::vector<Ref<GameObject>> m_SceneObjects;
+		std::vector<Ref<Actor>> m_SceneObjects;
 
 		Ref<Camera> m_ViewportCamera;
 

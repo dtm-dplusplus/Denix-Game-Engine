@@ -50,9 +50,9 @@ namespace Denix
 
 		static void DeserializeScene(const Ref<Scene>& _scene);
 
-		static bool DeserializeSceneObjects(const YAML::Node& _sceneNode, std::vector<Ref<GameObject>>& _gameObjects);
+		static bool DeserializeSceneObjects(const YAML::Node& _sceneNode, std::vector<Ref<Actor>>& _actors);
 		
-		static void SpawnSceneObject(const Ref<GameObject>& _object);
+		static void SpawnSceneObject(const Ref<Actor>& _object);
 		
 		static SceneSubsystem* Get() { return s_SceneSubsystem; }
 
@@ -118,7 +118,7 @@ namespace Denix
 			}
         		
 			// Load the scene objects
-			std::vector<Ref<GameObject>> sceneObjects;
+			std::vector<Ref<Actor>> sceneObjects;
 			DeserializeSceneObjects(sceneNode, sceneObjects);
 			
 			for (const auto& newGameObject : sceneObjects)

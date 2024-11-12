@@ -3,7 +3,7 @@
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Scene/GameObject.h"
+#include "Denix/Scene/Actor.h"
 #include "Denix/Physics/Collider.h"
 
 namespace Denix
@@ -34,7 +34,7 @@ namespace Denix
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		for (const Ref<GameObject>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
+		for (const Ref<Actor>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
 		{
 			const Ref<RenderComponent> renderComp = object->GetRenderComponent();
 			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
@@ -120,7 +120,7 @@ namespace Denix
 
 		ResourceSubsystem::GetShader("UnlitShader")->Bind();
 
-		for (const Ref<GameObject>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
+		for (const Ref<Actor>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
 		{
 			const Ref<RenderComponent> renderComp = object->GetRenderComponent();
 			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
@@ -219,7 +219,7 @@ namespace Denix
 				camera->GetTransformComponent()->GetPosition().z);
 		}
 
-		for (const Ref<GameObject>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
+		for (const Ref<Actor>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
 		{
 			const Ref<RenderComponent> renderComp = object->GetRenderComponent();
 			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
@@ -273,7 +273,7 @@ namespace Denix
 				camera->GetTransformComponent()->GetPosition().z);
 		}
 
-		for (const Ref<GameObject>& object : m_ActiveScene->m_SceneObjects)
+		for (const Ref<Actor>& object : m_ActiveScene->m_SceneObjects)
 		{
 			if (!object->GetPhysicsComponent()->GetCollider() || !object->GetPhysicsComponent()->CollisionDetectionEnabled()) continue;
 

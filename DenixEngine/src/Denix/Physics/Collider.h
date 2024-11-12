@@ -49,7 +49,7 @@ namespace Denix
 		/** Render component that is used to draw the collider */
 		
 		friend class PhysicsSubsystem;
-		friend class GameObject;
+		friend class Actor;
 		friend class PhysicsComponent;
 	};
 

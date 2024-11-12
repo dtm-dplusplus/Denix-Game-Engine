@@ -3,7 +3,7 @@
 
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Scene/GameObject.h"
+#include "Denix/Scene/Actor.h"
 #include "Denix/Scene/Object/Shapes/Shapes.h"
 #include "Denix/Scene/Object/Light/LightObject.h"
 

@@ -12,18 +12,18 @@
 
 namespace Denix
 {
-	/*	Base class for all game objects
+	/*	Base class for all actors
 	*
 	*/
-	class GameObject : public BaseObject, public std::enable_shared_from_this<GameObject>
+	class Actor : public BaseObject, public std::enable_shared_from_this<Actor>
 	{
 	public:
 		// Constructors
-		GameObject();
-		GameObject(const ObjectInit& _object_init);
+		Actor();
+		Actor(const ObjectInit& _object_init);
 
 		// Destructors
-		~GameObject() override = default;
+		~Actor() override = default;
 
 		// Reflection
 		void Serialize(YAML::Emitter& _out) override;
@@ -69,11 +69,11 @@ namespace Denix
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 		// Physics Component
-		virtual void OnCollision(Ref<GameObject>& _other, CollisionData& _collision) {} //const Ref<GameObject>& _other
+		virtual void OnCollision(Ref<Actor>& _other, CollisionData& _collision) {} //const Ref<Actor>& _other
 
-		virtual void OnTriggerEnter(Ref<GameObject> _other);
-		virtual void OnTriggerStay(Ref<GameObject> _other);
-		virtual void OnTriggerExit(Ref<GameObject> _other);
+		virtual void OnTriggerEnter(Ref<Actor> _other);
+		virtual void OnTriggerStay(Ref<Actor> _other);
+		virtual void OnTriggerExit(Ref<Actor> _other);
 
 		void Destroy()
 		{

@@ -6,7 +6,7 @@
 namespace Denix
 {
     class RenderComponent;
-    class GameObject;
+    class Actor;
     class Material;
     class ShaderEditor;
     
@@ -19,20 +19,20 @@ namespace Denix
         //void Begin() override;
         //void End() override;
 
-        void LightWidget(const Ref<GameObject>& _selectedObject) const;
-        void PhysicsWidget(const Ref<GameObject>& _selectedObject) const;
-        void CollisionWidget(const Ref<GameObject>& _selectedObject) const;
+        void LightWidget(const Ref<Actor>& _selectedObject) const;
+        void PhysicsWidget(const Ref<Actor>& _selectedObject) const;
+        void CollisionWidget(const Ref<Actor>& _selectedObject) const;
 
-        void RenderWidget(const Ref<GameObject>& _selectedObject);
-        void MaterialWidget(const Ref<GameObject>& _selectedObject);
+        void RenderWidget(const Ref<Actor>& _selectedObject);
+        void MaterialWidget(const Ref<Actor>& _selectedObject);
         void MaterialSelectionWidget(Ref<RenderComponent>& _rendComp);
         void TextureSelectionWidget(const Ref<Material>& _material);
         void ShaderSelectionWidget(Ref<Material>& _material);
-        void MeshWidget(const Ref<GameObject>& _selectedObject);
-        void TransformWidget(const Ref<GameObject>& _object) const;
-        void CameraWidget(const Ref<GameObject>& _camera) const;
+        void MeshWidget(const Ref<Actor>& _selectedObject);
+        void TransformWidget(const Ref<Actor>& _object) const;
+        void CameraWidget(const Ref<Actor>& _camera) const;
 
-        WRef<GameObject> m_GameObjectRef;
+        WRef<Actor> m_GameObjectRef;
         Ref<ShaderEditor> m_ShaderEditor;
     };
 }

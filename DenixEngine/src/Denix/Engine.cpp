@@ -30,7 +30,7 @@ namespace Denix
 
 		// Register classes
 		ReflectionSubsystem::Register<BaseObject>();
-		ReflectionSubsystem::Register<GameObject>();
+		ReflectionSubsystem::Register<Actor>();
 		ReflectionSubsystem::Register<Cube>();
 		ReflectionSubsystem::Register<Sphere>();
 		ReflectionSubsystem::Register<Plane>();
