@@ -7,7 +7,7 @@
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
 #include "Denix/Resource/Asset.h"
-#include "Denix/Engine.h"
+#include <omp.h>
 
 namespace Denix
 {
@@ -22,7 +22,6 @@ namespace Denix
 		{
 			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(m_StartupScene->GetAssetName())))
 			{
-				scene->m_SceneName = m_StartupScene->GetAssetName();
 				scene->m_SceneAsset =m_StartupScene;
 				OpenScene(scene);
 				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
@@ -34,7 +33,6 @@ namespace Denix
 		{
 			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(sceneAsset->GetAssetName())))
 			{
-				scene->m_SceneName = sceneAsset->GetAssetName();
 				scene->m_SceneAsset = sceneAsset;
 				OpenScene(scene);
 				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
@@ -86,10 +84,10 @@ namespace Denix
 			return false;
 		}
 
-		s_SceneSubsystem->m_LoadedScenes[_scene->GetSceneName()] = _scene;
+		s_SceneSubsystem->m_LoadedScenes[_scene->GetName()] = _scene;
 
 		if(_scene->m_SceneAsset) DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->m_SceneAsset->GetAssetName())
-		else DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->GetSceneName())
+		else DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->GetName())
 		
 		return true;
 	}
@@ -159,7 +157,7 @@ namespace Denix
 		s_SceneSubsystem->m_ActiveScene->BeginScene();
 
 		DE_LOG(LogScene, Info, "Activated Scene: {}",
-			s_SceneSubsystem->m_ActiveScene->m_SceneName)
+			s_SceneSubsystem->m_ActiveScene->GetName())
 	}
 
 	void SceneSubsystem::PlayScene()
@@ -180,7 +178,7 @@ namespace Denix
 			DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
 		}
 
-		DE_LOG(LogScene, Trace, "Started Playing Scene: {}", s_SceneSubsystem->m_ActiveScene->GetSceneName())
+		DE_LOG(LogScene, Trace, "Started Playing Scene: {}", s_SceneSubsystem->m_ActiveScene->GetName())
 	}
 
 	void SceneSubsystem::StopScene()
@@ -282,7 +280,7 @@ namespace Denix
 		}
 
 		// Scene update implementation
-		if (m_SceneThreaded && m_ActiveScene->m_SceneObjects.size() > 6)
+		if (m_SceneThreaded && m_ActiveScene->m_SceneObjects.size() > 30)
 		{
 			// Threaded Scene Update
 			ThreadedSceneUpdate(_deltaTime);
@@ -296,7 +294,6 @@ namespace Denix
 				gameObject->Update(_deltaTime);
 			}
 		}
-		
 		
 		// Client Scene Update
 		m_ActiveScene->Update(_deltaTime);
@@ -318,19 +315,11 @@ namespace Denix
 		};
 
 		// Get number of threads
-		size_t threadCount = std::thread::hardware_concurrency();
-		if (threadCount == 0) threadCount = 2; // Fallback to 2 threads if hardware_concurrency() returns 0
-		
 		std::vector<std::thread> threads;
-		unsigned int chunkSize = (sceneObjects.size() + threadCount - 1) / threadCount; // Calculate chunk size
 
-		for (unsigned int i = 0; i < threadCount; ++i)
-		{
-			auto start = sceneObjects.begin() + i * chunkSize;
-			size_t chunkEnd = std::distance(sceneObjects.begin(), start) + chunkSize;
-			auto end = chunkEnd < sceneObjects.size()? sceneObjects.begin() + chunkEnd : sceneObjects.end();
-			if (start < end) threads.emplace_back(updateFunction, start, end);
-		}
+		auto mid = sceneObjects.begin() + (sceneObjects.size() / 2);
+		threads.emplace_back(updateFunction, m_ActiveScene->m_SceneObjects.begin(), mid);
+		threads.emplace_back(updateFunction, mid, m_ActiveScene->m_SceneObjects.end());
 
 		for (std::thread &thread : threads) if (thread.joinable()) thread.join();
 	}
@@ -366,7 +355,7 @@ namespace Denix
 
 			// Serialize the scene attributes
 			SceneEmitter << YAML::Comment("DE_ASSET_SCENE");
-			SceneEmitter << YAML::Newline << YAML::Comment( _scene->m_SceneName + " Scene Data");
+			SceneEmitter << YAML::Newline << YAML::Comment( _scene->GetName() + " Scene Data");
 			SceneEmitter << YAML::BeginMap;
 			SceneEmitter << YAML::Key << "m_SceneObjects" << YAML::BeginSeq;
 
@@ -426,48 +415,32 @@ namespace Denix
 	                                             std::vector<Ref<GameObject>>& _gameObjects)
 	{
 		// Load the scene objects
-		YAML::Node sequenceNode = _sceneNode["m_SceneObjects"];
+		YAML::Node sceneObjectsNode = _sceneNode["m_SceneObjects"];
 
-		if(sequenceNode.IsNull())
+		if(sceneObjectsNode.IsNull())
 		{
 			DE_LOG(LogScene, Error, "Failed to load scene objects")
 			return false;
 		}
 		
-		for (const auto& gameObject : sequenceNode)
+		for (const auto& objNode : sceneObjectsNode)
 		{
-			// Create a new game object
-			Ref<GameObject> newGameObject = MakeRef<GameObject>();
-				
-			// Temp check for game object types
-			// This will be moved to reflection system
-			if(YAML::Node objData =  gameObject["m_Object"])
+			// Create a new game object with class type
+			Ref<GameObject> newGameObject;
+			std::string objType = objNode["m_Object"]["m_ClassName"].as<std::string>();
+			if( ReflectionSubsystem::ClassExists(objType))
 			{
-				if(objData["m_FriendlyName"].as<std::string>().find("Light") != std::string::npos)
-				{
-					if (objData["m_FriendlyName"].as<std::string>().find("Dir") != std::string::npos)
-					{
-						newGameObject = MakeRef<DirectionalLight>();
-					}
-
-					else if (objData["m_FriendlyName"].as<std::string>().find("Point") != std::string::npos)
-					{
-						newGameObject = MakeRef<PointLight>();
-					}
-
-					else if (objData["m_FriendlyName"].as<std::string>().find("Spot") != std::string::npos)
-					{
-						newGameObject = MakeRef<SpotLight>();
-					}
-				}
-				else if(objData["m_FriendlyName"].as<std::string>().find("Camera") != std::string::npos)
-				{
-					newGameObject = MakeRef<Camera>();
-				}
+				newGameObject = ReflectionSubsystem::Create<GameObject>(objType);
+				DE_LOG(LogScene, Error, "Failed to load game object: Invalid class type")
+				continue;
+			}
+			else
+			{
+				newGameObject = MakeRef<GameObject>();
 			}
 				
 			// Deserialize the game object
-			newGameObject->Deserialize(gameObject);
+			newGameObject->Deserialize(objNode);
 			_gameObjects.push_back(newGameObject);
 		}
 		

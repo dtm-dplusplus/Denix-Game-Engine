@@ -155,10 +155,6 @@ vec3 cast_ray(const vec3& orig, const vec3& dir, const int depth = 0)
 
 using namespace Denix;
 
-CPGScene::CPGScene(const Ref<Asset>& _sceneAsset): Scene(_sceneAsset)
-{
-}
-
 void CPGScene::Update(float _deltaTime)
 {
     Scene::Update(_deltaTime);

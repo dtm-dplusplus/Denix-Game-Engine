@@ -2,9 +2,10 @@
 
 #include "Scene/CPGScene.h"
 #include "Scene/DevScene.h"
-#include "Scene/BenchmarkScene.h"
+#include "Scene/PhysicsScene.h"
 
 //using namespace Denix;
+
 
 class DevProject final: public Engine
 {
@@ -17,7 +18,7 @@ public:
 		m_ProjectName = "DevProject";
 		ReflectionSubsystem::Register<DevScene>();
 		ReflectionSubsystem::Register<CPGScene>();
-		ReflectionSubsystem::Register<BenchmarkScene>();
+		ReflectionSubsystem::Register<PhysicsScene>();
 	}
 
 	void Initialize() override

@@ -18,15 +18,8 @@ namespace Denix
 	{
 	public:
 
-		Scene(const std::string& _name = "Scene") : BaseObject(ObjectInit(_name)),
-			m_SceneName{ _name },
-			m_ViewportCamera{ nullptr },
-			m_ActiveCamera{ nullptr },
-			m_DirLight{ nullptr }
-		{
-		}
-
-		Scene(const Ref<Asset>& _sceneAsset);
+		Scene();
+		Scene(const ObjectInit& _objInit);
 
 		virtual ~Scene() = default;
 
@@ -105,16 +98,10 @@ namespace Denix
 			// Give camera back to viewport camera
 			m_ActiveCamera = m_ViewportCamera;
 		}
-		virtual void Update(float _deltaTime)
+
+		void Update(float _deltaTime) override
 		{
 			DebugUI(_deltaTime);
-			
-			for (const auto& gameObject : m_SceneObjects)
-			{
-				// Update the GameObject -  This will always be here
-				gameObject->Update(_deltaTime);
-				if (m_IsPlaying) gameObject->Update(_deltaTime);
-			}
 		}
 
 		bool IsLoaded() const { return m_IsLoaded; }
@@ -128,6 +115,14 @@ namespace Denix
 			{
 				if (Ref<GameObject> obj = MakeRef<T>(std::forward<Args>(_args)...))
 				{
+					// Validate Name. We cannont have two objects with the same name
+					if (GetGameObject(obj->GetName()))
+					{
+						int copy = 1;
+						while(GetGameObject(obj->GetName() + std::to_string(copy))) copy++;
+						obj->SetName(obj->GetName() + std::to_string(copy));
+					}
+					
 					// Set Transform Component
 					obj->m_TransformComponent->SetPosition(_position);
 					obj->m_TransformComponent->SetRotation(_rotation);
@@ -175,7 +170,7 @@ namespace Denix
 
 					m_SceneObjects.push_back(std::move(obj));
 
-					return CastRef<T>(obj);
+					return CastRef<T>(m_SceneObjects.back());
 				}
 				DE_LOG(LogScene, Error, "Failed to create object of type: {}", typeid(T).name());
 			}

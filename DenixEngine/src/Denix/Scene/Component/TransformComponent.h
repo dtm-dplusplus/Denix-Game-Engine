@@ -88,8 +88,11 @@ namespace Denix
 		glm::vec3& GetScale() { return m_Scale; }
 
 		// Setters
+		void SetPosition(const float _x, const float _y, const float _z) { m_Position = { _x, _y, _z }; }
 		void SetPosition(const glm::vec3& _position) { m_Position = _position; }
 		void SetRotation(const glm::vec3& _rotation) { m_Rotation = _rotation; }
+
+		void SetScale(const float _x, const float _y, const float _z) { m_Scale = { _x, _y, _z }; }
 		void SetScale(const glm::vec3& _scale) { m_Scale = _scale; }
 
 	protected:

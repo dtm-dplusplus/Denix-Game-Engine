@@ -40,12 +40,14 @@ namespace Denix
         for (int i = 0; i < sceneObjects.size(); i++)
         {
             // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
+            ImGui::PushID(sceneObjects[i]->GetName().c_str());
             if (ImGui::Selectable(sceneObjects[i]->GetName().c_str(), m_SelectionIndex == i))
             {
                 m_SelectionIndex = i;
                 DE_LOG(LogEditor, Trace, "Selected Object: {0}", sceneObjects[i]->GetName());
             }
-
+            ImGui::PopID();
+            
             if (ImGui::BeginPopupContextItem()) //uses last item id as popup id
             {
                 m_SelectionIndex = i;

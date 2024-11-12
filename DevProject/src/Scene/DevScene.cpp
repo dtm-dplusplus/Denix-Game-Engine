@@ -7,43 +7,42 @@
 
 using namespace Denix;
 
-
-DevScene::DevScene(): Scene("Dev Scene")
+void DevScene::BeginScene()
 {
-}
+	Scene::BeginScene();
 
-DevScene::DevScene(const Ref<Asset>& _sceneAsset): Scene(_sceneAsset)
-{
-
+	SpawnGrid();
 }
 
 void DevScene::Update(float _deltaTime)
 {
 	Scene::Update(_deltaTime);
-
-	// Create a random device to seed the random number generator
-	static std::random_device rd;
-
-	// Use the Mersenne Twister engine
-	static std::mt19937 gen(rd());
-
-	// Define the range for the random numbers
-	std::uniform_int_distribution<> dis(1, 100);
-
-	// Generate and print a random number
-	int random_number = dis(gen);
-	std::cout << "Random Number: " << random_number << std::endl;
-
 }
 
 void DevScene::DebugUI(float _deltaTime)
 {
 	Scene::DebugUI(_deltaTime);
 
-	if(ImGui::Begin(m_SceneName.c_str()))
-	{
-
-		ImGui::End();
-	}
+	ImGui::Begin(GetName().c_str());
 	
+	if(ImGui::DragInt("Grid Size", &GridSize, 1.0f, 1, 100))
+	{
+		SpawnGrid();
+	}
+
+	ImGui::End();
+}
+
+void DevScene::SpawnGrid()
+{
+	m_SceneObjects.clear();
+	
+	// Spawn cube grid
+	for(int i = 0; i <  GridSize; i++)
+	{
+		for(int j = 0; j < GridSize; j++)
+		{
+			SpawnGameObject<Cube>(glm::vec3(i * 2.5f, j * 2.5f, 0.0f));
+		}
+	}
 }

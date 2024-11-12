@@ -31,6 +31,7 @@ namespace Denix
         _out << YAML::Key << "m_Object" << YAML::BeginMap;
         {
             _out << YAML::Key << "m_Name" << YAML::Value << GetName();
+            _out << YAML::Key << "m_ClassName" << YAML::Value << m_ClassName;
         }
         _out << YAML::EndMap;
         // End Object Data
