@@ -23,8 +23,6 @@ namespace Denix
 
 		virtual ~Scene() = default;
 
-		std::string GetSceneName() const { return m_SceneName; }
-
 		virtual bool Load()
 		{
 			m_ViewportCamera = MakeRef<Camera>(ObjectInit("Viewport Camera"));
@@ -267,7 +265,6 @@ namespace Denix
 	protected:
 
 		/** Name of the scene. Must be uniqiue */
-		std::string m_SceneName;
 		Ref<Asset> m_SceneAsset;
 		
 		/** determine if the engine is in editor or tool side mode.

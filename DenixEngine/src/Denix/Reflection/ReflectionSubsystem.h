@@ -39,7 +39,8 @@ namespace Denix
         template <typename T = BaseObject>
         static Ref<T> Create(const std::string& _className)
         {
-            if (const auto it = s_ReflectionSubsystem->m_CreateFuncs.find(_className); it != s_ReflectionSubsystem->m_CreateFuncs.end()) {
+            if (const auto it = s_ReflectionSubsystem->m_CreateFuncs.find(_className); it != s_ReflectionSubsystem->m_CreateFuncs.end())
+            {
                if(Ref<BaseObject> obj = it->second())
                {
                    obj->m_ClassName = _className;

@@ -24,13 +24,14 @@ namespace Denix
 			{
 				scene->m_SceneAsset =m_StartupScene;
 				OpenScene(scene);
-				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
 			}
 		}
 
 		// Search Resources for scenes
 		else if (const Ref<Asset> sceneAsset = ResourceSubsystem::GetSceneStore()[0])
 		{
+			DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
+
 			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(sceneAsset->GetAssetName())))
 			{
 				scene->m_SceneAsset = sceneAsset;
@@ -42,8 +43,8 @@ namespace Denix
 		// Create a default scene
 		else
 		{
-			OpenScene(MakeRef<Scene>());
 			DE_LOG(LogScene, Warn, "No startup scene found. Created default scene")
+			OpenScene(MakeRef<Scene>());
 		}
 
 		DE_LOG(LogScene, Info, "Scene Subsystem Initialized")
@@ -188,7 +189,6 @@ namespace Denix
 			s_SceneSubsystem->m_ActiveScene->EndPlay();
 			//m_ActiveScene->EndScene();
 
-			//UnloadScene(m_ActiveScene->GetSceneName());
 			//m_ActiveScene = nullptr;
 
 			// Need to establish a better way of handling scenes
@@ -342,7 +342,7 @@ namespace Denix
 		// We need the path from the asset to write the scene data
 		if(!_scene->m_SceneAsset || _scene->m_SceneAsset->GetAssetPath().empty())
 		{
-			DE_LOG(LogScene, Error, "Scene {} has no asset associated with it", _scene->GetSceneName())
+			DE_LOG(LogScene, Error, "Scene {} has no asset associated with it", _scene->GetName())
 			return false;
 		}
 		
@@ -371,7 +371,7 @@ namespace Denix
 
 			// Write emitter data to yaml file
 			FileSubsystem::WriteFile(sceneAsset->GetAssetPath(), SceneEmitter.c_str());
-			DE_LOG(LogScene, Info, "Serialized scene: {}", _scene->GetSceneName())
+			DE_LOG(LogScene, Info, "Serialized scene: {}", _scene->GetName())
 
 			return true;
 		}
@@ -387,7 +387,7 @@ namespace Denix
 		// Check if the scene asset is valid
 		if (!_scene->m_SceneAsset)
 		{
-			DE_LOG(LogScene, Error, "Scene {} has no asset associated with it", _scene->GetSceneName())
+			DE_LOG(LogScene, Error, "Scene {} has no asset associated with it", _scene->GetName())
 			return;
 		}
 		
