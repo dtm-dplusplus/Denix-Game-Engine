@@ -145,6 +145,9 @@ namespace Denix
 
 	Ref<Asset> ResourceSubsystem::GetSceneAsset(const std::string& _path)
 	{
+		// We Should validate the path first
+
+		// Check registered assets
 		for (const auto& asset : s_ResourceSubsystem->m_SceneStore)
 		{
 			if (asset->GetAssetPath() == _path)

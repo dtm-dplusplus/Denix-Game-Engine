@@ -112,6 +112,14 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>
+
+        # TEMP - Copy of assets edited in runtime
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/Content ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/Content
+
+        # TEMP - Copy of engine config edited in runtime
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/Config ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/Config
 )
 
 # Enable Edit and Continue for MSVC

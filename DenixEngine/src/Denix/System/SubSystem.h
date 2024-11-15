@@ -11,7 +11,7 @@ namespace Denix
 
 		virtual void Initialize() {}
 		virtual void Deinitialize() {}
-
+		
 		virtual void Update(float _deltaTime){}
 		virtual void PreUpdate(float _deltaTime) {}
 		virtual void PostUpdate(float _deltaTime) {}

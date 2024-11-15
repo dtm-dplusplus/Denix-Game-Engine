@@ -17,29 +17,21 @@ namespace Denix
 	{
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
 
-		// Check engine config for startup scene
-		if(m_StartupScene && FileSubsystem::FileExists(m_StartupScene->GetAssetPath()))
+		Ref<Scene> startScene = nullptr;
+		
+		// Check engine config for startup scene. This is validated in the LoadConfig function
+		if(m_StartupScene)
 		{
 			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(m_StartupScene->GetAssetName())))
 			{
-				scene->m_SceneAsset =m_StartupScene;
+				scene->m_SceneAsset =m_StartupScene; // Reflection doesn't support constructor arguments yet
 				OpenScene(scene);
 			}
-		}
-
-		// Search Resources for scenes
-		else if (const Ref<Asset> sceneAsset = ResourceSubsystem::GetSceneStore()[0])
-		{
-			DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
-
-			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(sceneAsset->GetAssetName())))
+			else
 			{
-				scene->m_SceneAsset = sceneAsset;
-				OpenScene(scene);
-				DE_LOG(LogScene, Warn, "No startup scene found. Using first scene in asset store")
+				assert(false, "Failed to create startup scene. No Reflection Class Found");
 			}
 		}
-		
 		// Create a default scene
 		else
 		{
@@ -209,8 +201,6 @@ namespace Denix
 		m_SceneThreaded = true;
 		
 		DE_LOG_CREATE(LogScene)
-		DE_LOG_CREATE(LogScene)
-		DE_LOG_CREATE(LogObject)
 	}
 
 	void SceneSubsystem::CleanRubbish()

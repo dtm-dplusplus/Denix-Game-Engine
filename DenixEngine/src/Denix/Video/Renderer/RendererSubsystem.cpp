@@ -27,7 +27,7 @@ namespace Denix
 		}
 
 		// Will skip if viewport mode is not default
-		RenderLighting();
+		//RenderLighting();
 	}
 
 	void RendererSubsystem::RenderDefaultViewport()
@@ -47,11 +47,11 @@ namespace Denix
 				mat->m_Shader->Bind();
 
 				// Upload the material
-				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.AO"), mat->GetAO());
+				/*glUniform1f(renderComp->m_Shader->GetUniform("u_Material.AO"), mat->GetAO());
 				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Metallic"), mat->GetMetallic());
 				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.Roughness"), mat->GetRoughness());
 				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularIntensity"), mat->GetSpecularIntensity());
-				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());
+				glUniform1f(renderComp->m_Shader->GetUniform("u_Material.SpecularPower"), mat->GetSpecularPower());*/
 
 				// Base color/texture specific settings
 				glUniform1i(renderComp->m_Shader->GetUniform("u_Material.IsBaseTexture"), mat->CheckBaseType());
@@ -92,7 +92,7 @@ namespace Denix
 					GL_FALSE, glm::value_ptr(transformComp->GetModel()));
 
 				// Upload Affects Lighting bool
-				glUniform1i(renderComp->m_Shader->GetUniform("u_AffectsLighting"), renderComp->m_AffectsLighting);
+				//glUniform1i(renderComp->m_Shader->GetUniform("u_AffectsLighting"), renderComp->m_AffectsLighting);
 
 				// Draw Call
 				if (const Ref<Model> model = meshComp->GetModel())
@@ -110,7 +110,7 @@ namespace Denix
 			}
 
 			// Draw Collision over gameobject if set to visible
-			if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
+			//if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
 		}
 	}
 
