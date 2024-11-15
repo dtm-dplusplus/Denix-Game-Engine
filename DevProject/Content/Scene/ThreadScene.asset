@@ -1,3 +1,53 @@
 # DE_ASSET_SCENE
 # Object Scene Data
 m_SceneObjects:
+  -  # Object Data
+    m_Object:
+      m_GUID: 476243
+      m_Name: Cube
+      m_ClassName: Cube
+# Render Component
+    m_RenderComponent:
+      m_IsVisible: true
+      m_AffectsLighting: true
+# Texture Settings
+      m_TextureSettings:
+        WrapMode: 10497
+        WrapValue: 0
+        FilterMode: 9729
+        FilterValue: 1
+# Material
+      m_Material: C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\Build\DevProject\Content\Engine\Material\MAT_Default.asset
+# Transform Component
+    m_TransformComponent:
+      m_Position:
+        - 0
+        - 0
+        - 0
+      m_Rotation:
+        - 0
+        - 0
+        - 0
+      m_Scale:
+        - 1
+        - 1
+        - 1
+      m_Moveability: 0
+# Physics Component
+    m_PhysicsComponent:
+      m_SimulatePhysics: false
+      m_SimulateGravity: true
+      m_Collider: Cube
+      m_ColliderVisible: false
+      m_CollisionDetectionEnabled: true
+      m_CollisonDimesionOverride: false
+      m_IsTrigger: false
+      m_ImpulseEnabled: true
+      m_StepMethod: 1
+      m_Mass: 1
+      m_LinearDrag: 0.5
+      m_Elasticity: 0
+      m_AngularDrag: 0.5
+# Mesh Component
+    m_MeshComponent:
+      m_Mesh: SM_Cube

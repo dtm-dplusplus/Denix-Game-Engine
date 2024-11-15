@@ -28,7 +28,8 @@ namespace Denix
         // Scene Objects
         ImGui::SetNextWindowDockID(UISubsystem::Get()->DockLeftID, ImGuiCond_Appearing);
         ImGui::Begin(GetName().c_str());
-
+        ImGui::SeparatorText(m_SceneRef.lock()->GetName().c_str());
+        
         // Update AddGameObjectWidget. Set the selected object to the last object created
         m_AddGameObjectWidget->Update(_deltaTime);
         if (m_AddGameObjectWidget->m_CreatedGameObject)
@@ -72,6 +73,7 @@ namespace Denix
     void SceneOrganizerWidget::SceneChangedEvent(const WRef<Scene>& _scene)
     {
         SceneEditorWidget::SceneChangedEvent(_scene);
+        m_AddGameObjectWidget->m_SceneRef = _scene;
         ResetSelection();
     }
 

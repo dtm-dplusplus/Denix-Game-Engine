@@ -1,7 +1,7 @@
-﻿#include "Denix/Core.h"
+﻿#pragma once
+#include "Denix/Core.h"
 #include <thread>
 #include <functional>
-#include <sstream>
 
 #include <windows.h>
 
@@ -11,42 +11,41 @@ namespace Denix
     {
     public:
         Thread() = default;
+
         ~Thread()
         {
-            if (m_Thread.joinable())
+            if (IsJoinable())
             {
-                m_Thread.join();
-                DE_LOG(Log, Info, "Thread joined");
+                Join();
             }
-            else
-            {
-                DE_LOG(Log, Error, "Thread not joinable");
-            }
+
+            DE_LOG(Log, Info, "Thread: {} destroyed", m_ThreadIDInt)
         }
 
-        template<typename CallFunc, typename... Args>
-            Thread(CallFunc&& _func, Args&&... _args)
-            {
-                DE_LOG(Log, Info, "Thread created with static function");
-                m_Thread = std::thread(_func, _args...);
-                m_ThreadID = std::this_thread::get_id();
-            }
+        template <typename Func, typename... Args>
+        explicit Thread(Func&& _func, Args&&... _args)
+        {
+            m_Thread = std::thread(std::forward<Func>(_func), std::forward<Args>(_args)...);
+            m_ThreadID = m_Thread.get_id();
+            SetThreadIDInt();
+            
+            DE_LOG(Log, Info, "Thread: {} created", m_ThreadIDInt)
+        }
 
-        template<typename T>
-            Thread(void(T::*_memberFunc)(), T* _instance)
-            {
-                m_Thread = std::thread(std::bind(_memberFunc, _instance));
-                m_ThreadID = m_Thread.get_id();        
-
-                DE_LOG(Log, Info, "Thread created with member function. Thread ID: {}", m_ThreadID);
-            std::cout << m_Thread.get_id();
-            }
-
+        /**
+         * @brief Join the thread. Check if the thread is joinable before joining
+         * Automatically called in the destructor
+         */
         void Join()
         {
             if (m_Thread.joinable())
             {
                 m_Thread.join();
+                DE_LOG(Log, Info, "Thread {} joined", m_ThreadIDInt)
+            }
+            else
+            {
+                DE_LOG(Log, Error, "Thread {} not joinable", m_ThreadIDInt)
             }
         }
 
@@ -55,13 +54,22 @@ namespace Denix
             return m_Thread.joinable();
         }
 
-        unsigned long GetThreadID() const
+        void Detach()
         {
-            return m_ThreadID;
+            m_Thread.detach();
+            DE_LOG(Log, Info, "Thread {} detached", m_ThreadIDInt)
+        }
+        
+        void SetThreadIDInt()
+        {
+            std::stringstream ss;
+            ss << m_Thread.get_id();
+            m_ThreadIDInt = std::stoi(ss.str());
         }
 
-    private:
+    // private:
         std::thread m_Thread;
-       unsigned long  m_ThreadID;
+        std::thread::id m_ThreadID;
+        int m_ThreadIDInt;
     };
 }

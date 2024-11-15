@@ -14,10 +14,11 @@ public:
     void BeginScene() override;
 
     void DebugUI(float _deltaTime) override;
-    void Work();
+    void Work(int _arg);
+    void InfiniteWork(bool& _ShouldWork);
 
     Ref<Timer>  WorkTimer;
-    
+    bool WorkArg = false;
     std::vector<Ref<Thread>> Threads; 
 };
 

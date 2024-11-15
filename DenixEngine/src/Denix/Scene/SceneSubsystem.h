@@ -65,7 +65,7 @@ namespace Denix
 
 		static void UnloadScene(const std::string& _name);
 
-		// Open Scene Methods. The string & asset overloads are wrappers for the pass by seen method.
+		// Open Scene Methods. The string & asset overloads are wrappers for the pass by scene method.
 		static void OpenScene(const std::string& _name);
 		static void OpenScene(const Ref<Asset>& _sceneAsset);
 		static void OpenScene(const Ref<Scene>& _scene);
