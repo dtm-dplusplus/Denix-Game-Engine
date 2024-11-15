@@ -3,8 +3,9 @@
 #include "Scene/CPGScene.h"
 #include "Scene/DevScene.h"
 #include "Scene/PhysicsScene.h"
+#include "Scene/ThreadScene.h"
 
-//using namespace Denix;
+ //using namespace Denix;
 
 
 class DevProject final: public Engine
@@ -19,6 +20,7 @@ public:
 		ReflectionSubsystem::Register<DevScene>();
 		ReflectionSubsystem::Register<CPGScene>();
 		ReflectionSubsystem::Register<PhysicsScene>();
+		ReflectionSubsystem::Register<ThreadScene>();
 	}
 
 	void Initialize() override
