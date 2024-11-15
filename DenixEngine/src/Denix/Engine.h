@@ -50,7 +50,7 @@ namespace Denix
     protected:
         std::string m_ProjectName;
         Ref<Asset> m_StartupScene;
-        
+        std::string m_EngineConfigPath;        
     private:
         static Engine* s_Engine;
 

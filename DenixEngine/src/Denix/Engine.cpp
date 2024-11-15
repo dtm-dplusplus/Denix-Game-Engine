@@ -68,22 +68,23 @@ namespace Denix
 		
 		m_FileSubsystem = InitalizeSubsystem<FileSubsystem>(m_ProjectName);
 
-		// Check Engine Config
-		LoadConfig();
-
 		m_WindowSubsystem = InitalizeSubsystem<WindowSubsystem>();
-
-		m_RendererSubsystem = InitalizeSubsystem<RendererSubsystem>();
 
 		m_ResourceSubsystem = InitalizeSubsystem<ResourceSubsystem>();
 
-		m_UISubsystem = InitalizeSubsystem<UISubsystem>();
+		// set the engine config path
+		m_EngineConfigPath = FileSubsystem::GetProjectRoot() + "Config\\Engine.cfg";
+		
+		// Load the engine config. This will set the startup scene and validate the engine config
+		LoadConfig();
 
+		m_RendererSubsystem = InitalizeSubsystem<RendererSubsystem>();
+
+		m_UISubsystem = InitalizeSubsystem<UISubsystem>();
 
 		m_PhysicsSubsystem = InitalizeSubsystem<PhysicsSubsystem>();
 
 		m_InputSubsystem = InitalizeSubsystem<InputSubsystem>();
-
 
 		m_SceneSubsystem = InitalizeSubsystem<SceneSubsystem>(m_StartupScene);
 
@@ -182,12 +183,20 @@ namespace Denix
 	{
 		try
 		{
-			std::string cfgPath = m_FileSubsystem->m_ProjectRoot + "Config\\Engine.cfg";
-			if(YAML::Node cfg = YAML::LoadFile(cfgPath))
+			// Load the config file. Exception will be thrown if the file doesn't exist so no need to check
+			const YAML::Node& cfg = YAML::LoadFile(m_EngineConfigPath);
+
+			// Validate startup scene
+			if(const YAML::Node& startSceneNode = cfg["Startup Scene"])
 			{
-				if(const std::string startupScene = cfg["Startup Scene"].as<std::string>(); !startupScene.empty())
-				{ 
-					m_StartupScene = MakeRef<Asset>(startupScene);
+				if(Ref<Asset> startSceneAsset = ResourceSubsystem::GetSceneAsset(startSceneNode.as<std::string>()))
+				{
+					m_StartupScene = startSceneAsset;
+					DE_LOG(LogEngine, Info, "Loaded Engine Config: Startup Scene: {0}", startSceneAsset->GetAssetName())
+				}
+				else
+				{
+					DE_LOG(LogEngine, Warn, "Load Engine Config: Startup Scene Not Found")
 				}
 			}
 		}
@@ -206,7 +215,6 @@ namespace Denix
 	{
 		try
 		{
-			static const std::string cfgPath = FileSubsystem::GetProjectRoot() + "Config\\Engine.cfg";
 				
 			YAML::Emitter cfgEmitter;
 			cfgEmitter << YAML::Comment("DENIX ENGINE CONFIGURATION");
@@ -214,7 +222,7 @@ namespace Denix
 			cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << (m_StartupScene? m_StartupScene->GetAssetPath() : "");
 			cfgEmitter << YAML::EndMap;
 			
-			if(FileSubsystem::WriteFile(cfgPath, cfgEmitter.c_str()))
+			if(FileSubsystem::WriteFile(m_EngineConfigPath, cfgEmitter.c_str()))
 				DE_LOG(LogEngine, Info, "Saved Engine Config")
 		}
 		catch(const std::exception& e)
@@ -222,12 +230,13 @@ namespace Denix
 			DE_LOG(LogEngine, Error, "Failed to Save Engine Config: {0}", e.what())
 
 			// Do some error handling
+			assert(false, "Failed to Save Engine Config");
 		}
 	}
 
 	Ref<Asset> Engine::GetStartupScene() const
 	{
-		return (m_StartupScene? m_StartupScene : nullptr);
+		return m_StartupScene;
 	}
 
 	void Engine::SetStartupScene(const Ref<Asset>& _ref)
