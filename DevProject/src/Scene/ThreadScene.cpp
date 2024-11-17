@@ -6,17 +6,14 @@ using namespace  Denix;
 
 ThreadScene::ThreadScene()
 {
-    
+    DebugThread = MakeRef<Thread>(&ThreadScene::InfiniteWork, this, std::ref(WorkArg));
+    WorkTimer = MakeRef<Timer>(ObjectInit("WorkTimer"));
 }
 
-void ThreadScene::BeginScene()
+ThreadScene::~ThreadScene()
 {
-    Scene::BeginScene();
-
-    WorkTimer = MakeRef<Timer>(ObjectInit("WorkTimer"));
-    /*Ref<Thread> thread = MakeRef<Thread>(Work);
-    Threads.push_back(thread);*/
-
+    DebugThread.reset();
+    WorkTimer.reset();
 }
 
 void ThreadScene::DebugUI(float _deltaTime)
@@ -24,44 +21,40 @@ void ThreadScene::DebugUI(float _deltaTime)
     Scene::DebugUI(_deltaTime);
 
     ImGui::Begin(GetName().c_str());
-    if (WorkArg) ImGui::Text("Working...");
-    else ImGui::Text("Not working...");
+    if (DebugThread)
+    {
+        ImGui::Text("Thread ID: %d", DebugThread->m_ThreadIDInt);
+        ImGui::Text("Is Working: %s", DebugThread->m_IsWorking ? "True" : "False");
+    }
+    
     if(ImGui::Button("Start Work"))
     {
-        WorkArg = true;
-       Threads.push_back(MakeRef<Thread>(&ThreadScene::InfiniteWork, this, std::ref(WorkArg)));
+       DebugThread = MakeRef<Thread>(&ThreadScene::Work, this);
     }
     if(ImGui::Button("Stop Work"))
     {
-        WorkArg = false;
-        Threads[0]->Join();
+        DebugThread->m_StopFlag = true;
     }
-    if (ImGui::Button("Detach Work"))
+    if (ImGui::Button("Join"))
     {
-        Threads[0]->Detach();
+        DebugThread->JoinCheck();
     }
-   
-    ImGui::End();
+    if (ImGui::Button("Detach"))
+    {
+        DebugThread->Detach();
+    }
 
-    // join the thread. Either by calling join() or by letting the destructor do it
-    /*if (!Threads.empty())
-    {
-        if (Threads[0]->IsJoinable())
-        {
-            Threads[0]->Join();
-        }
-    }*/
+    ImGui::End();
 }
 
-void ThreadScene::Work(int _arg)
+void ThreadScene::Work()
 {
-    DE_LOG(LogScene, Info, "Working on thread: {}", 1);
-    DE_LOG(LogScene, Info, "Work Argument: {}", _arg);
+    DE_LOG(LogScene, Info, "Working on thread: {}", DebugThread->m_ThreadIDInt);
     WorkTimer->Start();
 
-    for (int i = 0; i < 1000000; i++)
+    // Work for 10 minutes
+    while (WorkTimer->m_Duration.count() < 60.0f * 10.0f && !DebugThread->m_StopFlag)
     {
-        int x = i * i;
     }
 
     WorkTimer->Stop();

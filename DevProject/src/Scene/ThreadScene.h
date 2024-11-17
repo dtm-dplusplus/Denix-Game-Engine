@@ -10,15 +10,12 @@ class ThreadScene: public Scene
 {
 public:
     ThreadScene();
-    
-    void BeginScene() override;
-
+    ~ThreadScene();
     void DebugUI(float _deltaTime) override;
-    void Work(int _arg);
+    void Work();
     void InfiniteWork(bool& _ShouldWork);
 
     Ref<Timer>  WorkTimer;
     bool WorkArg = false;
-    std::vector<Ref<Thread>> Threads; 
+    Ref<Thread> DebugThread; 
 };
-

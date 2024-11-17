@@ -24,18 +24,21 @@ void DevScene::DebugUI(float _deltaTime)
 	Scene::DebugUI(_deltaTime);
 
 	ImGui::Begin(GetName().c_str());
-	
-	if(ImGui::DragInt("Grid Size", &GridSize, 1.0f, 1, 100))
-	{
-		SpawnGrid();
-	}
-
+	ImGui::Text("Scene Capacity: %d", m_SceneObjects.capacity());
+	ImGui::Text("Scene Objetcs Size: %d", m_SceneObjects.size());
+	ImGui::DragInt("Grid Size", &GridSize, 1.0f, 1, 100);
+	ImGui::SameLine();
+	if (ImGui::Button("Update Grid")) SpawnGrid();
 	ImGui::End();
 }
 
 void DevScene::SpawnGrid()
 {
+	DE_LOG(LogScene, Info, "Spawning Grid of size: {}", GridSize);
+	DE_LOG(LogScene, Info, "Scene Capacity: {}", m_SceneObjects.capacity());
 	m_SceneObjects.clear();
+	m_SceneObjects.shrink_to_fit();
+	DE_LOG(LogScene, Info, "Scene Capacity: {}", m_SceneObjects.capacity());
 	
 	// Spawn cube grid
 	for(int i = 0; i <  GridSize; i++)
