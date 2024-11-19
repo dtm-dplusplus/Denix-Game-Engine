@@ -7,6 +7,7 @@ int main(int argc, char** argv);
 
 namespace Denix
 {
+    class ThreadSubsystem;
     class Asset;
     class Subsystem;
     class ReflectionSubsystem;
@@ -77,6 +78,8 @@ namespace Denix
         // Usufeul vector for deinitializing subsystems in reverse order
         std::vector<Subsystem*> m_Subsystems;
 
+        Ref<ThreadSubsystem> m_ThreadSubsystem;
+        
         URef<TimerSubsystem> m_TimerSubsystem;
 
         URef<ReflectionSubsystem> m_ReflectionSubsystem;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Denix/Core.h"
+
 namespace Denix
 {
 	class Subsystem

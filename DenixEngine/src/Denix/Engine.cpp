@@ -1,6 +1,7 @@
 #include "Engine.h"
 
 #include "Denix/System/SubSystem.h"
+#include "Denix/Thread/ThreadSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
@@ -24,6 +25,9 @@ namespace Denix
 		m_StartupScene = nullptr;
 		Logger::Initialize();
 
+		// We initialize the thread subsystem here because it is used to create the other subsystems
+		m_ThreadSubsystem = InitalizeSubsystem<ThreadSubsystem>();
+		
 		// We initialize the reflection subsystem here because it is used by the client engine constructor
 		// Register all classes that need to be reflected here. This will be moved to some kind of pre build event & parser in the future
 		m_ReflectionSubsystem = InitalizeSubsystem<ReflectionSubsystem>();
