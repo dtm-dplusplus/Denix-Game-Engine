@@ -18,7 +18,7 @@ namespace Denix
 	{
 	public:
 
-		Scene();
+		Scene() = default;
 		Scene(const ObjectInit& _objInit);
 
 		virtual ~Scene() = default;

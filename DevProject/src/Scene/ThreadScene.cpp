@@ -4,16 +4,16 @@
 
 using namespace  Denix;
 
-ThreadScene::ThreadScene()
-{
-    DebugThread = MakeRef<Thread>(&ThreadScene::InfiniteWork, this, std::ref(WorkArg));
-    WorkTimer = MakeRef<Timer>(ObjectInit("WorkTimer"));
-}
-
 ThreadScene::~ThreadScene()
 {
     DebugThread.reset();
-    WorkTimer.reset();
+}
+
+void ThreadScene::BeginScene()
+{
+    Scene::BeginScene();
+
+    DebugThread = MakeRef<Thread>();
 }
 
 void ThreadScene::DebugUI(float _deltaTime)
@@ -24,54 +24,29 @@ void ThreadScene::DebugUI(float _deltaTime)
     if (DebugThread)
     {
         ImGui::Text("Thread ID: %d", DebugThread->m_ThreadIDInt);
+        ImGui::Text("Jobs Done: %d", DebugThread->m_JobsDone);
         ImGui::Text("Is Working: %s", DebugThread->m_IsWorking ? "True" : "False");
     }
-    
-    if(ImGui::Button("Start Work"))
+    if(ImGui::Button("Add Job"))
     {
-       DebugThread = MakeRef<Thread>(&ThreadScene::Work, this);
-    }
-    if(ImGui::Button("Stop Work"))
-    {
-        DebugThread->m_StopFlag = true;
-    }
-    if (ImGui::Button("Join"))
-    {
-        DebugThread->JoinCheck();
-    }
-    if (ImGui::Button("Detach"))
-    {
-        DebugThread->Detach();
+        DebugThread->AddJob(&ThreadScene::MyWork, this);
     }
 
     ImGui::End();
 }
 
-void ThreadScene::Work()
+void ThreadScene::MyWork()
 {
-    DE_LOG(LogScene, Info, "Working on thread: {}", DebugThread->m_ThreadIDInt);
+    DE_LOG(LogScene, Info, "Working on ThreadScene thread: {}", DebugThread->m_ThreadIDInt);
+    Ref<Timer> WorkTimer = MakeRef<Timer>(ObjectInit("Work Timer"));
     WorkTimer->Start();
 
     // Work for 10 minutes
-    while (WorkTimer->m_Duration.count() < 60.0f * 10.0f && !DebugThread->m_StopFlag)
+    while (WorkTimer->GetElapsed() < 2.0f)
     {
     }
 
     WorkTimer->Stop();
 
     DE_LOG (LogScene, Info, "Work took: {} seconds", WorkTimer->m_Duration.count());
-}
-
-void ThreadScene::InfiniteWork(bool& _ShouldWork)
-{
-    DE_LOG(LogScene, Info, "Working on thread: {}", 1);
-    WorkTimer->Start();
-
-    while (_ShouldWork)
-    {
-    }
-
-    WorkTimer->Stop();
-
-    DE_LOG(LogScene, Info, "Work took: {} seconds", WorkTimer->m_Duration.count());
 }

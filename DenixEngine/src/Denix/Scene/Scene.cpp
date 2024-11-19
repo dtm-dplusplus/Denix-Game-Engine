@@ -4,12 +4,6 @@
 
 namespace Denix
 {
-    Scene::Scene():
-        m_ViewportCamera{ nullptr },
-                    m_ActiveCamera{ nullptr },
-                    m_DirLight{ nullptr }
-    {
-    }
     Scene::Scene(const ObjectInit& _objInit): BaseObject(_objInit),
                                               m_ViewportCamera{ nullptr },
                                               m_ActiveCamera{ nullptr },

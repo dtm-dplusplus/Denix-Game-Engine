@@ -9,13 +9,10 @@ using namespace Denix;
 class ThreadScene: public Scene
 {
 public:
-    ThreadScene();
-    ~ThreadScene();
+    ~ThreadScene() override;
+    void BeginScene() override;
     void DebugUI(float _deltaTime) override;
-    void Work();
-    void InfiniteWork(bool& _ShouldWork);
+    void MyWork();
 
-    Ref<Timer>  WorkTimer;
-    bool WorkArg = false;
     Ref<Thread> DebugThread; 
 };

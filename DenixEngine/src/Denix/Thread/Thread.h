@@ -2,6 +2,8 @@
 #include "Denix/Core.h"
 #include <thread>
 #include <functional>
+#include <source_location>
+#include <queue>
 
 #include <windows.h>
 
@@ -10,7 +12,14 @@ namespace Denix
     class Thread
     {
     public:
-        Thread() = default;
+        Thread()
+        {
+            m_Thread = std::thread(&Thread::Work, this);
+            m_ThreadID = m_Thread.get_id();
+            SetThreadIDInt();
+            m_IsWorking = false;
+            DE_LOG(Log, Info, "Thread: {} created", m_ThreadIDInt)
+        }
 
         ~Thread()
         {
@@ -22,13 +31,39 @@ namespace Denix
         template <typename Func, typename... Args>
         explicit Thread(Func&& _func, Args&&... _args)
         {
-            m_Thread = std::thread(std::forward<Func>(_func), std::forward<Args>(_args)...);
+            m_ThreadFunction = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...);
+            m_Thread = std::thread(m_ThreadFunction, this);
             m_ThreadID = m_Thread.get_id();
             SetThreadIDInt();
             m_IsWorking = true;
             DE_LOG(Log, Info, "Thread: {} created", m_ThreadIDInt)
         }
 
+
+        void Work()
+        {
+            while(true)
+            {
+                if (!m_Jobs.empty())
+                {
+                    //std::string funcName = m_Jobs.front().target_type().name();
+                   // DE_LOG(Log, Info, "Thread {} working on job: {}", m_ThreadIDInt, funcName)
+                    m_IsWorking = true;
+                    m_Jobs.front()();
+                    m_Jobs.pop();
+                    m_JobsDone++;
+                    m_IsWorking = false;
+                    //DE_LOG(Log, Info, "Thread {} finished job: {}", m_ThreadIDInt, funcName)
+                }
+            }
+        }
+
+        template <typename Func, typename... Args>
+        void AddJob(Func&& _func, Args&&... _args)
+        {
+            m_Jobs.push(std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
+        }
+        
         /**
          * @brief Join the thread. 
          */
@@ -96,6 +131,11 @@ namespace Denix
         std::thread::id m_ThreadID;
         size_t m_ThreadIDInt;
 
+        std::function<void()> m_ThreadFunction;
+        int m_JobsDone = 0;
+
+        std::queue<std::function<void()>> m_Jobs;
+        
         bool m_IsWorking;
         bool m_StopFlag = false;
     };
