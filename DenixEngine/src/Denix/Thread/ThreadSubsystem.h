@@ -23,10 +23,19 @@ namespace Denix
         template <typename Func, typename... Args>
        static  void AddJob(Func&& _func, Args&&... _args)
         {
-            s_ThreadSubsystem->m_Jobs.emplace(std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
+            s_ThreadSubsystem->m_Jobs.push(std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
         }
 
-        std::vector<Thread> m_Threads;
+        static Ref<Thread> GetThread(std::thread::id _id)
+        {
+           for (const auto& thread: s_ThreadSubsystem->m_Threads)
+               if(thread->m_ThreadID == _id) return thread;
+
+            return nullptr;
+        }
+
+        
+        std::vector<Ref<Thread>> m_Threads;
         size_t m_SystemThreadCount = 0;
         
         std::queue<std::function<void()>> m_Jobs;

@@ -19,16 +19,15 @@ namespace Denix
 
         ~Thread()
         {
-            JoinCheck();
-
             DE_LOG(Log, Info, "Thread: {} destroyed", m_ThreadIDInt)
+            JoinCheck();
         }
 
         template <typename Func, typename... Args>
         void InitThread(Func&& _func , Args&&... _args)
         {
-            m_Job = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...);
-            m_Thread = std::thread(&Thread::Work, this);
+            // = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...); //Lambda here?
+            m_Thread = std::thread(std::forward<Func>(_func), std::forward<Args>(_args)...);
             m_ThreadID = m_Thread.get_id();
             SetThreadIDInt();
             DE_LOG(Log, Info, "Thread: {} created", m_ThreadIDInt)

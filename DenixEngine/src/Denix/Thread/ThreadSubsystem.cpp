@@ -26,14 +26,14 @@ void Denix::ThreadSubsystem::Initialize()
     DE_LOG(Log, Trace, "Processor architecture: {}", sysinfo.wProcessorArchitecture)
 
     // Initialize the scheduler thread
-    m_Threads.emplace_back();
-    m_Threads.back().InitThread(&ThreadSubsystem::ScheduleWork, this);
-
+    m_Threads.emplace_back(MakeRef<Thread>());
+    m_Threads.back()->InitThread(&ThreadSubsystem::ScheduleWork, this);
+    
     // Initialize the worker threads
     for (size_t i = 0; i < 4; i++)
     {
-        m_Threads.emplace_back();
-        m_Threads.back().InitWorkerThread();
+        m_Threads.emplace_back(MakeRef<Thread>());
+        m_Threads.back()->InitWorkerThread();
     }
     DE_LOG(Log, Info, "Thread Subsystem Initialized")
 }
@@ -48,20 +48,22 @@ void Denix::ThreadSubsystem::Deinitialize()
 
 void Denix::ThreadSubsystem::ScheduleWork()
 {
-    while (m_Enabled)
+    while (true)
     {
-        // Process jobs
-        // Find a thread that is not working
-        for (auto& thread : m_Threads)
+        // Probably need a lock here?
+        
+        if (m_Enabled &&!m_Jobs.empty())
         {
-            if (!thread.m_IsWorking && !m_Jobs.empty())
+            // Find a thread that is not working and Process job
+            for (auto& thread : m_Threads)
             {
-                
-                thread.m_Job = m_Jobs.front();
-                m_Jobs.pop();
+                if (!thread->m_IsWorking)
+                {
+                    thread->m_Job = m_Jobs.front();
+                    m_Jobs.pop();
+                }
             }
         }
-        DE_LOG(Log, Info, "Thread Subsystem Working")
         //  std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Adjust sleep duration as needed
     }
 }
