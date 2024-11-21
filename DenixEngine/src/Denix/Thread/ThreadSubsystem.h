@@ -28,14 +28,15 @@ namespace Denix
 
         static Ref<Thread> GetThread(std::thread::id _id)
         {
-           for (const auto& thread: s_ThreadSubsystem->m_Threads)
+           for (const auto& thread: s_ThreadSubsystem->m_WorkerThreads)
                if(thread->m_ThreadID == _id) return thread;
 
             return nullptr;
         }
 
-        
-        std::vector<Ref<Thread>> m_Threads;
+
+        Ref<Thread> m_ThreadScheduler;
+        std::vector<Ref<Thread>> m_WorkerThreads;
         size_t m_SystemThreadCount = 0;
         
         std::queue<std::function<void()>> m_Jobs;

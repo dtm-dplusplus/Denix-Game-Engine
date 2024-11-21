@@ -25,19 +25,19 @@ void ThreadScene::DebugUI(float _deltaTime)
     ImGui::SeparatorText("Thread Subsystem");
     static Ref<ThreadSubsystem> ThreadSubsystem = ThreadSubsystem::Get();
     ImGui::Checkbox("Enabled", &ThreadSubsystem->IsEnabled());
-    ImGui::Text("Thread count: %d", ThreadSubsystem->m_Threads.size());
+    ImGui::Text("Thread count: %d", ThreadSubsystem->m_WorkerThreads.size());
     ImGui::Text("System Thread count: %d", ThreadSubsystem->m_SystemThreadCount);
     ImGui::Separator();
     ImGui::Text("Jobs queued: %d", ThreadSubsystem->m_Jobs.size());
     ImGui::Text("Jobs done: %d", ThreadSubsystem->m_JobsDone);
 
-    for (const auto& thread : ThreadSubsystem->m_Threads)
+    for (const auto& thread : ThreadSubsystem->m_WorkerThreads)
     {
         ImVec4 color = thread->m_IsWorking? ImVec4(0.2f, 0.8f, 0.2f, 1.0f) : ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
         ImGui::ColorButton("##ThreadColor", color, ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
-        if (thread != ThreadSubsystem->m_Threads.back()) ImGui::SameLine();
+        if (thread != ThreadSubsystem->m_WorkerThreads.back()) ImGui::SameLine();
     }
-    for (const auto& thread : ThreadSubsystem->m_Threads)
+    for (const auto& thread : ThreadSubsystem->m_WorkerThreads)
     {
         ImGui::Text("Thread ID: %d", thread->m_ThreadIDInt);
         ImGui::Text("Jobs Done: %d", thread->m_JobsDone);
