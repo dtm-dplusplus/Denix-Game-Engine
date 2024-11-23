@@ -22,7 +22,7 @@ namespace Denix
     class WindowSubsystem;
     class TimerSubsystem;
     class ProfileSubsystem;
-    
+
     class Engine
     {
     public:
@@ -34,7 +34,7 @@ namespace Denix
         Engine(Engine&& _other) noexcept = delete;
         Engine& operator=(const Engine& _other) = delete;
         Engine& operator=(Engine&& _other) noexcept = delete;
-        
+
         virtual void Initialize();
         virtual void Deinitialize();
 
@@ -51,14 +51,14 @@ namespace Denix
     protected:
         std::string m_ProjectName;
         Ref<Asset> m_StartupScene;
-        std::string m_EngineConfigPath;        
+        std::string m_EngineConfigPath;
     private:
         static Engine* s_Engine;
 
         template<typename  T, typename ... Args>
-        URef<T> InitalizeSubsystem(Args&& ... _args)
+        Ref<T> InitalizeSubsystem(Args&& ... _args)
         {
-            URef<T> subsystem = MakeURef<T>(std::forward<Args>(_args)...); 
+            Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...);
 
             try
             {
@@ -70,42 +70,42 @@ namespace Denix
                 DE_LOG(LogEngine, Critical, "Failed to Initialize Subsystem: {0}", e.what())
                 assert(false, e.what());
             }
-            
+
             m_Subsystems.push_back(subsystem.get());
             return subsystem;
         }
 
-        // Usufeul vector for deinitializing subsystems in reverse order
+        // Useful vector for deinitializing subsystems in reverse order
         std::vector<Subsystem*> m_Subsystems;
 
         Ref<ThreadSubsystem> m_ThreadSubsystem;
-        
-        URef<TimerSubsystem> m_TimerSubsystem;
 
-        URef<ReflectionSubsystem> m_ReflectionSubsystem;
+        Ref<TimerSubsystem> m_TimerSubsystem;
 
-        URef<FileSubsystem> m_FileSubsystem;
-        URef<ProfileSubsystem> m_ProfileSubsystem;
+        Ref<ReflectionSubsystem> m_ReflectionSubsystem;
 
-        URef<WindowSubsystem> m_WindowSubsystem;
+        Ref<FileSubsystem> m_FileSubsystem;
+        Ref<ProfileSubsystem> m_ProfileSubsystem;
 
-        URef<ResourceSubsystem> m_ResourceSubsystem;
+        Ref<WindowSubsystem> m_WindowSubsystem;
 
-        URef<SceneSubsystem> m_SceneSubsystem;
+        Ref<ResourceSubsystem> m_ResourceSubsystem;
 
-        URef<PhysicsSubsystem> m_PhysicsSubsystem;
+        Ref<SceneSubsystem> m_SceneSubsystem;
 
-        URef<UISubsystem> m_UISubsystem;
+        Ref<PhysicsSubsystem> m_PhysicsSubsystem;
 
-        URef<RendererSubsystem> m_RendererSubsystem;
+        Ref<UISubsystem> m_UISubsystem;
 
-        URef<EditorSubsystem> m_EditorSubsystem;
+        Ref<RendererSubsystem> m_RendererSubsystem;
 
-        URef<InputSubsystem> m_InputSubsystem;
+        Ref<EditorSubsystem> m_EditorSubsystem;
+
+        Ref<InputSubsystem> m_InputSubsystem;
 
         friend int ::main(int argc, char** argv);
     };
 
     // Defined in client
-    URef<Engine> CreateEngine();
+   URef<Engine> CreateEngine();
 }
