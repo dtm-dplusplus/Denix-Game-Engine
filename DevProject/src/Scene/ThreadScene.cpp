@@ -2,7 +2,7 @@
 
 #include "imgui.h"
 #include "implot.h"
-#include "Denix/Thread/ThreadSubsystem.h"
+#include "Denix/Thread/JobSubsystem.h"
 
 using namespace  Denix;
 
@@ -24,7 +24,7 @@ void ThreadScene::DebugUI(float _deltaTime)
 
     ImGui::Begin(GetName().c_str());
     ImGui::SeparatorText("Thread Subsystem");
-    static Ref<ThreadSubsystem> ThreadSubsystem = ThreadSubsystem::Get();
+    static Ref<JobSubsystem> ThreadSubsystem = JobSubsystem::Get();
     ImGui::Checkbox("Enabled", &ThreadSubsystem->IsEnabled());
     ImGui::Text("Thread count: %d", ThreadSubsystem->m_WorkerThreads.size());
     ImGui::Text("System Thread count: %d", ThreadSubsystem->m_SystemThreadCount);

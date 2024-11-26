@@ -1,11 +1,11 @@
 ﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
-#include "ThreadSubsystem.h"
+#include "JobSubsystem.h"
 
 #include "Denix/Core/TimerSubsystem.h"
 
-Denix::ThreadSubsystem* Denix::ThreadSubsystem::s_ThreadSubsystem = nullptr;
+Denix::JobSubsystem* Denix::JobSubsystem::s_ThreadSubsystem = nullptr;
 
-void Denix::ThreadSubsystem::Initialize()
+void Denix::JobSubsystem::Initialize()
 {
     Subsystem::Initialize();
 
@@ -27,7 +27,7 @@ void Denix::ThreadSubsystem::Initialize()
 
     // Initialize the scheduler thread
    m_ThreadScheduler = MakeRef<Thread>();
-    m_ThreadScheduler->InitThread(&ThreadSubsystem::ScheduleWork, this);
+    m_ThreadScheduler->InitThread(&JobSubsystem::ScheduleWork, this);
     
     // Initialize the worker threads
     for (size_t i = 0; i < 4; i++)
@@ -38,7 +38,7 @@ void Denix::ThreadSubsystem::Initialize()
     DE_LOG(Log, Info, "Thread Subsystem Initialized")
 }
 
-void Denix::ThreadSubsystem::Deinitialize()
+void Denix::JobSubsystem::Deinitialize()
 {
     Subsystem::Deinitialize();
 
@@ -46,7 +46,7 @@ void Denix::ThreadSubsystem::Deinitialize()
     DE_LOG(Log, Trace, "Thread Subsystem Deinitialized")
 }
 
-void Denix::ThreadSubsystem::ScheduleWork()
+void Denix::JobSubsystem::ScheduleWork()
 {
     while (true)
     {

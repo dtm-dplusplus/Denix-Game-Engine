@@ -6,15 +6,15 @@
 namespace Denix
 {
     
-    class ThreadSubsystem: public Subsystem, public std::enable_shared_from_this<ThreadSubsystem>
+    class JobSubsystem: public Subsystem, public std::enable_shared_from_this<JobSubsystem>
     {
     public:
-        ThreadSubsystem()
+        JobSubsystem()
         {
             s_ThreadSubsystem = this;
             m_JobsDone = 0;
         }
-        ~ThreadSubsystem() override
+        ~JobSubsystem() override
         {
             s_ThreadSubsystem = nullptr;
         }
@@ -52,8 +52,8 @@ namespace Denix
         std::priority_queue<JobDeclaration, std::vector<JobDeclaration>, JobComparator> m_Jobs;
         size_t m_JobsDone;
 
-        static Ref<ThreadSubsystem> Get() { return s_ThreadSubsystem->shared_from_this(); }
-        static ThreadSubsystem* s_ThreadSubsystem;
+        static Ref<JobSubsystem> Get() { return s_ThreadSubsystem->shared_from_this(); }
+        static JobSubsystem* s_ThreadSubsystem;
 
     private:
         void Initialize() override;

@@ -52,7 +52,6 @@ namespace Denix
 		void Initialize() override;
 		void Deinitialize() override;
 		void Update(float _deltaTime) override;
-		void Poll();
 
 		void InputPanel();
 		//SDL_Event& GetEvent() { return m_Event; }
@@ -68,6 +67,10 @@ namespace Denix
 		
 		// Mouse Properties
 		MouseData m_MouseData;
+
+		void Poll();
+
+		friend class Engine;
 	};
 
 }

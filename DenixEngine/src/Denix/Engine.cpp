@@ -1,7 +1,7 @@
 #include "Engine.h"
 
 #include "Denix/System/SubSystem.h"
-#include "Denix/Thread/ThreadSubsystem.h"
+#include "Denix/Thread/JobSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
@@ -26,7 +26,7 @@ namespace Denix
 		Logger::Initialize();
 
 		// We initialize the thread subsystem here because it is used to create the other subsystems
-		m_ThreadSubsystem = InitalizeSubsystem<ThreadSubsystem>();
+		m_JobSubsystem = InitalizeSubsystem<JobSubsystem>();
 		
 		// We initialize the reflection subsystem here because it is used by the client engine constructor
 		// Register all classes that need to be reflected here. This will be moved to some kind of pre build event & parser in the future
@@ -124,10 +124,10 @@ namespace Denix
 			
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
 			DE_PROFILE(Input Poll)
-			m_InputSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			m_InputSubsystem->Poll();
 			DE_PROFILE_END(Input Poll)
 
-
+			
 			// Clear the offscreen frame buffer
 			DE_PROFILE(New Window Buffer)
 			m_UISubsystem->NewFrame();
@@ -176,6 +176,7 @@ namespace Denix
 			DE_PROFILE(Clean Rubbish)
 			m_SceneSubsystem->CleanRubbish();
 			DE_PROFILE_END(Clean Rubbish)
+
 			
 			m_TimerSubsystem->EndFrame();
 		}

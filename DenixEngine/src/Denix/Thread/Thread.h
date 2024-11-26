@@ -187,7 +187,7 @@ namespace Denix
         bool m_IsWorking;
         bool m_StopFlag = false;
 
-        friend class ThreadSubsystem;
+        friend class JobSubsystem;
     };
 
 
