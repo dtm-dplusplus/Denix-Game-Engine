@@ -4,15 +4,50 @@
 #include <functional>
 #include <source_location>
 #include <queue>
+#include <utility>
 
 #include <windows.h>
 
 namespace Denix
 {
+    enum class Priority
+    {
+        LATENT, NORMAL, HIGH, CRITICAL
+    };
+
+    struct JobDeclaration
+    {
+        JobDeclaration() = default;
+        
+        template <typename Func, typename... Args>
+        JobDeclaration(std::string _name, Priority _priority, Func _entryPoint)
+            : m_Name(std::move(_name)), m_EntryPoint(std::move(_entryPoint)), m_Priority(_priority)
+        {
+        }
+
+        /**
+         * @brief Job name. Used for debugging purposes
+         */
+        std::string m_Name;
+
+        /**
+         * @brief Jobs entry point function
+         */
+        std::function<void()> m_EntryPoint;
+
+        /*template <typename... Args>
+        std::tuple<Args...> m_Args;*/
+
+        /**
+         * @brief Job priority
+         */
+        Priority m_Priority;
+    };
+    
     class Thread
     {
     public:
-        Thread()
+        Thread(): m_Job()
         {
             m_IsWorking = false;
         }
@@ -24,7 +59,7 @@ namespace Denix
         }
 
         template <typename Func, typename... Args>
-        void InitThread(Func&& _func , Args&&... _args)
+        void InitThread(Func&& _func, Args&&... _args)
         {
             // = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...); //Lambda here?
             m_Thread = std::thread(std::forward<Func>(_func), std::forward<Args>(_args)...);
@@ -40,7 +75,7 @@ namespace Denix
             SetThreadIDInt();
             DE_LOG(Log, Info, "Thread: {} created", m_ThreadIDInt)
         }
-        
+
         // Delete copy constructor and copy assignment operator
         Thread(const Thread&) = delete;
         Thread& operator=(const Thread&) = delete;
@@ -48,7 +83,7 @@ namespace Denix
         // Allow move constructor and move assignment operator
         Thread(Thread&&) = default;
         Thread& operator=(Thread&&) = default;
-        
+
         /*template <typename Func, typename... Args>
         explicit Thread(Func&& _func, Args&&... _args)
         {
@@ -63,23 +98,22 @@ namespace Denix
 
         void Work()
         {
-            while(true)
+            while (true)
             {
-                if (m_Job)
+                if (m_Job.m_EntryPoint)
                 {
-                   DE_LOG(Log, Info, "Thread {} working on job", m_ThreadIDInt)
+                    DE_LOG(Log, Info, "Thread {} working on job", m_ThreadIDInt)
                     m_IsWorking = true;
-                    m_Job();
-                    m_Job = nullptr;
+                    m_Job.m_EntryPoint();
+                    m_Job.m_EntryPoint = nullptr;
                     m_JobsDone++;
                     m_IsWorking = false;
-                    DE_LOG(Log, Info, "Thread {} finished job", m_ThreadIDInt)
+                    DE_LOG(Log, Info, "Thread {} finished job {}", m_ThreadIDInt, m_Job.m_Name);
                 }
             }
         }
 
-        
-        
+
         /**
          * @brief Join the thread. 
          */
@@ -147,7 +181,7 @@ namespace Denix
         std::thread::id m_ThreadID;
         size_t m_ThreadIDInt;
 
-        std::function<void()> m_Job; 
+        JobDeclaration m_Job;
         int m_JobsDone = 0;
 
         bool m_IsWorking;
@@ -155,4 +189,7 @@ namespace Denix
 
         friend class ThreadSubsystem;
     };
+
+
+  
 }

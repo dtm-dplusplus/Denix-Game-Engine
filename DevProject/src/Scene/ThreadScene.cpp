@@ -1,6 +1,7 @@
 ﻿#include "ThreadScene.h"
 
 #include "imgui.h"
+#include "implot.h"
 #include "Denix/Thread/ThreadSubsystem.h"
 
 using namespace  Denix;
@@ -48,20 +49,44 @@ void ThreadScene::DebugUI(float _deltaTime)
     static int JobSpawn = 1;
     ImGui::DragInt("Job Spawn", &JobSpawn, 1, 1, 1000);
     ImGui::SameLine();
-    if (ImGui::Button("Add Job"))
+    if (ImGui::Button("Add Jobs"))
     {
         for (int i = 0; i < JobSpawn; i++)
         {
-            ThreadSubsystem->AddJob(&ThreadScene::MyWork, this);
+            ThreadSubsystem->AddJob("Test Job", Priority::NORMAL, &ThreadScene::JobA, this);
         }
     }
+
+    if (ImGui::Button("Add Job A"))
+    {
+        ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, &ThreadScene::JobA, this);
+    }
+    
+    if (ImGui::Button("Add Job B"))
+    {
+        ThreadSubsystem->AddJob("Test Job B", Priority::NORMAL, &ThreadScene::JobB, this);
+    }
+
+    if (ImGui::Button("Add Job C"))
+    {
+        ThreadSubsystem->AddJob("Test Job C", Priority::NORMAL, &ThreadScene::JobC, this);
+    }
+
+    // Frame Graph
+    //Histogram/ ImGui Histogram
+    // Error Bar
+    // Bar Stacks
+    // Bar Groups
+    // Bar Plots
+    // Scatter
+    // Markers
+
+    
     ImGui::End();
 }
 
-void ThreadScene::MyWork()
+void ThreadScene::JobA()
 {
-    Ref<Thread> myThread = ThreadSubsystem::GetThread(std::this_thread::get_id());
-    DE_LOG(LogScene, Info, "Working on ThreadScene thread: {}", myThread->m_ThreadIDInt);
     Ref<Timer> WorkTimer = MakeRef<Timer>(ObjectInit("Work Timer"));
     WorkTimer->Start();
 
@@ -71,6 +96,30 @@ void ThreadScene::MyWork()
     }
 
     WorkTimer->Stop();
+}
 
-    DE_LOG (LogScene, Info, "Work took: {}  on thread {}", WorkTimer->m_Duration.count(), myThread->m_ThreadIDInt);
+void ThreadScene::JobB()
+{
+    Ref<Timer> WorkTimer = MakeRef<Timer>(ObjectInit("Work Timer"));
+    WorkTimer->Start();
+
+    // Work for 10 minutes
+    while (WorkTimer->GetElapsed() < 2.0f)
+    {
+    }
+
+    WorkTimer->Stop();
+}
+
+void ThreadScene::JobC()
+{
+    Ref<Timer> WorkTimer = MakeRef<Timer>(ObjectInit("Work Timer"));
+    WorkTimer->Start();
+
+    // Work for 10 minutes
+    while (WorkTimer->GetElapsed() < 2.0f)
+    {
+    }
+
+    WorkTimer->Stop();
 }

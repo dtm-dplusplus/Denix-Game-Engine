@@ -12,7 +12,12 @@ public:
     ~ThreadScene() override;
     void BeginScene() override;
     void DebugUI(float _deltaTime) override;
-    void MyWork();
+
+    
+    void JobA();
+    void JobB();
+    void JobC();
+    
 
     Ref<Thread> DebugThread; 
 };

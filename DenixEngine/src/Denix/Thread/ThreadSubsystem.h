@@ -19,12 +19,15 @@ namespace Denix
             s_ThreadSubsystem = nullptr;
         }
 
-       
         template <typename Func, typename... Args>
-       static  void AddJob(Func&& _func, Args&&... _args)
-        {
-            s_ThreadSubsystem->m_Jobs.push(std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
-        }
+    static void AddJob(const std::string& _name, const Priority _priority, Func&& _func, Args&&... _args)
+    {
+        JobDeclaration job(_name, _priority, std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
+       
+        s_ThreadSubsystem->m_Jobs.push(job);
+    }
+        
+
 
         static Ref<Thread> GetThread(std::thread::id _id)
         {
@@ -39,7 +42,7 @@ namespace Denix
         std::vector<Ref<Thread>> m_WorkerThreads;
         size_t m_SystemThreadCount = 0;
         
-        std::queue<std::function<void()>> m_Jobs;
+        std::queue<JobDeclaration> m_Jobs;
         size_t m_JobsDone;
 
         static Ref<ThreadSubsystem> Get() { return s_ThreadSubsystem->shared_from_this(); }
