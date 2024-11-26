@@ -41,8 +41,15 @@ namespace Denix
         Ref<Thread> m_ThreadScheduler;
         std::vector<Ref<Thread>> m_WorkerThreads;
         size_t m_SystemThreadCount = 0;
-        
-        std::queue<JobDeclaration> m_Jobs;
+
+        struct JobComparator
+        {
+            bool operator()(const JobDeclaration& lhs, const JobDeclaration& rhs) const
+            {
+                return lhs.m_Priority < rhs.m_Priority;
+            }
+        };
+        std::priority_queue<JobDeclaration, std::vector<JobDeclaration>, JobComparator> m_Jobs;
         size_t m_JobsDone;
 
         static Ref<ThreadSubsystem> Get() { return s_ThreadSubsystem->shared_from_this(); }

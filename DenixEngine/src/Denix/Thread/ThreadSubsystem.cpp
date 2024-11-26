@@ -58,11 +58,14 @@ void Denix::ThreadSubsystem::ScheduleWork()
                 if (!thread->m_IsWorking)
                 {
                     thread->m_IsWorking = true;
-                    thread->m_Job = m_Jobs.front();
+                    thread->m_Job = m_Jobs.top();
                     m_Jobs.pop();
                     break;
                 }
             }
         }
+
+        // Sleep for a bit
+        std::this_thread::sleep_for(std::chrono::milliseconds(3));
     }
 }

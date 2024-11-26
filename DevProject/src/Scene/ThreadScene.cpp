@@ -46,15 +46,11 @@ void ThreadScene::DebugUI(float _deltaTime)
     }
    
    
-    static int JobSpawn = 1;
-    ImGui::DragInt("Job Spawn", &JobSpawn, 1, 1, 1000);
-    ImGui::SameLine();
-    if (ImGui::Button("Add Jobs"))
+    if (ImGui::Button("Add Jobs ABC"))
     {
-        for (int i = 0; i < JobSpawn; i++)
-        {
-            ThreadSubsystem->AddJob("Test Job", Priority::NORMAL, &ThreadScene::JobA, this);
-        }
+        ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, &ThreadScene::JobA, this);
+        ThreadSubsystem->AddJob("Test Job B", Priority::NORMAL, &ThreadScene::JobB, this);
+        ThreadSubsystem->AddJob("Test Job C", Priority::HIGH, &ThreadScene::JobC, this);
     }
 
     if (ImGui::Button("Add Job A"))

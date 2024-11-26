@@ -15,6 +15,18 @@ namespace Denix
         LATENT, NORMAL, HIGH, CRITICAL
     };
 
+    inline std::string PriorityToString(const Priority _priority)
+    {
+        switch (_priority)
+        {
+        case Priority::LATENT: return "LATENT";
+        case Priority::NORMAL: return "NORMAL";
+        case Priority::HIGH: return "HIGH";
+        case Priority::CRITICAL: return "CRITICAL";
+        }
+        return "UNKNOWN";
+    }
+
     struct JobDeclaration
     {
         JobDeclaration() = default;
@@ -84,31 +96,19 @@ namespace Denix
         Thread(Thread&&) = default;
         Thread& operator=(Thread&&) = default;
 
-        /*template <typename Func, typename... Args>
-        explicit Thread(Func&& _func, Args&&... _args)
-        {
-            m_Job = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...);
-            m_Thread = std::thread(m_Job, this);
-            m_ThreadID = m_Thread.get_id();
-            SetThreadIDInt();
-            m_IsWorking = true;
-            DE_LOG(Log, Info, "Thread: {} created", m_ThreadIDInt)
-        }*/
-
-
         void Work()
         {
             while (true)
             {
                 if (m_Job.m_EntryPoint)
                 {
-                    DE_LOG(Log, Info, "Thread {} working on job", m_ThreadIDInt)
+                    DE_LOG(Log, Info, "Thread: {} Priority: {} Job: {}", m_ThreadIDInt, PriorityToString(m_Job.m_Priority), m_Job.m_Name)
                     m_IsWorking = true;
                     m_Job.m_EntryPoint();
                     m_Job.m_EntryPoint = nullptr;
                     m_JobsDone++;
                     m_IsWorking = false;
-                    DE_LOG(Log, Info, "Thread {} finished job {}", m_ThreadIDInt, m_Job.m_Name);
+                    DE_LOG(Log, Info, "Thread {} Priority: {} Job Done: {}", m_ThreadIDInt, PriorityToString(m_Job.m_Priority), m_Job.m_Name)
                 }
             }
         }
