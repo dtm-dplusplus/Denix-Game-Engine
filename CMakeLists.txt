@@ -85,7 +85,7 @@ target_link_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/SDL3/bin/${CMAKE_BUILD_TYPE}
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/bin/${CMAKE_BUILD_TYPE}
      #   PUBLIC $<TARGET_LINKER_FILE_DIR:assimp>
-        PUBLIC $<TARGET_LINKER_FILE_DIR:yaml-cpp>
+        # PUBLIC $<TARGET_LINKER_FILE_DIR:yaml-cpp>
 )
 
 # Define linker libs
@@ -97,14 +97,12 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC glew32.lib
         PUBLIC $<TARGET_LINKER_FILE_NAME:Imgui>
         #PUBLIC  $<TARGET_LINKER_FILE_NAME:assimp>
-        PUBLIC  $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp/bin/Debug/assimp-vc143-mtd.lib>
+         PUBLIC  $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp/bin/Debug/assimp-vc143-mtd.lib>
         PUBLIC  $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp/bin/Release/assimp-vc143-mt.lib>
-        PUBLIC
-        $<$<CONFIG:Debug>:$<TARGET_LINKER_FILE_NAME:yaml-cpp::yaml-cpp>>
-        $<$<CONFIG:Release>:$<TARGET_LINKER_FILE_NAME:yaml-cpp::yaml-cpp>>
+        
+        PUBLIC  $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp/bin/Debug/yaml-cppd.lib>
+                       $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp/bin/Release/yaml-cpp.lib>
 )
-
-message("Build Type:" ${CMAKE_BUILD_TYPE})
 
 # Add Post build commands for dependencies
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -116,9 +114,10 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp/bin/Debug/assimp-vc143-mtd.dll>
         $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp/bin/Release/assimp-vc143-mt.dll> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-
-        COMMAND ${CMAKE_COMMAND} -E copy
-        $<TARGET_FILE:yaml-cpp::yaml-cpp> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        
+       COMMAND ${CMAKE_COMMAND} -E copy
+       $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp/bin/Debug/yaml-cppd.dll>
+       $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp/bin/Release/yaml-cpp.dll> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>

@@ -35,15 +35,15 @@ set_property(TARGET Imgui PROPERTY FOLDER DenixEngine/Depend/Imgui)
 #set_property(TARGET zlibstatic PROPERTY FOLDER DenixEngine/Depend/Assimp)
 
 # Create Yaml-cpp Library
-add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp)
-set_property(TARGET yaml-cpp PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
-set_property(TARGET yaml-cpp-parse PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
-set_property(TARGET yaml-cpp-read PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
-set_property(TARGET yaml-cpp-sandbox PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
-set_property(TARGET uninstall PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
-if(TARGET format)
-    set_property(TARGET format PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
-endif ()
+#add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp)
+#set_property(TARGET yaml-cpp PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+#set_property(TARGET yaml-cpp-parse PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+#set_property(TARGET yaml-cpp-read PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+#set_property(TARGET yaml-cpp-sandbox PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+#set_property(TARGET uninstall PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+#if(TARGET format)
+#    set_property(TARGET format PROPERTY FOLDER DenixEngine/Depend/Yaml-cpp)
+#endif ()
 
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
@@ -79,7 +79,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
 add_dependencies(${PROJECT_NAME} Imgui)
 #add_dependencies(${PROJECT_NAME} SDL3::SDL3)
 #add_dependencies(${PROJECT_NAME} assimp)
-add_dependencies(${PROJECT_NAME} yaml-cpp::yaml-cpp)
+#add_dependencies(${PROJECT_NAME} yaml-cpp::yaml-cpp)
 
 # Enable Edit and Continue for MSVC
 if(MSVC)
