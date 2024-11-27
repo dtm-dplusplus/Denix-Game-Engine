@@ -29,10 +29,10 @@ set_property(TARGET Imgui PROPERTY FOLDER DenixEngine/Depend/Imgui)
 #set_property(TARGET SDL_uclibc PROPERTY FOLDER DenixEngine/Depend/SDL3)
 
 # Create Assimp Library
-add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp)
-set_property(TARGET assimp PROPERTY FOLDER DenixEngine/Depend/Assimp)
-set_property(TARGET UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTY FOLDER DenixEngine/Depend/Assimp)
-set_property(TARGET zlibstatic PROPERTY FOLDER DenixEngine/Depend/Assimp)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp)
+#set_property(TARGET assimp PROPERTY FOLDER DenixEngine/Depend/Assimp)
+#set_property(TARGET UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTY FOLDER DenixEngine/Depend/Assimp)
+#set_property(TARGET zlibstatic PROPERTY FOLDER DenixEngine/Depend/Assimp)
 
 # Create Yaml-cpp Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp)
@@ -59,7 +59,8 @@ include_directories(${PROJECT_NAME}
         ${SOURCE_DIR}/contrib/glew/include
         ${SOURCE_DIR}/contrib/glm
         ${SOURCE_DIR}/contrib/imgui
-        ${OUTPUT_SOURCE_DIR}/contrib/assimp/include # Temp fix as config.h generated in binary dir
+        #${OUTPUT_SOURCE_DIR}/contrib/assimp/include # Temp fix as config.h generated in binary dir
+        ${SOURCE_DIR}/contrib/assimp/include # Temp fix as config.h generated in binary dir
         ${SOURCE_DIR}/contrib/stb
         ${SOURCE_DIR}/contrib/yaml-cpp/include
 )
@@ -77,7 +78,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
 # Set dependencies for DenixEngine
 add_dependencies(${PROJECT_NAME} Imgui)
 #add_dependencies(${PROJECT_NAME} SDL3::SDL3)
-add_dependencies(${PROJECT_NAME} assimp)
+#add_dependencies(${PROJECT_NAME} assimp)
 add_dependencies(${PROJECT_NAME} yaml-cpp::yaml-cpp)
 
 # Enable Edit and Continue for MSVC
