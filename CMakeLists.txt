@@ -77,11 +77,22 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER ${PROJECT_NAME})
 # Set Startup Project
 set_property(DIRECTORY ${CMAKE_BINARY_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
+# Define linker lib dirs
+target_link_directories(${PROJECT_NAME}
+        PUBLIC $<TARGET_LINKER_FILE_DIR:DenixEngine>
+        PUBLIC $<TARGET_LINKER_FILE_DIR:Imgui>
+        PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/lib
+        PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/SDL3/bin/${CMAKE_BUILD_TYPE}
+        PUBLIC $<TARGET_LINKER_FILE_DIR:assimp>
+        PUBLIC $<TARGET_LINKER_FILE_DIR:yaml-cpp>
+)
+
 # Define linker libs
 target_link_libraries(${PROJECT_NAME}
         PUBLIC DenixEngine.lib
         PUBLIC opengl32.lib
-        PUBLIC SDL3::SDL3
+        # PUBLIC SDL3::SDL3
+        PUBLIC SDL3.lib
         PUBLIC glew32.lib
         PUBLIC $<TARGET_LINKER_FILE_NAME:Imgui>
         PUBLIC  $<TARGET_LINKER_FILE_NAME:assimp>
@@ -90,19 +101,14 @@ target_link_libraries(${PROJECT_NAME}
         $<$<CONFIG:Release>:$<TARGET_LINKER_FILE_NAME:yaml-cpp::yaml-cpp>>
 )
 
-# Define linker lib dirs
-target_link_directories(${PROJECT_NAME}
-        PUBLIC $<TARGET_LINKER_FILE_DIR:DenixEngine>
-        PUBLIC $<TARGET_LINKER_FILE_DIR:Imgui>
-        PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/lib
-        PUBLIC $<TARGET_LINKER_FILE_DIR:assimp>
-        PUBLIC $<TARGET_LINKER_FILE_DIR:yaml-cpp>
-)
+message("Build Type:" ${CMAKE_BUILD_TYPE})
 
 # Add Post build commands for dependencies
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/sdl3/bin/Debug/SDL3.dll>
+        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/SDL3/bin/Release/SDL3.dll> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+
 
         COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_FILE:assimp> $<TARGET_FILE_DIR:${PROJECT_NAME}>

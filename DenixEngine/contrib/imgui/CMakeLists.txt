@@ -39,7 +39,7 @@ add_library(Imgui STATIC
 )
 
 # Add Dependency to support the SDL3 Backend
-add_dependencies(${PROJECT_NAME} SDL3::SDL3)
+#add_dependencies(${PROJECT_NAME} SDL3::SDL3)
 
 # Enable Edit and Continue for MSVC
 if(MSVC)

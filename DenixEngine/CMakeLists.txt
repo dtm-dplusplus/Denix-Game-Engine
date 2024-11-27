@@ -24,9 +24,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
 set_property(TARGET Imgui PROPERTY FOLDER DenixEngine/Depend/Imgui)
 
 # Create SDL3 Library
-add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/SDL3)
-set_property(TARGET SDL3-shared PROPERTY FOLDER DenixEngine/Depend/SDL3)
-set_property(TARGET SDL_uclibc PROPERTY FOLDER DenixEngine/Depend/SDL3)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/SDL3)
+#set_property(TARGET SDL3-shared PROPERTY FOLDER DenixEngine/Depend/SDL3)
+#set_property(TARGET SDL_uclibc PROPERTY FOLDER DenixEngine/Depend/SDL3)
 
 # Create Assimp Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp)
@@ -76,7 +76,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
 
 # Set dependencies for DenixEngine
 add_dependencies(${PROJECT_NAME} Imgui)
-add_dependencies(${PROJECT_NAME} SDL3::SDL3)
+#add_dependencies(${PROJECT_NAME} SDL3::SDL3)
 add_dependencies(${PROJECT_NAME} assimp)
 add_dependencies(${PROJECT_NAME} yaml-cpp::yaml-cpp)
 
