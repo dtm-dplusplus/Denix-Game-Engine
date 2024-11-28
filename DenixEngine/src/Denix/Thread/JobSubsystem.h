@@ -14,12 +14,18 @@ namespace Denix
         {
             s_JobSubsystem = this;
             m_JobsDone = 0;
+            DE_LOG_CREATE(LogThread)
+            DE_LOG_CREATE(LogJob)
         }
         ~JobSubsystem() override
         {
             s_JobSubsystem = nullptr;
         }
 
+        JobSubsystem(const JobSubsystem& _other) = delete;
+        JobSubsystem(JobSubsystem&& _other) noexcept = delete;
+        JobSubsystem& operator=(const JobSubsystem& _other) = delete;
+        JobSubsystem& operator=(JobSubsystem&& _other) noexcept = delete;
 
         /**
          * 
@@ -53,8 +59,6 @@ namespace Denix
             return nullptr;
         }
 
-
-        Ref<Thread> m_ThreadScheduler;
         std::vector<Ref<Thread>> m_WorkerThreads;
         size_t m_SystemThreadCount = 0;
 
@@ -79,9 +83,6 @@ namespace Denix
 
         void Deinitialize() override;
 
-        void ScheduleWork();
-
-        
         friend class Engine;
         friend class Thread;
     };

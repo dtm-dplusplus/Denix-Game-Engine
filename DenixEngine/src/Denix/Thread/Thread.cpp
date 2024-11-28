@@ -5,7 +5,7 @@
 
 void Denix::Thread::Work()
 {
-    while (true)
+    while (m_ShouldWork)
     {
         m_Job = JobSubsystem::GetJob();
         if (m_Job)

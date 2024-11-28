@@ -202,7 +202,6 @@ namespace Denix
 		m_StartupScene = _startupScene;
 		m_SceneThreaded = true;
 		
-		DE_LOG_CREATE(LogScene)
 	}
 
 	void SceneSubsystem::CleanRubbish()

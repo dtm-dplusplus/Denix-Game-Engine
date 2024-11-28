@@ -24,7 +24,12 @@ namespace Denix
 		s_Engine = this;
 		m_StartupScene = nullptr;
 		m_ParallelLoop = MakeRef<bool>(true);
+
+		// Initialize Logger
 		Logger::Initialize();
+		DE_LOG_CREATE(LogEngine)
+		
+		DE_LOG_CREATE(LogScene)
 
 		// We initialize the thread subsystem here because it is used to create the other subsystems
 		m_JobSubsystem = InitalizeSubsystem<JobSubsystem>();
@@ -149,16 +154,16 @@ namespace Denix
 			// Currently, jobs are added to the job subsystem and executed instantly. In the future they should be scheduled in some kind of group/bucket
 			// Update the UI & Editor for any changes
 			DE_PROFILE(Editor Update)
-			//Ref<Counter> uiCounter = MakeRef<Counter>(1);
-			//m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			//WaitForCounter(*uiCounter);
+			Ref<Counter> uiCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			WaitForCounter(*uiCounter);
 			
-			//Ref<Counter> editorCounter = MakeRef<Counter>(1);
-			//m_JobSubsystem->AddJob("Editor Update", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			//WaitForCounter(*editorCounter);
+			Ref<Counter> editorCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("Editor Update", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			WaitForCounter(*editorCounter);
 
-			m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			//m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			//m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 			DE_PROFILE_END(Editor Update)
 
 
@@ -170,32 +175,21 @@ namespace Denix
 			// Update the physics system. Collision detection and resolution will be here
 			//m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, sceneCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 
+			// Run dummy subsystem whilst rendering & Scene
+			Ref<Counter> dummyCounter = MakeRef<Counter>(2);
+			m_JobSubsystem->AddJob( "Dummy Subsystem A", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemA, this);
+			m_JobSubsystem->AddJob( "Dummy Subsystem B", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemB, this);
+			
 			// Update the scene. The majority of the client game logic will be here
 			m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 
 			// Update the physics system. Collision detection and resolution will be here
 			//m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 
-			
-
-			// Run dummy subsystem whilst rendering
-			Ref<Counter> dummyCounter;
-			if (m_ParallelDummyJobs)
-			{
-				dummyCounter = MakeRef<Counter>(2);
-				m_JobSubsystem->AddJob( "Dummy Subsystem A", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemA, this);
-				m_JobSubsystem->AddJob( "Dummy Subsystem B", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemB, this);
-			}
-			else
-			{
-				DummySubsystemA();
-				DummySubsystemB();
-			}
-
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			m_RendererSubsystem->RenderScene();
 			
-			if (m_ParallelDummyJobs) WaitForCounter(*dummyCounter);
+			WaitForCounter(*dummyCounter);
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			DE_PROFILE(Draw Viewport)

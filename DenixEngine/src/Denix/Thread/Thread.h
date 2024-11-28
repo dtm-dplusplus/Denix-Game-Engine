@@ -17,13 +17,14 @@ namespace Denix
         Thread()
         {
             m_IsWorking = false;
+            m_ShouldWork = true;
             m_ThreadIDInt = 0;
         }
 
         ~Thread()
         {
-            // If the thread is still working, join it. Freezes the program if the thread is still working. Disable for now
-            //Join();
+           m_ShouldWork = false;
+           JoinCheck();
         }
 
         template <typename Func, typename... Args>
@@ -33,7 +34,7 @@ namespace Denix
             m_Thread = std::thread(std::forward<Func>(_func), std::forward<Args>(_args)...);
             m_ThreadID = m_Thread.get_id();
             SetThreadIDInt();
-            DE_LOG(Log, Info, "Thread: {} created", m_ThreadIDInt)
+            DE_LOG(LogThread, Info, "Thread: {} created", m_ThreadIDInt)
         }
 
         void InitWorkerThread()
@@ -41,7 +42,7 @@ namespace Denix
             m_Thread = std::thread(&Thread::Work, this);
             m_ThreadID = m_Thread.get_id();
             SetThreadIDInt();
-            DE_LOG(Log, Info, "Thread: {} created", m_ThreadIDInt)
+            DE_LOG(LogThread, Info, "Thread: {} created", m_ThreadIDInt)
         }
 
         // Delete copy constructor and copy assignment operator
@@ -73,11 +74,11 @@ namespace Denix
             {
                 m_Thread.join();
                 m_IsWorking = false;
-                DE_LOG(Log, Info, "Thread {} joined", m_ThreadIDInt)
+                DE_LOG(LogThread, Info, "Thread {} joined", m_ThreadIDInt)
             }
             else
             {
-                DE_LOG(Log, Error, "Thread {} not joinable", m_ThreadIDInt)
+                DE_LOG(LogThread, Error, "Thread {} not joinable", m_ThreadIDInt)
             }
         }
 
@@ -97,11 +98,11 @@ namespace Denix
             if (m_Thread.joinable())
             {
                 m_Thread.detach();
-                DE_LOG(Log, Info, "Thread {} detached", m_ThreadIDInt)
+                DE_LOG(LogThread, Info, "Thread {} detached", m_ThreadIDInt)
             }
             else
             {
-                DE_LOG(Log, Error, "Thread {} failed to detach. Not joinable", m_ThreadIDInt)
+                DE_LOG(LogThread, Error, "Thread {} failed to detach. Not joinable", m_ThreadIDInt)
             }
         }
 
@@ -122,7 +123,7 @@ namespace Denix
         int m_JobsDone = 0;
 
         bool m_IsWorking;
-        bool m_StopFlag = false;
+        bool m_ShouldWork;
 
         friend class JobSubsystem;
     };

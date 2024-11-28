@@ -17,6 +17,10 @@ namespace Denix
 		WindowSubsystem()
 		{
 			s_WindowSubsystem = this;
+
+			DE_LOG_CREATE(LogGL)
+			DE_LOG_CREATE(LogWindow)
+			DE_LOG_CREATE(LogShader)
 		}
 
 		~WindowSubsystem() override
