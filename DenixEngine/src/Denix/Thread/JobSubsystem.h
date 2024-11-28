@@ -19,11 +19,25 @@ namespace Denix
             s_ThreadSubsystem = nullptr;
         }
 
+        /**
+         * 
+         * @tparam Func 
+         * @tparam Args 
+         * @param _name 
+         * @param _priority 
+         * @param _waitCounter
+         * @param _func 
+         * @param _args 
+         */
         template <typename Func, typename... Args>
-    static void AddJob(const std::string& _name, const Priority _priority, Func&& _func, Args&&... _args)
+    static void AddJob(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter, Func&& _func, Args&&... _args)
     {
-        JobDeclaration job(_name, _priority, std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
-       
+        JobDeclaration job;
+            job.m_Name = _name;
+            job.m_Priority = _priority;
+            job.m_WaitCounter =  _waitCounter? _waitCounter : MakeRef<Counter>(1);
+            job.m_EntryPoint = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...);
+            
         s_ThreadSubsystem->m_Jobs.push(job);
     }
         

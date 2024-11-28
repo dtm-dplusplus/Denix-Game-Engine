@@ -8,14 +8,31 @@ using namespace  Denix;
 
 ThreadScene::~ThreadScene()
 {
-    DebugThread.reset();
 }
 
 void ThreadScene::BeginScene()
 {
     Scene::BeginScene();
+}
 
-    DebugThread = MakeRef<Thread>();
+void ThreadScene::Update(float _deltaTime)
+{
+    Scene::Update(_deltaTime);
+
+    // Get the first Actor in the scene and oscillate its position
+    static float moveDir= 1.0f;
+    if (m_SceneObjects.size() > 0)
+    {
+        Ref<Actor> actor = m_SceneObjects[0];
+        glm::vec3& position = actor->GetTransformComponent()->GetPosition();
+        if (position.x > 2.0f) moveDir = -1.0f;
+        else if (position.x < -2.0f) moveDir = 1.0f;
+        position.x += moveDir * 3.0f * _deltaTime;        
+    }
+
+    if (DebugCounter) WaitForCounter(*DebugCounter);
+
+    
 }
 
 void ThreadScene::DebugUI(float _deltaTime)
@@ -44,30 +61,22 @@ void ThreadScene::DebugUI(float _deltaTime)
         ImGui::Text("Jobs Done: %d", thread->m_JobsDone);
         ImGui::Text("Is Working: %s", thread->m_IsWorking ? "True" : "False");
     }
-   
-   
-    if (ImGui::Button("Add Jobs ABC"))
-    {
-        ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, &ThreadScene::JobA, this);
-        ThreadSubsystem->AddJob("Test Job B", Priority::NORMAL, &ThreadScene::JobB, this);
-        ThreadSubsystem->AddJob("Test Job C", Priority::HIGH, &ThreadScene::JobC, this);
-    }
 
-    if (ImGui::Button("Add Job A"))
-    {
-        ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, &ThreadScene::JobA, this);
-    }
+    ImGui::SeparatorText("Debug Jobs" );
     
-    if (ImGui::Button("Add Job B"))
+    if (ImGui::Button("Add Jobs AB"))
     {
-        ThreadSubsystem->AddJob("Test Job B", Priority::NORMAL, &ThreadScene::JobB, this);
+        DebugCounter = MakeRef<Counter>();
+        DebugCounter->Add(2); // Increment the counter by 2 for the two jobs
+        ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, DebugCounter,&ThreadScene::JobA, this);
+        ThreadSubsystem->AddJob("Test Job B", Priority::NORMAL, DebugCounter,&ThreadScene::JobB, this);
     }
 
-    if (ImGui::Button("Add Job C"))
+    if (ImGui::Button("Add Jobs A Arg"))
     {
-        ThreadSubsystem->AddJob("Test Job C", Priority::NORMAL, &ThreadScene::JobC, this);
+        DebugCounter = MakeRef<Counter>(1);
+        ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, DebugCounter,&ThreadScene::JobAArg, this, 1);
     }
-
     // Frame Graph
     //Histogram/ ImGui Histogram
     // Error Bar
@@ -87,7 +96,21 @@ void ThreadScene::JobA()
     WorkTimer->Start();
 
     // Work for 10 minutes
-    while (WorkTimer->GetElapsed() < 2.0f)
+    while (WorkTimer->GetElapsed() < 1.0f)
+    {
+    }
+
+    WorkTimer->Stop();
+}
+
+void ThreadScene::JobAArg(int _arg)
+{
+    DE_LOG(Log, Info, "Job A Arg: {0}", _arg);
+    Ref<Timer> WorkTimer = MakeRef<Timer>(ObjectInit("Work Timer"));
+    WorkTimer->Start();
+
+    // Work for 10 minutes
+    while (WorkTimer->GetElapsed() < _arg)
     {
     }
 
@@ -100,7 +123,7 @@ void ThreadScene::JobB()
     WorkTimer->Start();
 
     // Work for 10 minutes
-    while (WorkTimer->GetElapsed() < 2.0f)
+    while (WorkTimer->GetElapsed() < 3.0f)
     {
     }
 

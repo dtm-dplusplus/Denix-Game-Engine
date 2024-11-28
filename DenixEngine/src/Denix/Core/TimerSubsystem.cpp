@@ -13,6 +13,7 @@ namespace Denix
 		DE_LOG_CREATE(LogTimer)
 
 		m_FrameTime = 0.33f;
+		m_DeltaTime = 0.33f;
 		m_FramesPerSecond = 30;
 		m_GameTimeSpeed = 1.0f;
 		m_MaxFPS = 60;

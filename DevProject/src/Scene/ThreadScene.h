@@ -11,13 +11,15 @@ class ThreadScene: public Scene
 public:
     ~ThreadScene() override;
     void BeginScene() override;
+    void Update(float _deltaTime) override;
     void DebugUI(float _deltaTime) override;
 
     
     void JobA();
+    void JobAArg(int _arg);
     void JobB();
     void JobC();
     
 
-    Ref<Thread> DebugThread; 
+    Ref<Counter> DebugCounter; 
 };

@@ -18,6 +18,8 @@ namespace Denix
 		virtual void PreUpdate(float _deltaTime) {}
 		virtual void PostUpdate(float _deltaTime) {}
 
+		virtual void RegisterUpdate() {}
+		
 		bool IsEnabled() const { return m_Enabled; }
 		bool& IsEnabled() { return m_Enabled; }
 		void SetEnabled(const bool _enabled) { m_Enabled = _enabled; }

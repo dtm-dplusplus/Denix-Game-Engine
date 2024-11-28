@@ -141,11 +141,21 @@ namespace Denix
 			DE_PROFILE(Physics PreUpdate)
 			m_PhysicsSubsystem->PreUpdate(m_TimerSubsystem->m_DeltaTime);
 			DE_PROFILE_END(Physics PreUpdate)
-			
+
+			// Job Subsystem Test
+			// UI & Editor should be part of the same job group. Editor relies on UI to be updated first.
+			// Therefore we must WaitForCounter individually to ensure these two jobs are executed serially.
+			// We will build a  job builder which can queue these jobs and ensure they run serially
+			// Currently, jobs are added to the job subsystem and executed instantly. In the future they should be scheduled in some kind of group/bucket
 			// Update the UI & Editor for any changes
 			DE_PROFILE(Editor Update)
-			m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			Ref<Counter> uiCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			WaitForCounter(*uiCounter);
+			
+			Ref<Counter> editorCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("Editor Update", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			WaitForCounter(*editorCounter);
 			DE_PROFILE_END(Editor Update)
 			
 			// Update the scene. The majority of the client game logic will be here
