@@ -93,8 +93,8 @@ void ThreadScene::DebugUI(float _deltaTime)
     if (ImGui::Button("Add Jobs AB"))
     {
         DebugCounter = MakeRef<Counter>(2);
-        ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, DebugCounter,&ThreadScene::JobA, this);
-        ThreadSubsystem->AddJob("Test Job B", Priority::NORMAL, DebugCounter,&ThreadScene::JobB, this);
+        for (int i = 0; i < 20; i++) ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, DebugCounter,&ThreadScene::JobA, this);
+        ThreadSubsystem->AddJob("Test Job B", Priority::HIGH, DebugCounter,&ThreadScene::JobB, this);
     }
 
     if (ImGui::Button("Add Jobs A Arg"))
@@ -126,6 +126,7 @@ void ThreadScene::JobA()
     }
 
     WorkTimer->Stop();
+    DE_LOG(Log, Info, "Job A Done");
 }
 
 void ThreadScene::JobAArg(int _arg)
@@ -140,6 +141,7 @@ void ThreadScene::JobAArg(int _arg)
     }
 
     WorkTimer->Stop();
+    
 }
 
 void ThreadScene::JobB()
@@ -148,11 +150,12 @@ void ThreadScene::JobB()
     WorkTimer->Start();
 
     // Work for 10 minutes
-    while (WorkTimer->GetElapsed() < 3.0f)
+    while (WorkTimer->GetElapsed() < 1.0f)
     {
     }
 
     WorkTimer->Stop();
+    DE_LOG(Log, Info, "Job B Done");
 }
 
 void ThreadScene::JobC()

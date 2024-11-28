@@ -52,25 +52,7 @@ namespace Denix
         Thread(Thread&&) = default;
         Thread& operator=(Thread&&) = default;
 
-        void Work()
-        {
-            while (true)
-            {
-                if (m_Job)
-                {
-                    m_IsWorking = true;
-                    m_Job->m_Timer.Start();
-                    m_Job->m_EntryPoint();
-                    m_Job->m_Timer.Stop();
-                    m_Job->m_WaitCounter->Decrement();
-                    m_Job = nullptr;
-
-                    // Let the scheduler know that the job is done
-                    m_JobsDone++;
-                    m_IsWorking = false;
-                }
-            }
-        }
+        void Work();
 
 
         /**

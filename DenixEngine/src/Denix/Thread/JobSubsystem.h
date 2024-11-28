@@ -2,7 +2,7 @@
 #include "Denix/System/Subsystem.h"
 
 #include "Denix/Thread/Thread.h"
-#include <queue>  
+#include <concurrent_priority_queue.h>
 
 namespace Denix
 {
@@ -12,13 +12,14 @@ namespace Denix
     public:
         JobSubsystem()
         {
-            s_ThreadSubsystem = this;
+            s_JobSubsystem = this;
             m_JobsDone = 0;
         }
         ~JobSubsystem() override
         {
-            s_ThreadSubsystem = nullptr;
+            s_JobSubsystem = nullptr;
         }
+
 
         /**
          * 
@@ -39,14 +40,14 @@ namespace Denix
             job->m_WaitCounter =  _waitCounter? _waitCounter : MakeRef<Counter>(1);
             job->m_EntryPoint = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...);
             
-        s_ThreadSubsystem->m_Jobs.push(std::move(job));
+        s_JobSubsystem->m_Jobs.push(std::move(job));
     }
         
 
 
         static Ref<Thread> GetThread(std::thread::id _id)
         {
-           for (const auto& thread: s_ThreadSubsystem->m_WorkerThreads)
+           for (const auto& thread: s_JobSubsystem->m_WorkerThreads)
                if(thread->m_ThreadID == _id) return thread;
 
             return nullptr;
@@ -64,13 +65,16 @@ namespace Denix
                 return _lhs->m_Priority < _rhs->m_Priority;
             }
         };
-        std::priority_queue<Ref<JobDeclaration>, std::vector<Ref<JobDeclaration>>, JobComparator> m_Jobs;
+
+        Concurrency::concurrent_priority_queue <Ref<JobDeclaration>, JobComparator> m_Jobs;
         size_t m_JobsDone;
 
-        static Ref<JobSubsystem> Get() { return s_ThreadSubsystem->shared_from_this(); }
-        static JobSubsystem* s_ThreadSubsystem;
+        static Ref<JobSubsystem> Get() { return s_JobSubsystem->shared_from_this(); }
+        static JobSubsystem* s_JobSubsystem;
 
     private:
+        static Ref<JobDeclaration> GetJob();
+
         void Initialize() override;
 
         void Deinitialize() override;
@@ -79,5 +83,6 @@ namespace Denix
 
         
         friend class Engine;
+        friend class Thread;
     };
 }

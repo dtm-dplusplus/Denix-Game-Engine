@@ -3,7 +3,14 @@
 
 #include "Denix/Core/TimerSubsystem.h"
 
-Denix::JobSubsystem* Denix::JobSubsystem::s_ThreadSubsystem = nullptr;
+Denix::JobSubsystem* Denix::JobSubsystem::s_JobSubsystem = nullptr;
+
+Denix::Ref<Denix::JobDeclaration> Denix::JobSubsystem::GetJob()
+{
+    Ref<JobDeclaration> job;
+    s_JobSubsystem->m_Jobs.try_pop(job);
+    return job? job : nullptr;
+}
 
 void Denix::JobSubsystem::Initialize()
 {
@@ -26,8 +33,8 @@ void Denix::JobSubsystem::Initialize()
     DE_LOG(Log, Trace, "Processor architecture: {}", sysinfo.wProcessorArchitecture)
 
     // Initialize the scheduler thread
-   m_ThreadScheduler = MakeRef<Thread>();
-    m_ThreadScheduler->InitThread(&JobSubsystem::ScheduleWork, this);
+   /*m_ThreadScheduler = MakeRef<Thread>();
+    m_ThreadScheduler->InitThread(&JobSubsystem::ScheduleWork, this);*/
     
     // Initialize the worker threads
     for (size_t i = 0; i < m_SystemThreadCount - 3; i++)
@@ -51,7 +58,7 @@ void Denix::JobSubsystem::Deinitialize()
 
 void Denix::JobSubsystem::ScheduleWork()
 {
-    while (m_Enabled)
+    /*while (m_Enabled)
     {
         // Probably need a lock here?
         if (!m_Jobs.empty())
@@ -70,5 +77,5 @@ void Denix::JobSubsystem::ScheduleWork()
 
         // Sleep for a bit
         std::this_thread::sleep_for(std::chrono::milliseconds(3));
-    }
+    }*/
 }
