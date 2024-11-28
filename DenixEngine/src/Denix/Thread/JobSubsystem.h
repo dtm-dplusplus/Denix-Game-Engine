@@ -2,6 +2,7 @@
 #include "Denix/System/Subsystem.h"
 
 #include "Denix/Thread/Thread.h"
+#include <queue>  
 
 namespace Denix
 {
@@ -32,11 +33,11 @@ namespace Denix
         template <typename Func, typename... Args>
     static void AddJob(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter, Func&& _func, Args&&... _args)
     {
-        JobDeclaration job;
-            job.m_Name = _name;
-            job.m_Priority = _priority;
-            job.m_WaitCounter =  _waitCounter? _waitCounter : MakeRef<Counter>(1);
-            job.m_EntryPoint = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...);
+            Ref<JobDeclaration> job = MakeRef<JobDeclaration>();
+            job->m_Name = _name;
+            job->m_Priority = _priority;
+            job->m_WaitCounter =  _waitCounter? _waitCounter : MakeRef<Counter>(1);
+            job->m_EntryPoint = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...);
             
         s_ThreadSubsystem->m_Jobs.push(job);
     }
@@ -58,12 +59,12 @@ namespace Denix
 
         struct JobComparator
         {
-            bool operator()(const JobDeclaration& lhs, const JobDeclaration& rhs) const
+            bool operator() (const Ref<JobDeclaration>& _lhs, const Ref<JobDeclaration>& _rhs) const
             {
-                return lhs.m_Priority < rhs.m_Priority;
+                return _lhs->m_Priority < _rhs->m_Priority;
             }
         };
-        std::priority_queue<JobDeclaration, std::vector<JobDeclaration>, JobComparator> m_Jobs;
+        std::priority_queue<Ref<JobDeclaration>, std::vector<Ref<JobDeclaration>>, JobComparator> m_Jobs;
         size_t m_JobsDone;
 
         static Ref<JobSubsystem> Get() { return s_ThreadSubsystem->shared_from_this(); }

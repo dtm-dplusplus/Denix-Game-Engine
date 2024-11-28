@@ -43,7 +43,6 @@ void ThreadScene::Update(float _deltaTime)
     }
 
     if (DebugCounter) WaitForCounter(*DebugCounter);
-
 }
 
 void ThreadScene::DebugUI(float _deltaTime)
@@ -66,6 +65,7 @@ void ThreadScene::DebugUI(float _deltaTime)
     ImGui::Checkbox("Parallel Loop", RenderParallel.get());
     ImGui::Checkbox("Dummy Subsystem A", &Engine::Get()->m_DummySubsystemA);
     ImGui::Checkbox("Dummy Subsystem B", &Engine::Get()->m_DummySubsystemB);
+    ImGui::Checkbox("Parallel Dummy Jobs", &Engine::Get()->m_ParallelDummyJobs);
     ImGui::SeparatorText("Thread Subsystem");
     static Ref<JobSubsystem> ThreadSubsystem = JobSubsystem::Get();
     ImGui::Checkbox("Enabled", &ThreadSubsystem->IsEnabled());

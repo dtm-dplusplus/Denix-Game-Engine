@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <string_view>
-#include <memory>
 #include <map>
 #include <unordered_map>
 #include <ranges>
@@ -15,5 +14,8 @@
 #include <sstream>
 
 #include <chrono>
+
+#include <memory>
+#include <functional>
 #include <thread>
 #include <mutex>

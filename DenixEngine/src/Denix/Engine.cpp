@@ -176,31 +176,26 @@ namespace Denix
 			// Update the physics system. Collision detection and resolution will be here
 			//m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 
+			
+
+			// Run dummy subsystem whilst rendering
+			Ref<Counter> dummyCounter;
+			if (m_ParallelDummyJobs)
+			{
+				dummyCounter = MakeRef<Counter>(2);
+				m_JobSubsystem->AddJob( "Dummy Subsystem A", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemA, this);
+				m_JobSubsystem->AddJob( "Dummy Subsystem B", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemB, this);
+			}
+			else
+			{
+				DummySubsystemA();
+				DummySubsystemB();
+			}
+
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			m_RendererSubsystem->RenderScene();
-
-
-			// Dummy subsystem A
-			if (m_DummySubsystemA)
-			{
-				[]{
-					DE_PROFILE(Dummy Subsystem A)
-
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
-					DE_PROFILE_END(Dummy Subsystem A)
-				}();
-			}
-
-			// Dummy subsystem B
-			if (m_DummySubsystemB)
-			{
-				[]{
-					DE_PROFILE(Dummy Subsystem B)
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
-					DE_PROFILE_END(Dummy Subsystem B)
-				}();
-			}
 			
+			if (m_ParallelDummyJobs) WaitForCounter(*dummyCounter);
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			DE_PROFILE(Draw Viewport)
@@ -219,6 +214,21 @@ namespace Denix
 			m_TimerSubsystem->EndFrame();
 		}
 	}
+
+	void Engine::DummySubsystemA()
+	{
+		DE_PROFILE(Dummy Subsystem A)
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		DE_PROFILE_END(Dummy Subsystem A)
+	}
+
+	void Engine::DummySubsystemB()
+	{
+		DE_PROFILE(Dummy Subsystem B)
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		DE_PROFILE_END(Dummy Subsystem B)
+	}
+	
 	void Engine::SequentialLoop()
 	{
 		while(m_WindowSubsystem->m_Window->IsOpen())

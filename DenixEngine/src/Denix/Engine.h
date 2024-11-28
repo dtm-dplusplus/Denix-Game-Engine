@@ -50,10 +50,14 @@ namespace Denix
 
         std::string GetProjectName() const { return m_ProjectName; }
 
-
+    public:
         Ref<bool> m_ParallelLoop = MakeRef<bool>(true);
+
+        void DummySubsystemA();
+        void DummySubsystemB();
         bool m_DummySubsystemA = true;
         bool m_DummySubsystemB = true;
+        bool m_ParallelDummyJobs = false;
     protected:
         std::string m_ProjectName;
         Ref<Asset> m_StartupScene;
