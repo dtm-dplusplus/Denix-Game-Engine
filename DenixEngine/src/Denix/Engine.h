@@ -57,7 +57,7 @@ namespace Denix
         void DummySubsystemB();
         bool m_DummySubsystemA = true;
         bool m_DummySubsystemB = true;
-        bool m_ParallelDummyJobs = false;
+        bool m_ParallelDummyJobs = true;
     protected:
         std::string m_ProjectName;
         Ref<Asset> m_StartupScene;

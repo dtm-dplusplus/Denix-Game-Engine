@@ -39,7 +39,7 @@ namespace Denix
             job->m_WaitCounter =  _waitCounter? _waitCounter : MakeRef<Counter>(1);
             job->m_EntryPoint = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...);
             
-        s_ThreadSubsystem->m_Jobs.push(job);
+        s_ThreadSubsystem->m_Jobs.push(std::move(job));
     }
         
 

@@ -34,23 +34,13 @@ namespace  Denix
         Counter(int _value) : m_Value(_value) {}
         void Increment()
         {
-            m_Value.fetch_add(1);
+            ++m_Value;
         }
 
         void Decrement()
         {
-            m_Value.fetch_sub(1);
+            --m_Value;
             //m_ConditionVar.notify_all();
-        }
-
-        void Add(int _value)
-        {
-            m_Value.fetch_add(_value);
-        }
-
-        void Subtract(int _value)
-        {
-            m_Value.fetch_sub(_value);
         }
         
         std::atomic_int m_Value{0};

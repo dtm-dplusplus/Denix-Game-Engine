@@ -92,8 +92,7 @@ void ThreadScene::DebugUI(float _deltaTime)
     
     if (ImGui::Button("Add Jobs AB"))
     {
-        DebugCounter = MakeRef<Counter>();
-        DebugCounter->Add(2); // Increment the counter by 2 for the two jobs
+        DebugCounter = MakeRef<Counter>(2);
         ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, DebugCounter,&ThreadScene::JobA, this);
         ThreadSubsystem->AddJob("Test Job B", Priority::NORMAL, DebugCounter,&ThreadScene::JobB, this);
     }
