@@ -2,6 +2,7 @@
 #include "Denix/Scene/Scene.h"
 #include "Denix/Physics/PhysicsComponent.h"
 #include "Denix/Physics/Collider.h"
+#include "Denix/Profile/ProfileSubsystem.h"
 
 namespace Denix
 {
@@ -48,6 +49,8 @@ namespace Denix
 
 	void PhysicsSubsystem::Update(float _deltaTime)
 	{
+		DE_PROFILE(Physics Update)
+		
 		if (!m_Enabled) return;
 		if (!m_ActiveScene->IsPlaying()) return;
 		
@@ -56,6 +59,8 @@ namespace Denix
 		if (m_CollisionResponseEnabled) CollisionResonsePhase(_deltaTime);
 
 		PhysicsSimulationPhase(_deltaTime);
+
+		DE_PROFILE_END(Physics Update)
 	}
  
 	void PhysicsSubsystem::CollisionDetectionPhase(float _deltaTime)

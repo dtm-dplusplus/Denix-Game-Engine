@@ -112,8 +112,8 @@ namespace Denix
 
         ~Thread()
         {
-            DE_LOG(Log, Info, "Thread: {} destroyed", m_ThreadIDInt)
-            JoinCheck();
+            // If the thread is still working, join it. Freezes the program if the thread is still working. Disable for now
+            //Join();
         }
 
         template <typename Func, typename... Args>
@@ -148,7 +148,7 @@ namespace Denix
             {
                 if (m_Job.m_EntryPoint)
                 {
-                    DE_LOG(Log, Info, "Thread: {} Priority: {} Job: {}", m_ThreadIDInt, PriorityToString(m_Job.m_Priority), m_Job.m_Name)
+                   // DE_LOG(Log, Info, "Thread: {} Priority: {} Job: {}", m_ThreadIDInt, PriorityToString(m_Job.m_Priority), m_Job.m_Name)
                     m_IsWorking = true;
                     m_Job.m_Timer.Start();
                     m_Job.m_EntryPoint();
@@ -162,7 +162,7 @@ namespace Denix
                     // Let the scheduler know that the job is done
                     m_JobsDone++;
                     m_IsWorking = false;
-                    DE_LOG(Log, Info, "Thread {} Priority: {} Job Done: {}", m_ThreadIDInt, PriorityToString(m_Job.m_Priority), m_Job.m_Name)
+                   // DE_LOG(Log, Info, "Thread {} Priority: {} Job Done: {}", m_ThreadIDInt, PriorityToString(m_Job.m_Priority), m_Job.m_Name)
                 }
             }
         }
@@ -173,12 +173,7 @@ namespace Denix
          */
         void Join()
         {
-            if (m_Thread.joinable())
-            {
-                m_Thread.join();
-                m_IsWorking = false;
-                DE_LOG(Log, Info, "Thread {} joined", m_ThreadIDInt)
-            }
+            m_Thread.join();
         }
 
         /**
@@ -251,10 +246,13 @@ namespace Denix
         _counter.m_Mutex.lock();
         while (_counter.m_Value.load() > 0)
         {
-            _counter.m_Mutex.unlock();
+            // We should probably add a yield here
+            /*_counter.m_Mutex.unlock();
             std::this_thread::yield();
-            _counter.m_Mutex.lock();
+            _counter.m_Mutex.lock();*/
         }
+
+        _counter.m_Mutex.unlock();
     }
 
   

@@ -37,41 +37,6 @@ namespace Denix
 		DE_LOG(LogEditor, Trace, "Editor Subsystem Initialized")
 	}
 
-	void EditorSubsystem::RegisterUpdate()
-	{
-		Subsystem::RegisterUpdate();
-
-		// Register the Editor Subsystem for updates
-		if(!m_Enabled) return;
-		if (!m_ActiveScene) return;
-
-		EditorWidget::m_DragSpeed = EditorWidget::m_DragSensitivity * TimerSubsystem::GetDeltaTime();
-		m_DragSpeed = EditorWidget::m_DragSpeed;
-
-		JobSubsystem::AddJob("Main Menu Bar", Priority::NORMAL, nullptr, &EditorSubsystem::MainMenuBar, this);
-		MainMenuBar();
-
-		// Asset Browser
-		if(m_AssetBrowserWidget)
-		{
-			m_AssetBrowserWidget->Update(_deltaTime);
-			// TEMP - Remove when AssetBrowser is set to close
-			if(m_AssetBrowserWidget->IsRubbish()) m_AssetBrowserWidget.reset();
-		}
-
-		// Scene Widgets
-		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->Update(0.0f);
-		if (m_GameObjectDetailsWidget)
-		{
-			m_GameObjectDetailsWidget->m_GameObjectRef = m_SceneOrganizerWidget->GetSelectedObject();
-			m_GameObjectDetailsWidget->Update(0.0f);
-		}
-		
-		if(m_PerformanceSettingsWidget) m_PerformanceSettingsWidget->Update(_deltaTime);
-		if(m_InputDebuggerWidget) m_InputDebuggerWidget->Update(_deltaTime);
-		if (m_EngineProfilerWidget) m_EngineProfilerWidget->Update(_deltaTime);
-	}
-
 	void EditorSubsystem::Update(float _deltaTime)
 	{
 		if(!m_Enabled) return;

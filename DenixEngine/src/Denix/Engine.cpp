@@ -157,21 +157,35 @@ namespace Denix
 			m_JobSubsystem->AddJob("Editor Update", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 			WaitForCounter(*editorCounter);
 			DE_PROFILE_END(Editor Update)
-			
-			// Update the scene. The majority of the client game logic will be here
-			DE_PROFILE(Scene Update)
-			m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			DE_PROFILE_END(Scene Update)
 
-			// Update the physics system. Collision detection and resolution will be here
-			DE_PROFILE(Physics Update)
-			m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			DE_PROFILE_END(Physics Update)
-			
-			// Draw to viewport framebuffer
-			DE_PROFILE(Render Scene)
+
+			// Render Parallel test
+			// Rendering has to run on main thread as opengl context is thread specific. We will run the scene & physics update in parallel instead
+			Ref<Counter> sceneCounter;
+			if (m_ParallelRendering)
+			{
+				sceneCounter = MakeRef<Counter>(1);
+
+				// Update the scene. The majority of the client game logic will be here
+				m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+
+				// Update the physics system. Collision detection and resolution will be here
+				//m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, sceneCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			}
+			else
+			{
+				// Update the scene. The majority of the client game logic will be here
+				m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+
+				// Update the physics system. Collision detection and resolution will be here
+				//m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			}
+
+			// Render the scene. This runs on the main thread as it requires the opengl context
 			m_RendererSubsystem->RenderScene();
-			DE_PROFILE_END(Render Scene)
+
+			// Wait for the scene & physics update to complete
+			if (m_ParallelRendering) WaitForCounter(*sceneCounter);
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			DE_PROFILE(Draw Viewport)

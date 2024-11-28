@@ -48,6 +48,8 @@ namespace Denix
 
         std::string GetProjectName() const { return m_ProjectName; }
 
+
+        Ref<bool> m_ParallelRendering = MakeRef<bool>(true);
     protected:
         std::string m_ProjectName;
         Ref<Asset> m_StartupScene;

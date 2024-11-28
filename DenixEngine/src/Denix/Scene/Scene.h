@@ -14,7 +14,7 @@ namespace Denix
 	constexpr unsigned int MAX_SPOT_LIGHTS = 100;
 
 	// Basic Scene class
-	class Scene: public BaseObject
+	class Scene: public BaseObject, public std::enable_shared_from_this<Scene>
 	{
 	public:
 

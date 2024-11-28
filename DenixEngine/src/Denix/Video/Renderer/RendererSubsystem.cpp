@@ -5,6 +5,7 @@
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Actor.h"
 #include "Denix/Physics/Collider.h"
+#include "Denix/Profile/ProfileSubsystem.h"
 
 namespace Denix
 {
@@ -12,6 +13,8 @@ namespace Denix
 
 	void RendererSubsystem::RenderScene()
 	{
+		DE_PROFILE(Render Scene)
+
 		if (!s_RendererSubSystem->m_Enabled) return;
 
 		// Render the scene based on the viewport mode
@@ -28,6 +31,8 @@ namespace Denix
 
 		// Will skip if viewport mode is not default
 		//RenderLighting();
+
+		DE_PROFILE_END(Render Scene)
 	}
 
 	void RendererSubsystem::RenderDefaultViewport()

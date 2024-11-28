@@ -3,8 +3,10 @@
 #include "Denix/Core/Timer.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Thread/Thread.h"
+#include "Util/ActorGridSpawner.h"
 
 using namespace Denix;
+struct ActorGridSpawner;
 
 class ThreadScene: public Scene
 {
@@ -21,5 +23,8 @@ public:
     void JobC();
     
 
-    Ref<Counter> DebugCounter; 
+    Ref<Counter> DebugCounter;
+    Ref<bool> RenderParallel;
+
+    ActorGridSpawner m_GridSpawner;
 };

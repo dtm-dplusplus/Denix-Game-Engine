@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "implot.h"
+#include "Denix/Engine.h"
 #include "Denix/Thread/JobSubsystem.h"
 
 using namespace  Denix;
@@ -13,6 +14,17 @@ ThreadScene::~ThreadScene()
 void ThreadScene::BeginScene()
 {
     Scene::BeginScene();
+
+    RenderParallel = Engine::Get()->m_ParallelRendering;
+   
+    /*for (int i = 0; i < 30; i++)
+    {
+        for (int j = 0; j < 30; j++)
+        {
+           SpawnGameObject<Cube>(glm::vec3(i * 2.5f, j * 2.5f, 0.0f));
+            DE_LOG(Log, Info, "Spawned Cube {} {}", i, j);
+        }
+    }*/
 }
 
 void ThreadScene::Update(float _deltaTime)
@@ -32,7 +44,6 @@ void ThreadScene::Update(float _deltaTime)
 
     if (DebugCounter) WaitForCounter(*DebugCounter);
 
-    
 }
 
 void ThreadScene::DebugUI(float _deltaTime)
@@ -40,6 +51,20 @@ void ThreadScene::DebugUI(float _deltaTime)
     Scene::DebugUI(_deltaTime);
 
     ImGui::Begin(GetName().c_str());
+    ImGui::SeparatorText("Dev Stuff");
+    ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, 100);
+    if (ImGui::Button("Spawn Grid"))
+    {
+        m_GridSpawner.SpawnGridDef(shared_from_this(), 20);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Spawn Grid"))
+    {
+        m_GridSpawner.SpawnGrid(shared_from_this());
+    }
+    ImGui::SeparatorText("Engine Thread Settings");
+    ImGui::Checkbox("Parallel Rendering", RenderParallel.get());
+    
     ImGui::SeparatorText("Thread Subsystem");
     static Ref<JobSubsystem> ThreadSubsystem = JobSubsystem::Get();
     ImGui::Checkbox("Enabled", &ThreadSubsystem->IsEnabled());

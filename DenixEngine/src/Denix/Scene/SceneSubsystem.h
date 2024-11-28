@@ -36,7 +36,6 @@ namespace Denix
 
 		void Deinitialize() override;
 
-		void ThreadedSceneUpdate(float _deltaTime);
 		void Update(float _deltaTime) override;
 
 		static void SerializeScene();

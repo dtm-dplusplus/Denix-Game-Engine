@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Denix/Resource/Asset.h"
 #include "Denix/Scene/Scene.h"
+#include "Util/ActorGridSpawner.h"
 
 using namespace Denix;
 
@@ -14,6 +15,5 @@ public:
     void Update(float _deltaTime) override;
     void DebugUI(float _deltaTime) override;
 
-    void SpawnGrid();
-    int GridSize = 10;
+   ActorGridSpawner m_GridSpawner;
 };

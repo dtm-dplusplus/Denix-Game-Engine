@@ -31,7 +31,6 @@ namespace Denix
 		void Update(float _deltaTime) override;
 		void Initialize() override;
 		void Deinitialize() override;
-		void RegisterUpdate() override;
 	private:
 		static EditorSubsystem* s_EditorSubsystem;
 

@@ -9,6 +9,8 @@
 #include "Denix/Resource/Asset.h"
 #include <omp.h>
 
+#include "Denix/Profile/ProfileSubsystem.h"
+
 namespace Denix
 {
 	SceneSubsystem* SceneSubsystem::s_SceneSubsystem{ nullptr };
@@ -243,6 +245,8 @@ namespace Denix
 
 	void SceneSubsystem::Update(float _deltaTime)
 	{
+		DE_PROFILE(Scene Update)
+
 		// Validate Scene
 		if (!m_ActiveScene)
 		{
@@ -270,48 +274,19 @@ namespace Denix
 		}
 
 		// Scene update implementation
-		if (m_SceneThreaded && m_ActiveScene->m_SceneObjects.size() > 30)
+		// Single Threaded Scene Update
+		for (const auto& actor : m_ActiveScene->m_SceneObjects)
 		{
-			// Threaded Scene Update
-			ThreadedSceneUpdate(_deltaTime);
-		}
-		else
-		{
-			// Single Threaded Scene Update
-			for (const auto& actor : m_ActiveScene->m_SceneObjects)
-			{
-				// Update the Actor -  This will always be here
-				actor->Update(_deltaTime);
-			}
+			// Update the Actor -  This will always be here
+			actor->Update(_deltaTime);
 		}
 		
 		// Client Scene Update
 		m_ActiveScene->Update(_deltaTime);
 		
 		if(m_ActiveScene->IsPlaying()) m_ActiveScene->Update(_deltaTime);
-	}
 
-	void SceneSubsystem::ThreadedSceneUpdate(float _deltaTime)
-	{
-		std::vector<Ref<Actor>>& sceneObjects = m_ActiveScene->m_SceneObjects;
-		
-		auto updateFunction = [_deltaTime](const std::vector<Ref<Actor>>::iterator& _begin, const std::vector<Ref<Actor>>::iterator& _end)
-		{
-			for (auto it = _begin; it != _end; ++it)
-			{
-				// Render the Actor
-				(*it)->Update(_deltaTime);
-			}
-		};
-
-		// Get number of threads
-		std::vector<std::thread> threads;
-
-		auto mid = sceneObjects.begin() + (sceneObjects.size() / 2);
-		threads.emplace_back(updateFunction, m_ActiveScene->m_SceneObjects.begin(), mid);
-		threads.emplace_back(updateFunction, mid, m_ActiveScene->m_SceneObjects.end());
-
-		for (std::thread &thread : threads) if (thread.joinable()) thread.join();
+		DE_PROFILE_END(Scene Update)
 	}
 
 	void SceneSubsystem::SerializeScene()

@@ -30,7 +30,7 @@ void Denix::JobSubsystem::Initialize()
     m_ThreadScheduler->InitThread(&JobSubsystem::ScheduleWork, this);
     
     // Initialize the worker threads
-    for (size_t i = 0; i < 4; i++)
+    for (size_t i = 0; i < m_SystemThreadCount - 3; i++)
     {
         m_WorkerThreads.emplace_back(MakeRef<Thread>());
         m_WorkerThreads.back()->InitWorkerThread();
