@@ -241,9 +241,15 @@ namespace Denix
 
     inline void WaitForCounter(Counter& _counter)
     {
-        // Wait until the counter reaches the target value
-       if (_counter.m_Value.load() == 0) return;
         _counter.m_Mutex.lock();
+
+        // Wait until the counter reaches the target value
+       if (_counter.m_Value.load() == 0)
+       {
+           _counter.m_Mutex.unlock();
+              return;
+       }
+        
         while (_counter.m_Value.load() > 0)
         {
             // We should probably add a yield here

@@ -15,7 +15,7 @@ void ThreadScene::BeginScene()
 {
     Scene::BeginScene();
 
-    RenderParallel = Engine::Get()->m_ParallelRendering;
+    RenderParallel = Engine::Get()->m_ParallelLoop;
    
     /*for (int i = 0; i < 30; i++)
     {
@@ -63,8 +63,9 @@ void ThreadScene::DebugUI(float _deltaTime)
         m_GridSpawner.SpawnGrid(shared_from_this());
     }
     ImGui::SeparatorText("Engine Thread Settings");
-    ImGui::Checkbox("Parallel Rendering", RenderParallel.get());
-    
+    ImGui::Checkbox("Parallel Loop", RenderParallel.get());
+    ImGui::Checkbox("Dummy Subsystem A", &Engine::Get()->m_DummySubsystemA);
+    ImGui::Checkbox("Dummy Subsystem B", &Engine::Get()->m_DummySubsystemB);
     ImGui::SeparatorText("Thread Subsystem");
     static Ref<JobSubsystem> ThreadSubsystem = JobSubsystem::Get();
     ImGui::Checkbox("Enabled", &ThreadSubsystem->IsEnabled());

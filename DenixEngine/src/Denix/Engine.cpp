@@ -23,6 +23,7 @@ namespace Denix
 	{
 		s_Engine = this;
 		m_StartupScene = nullptr;
+		m_ParallelLoop = MakeRef<bool>(true);
 		Logger::Initialize();
 
 		// We initialize the thread subsystem here because it is used to create the other subsystems
@@ -102,20 +103,19 @@ namespace Denix
 	{
 		DE_LOG(LogEngine, Trace, "Engine Deinitializing")
 
+		SaveConfig();
+		
 		// Deinitialie SubSystems in the reverse order of initialization
 		for (const auto& subsystem : std::views::reverse(m_Subsystems))
 		{
 			subsystem->Deinitialize();
 		}
-
+		
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
 	}
 
-	void Engine::Run()
+	void Engine::ParallelLoop()
 	{
-		Initialize();
-
-		// Engine Loop
 		while(m_WindowSubsystem->m_Window->IsOpen())
 		{
 			// Setup timer system for the new frame.
@@ -149,43 +149,58 @@ namespace Denix
 			// Currently, jobs are added to the job subsystem and executed instantly. In the future they should be scheduled in some kind of group/bucket
 			// Update the UI & Editor for any changes
 			DE_PROFILE(Editor Update)
-			Ref<Counter> uiCounter = MakeRef<Counter>(1);
-			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			WaitForCounter(*uiCounter);
+			//Ref<Counter> uiCounter = MakeRef<Counter>(1);
+			//m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			//WaitForCounter(*uiCounter);
 			
-			Ref<Counter> editorCounter = MakeRef<Counter>(1);
-			m_JobSubsystem->AddJob("Editor Update", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			WaitForCounter(*editorCounter);
+			//Ref<Counter> editorCounter = MakeRef<Counter>(1);
+			//m_JobSubsystem->AddJob("Editor Update", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			//WaitForCounter(*editorCounter);
+
+			m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 			DE_PROFILE_END(Editor Update)
 
 
 			// Render Parallel test
 			// Rendering has to run on main thread as opengl context is thread specific. We will run the scene & physics update in parallel instead
-			Ref<Counter> sceneCounter;
-			if (m_ParallelRendering)
-			{
-				sceneCounter = MakeRef<Counter>(1);
+			//Ref<Counter> sceneCounter;
+			//m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 
-				// Update the scene. The majority of the client game logic will be here
-				m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			// Update the physics system. Collision detection and resolution will be here
+			//m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, sceneCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 
-				// Update the physics system. Collision detection and resolution will be here
-				//m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, sceneCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			}
-			else
-			{
-				// Update the scene. The majority of the client game logic will be here
-				m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			// Update the scene. The majority of the client game logic will be here
+			m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 
-				// Update the physics system. Collision detection and resolution will be here
-				//m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			}
+			// Update the physics system. Collision detection and resolution will be here
+			//m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			m_RendererSubsystem->RenderScene();
 
-			// Wait for the scene & physics update to complete
-			if (m_ParallelRendering) WaitForCounter(*sceneCounter);
+
+			// Dummy subsystem A
+			if (m_DummySubsystemA)
+			{
+				[]{
+					DE_PROFILE(Dummy Subsystem A)
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					DE_PROFILE_END(Dummy Subsystem A)
+				}();
+			}
+
+			// Dummy subsystem B
+			if (m_DummySubsystemB)
+			{
+				[]{
+					DE_PROFILE(Dummy Subsystem B)
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					DE_PROFILE_END(Dummy Subsystem B)
+				}();
+			}
+			
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			DE_PROFILE(Draw Viewport)
@@ -201,9 +216,76 @@ namespace Denix
 			m_SceneSubsystem->CleanRubbish();
 			DE_PROFILE_END(Clean Rubbish)
 
-			
 			m_TimerSubsystem->EndFrame();
 		}
+	}
+	void Engine::SequentialLoop()
+	{
+		while(m_WindowSubsystem->m_Window->IsOpen())
+		{
+			// Setup timer system for the new frame.
+			m_TimerSubsystem->BeginFrame();
+			m_ProfileSubsystem->Update(m_TimerSubsystem->m_FrameTime);
+			
+			// Poll input & Events. Events will be dispatched to the appropriate subsystems
+			DE_PROFILE(Input Poll)
+			m_InputSubsystem->Poll();
+			DE_PROFILE_END(Input Poll)
+
+			
+			// Clear the offscreen frame buffer
+			DE_PROFILE(New Window Buffer)
+			m_UISubsystem->NewFrame();
+			m_WindowSubsystem->m_Window->ClearBuffer();
+			m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->m_FrameBuffer->Bind();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			DE_PROFILE_END(New Window Buffer)
+			
+			// Prepare physics system for scene update
+			DE_PROFILE(Physics PreUpdate)
+			m_PhysicsSubsystem->PreUpdate(m_TimerSubsystem->m_DeltaTime);
+			DE_PROFILE_END(Physics PreUpdate)
+
+			// Update the UI & Editor for any changes
+			DE_PROFILE(Editor Update)
+			m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			DE_PROFILE_END(Editor Update)
+
+			// Update the scene. The majority of the client game logic will be here
+			m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+
+			// Update the physics system. Collision detection and resolution will be here
+			m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			
+			// Render the scene. This runs on the main thread as it requires the opengl context
+			m_RendererSubsystem->RenderScene();
+
+			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
+			DE_PROFILE(Draw Viewport)
+			FrameBuffer::Unbind();
+			m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
+			m_UISubsystem->RenderUI(); // Swap buffers and render UI
+			m_WindowSubsystem->m_Window->SwapBuffers();
+			m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
+			DE_PROFILE_END(Draw Viewport)
+			
+			// Run the garbage collector
+			DE_PROFILE(Clean Rubbish)
+			m_SceneSubsystem->CleanRubbish();
+			DE_PROFILE_END(Clean Rubbish)
+
+			m_TimerSubsystem->EndFrame();
+		}
+	}
+
+	void Engine::Run()
+	{
+		Initialize();
+
+		// Engine Loop
+		if (*m_ParallelLoop) ParallelLoop();
+		else SequentialLoop();
 		
 		Deinitialize();
 	}
@@ -228,6 +310,11 @@ namespace Denix
 					DE_LOG(LogEngine, Warn, "Load Engine Config: Startup Scene Not Found")
 				}
 			}
+
+			if(const YAML::Node& startSceneNode = cfg["Parallel Loop"])
+			{
+				m_ParallelLoop = MakeRef<bool>(startSceneNode.as<bool>());
+			}
 		}
 		catch(const std::exception& e)
 		{
@@ -244,11 +331,11 @@ namespace Denix
 	{
 		try
 		{
-				
 			YAML::Emitter cfgEmitter;
 			cfgEmitter << YAML::Comment("DENIX ENGINE CONFIGURATION");
 			cfgEmitter << YAML::BeginMap;
 			cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << (m_StartupScene? m_StartupScene->GetAssetPath() : "");
+			cfgEmitter << YAML::Key << "Parallel Loop" << YAML::Value <<  *m_ParallelLoop;
 			cfgEmitter << YAML::EndMap;
 			
 			if(FileSubsystem::WriteFile(m_EngineConfigPath, cfgEmitter.c_str()))

@@ -42,13 +42,16 @@ void Denix::JobSubsystem::Deinitialize()
 {
     Subsystem::Deinitialize();
 
+    // Stops the scheduler thread
+    m_Enabled = false;
+    
     DE_LOG(Log, Trace, "Thread Subsystem Deinitializing")
     DE_LOG(Log, Trace, "Thread Subsystem Deinitialized")
 }
 
 void Denix::JobSubsystem::ScheduleWork()
 {
-    while (true)
+    while (m_Enabled)
     {
         // Probably need a lock here?
         if (!m_Jobs.empty())

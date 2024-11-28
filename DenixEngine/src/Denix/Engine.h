@@ -37,6 +37,8 @@ namespace Denix
 
         virtual void Initialize();
         virtual void Deinitialize();
+        void ParallelLoop();
+        void SequentialLoop();
 
         void Run();
         void LoadConfig();
@@ -49,7 +51,9 @@ namespace Denix
         std::string GetProjectName() const { return m_ProjectName; }
 
 
-        Ref<bool> m_ParallelRendering = MakeRef<bool>(true);
+        Ref<bool> m_ParallelLoop = MakeRef<bool>(true);
+        bool m_DummySubsystemA = true;
+        bool m_DummySubsystemB = true;
     protected:
         std::string m_ProjectName;
         Ref<Asset> m_StartupScene;
