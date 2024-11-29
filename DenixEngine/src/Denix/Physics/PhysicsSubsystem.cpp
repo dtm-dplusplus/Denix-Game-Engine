@@ -22,6 +22,8 @@ namespace Denix
 
 	void PhysicsSubsystem::PreUpdate(float _deltaTime)
 	{
+		DE_PROFILE(Physics PreUpdate)
+
 		Subsystem::PreUpdate(_deltaTime);
 
 		if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
@@ -45,6 +47,8 @@ namespace Denix
 
 			physicsComp->m_CenterOfMass = physicsComp->m_ParentTransform->GetPosition();
 		}
+
+		DE_PROFILE_END(Physics PreUpdate)
 	}
 
 	void PhysicsSubsystem::Update(float _deltaTime)

@@ -39,6 +39,8 @@ namespace Denix
 
 	void EditorSubsystem::Update(float _deltaTime)
 	{
+		DE_PROFILE(Editor Update)
+
 		if(!m_Enabled) return;
 		if (!m_ActiveScene) return;
 
@@ -66,6 +68,8 @@ namespace Denix
 		if(m_PerformanceSettingsWidget) m_PerformanceSettingsWidget->Update(_deltaTime);
 		if(m_InputDebuggerWidget) m_InputDebuggerWidget->Update(_deltaTime);
 		if (m_EngineProfilerWidget) m_EngineProfilerWidget->Update(_deltaTime);
+
+		DE_PROFILE_END(Editor Update)
 	}
 	
 	void EditorSubsystem::MainMenuBar()

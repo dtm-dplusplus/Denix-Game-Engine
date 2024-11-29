@@ -206,6 +206,8 @@ namespace Denix
 
 	void SceneSubsystem::CleanRubbish()
 	{
+		DE_PROFILE(Clean Rubbish)
+
 		// Cleanup rubbish objects here. TEMP loop, will be moved to a queue
 		for (const auto& actor : m_ActiveScene->m_SceneObjects)
 		{
@@ -240,6 +242,8 @@ namespace Denix
 				std::erase(m_ActiveScene->m_SceneObjects, actor);
 			}
 		}
+
+		DE_PROFILE_END(Clean Rubbish)
 	}
 
 	void SceneSubsystem::Update(float _deltaTime)

@@ -143,9 +143,7 @@ namespace Denix
 			
 			
 			// Prepare physics system for scene update
-			DE_PROFILE(Physics PreUpdate)
 			m_PhysicsSubsystem->PreUpdate(m_TimerSubsystem->m_DeltaTime);
-			DE_PROFILE_END(Physics PreUpdate)
 
 			// Job Subsystem Test
 			// UI & Editor should be part of the same job group. Editor relies on UI to be updated first.
@@ -153,7 +151,6 @@ namespace Denix
 			// We will build a  job builder which can queue these jobs and ensure they run serially
 			// Currently, jobs are added to the job subsystem and executed instantly. In the future they should be scheduled in some kind of group/bucket
 			// Update the UI & Editor for any changes
-			DE_PROFILE(Editor Update)
 			Ref<Counter> uiCounter = MakeRef<Counter>(1);
 			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 			WaitForCounter(*uiCounter);
@@ -161,35 +158,25 @@ namespace Denix
 			Ref<Counter> editorCounter = MakeRef<Counter>(1);
 			m_JobSubsystem->AddJob("Editor Update", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 			WaitForCounter(*editorCounter);
-
-			//m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			//m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			DE_PROFILE_END(Editor Update)
-
-
-			// Render Parallel test
-			// Rendering has to run on main thread as opengl context is thread specific. We will run the scene & physics update in parallel instead
-			//Ref<Counter> sceneCounter;
-			//m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-
-			// Update the physics system. Collision detection and resolution will be here
-			//m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, sceneCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-
-			// Run dummy subsystem whilst rendering & Scene
-			Ref<Counter> dummyCounter = MakeRef<Counter>(2);
-			m_JobSubsystem->AddJob( "Dummy Subsystem A", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemA, this);
-			m_JobSubsystem->AddJob( "Dummy Subsystem B", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemB, this);
 			
-			// Update the scene. The majority of the client game logic will be here
-			m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			// Run dummy subsystem whilst rendering & Scene
+			//Ref<Counter> dummyCounter = MakeRef<Counter>(2);
+			//m_JobSubsystem->AddJob( "Dummy Subsystem A", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemA, this);
+			//m_JobSubsystem->AddJob( "Dummy Subsystem B", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemB, this);
+			
+			// Update the scene. The majority of the client game logic will be here. Do this in parallel with the rendering
+			Ref<Counter> sceneCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 
 			// Update the physics system. Collision detection and resolution will be here
 			//m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			m_RendererSubsystem->RenderScene();
+
+			WaitForCounter(*sceneCounter);
 			
-			WaitForCounter(*dummyCounter);
+			//WaitForCounter(*dummyCounter);
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			DE_PROFILE(Draw Viewport)
@@ -201,10 +188,10 @@ namespace Denix
 			DE_PROFILE_END(Draw Viewport)
 			
 			// Run the garbage collector
-			DE_PROFILE(Clean Rubbish)
-			m_SceneSubsystem->CleanRubbish();
-			DE_PROFILE_END(Clean Rubbish)
-
+			Ref<Counter> cleanCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, cleanCounter, &SceneSubsystem::CleanRubbish, m_SceneSubsystem.get());
+			WaitForCounter(*cleanCounter);
+			
 			m_TimerSubsystem->EndFrame();
 		}
 	}
