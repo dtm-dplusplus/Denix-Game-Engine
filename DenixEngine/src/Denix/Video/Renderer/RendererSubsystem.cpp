@@ -39,7 +39,7 @@ namespace Denix
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		for (const Ref<Actor>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
+		for (const Ref<Actor>& object : s_RendererSubSystem->m_ActiveScene->m_Actors)
 		{
 			const Ref<RenderComponent> renderComp = object->GetRenderComponent();
 			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
@@ -224,7 +224,7 @@ namespace Denix
 				camera->GetTransformComponent()->GetPosition().z);
 		}
 
-		for (const Ref<Actor>& object : s_RendererSubSystem->m_ActiveScene->m_SceneObjects)
+		for (const Ref<Actor>& object : s_RendererSubSystem->m_ActiveScene->m_Actors)
 		{
 			const Ref<RenderComponent> renderComp = object->GetRenderComponent();
 			const Ref<TransformComponent> transformComp = object->GetTransformComponent();
@@ -278,7 +278,7 @@ namespace Denix
 				camera->GetTransformComponent()->GetPosition().z);
 		}
 
-		for (const Ref<Actor>& object : m_ActiveScene->m_SceneObjects)
+		for (const Ref<Actor>& object : m_ActiveScene->m_Actors)
 		{
 			if (!object->GetPhysicsComponent()->GetCollider() || !object->GetPhysicsComponent()->CollisionDetectionEnabled()) continue;
 

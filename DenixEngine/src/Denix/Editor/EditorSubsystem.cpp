@@ -196,6 +196,7 @@ namespace Denix
 			// Scene Properties
 			if (ImGui::BeginMenu("Tools"))
 			{
+				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_SceneThreaded);
 				if(ImGui::BeginMenu("Reflection"))
 				{
 					for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)

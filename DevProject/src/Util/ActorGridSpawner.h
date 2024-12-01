@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Denix/Core.h"
+#include "Denix/Core/Timer.h"
 #include "Denix/Scene/Scene.h"
 
 using namespace  Denix;
@@ -15,7 +16,9 @@ public:
         std::vector<Ref<Actor>>& _sceneObjects = _scene->GetSceneObjects();
         _sceneObjects.clear();
         _sceneObjects.shrink_to_fit();
-        
+
+        Timer spawnTime;
+        spawnTime.Start();
         // Spawn cube grid
         for (int i = 0; i < GridSize; i++)
         {
@@ -24,6 +27,8 @@ public:
                 _scene->SpawnGameObject<Cube>(glm::vec3(i * 2.5f, j * 2.5f, 0.0f));
             }
         }
+        spawnTime.Stop();
+        DE_LOG(Log, Warn, "Spawned {} Actors to Grid in: {} ms", GridSize * GridSize, spawnTime.GetDuration() * 1000.0f);
     }
 
     void SpawnGridDef(const Ref<Scene>& _scene, const int _count)

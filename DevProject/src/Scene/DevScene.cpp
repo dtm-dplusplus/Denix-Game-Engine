@@ -24,7 +24,11 @@ void DevScene::DebugUI(float _deltaTime)
 	Scene::DebugUI(_deltaTime);
 
 	ImGui::Begin(GetName().c_str());
-	ImGui::Text("Scene Objetcs Size: %d", m_SceneObjects.size());
+	ImGui::Text("Scene Objetcs Size: %d", m_Actors.size());
 	ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, 100);
+	if(ImGui::Button("Spawn Grid"))
+	{
+		m_GridSpawner.SpawnGrid(shared_from_this());
+	}
 	ImGui::End();
 }

@@ -33,16 +33,16 @@ void ThreadScene::Update(float _deltaTime)
 
     // Get the first Actor in the scene and oscillate its position
     static float moveDir= 1.0f;
-    if (m_SceneObjects.size() > 0)
+    /*if (m_Actors.size() > 0)
     {
-        Ref<Actor> actor = m_SceneObjects[0];
+        Ref<Actor> actor = m_Actors[0];
         glm::vec3& position = actor->GetTransformComponent()->GetPosition();
         if (position.x > 2.0f) moveDir = -1.0f;
         else if (position.x < -2.0f) moveDir = 1.0f;
         position.x += moveDir * 3.0f * _deltaTime;        
-    }
+    }*/
 
-    if (DebugCounter) WaitForCounter(*DebugCounter);
+    if (DebugCounter) WaitForCounter(DebugCounter.get());
 }
 
 void ThreadScene::DebugUI(float _deltaTime)
@@ -52,20 +52,16 @@ void ThreadScene::DebugUI(float _deltaTime)
     ImGui::Begin(GetName().c_str());
     ImGui::SeparatorText("Dev Stuff");
     ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, 100);
-    if (ImGui::Button("Spawn Grid"))
-    {
-        m_GridSpawner.SpawnGridDef(shared_from_this(), 20);
-    }
     ImGui::SameLine();
-    if (ImGui::Button("Spawn Grid"))
-    {
-        m_GridSpawner.SpawnGrid(shared_from_this());
-    }
+    if (ImGui::Button("Spawn Grid"))  m_GridSpawner.SpawnGrid(shared_from_this());
+
     ImGui::SeparatorText("Engine Thread Settings");
+    ImGui::DragInt("Wait For Counter Sleep Time", &Thread::s_WaitForCounterSleepTime);
+    ImGui::DragInt("Wait For Job Sleep Time", &Thread::s_WaitForJobSleepTime);
     ImGui::Checkbox("Parallel Loop", RenderParallel.get());
-    ImGui::Checkbox("Dummy Subsystem A", &Engine::Get()->m_DummySubsystemA);
-    ImGui::Checkbox("Dummy Subsystem B", &Engine::Get()->m_DummySubsystemB);
-    ImGui::Checkbox("Parallel Dummy Jobs", &Engine::Get()->m_ParallelDummyJobs);
+    //ImGui::Checkbox("Dummy Subsystem A", &Engine::Get()->m_DummySubsystemA);
+    //ImGui::Checkbox("Dummy Subsystem B", &Engine::Get()->m_DummySubsystemB);
+    //ImGui::Checkbox("Parallel Dummy Jobs", &Engine::Get()->m_ParallelDummyJobs);
     ImGui::SeparatorText("Thread Subsystem");
     static Ref<JobSubsystem> ThreadSubsystem = JobSubsystem::Get();
     ImGui::Checkbox("Enabled", &ThreadSubsystem->IsEnabled());

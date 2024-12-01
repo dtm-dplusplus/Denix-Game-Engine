@@ -10,6 +10,8 @@
 #include <omp.h>
 
 #include "Denix/Profile/ProfileSubsystem.h"
+#include "Denix/Thread/JobSubsystem.h"
+#include "Denix/Thread/ThreadPrimitive.h"
 
 namespace Denix
 {
@@ -209,7 +211,7 @@ namespace Denix
 		DE_PROFILE(Clean Rubbish)
 
 		// Cleanup rubbish objects here. TEMP loop, will be moved to a queue
-		for (const auto& actor : m_ActiveScene->m_SceneObjects)
+		for (const auto& actor : m_ActiveScene->m_Actors)
 		{
 			if(!actor) continue;
 			if (actor->IsRubbish())
@@ -239,7 +241,7 @@ namespace Denix
 						} break;
 					}
 				}
-				std::erase(m_ActiveScene->m_SceneObjects, actor);
+				std::erase(m_ActiveScene->m_Actors, actor);
 			}
 		}
 
@@ -270,25 +272,83 @@ namespace Denix
 		}
 
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
+		DE_PROFILE(Camera Update)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
 			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
 			cam->Update(_deltaTime);
 		}
+		DE_PROFILE_END(Camera Update)
 
+		// Actor Update Metrics
+		// 1 - 0.014ms
+		// 10 - 0.084ms
+		// 25 - 0.2ms
+		// 50 - 0.4ms
+		// 100 - 0.8ms
+		// 500 - 4ms, 3.54 to submit jobs
+
+		// 1 Actor
+		// 0.003ms init job Ref vector
+		// 0.012ms to construct Ref job
+		// 0.001ms submit job
+
+		// 1024 Actors
+		// 0.04ms init job vector
+		// 14.5ms submit jobs
+		// 0.005ms wait for counter
+		// 15.6ms total parllel scene update
+		// 12.2ms total sequential scene update
 		// Scene update implementation
-		// Single Threaded Scene Update
-		for (const auto& actor : m_ActiveScene->m_SceneObjects)
+		if(m_SceneThreaded)
+		{
+			size_t actorCount = m_ActiveScene->m_Actors.size();
+			Ref<Counter> sceneCounter = MakeRef<Counter>(actorCount);
+			std::vector<Ref<JobDeclaration>> jobDecs(actorCount);
+		
+			// Submit jobs for each actor
+			DE_PROFILE(Submit Scene Jobs)
+			for (int i = 0; i < actorCount; i++)
+			{
+				DE_PROFILE(Consruct Job)
+				Ref<Actor> actor = m_ActiveScene->m_Actors[i];
+				jobDecs[i] = MakeRef<JobDeclaration>();
+				jobDecs[i]->m_Name = actor->GetName();
+				jobDecs[i]->m_Priority = Priority::NORMAL;
+				jobDecs[i]->m_WaitCounter = sceneCounter;
+				jobDecs[i]->m_EntryPoint = std::bind(&Actor::Update, actor, _deltaTime);
+				DE_PROFILE_END(Consruct Job)
+				
+				DE_PROFILE(Submit Job)
+				JobSubsystem::AddJob(jobDecs[i]);
+				DE_PROFILE_END(Submit Job)
+			}
+			DE_PROFILE_END(Submit Scene Jobs)
+
+			DE_PROFILE(Wait For Scene jobs)
+			WaitForCounter(sceneCounter.get());
+			DE_PROFILE_END(Wait For Scene jobs)
+		}
+		else
+		{
+			DE_PROFILE(Actor Update)
+			for (auto actor: m_ActiveScene->m_Actors)
+			{
+				actor->Update(_deltaTime);
+			}
+			DE_PROFILE_END(Actor Update)
+		}
+		
+		
+		/*for (const auto& actor : m_ActiveScene->m_Actors)
 		{
 			// Update the Actor -  This will always be here
 			actor->Update(_deltaTime);
-		}
+		}*/
 		
 		// Client Scene Update
 		m_ActiveScene->Update(_deltaTime);
 		
-		if(m_ActiveScene->IsPlaying()) m_ActiveScene->Update(_deltaTime);
-
 		DE_PROFILE_END(Scene Update)
 	}
 
@@ -328,7 +388,7 @@ namespace Denix
 			SceneEmitter << YAML::Key << "m_SceneObjects" << YAML::BeginSeq;
 
 			// Serialize the actors
-			for(auto& actor : _scene->m_SceneObjects)
+			for(auto& actor : _scene->m_Actors)
 			{
 				SceneEmitter << YAML::BeginMap;
 				actor->Serialize(SceneEmitter);

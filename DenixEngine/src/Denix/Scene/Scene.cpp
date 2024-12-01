@@ -54,6 +54,6 @@ namespace Denix
             m_DirLight = CastRef<DirectionalLight>(_obj);
         }
 		
-        m_SceneObjects.push_back(std::move(_obj));
+        m_Actors.push_back(std::move(_obj));
     }
 }

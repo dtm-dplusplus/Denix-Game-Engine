@@ -26,7 +26,7 @@ namespace Denix
         m_Timer->Stop();
 
         // Record the duration
-        m_DurationRecords[m_DurationCount] = m_Timer->GetDuration<std::milli>();
+        m_DurationRecords[m_DurationCount] = m_Timer->GetDuration() * 1000.0f;
         m_Buffer.AddPoint(TimerSubsystem::GetProgramElapsedTime(),  m_DurationRecords[m_DurationCount]);
         
         // Update the minimum and maximum durations

@@ -49,7 +49,15 @@ namespace Denix
         s_JobSubsystem->m_Jobs.push(std::move(job));
     }
         
-
+        /**
+         * 
+         * @param _job
+         */
+    static void AddJob(Ref<JobDeclaration> _job)
+        {
+            if (!_job) return;
+            s_JobSubsystem->m_Jobs.push(std::move(_job));
+        }
 
         static Ref<Thread> GetThread(std::thread::id _id)
         {

@@ -57,17 +57,6 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
     {
         if (ImGui::TreeNode(name.c_str()))
         {
-            if (ImPlot::BeginPlot("##Profiling", nullptr, "Frame Time (ms)", ImVec2(-1, 0), ImPlotFlags_None,
-                                  ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
-            {
-                ImPlot::SetupAxisLimits(ImAxis_X1, elaspedTime - history, elaspedTime, ImGuiCond_Always);
-                ImPlot::SetupAxisLimits(ImAxis_Y1, profile->m_AverageDuration * 0.5f,
-                                        profile->m_MaximumDuration * 1.25f, ImGuiCond_Always);
-                ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
-                ImPlot::PlotLine(name.c_str(), &profile->m_Buffer.Data[0].x, &profile->m_Buffer.Data[0].y,
-                                 profile->m_Buffer.Data.size(), 0, profile->m_Buffer.Offset, 2 * sizeof(float));
-                ImPlot::EndPlot();
-            }
             ImGui::Text("Frame Percentage: %.2f%%", profile->m_FramePercentage * 100.0f);
             ImGui::Text("Duration: %fms", profile->GetDuration());
             ImGui::Text("Minimum Duration: %fms", profile->m_MinimumDuration);

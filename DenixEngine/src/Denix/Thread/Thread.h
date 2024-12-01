@@ -125,17 +125,23 @@ namespace Denix
         bool m_IsWorking;
         bool m_ShouldWork;
 
+        static int s_WaitForCounterSleepTime;
+
+        
+        static int s_WaitForJobSleepTime;
+
         friend class JobSubsystem;
     };
 
-    inline void WaitForCounter(const Counter& _counter)
+    inline void WaitForCounter(Counter* _counter)
     {
-        // Not sure if this is the best way to do this but it works
-        while (_counter.m_Value > 0){}
-        
-        /*std::unique_lock lock(_counter.m_Mutex);
+        if (!_counter) return;
 
-        // Wait until the counter reaches the target value
-        _counter.m_ConditionVar.wait(lock, [&_counter] { return _counter.m_Value.load() == 0; });*/
+        // Wait for the counter to reach zero, then continue. Sleep to reduce CPU usage
+        while (_counter->m_Value > 0)
+        {
+            // Add sleep condition here to reduce CPU usage
+            std::this_thread::sleep_for(std::chrono::nanoseconds(Thread::s_WaitForCounterSleepTime));
+        }
     }
 }

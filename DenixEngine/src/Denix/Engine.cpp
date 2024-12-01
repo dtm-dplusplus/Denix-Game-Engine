@@ -153,11 +153,10 @@ namespace Denix
 			// Update the UI & Editor for any changes
 			Ref<Counter> uiCounter = MakeRef<Counter>(1);
 			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			WaitForCounter(*uiCounter);
-			
-			Ref<Counter> editorCounter = MakeRef<Counter>(1);
-			m_JobSubsystem->AddJob("Editor Update", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			WaitForCounter(*editorCounter);
+			WaitForCounter(uiCounter.get());
+
+			// Run on main due to opengl context when initializing the scene
+			m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 			
 			// Run dummy subsystem whilst rendering & Scene
 			//Ref<Counter> dummyCounter = MakeRef<Counter>(2);
@@ -165,16 +164,17 @@ namespace Denix
 			//m_JobSubsystem->AddJob( "Dummy Subsystem B", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemB, this);
 			
 			// Update the scene. The majority of the client game logic will be here. Do this in parallel with the rendering
-			Ref<Counter> sceneCounter = MakeRef<Counter>(1);
-			m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-
+			//Ref<Counter> sceneCounter = MakeRef<Counter>(1);
+			//m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime); // Try scatter gather pattern for scene update
+			
 			// Update the physics system. Collision detection and resolution will be here
 			//m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			m_RendererSubsystem->RenderScene();
 
-			WaitForCounter(*sceneCounter);
+			//WaitForCounter(*sceneCounter);
 			
 			//WaitForCounter(*dummyCounter);
 			
@@ -190,7 +190,7 @@ namespace Denix
 			// Run the garbage collector
 			Ref<Counter> cleanCounter = MakeRef<Counter>(1);
 			m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, cleanCounter, &SceneSubsystem::CleanRubbish, m_SceneSubsystem.get());
-			WaitForCounter(*cleanCounter);
+			WaitForCounter(cleanCounter.get());
 			
 			m_TimerSubsystem->EndFrame();
 		}

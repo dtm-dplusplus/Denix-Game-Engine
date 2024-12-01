@@ -41,7 +41,7 @@ namespace Denix
 		{
 			m_ActiveCamera = m_ViewportCamera;
 
-			for (const auto& obj : m_SceneObjects)
+			for (const auto& obj : m_Actors)
 			{
 				obj->BeginScene();
 
@@ -66,7 +66,7 @@ namespace Denix
 
 		virtual void EndScene()
 		{
-			for (const auto& obj : m_SceneObjects)
+			for (const auto& obj : m_Actors)
 			{
 				obj->EndScene();
 			}
@@ -78,7 +78,7 @@ namespace Denix
 		{
 			m_IsPlaying = true;
 
-			for (const auto& obj : m_SceneObjects)
+			for (const auto& obj : m_Actors)
 			{
 				obj->BeginPlay();
 			}
@@ -88,7 +88,7 @@ namespace Denix
 		{
 			m_IsPlaying = false;
 
-			for (const auto& obj : m_SceneObjects)
+			for (const auto& obj : m_Actors)
 			{
 				obj->EndPlay();
 			}
@@ -168,9 +168,9 @@ namespace Denix
 						m_DirLight = CastRef<DirectionalLight>(obj);
 					}
 
-					m_SceneObjects.push_back(std::move(obj));
+					m_Actors.push_back(std::move(obj));
 
-					return CastRef<T>(m_SceneObjects.back());
+					return CastRef<T>(m_Actors.back());
 				}
 				DE_LOG(LogScene, Error, "Failed to create object of type: {}", typeid(T).name());
 			}
@@ -186,9 +186,9 @@ namespace Denix
 
 		void RemoveSceneObject(const Ref<Actor>& obj)
 		{
-			if (const auto it = std::ranges::find(m_SceneObjects, obj); it != m_SceneObjects.end())
+			if (const auto it = std::ranges::find(m_Actors, obj); it != m_Actors.end())
 			{
-				m_SceneObjects.erase(it);
+				m_Actors.erase(it);
 			}
 		}
 
@@ -201,7 +201,7 @@ namespace Denix
 
 		Ref<Camera> GetGameCamera() const
 		{
-			for (const auto& obj : m_SceneObjects)
+			for (const auto& obj : m_Actors)
 			{
 				if (typeid(Camera) == typeid(*obj))
 				{
@@ -215,12 +215,12 @@ namespace Denix
 		Ref<DirectionalLight> GetDirectionalLight() { return m_DirLight; }
 		void SetDirectionalLight(const Ref<DirectionalLight>& _dirLight) { m_DirLight = _dirLight; }
 
-		std::vector<Ref<Actor>> GetSceneObjects() const { return m_SceneObjects; }
-		std::vector<Ref<Actor>>& GetSceneObjects() { return m_SceneObjects; }
+		std::vector<Ref<Actor>> GetSceneObjects() const { return m_Actors; }
+		std::vector<Ref<Actor>>& GetSceneObjects() { return m_Actors; }
 		
 		Ref<Actor> GetGameObject(const std::string& _name) const
 		{
-			for (const auto& obj : m_SceneObjects)
+			for (const auto& obj : m_Actors)
 			{
 				if (obj->GetName() == _name)
 				{
@@ -234,7 +234,7 @@ namespace Denix
 		template<class T>
 		Ref<Actor> GetGameObjectByClass()
 		{
-			for (const auto& obj : m_SceneObjects)
+			for (const auto& obj : m_Actors)
 			{
 				if (typeid(T) == typeid(*obj))
 				{
@@ -250,7 +250,7 @@ namespace Denix
 		{
 			std::vector<Ref<Actor>> actors;
 
-			for (const auto& obj : m_SceneObjects)
+			for (const auto& obj : m_Actors)
 			{
 				if (typeid(T) == typeid(*obj))
 				{
@@ -284,7 +284,7 @@ namespace Denix
 		float m_Gravity = 9.81f;
 
 		/** List of Objects in the scene */
-		std::vector<Ref<Actor>> m_SceneObjects;
+		std::vector<Ref<Actor>> m_Actors;
 
 		Ref<Camera> m_ViewportCamera;
 

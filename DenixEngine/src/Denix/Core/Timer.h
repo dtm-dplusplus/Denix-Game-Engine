@@ -14,18 +14,10 @@ namespace Denix
         void Start();
         void Stop();
 
-       template<typename Period = std::chrono::seconds>
+       //template<typename T = std::chrono::seconds>
         float GetDuration() const
         {
-           // Return 0 if the end time is not set
-           if(m_EndTime == std::chrono::time_point<std::chrono::system_clock>())
-           {
-               DE_LOG(LogCore, Error, "{} end time not set", GetName())
-                return 0.0f;
-           }
-               
-           
-            return std::chrono::duration<float, Period>(m_EndTime - m_StartTime).count();
+            return std::chrono::duration<float>(m_EndTime - m_StartTime).count();
         }
 
       template<typename Period = std::chrono::seconds>

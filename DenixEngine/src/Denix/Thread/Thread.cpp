@@ -3,6 +3,9 @@
 
 #include "JobSubsystem.h"
 
+int Denix::Thread::s_WaitForCounterSleepTime = 10000;
+int Denix::Thread::s_WaitForJobSleepTime = 10000;
+
 void Denix::Thread::Work()
 {
     while (m_ShouldWork)
@@ -23,6 +26,6 @@ void Denix::Thread::Work()
         }
 
         // Wait briefly to allow jobs to populate the queue and be prioritized
-        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+        std::this_thread::sleep_for(std::chrono::nanoseconds(s_WaitForJobSleepTime));
     }
 }
