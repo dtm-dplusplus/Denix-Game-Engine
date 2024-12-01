@@ -8,7 +8,7 @@ namespace Denix
 {
 	class Scene;
 	class SceneOrganizerWidget;
-	class GameObjectDetailsWidget;
+	class ActorDetailsWidget;
 	class AssetBrowserWidget;
 	class InputDebuggerWidget;
 	class EngineProfilerWidget;
@@ -46,7 +46,7 @@ namespace Denix
 
 		Ref<SceneOrganizerWidget> m_SceneOrganizerWidget;
 		
-		Ref<GameObjectDetailsWidget> m_GameObjectDetailsWidget;
+		Ref<ActorDetailsWidget> m_ActorDetailsWidget;
 
 		Ref<AssetBrowserWidget> m_AssetBrowserWidget;
 

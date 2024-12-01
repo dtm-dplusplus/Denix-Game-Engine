@@ -14,7 +14,7 @@ namespace Denix
 		/**
 		 *  @brief Constructor for the Camera class
 		 * @param _position Option to set the position of the camera 
-		 * @param _objInit ObjectInitializer for the GameObject 
+		 * @param _objInit ObjectInitializer for the Actor 
 		 */
 		Camera(const ObjectInit& _objInit = {"Camera"}, const glm::vec3 _position = {0.0f, 5.0f, 25.0f}) : Actor(ObjectInit(_objInit))
 		{

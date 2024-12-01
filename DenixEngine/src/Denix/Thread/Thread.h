@@ -74,7 +74,7 @@ namespace Denix
             {
                 m_Thread.join();
                 m_IsWorking = false;
-                DE_LOG(LogThread, Info, "Thread {} joined", m_ThreadIDInt)
+                DE_LOG(LogThread, Trace, "Thread {} joined", m_ThreadIDInt)
             }
             else
             {

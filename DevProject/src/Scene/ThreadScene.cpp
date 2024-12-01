@@ -17,14 +17,6 @@ void ThreadScene::BeginScene()
 
     RenderParallel = Engine::Get()->m_ParallelLoop;
    
-    /*for (int i = 0; i < 30; i++)
-    {
-        for (int j = 0; j < 30; j++)
-        {
-           SpawnGameObject<Cube>(glm::vec3(i * 2.5f, j * 2.5f, 0.0f));
-            DE_LOG(Log, Info, "Spawned Cube {} {}", i, j);
-        }
-    }*/
 }
 
 void ThreadScene::Update(float _deltaTime)
@@ -32,7 +24,7 @@ void ThreadScene::Update(float _deltaTime)
     Scene::Update(_deltaTime);
 
     // Get the first Actor in the scene and oscillate its position
-    static float moveDir= 1.0f;
+    //static float moveDir= 1.0f;
     /*if (m_Actors.size() > 0)
     {
         Ref<Actor> actor = m_Actors[0];

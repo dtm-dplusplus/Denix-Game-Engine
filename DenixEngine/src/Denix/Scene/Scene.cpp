@@ -11,7 +11,7 @@ namespace Denix
     {
     }
 
-    void Scene::SpawnGameObject(const Ref<Actor>& _obj)
+    void Scene::SpawnActor(const Ref<Actor>& _obj)
     {
         if (m_IsOpen)
         {

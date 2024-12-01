@@ -114,7 +114,7 @@ namespace Denix
 				}
 			}
 
-			// Draw Collision over gameobject if set to visible
+			// Draw Collision over actor if set to visible
 			//if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
 		}
 	}
@@ -197,7 +197,7 @@ namespace Denix
 				}
 			}
 
-			// Draw Collision over gameobject if set to visible
+			// Draw Collision over actor if set to visible
 			if (object->GetPhysicsComponent()->IsColliderVisible()) RenderCollider(object->GetPhysicsComponent());
 		}*/
 	}

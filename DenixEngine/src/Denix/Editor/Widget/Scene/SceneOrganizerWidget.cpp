@@ -4,7 +4,7 @@
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Actor.h"
-#include "Denix/Editor/Widget/Scene/AddGameObjectWidget.h"
+#include "Denix/Editor/Widget/Scene/AddActorWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneSettingsWidget.h"
 
 namespace Denix
@@ -13,7 +13,7 @@ namespace Denix
     {
         m_SceneRef = _scene;
         m_SelectionIndex = -1;
-        m_AddGameObjectWidget = MakeRef<AddGameObjectWidget>(_scene);
+        m_AddActorWidget = MakeRef<AddActorWidget>(_scene);
         m_SceneSettingsWidget = MakeRef<SceneSettingsWidget>(_scene);
     }
 
@@ -30,11 +30,11 @@ namespace Denix
         ImGui::Begin(GetName().c_str());
         ImGui::SeparatorText(m_SceneRef.lock()->GetName().c_str());
         
-        // Update AddGameObjectWidget. Set the selected object to the last object created
-        m_AddGameObjectWidget->Update(_deltaTime);
-        if (m_AddGameObjectWidget->m_CreatedGameObject)
+        // Update AddActorWidget. Set the selected object to the last object created
+        m_AddActorWidget->Update(_deltaTime);
+        if (m_AddActorWidget->m_CreatedActor)
         {
-            m_AddGameObjectWidget->m_CreatedGameObject = false;
+            m_AddActorWidget->m_CreatedActor = false;
             SetSelection(sceneObjects.size() - 1);
         }
         
@@ -73,7 +73,7 @@ namespace Denix
     void SceneOrganizerWidget::SceneChangedEvent(const WRef<Scene>& _scene)
     {
         SceneEditorWidget::SceneChangedEvent(_scene);
-        m_AddGameObjectWidget->m_SceneRef = _scene;
+        m_AddActorWidget->m_SceneRef = _scene;
         ResetSelection();
     }
 

@@ -7,15 +7,15 @@ namespace Denix
     class Scene;
     class Actor;
 
-    class AddGameObjectWidget
+    class AddActorWidget
     {
     public:
-        AddGameObjectWidget(const WRef<Scene>& _scene);
+        AddActorWidget(const WRef<Scene>& _scene);
 
         void Update(float _deltaTime);
 
         WRef<Scene> m_SceneRef;
-        bool m_CreatedGameObject;
+        bool m_CreatedActor;
     };
 }
 

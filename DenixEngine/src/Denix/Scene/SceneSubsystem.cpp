@@ -430,11 +430,11 @@ namespace Denix
 		}
         	
 		// Load the scene objects
-		std::vector<Ref<Actor>> sceneObjects;
-		DeserializeSceneObjects(sceneNode, sceneObjects);
+		std::vector<Ref<Actor>> Actors;
+		DeserializeSceneObjects(sceneNode, Actors);
 		
-		for (const auto& newGameObject : sceneObjects)
-			_scene->SpawnGameObject(newGameObject);
+		for (const auto& newActor : Actors)
+			_scene->SpawnActor(newActor);
 		
 		DE_LOG(LogScene, Info, "Deserialized scene: {}", _scene->GetName())
 	}
@@ -506,7 +506,7 @@ namespace Denix
 	{
 		if (s_SceneSubsystem->m_ActiveScene)
 		{
-			s_SceneSubsystem->m_ActiveScene->SpawnGameObject(_object);
+			s_SceneSubsystem->m_ActiveScene->SpawnActor(_object);
 		}
 		else
 		{

@@ -110,7 +110,10 @@ namespace Denix
 
 		glm::mat4 m_Model = glm::mat4(1.f);
 		glm::mat3 m_RotationMatrix = glm::mat3(1.f);
+		
 		friend class Actor;
+		friend class Scene;
+		friend class SceneSubsystem;
 		friend class PhysicsComponent;
 		friend class PhysicsSubsystem;
 	};

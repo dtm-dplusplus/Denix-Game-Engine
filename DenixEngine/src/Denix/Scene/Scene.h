@@ -109,80 +109,42 @@ namespace Denix
 		bool IsPlaying() const { return m_IsPlaying; }
 
 		template <class T = Actor, typename... Args>
-		Ref<T> SpawnGameObject(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f))
+		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f))
 		{
-			try
+			// Check if T is derived from Actor
+			static_assert(std::is_base_of_v<Actor, T>, "T must be derived from Actor");
+			
+			if (Ref<Actor> obj = MakeRef<T>(std::forward<Args>(_args)...))
 			{
-				if (Ref<Actor> obj = MakeRef<T>(std::forward<Args>(_args)...))
+				// Validate Name. We cannont have two objects with the same name
+				if (GetActorByName(obj->m_Name))
 				{
-					// Validate Name. We cannont have two objects with the same name
-					if (GetGameObject(obj->GetName()))
-					{
-						int copy = 1;
-						while(GetGameObject(obj->GetName() + std::to_string(copy))) copy++;
-						obj->SetName(obj->GetName() + std::to_string(copy));
-					}
-					
-					// Set Transform Component
-					obj->m_TransformComponent->SetPosition(_position);
-					obj->m_TransformComponent->SetRotation(_rotation);
-					
-					if (m_IsOpen)
-					{
-						obj->BeginScene();
-
-						if (m_IsPlaying)
-							obj->BeginPlay();
-					}
-
-					// Type Checking for lights
-					if (typeid(PointLight) == typeid(*obj))
-					{
-						if (m_PointLights.size() < MAX_POINT_LIGHTS)
-						{
-							m_PointLights.push_back(CastRef<PointLight>(obj));
-						}
-						else
-						{
-							DE_LOG(LogScene, Warn, "Max Point Lights Reached")
-						}
-					}
-					else if (typeid(SpotLight) == typeid(*obj))
-					{
-						if (m_SpotLights.size() < MAX_SPOT_LIGHTS)
-						{
-							m_SpotLights.push_back(CastRef<SpotLight>(obj));
-						}
-						else
-						{
-							DE_LOG(LogScene, Warn, "Max Spot Lights Reached")
-						}
-					}
-					else if (typeid(DirectionalLight) == typeid(*obj))
-					{
-						// Check if the scene already has a directional light
-						if (m_DirLight)
-						{
-							DE_LOG(LogEditor, Warn, "Scene already has a directional light")
-						}
-						m_DirLight = CastRef<DirectionalLight>(obj);
-					}
-
-					m_Actors.push_back(std::move(obj));
-
-					return CastRef<T>(m_Actors.back());
+					int copy = 1;
+					while(GetActorByName(obj->m_Name + std::to_string(copy))) copy++;
+					obj->m_Name+= std::to_string(copy);
 				}
-				DE_LOG(LogScene, Error, "Failed to create object of type: {}", typeid(T).name());
+					
+				// Set Transform Component
+				obj->m_TransformComponent->m_Position = _position;
+				obj->m_TransformComponent->m_Rotation = _rotation;
+
+				// Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
+				obj->BeginScene();
+				if (m_IsPlaying) obj->BeginPlay();						
+
+				// Add the object to the scene
+				m_Actors.push_back(std::move(obj));
+
+				// Retrun the actor reference as it's derived type
+				return CastRef<T>(m_Actors.back());
 			}
-			catch (const std::exception& e)
-			{
-				DE_LOG(LogScene, Error, "Failed to spawn Actor: {}", e.what());
-			}
+			
+			DE_LOG(LogScene, Error, "Failed to create object of type: {}", typeid(T).name());
 
 			return nullptr;
 		}
 		
-		void SpawnGameObject(const Ref<Actor>& _obj);
+		void SpawnActor(const Ref<Actor>& _obj);
 
 		void RemoveSceneObject(const Ref<Actor>& obj)
 		{
@@ -218,7 +180,7 @@ namespace Denix
 		std::vector<Ref<Actor>> GetSceneObjects() const { return m_Actors; }
 		std::vector<Ref<Actor>>& GetSceneObjects() { return m_Actors; }
 		
-		Ref<Actor> GetGameObject(const std::string& _name) const
+		Ref<Actor> GetActorByName(const std::string& _name) const
 		{
 			for (const auto& obj : m_Actors)
 			{
@@ -232,7 +194,7 @@ namespace Denix
 		}
 
 		template<class T>
-		Ref<Actor> GetGameObjectByClass()
+		Ref<Actor> GetActorByClass()
 		{
 			for (const auto& obj : m_Actors)
 			{

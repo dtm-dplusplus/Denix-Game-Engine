@@ -1,7 +1,7 @@
 #include "EditorSubsystem.h"
 
 #include "Denix.h"
-#include "Denix/Editor/Widget/Scene/GameObjectDetailsWidget.h"
+#include "Denix/Editor/Widget/Scene/ActorDetailsWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneOrganizerWidget.h"
 #include "Denix/Editor/Widget/AssetBrowserWidget.h"
 #include "Denix/Editor/Widget/EngineProfilerWidget.h"
@@ -27,7 +27,7 @@ namespace Denix
 
 		// Init Editor Widgets
 		m_SceneOrganizerWidget = MakeRef<SceneOrganizerWidget>(m_ActiveScene);
-		m_GameObjectDetailsWidget = MakeRef<GameObjectDetailsWidget>();
+		m_ActorDetailsWidget = MakeRef<ActorDetailsWidget>();
 		m_AssetBrowserWidget = MakeRef<AssetBrowserWidget>();
 		DE_LOG(LogEditor, Info, "Editor Subsystem Initialized")
 	}
@@ -59,10 +59,10 @@ namespace Denix
 
 		// Scene Widgets
 		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->Update(0.0f);
-		if (m_GameObjectDetailsWidget)
+		if (m_ActorDetailsWidget)
 		{
-			m_GameObjectDetailsWidget->m_GameObjectRef = m_SceneOrganizerWidget->GetSelectedObject();
-			m_GameObjectDetailsWidget->Update(0.0f);
+			m_ActorDetailsWidget->m_ActorRef = m_SceneOrganizerWidget->GetSelectedObject();
+			m_ActorDetailsWidget->Update(0.0f);
 		}
 		
 		if(m_PerformanceSettingsWidget) m_PerformanceSettingsWidget->Update(_deltaTime);
@@ -226,6 +226,6 @@ namespace Denix
 	{
 		m_ActiveScene = _scene;
 		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->SceneChangedEvent(_scene);
-		if (m_GameObjectDetailsWidget) m_GameObjectDetailsWidget->m_GameObjectRef.reset();
+		if (m_ActorDetailsWidget) m_ActorDetailsWidget->m_ActorRef.reset();
 	}
 }

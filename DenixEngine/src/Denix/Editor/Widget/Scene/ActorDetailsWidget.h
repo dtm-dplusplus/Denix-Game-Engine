@@ -10,10 +10,10 @@ namespace Denix
     class Material;
     class ShaderEditor;
     
-    class GameObjectDetailsWidget: public EditorWidget
+    class ActorDetailsWidget: public EditorWidget
     {
     public:
-        GameObjectDetailsWidget();
+        ActorDetailsWidget();
 
         void Update(float _deltaTime) override;
         //void Begin() override;
@@ -32,7 +32,7 @@ namespace Denix
         void TransformWidget(const Ref<Actor>& _object) const;
         void CameraWidget(const Ref<Actor>& _camera) const;
 
-        WRef<Actor> m_GameObjectRef;
+        WRef<Actor> m_ActorRef;
         Ref<ShaderEditor> m_ShaderEditor;
     };
 }

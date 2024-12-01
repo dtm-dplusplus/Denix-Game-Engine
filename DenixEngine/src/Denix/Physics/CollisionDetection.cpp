@@ -53,8 +53,8 @@ namespace Denix
 				{
 					collisionEvent.IsCollision = true;
 					collisionEvent.ColData.Normal = { 0.0f, 1.0f, 0.0f };
-					collisionEvent.Owner = SceneSubsystem::GetActiveScene()->GetGameObject(_compA->GetParentObjectName());
-					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_compB->GetParentObjectName());
+					collisionEvent.Owner = SceneSubsystem::GetActiveScene()->GetActorByName(_compA->GetParentObjectName());
+					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetActorByName(_compB->GetParentObjectName());
 				}
 				
 			} break;
@@ -91,8 +91,8 @@ namespace Denix
 				
 				if (collisionEvent.IsCollision)
 				{
-					collisionEvent.Owner = SceneSubsystem::GetActiveScene()->GetGameObject(_compA->GetParentObjectName());
-					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_compB->GetParentObjectName());
+					collisionEvent.Owner = SceneSubsystem::GetActiveScene()->GetActorByName(_compA->GetParentObjectName());
+					collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetActorByName(_compB->GetParentObjectName());
 				}
 	
 				break;
@@ -120,8 +120,8 @@ namespace Denix
 		{
 			collisionEvent.IsCollision = true;
 			collisionEvent.ColData.Normal = { 0.0f, 1.0f, 0.0f }; // Hard Coded Normal
-			collisionEvent.Owner = SceneSubsystem::GetActiveScene()->GetGameObject(_compA->GetParentObjectName());
-			collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetGameObject(_compB->GetParentObjectName());
+			collisionEvent.Owner = SceneSubsystem::GetActiveScene()->GetActorByName(_compA->GetParentObjectName());
+			collisionEvent.Other = SceneSubsystem::GetActiveScene()->GetActorByName(_compB->GetParentObjectName());
 		}
 	}
 

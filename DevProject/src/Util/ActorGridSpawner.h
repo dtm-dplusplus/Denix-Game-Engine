@@ -24,7 +24,7 @@ public:
         {
             for (int j = 0; j < GridSize; j++)
             {
-                _scene->SpawnGameObject<Cube>(glm::vec3(i * 2.5f, j * 2.5f, 0.0f));
+                _scene->SpawnActor<Cube>(glm::vec3(i * 2.5f, j * 2.5f, 0.0f));
             }
         }
         spawnTime.Stop();
@@ -44,7 +44,7 @@ public:
         {
             for (int j = 0; j < _count; j++)
             {
-                _scene->SpawnGameObject<Cube>(glm::vec3(i * 2.5f, j * 2.5f, 0.0f));
+                _scene->SpawnActor<Cube>(glm::vec3(i * 2.5f, j * 2.5f, 0.0f));
             }
         }
     }

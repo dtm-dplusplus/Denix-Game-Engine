@@ -6,7 +6,7 @@ namespace Denix
 {
     class Scene;
     class Actor;
-    class AddGameObjectWidget;
+    class AddActorWidget;
     class SceneSettingsWidget;
 
     class SceneOrganizerWidget: public SceneEditorWidget
@@ -24,7 +24,7 @@ namespace Denix
         int m_SelectionIndex;
 
     private:
-        Ref<AddGameObjectWidget> m_AddGameObjectWidget;
+        Ref<AddActorWidget> m_AddActorWidget;
         Ref<SceneSettingsWidget> m_SceneSettingsWidget;
     };
 }
