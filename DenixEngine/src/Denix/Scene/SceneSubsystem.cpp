@@ -304,25 +304,11 @@ namespace Denix
 		{
 			size_t actorCount = m_ActiveScene->m_Actors.size();
 			Ref<Counter> sceneCounter = MakeRef<Counter>(actorCount);
-			std::vector<Ref<JobDeclaration>> jobDecs(actorCount);
 		
 			// Submit jobs for each actor
 			DE_PROFILE(Submit Scene Jobs)
-			for (int i = 0; i < actorCount; i++)
-			{
-				DE_PROFILE(Consruct Job)
-				Ref<Actor> actor = m_ActiveScene->m_Actors[i];
-				jobDecs[i] = MakeRef<JobDeclaration>();
-				jobDecs[i]->m_Name = actor->GetName();
-				jobDecs[i]->m_Priority = Priority::NORMAL;
-				jobDecs[i]->m_WaitCounter = sceneCounter;
-				jobDecs[i]->m_EntryPoint = std::bind(&Actor::Update, actor, _deltaTime);
-				DE_PROFILE_END(Consruct Job)
-				
-				DE_PROFILE(Submit Job)
-				JobSubsystem::AddJob(jobDecs[i]);
-				DE_PROFILE_END(Submit Job)
-			}
+			for (auto& actor : m_ActiveScene->m_Actors)
+				JobSubsystem::AddJob("Actor Update", Priority::NORMAL, sceneCounter, &Actor::Update, actor, _deltaTime);
 			DE_PROFILE_END(Submit Scene Jobs)
 
 			DE_PROFILE(Wait For Scene jobs)

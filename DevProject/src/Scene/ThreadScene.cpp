@@ -54,22 +54,23 @@ void ThreadScene::DebugUI(float _deltaTime)
     //ImGui::Checkbox("Dummy Subsystem A", &Engine::Get()->m_DummySubsystemA);
     //ImGui::Checkbox("Dummy Subsystem B", &Engine::Get()->m_DummySubsystemB);
     //ImGui::Checkbox("Parallel Dummy Jobs", &Engine::Get()->m_ParallelDummyJobs);
-    ImGui::SeparatorText("Thread Subsystem");
-    static Ref<JobSubsystem> ThreadSubsystem = JobSubsystem::Get();
-    ImGui::Checkbox("Enabled", &ThreadSubsystem->IsEnabled());
-    ImGui::Text("Thread count: %d", ThreadSubsystem->m_WorkerThreads.size());
-    ImGui::Text("System Thread count: %d", ThreadSubsystem->m_SystemThreadCount);
+    ImGui::SeparatorText("Job Subsystem");
+    static Ref<JobSubsystem> jobSubsystem = JobSubsystem::Get();
+    ImGui::Checkbox("Enabled", &jobSubsystem->IsEnabled());
+    ImGui::Checkbox("Construct Lambda Job", &jobSubsystem->m_ConstructLambaJob);
+    ImGui::Text("Thread count: %d", jobSubsystem->m_WorkerThreads.size());
+    ImGui::Text("System Thread count: %d", jobSubsystem->m_SystemThreadCount);
     ImGui::Separator();
-    ImGui::Text("Jobs queued: %d", ThreadSubsystem->m_Jobs.size());
-    ImGui::Text("Jobs done: %d", ThreadSubsystem->m_JobsDone);
+    ImGui::Text("Jobs queued: %d", jobSubsystem->m_Jobs.size());
+    ImGui::Text("Jobs done: %d", jobSubsystem->m_JobsDone);
 
-    for (const auto& thread : ThreadSubsystem->m_WorkerThreads)
+    for (const auto& thread : jobSubsystem->m_WorkerThreads)
     {
         ImVec4 color = thread->m_IsWorking? ImVec4(0.2f, 0.8f, 0.2f, 1.0f) : ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
         ImGui::ColorButton("##ThreadColor", color, ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
-        if (thread != ThreadSubsystem->m_WorkerThreads.back()) ImGui::SameLine();
+        if (thread != jobSubsystem->m_WorkerThreads.back()) ImGui::SameLine();
     }
-    for (const auto& thread : ThreadSubsystem->m_WorkerThreads)
+    for (const auto& thread : jobSubsystem->m_WorkerThreads)
     {
         ImGui::Text("Thread ID: %d", thread->m_ThreadIDInt);
         ImGui::Text("Jobs Done: %d", thread->m_JobsDone);
@@ -81,14 +82,14 @@ void ThreadScene::DebugUI(float _deltaTime)
     if (ImGui::Button("Add Jobs AB"))
     {
         DebugCounter = MakeRef<Counter>(2);
-        for (int i = 0; i < 20; i++) ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, DebugCounter,&ThreadScene::JobA, this);
-        ThreadSubsystem->AddJob("Test Job B", Priority::HIGH, DebugCounter,&ThreadScene::JobB, this);
+        for (int i = 0; i < 20; i++) jobSubsystem->AddJob("Test Job A", Priority::NORMAL, DebugCounter,&ThreadScene::JobA, this);
+        jobSubsystem->AddJob("Test Job B", Priority::HIGH, DebugCounter,&ThreadScene::JobB, this);
     }
 
     if (ImGui::Button("Add Jobs A Arg"))
     {
         DebugCounter = MakeRef<Counter>(1);
-        ThreadSubsystem->AddJob("Test Job A", Priority::NORMAL, DebugCounter,&ThreadScene::JobAArg, this, 1);
+        jobSubsystem->AddJob("Test Job A", Priority::NORMAL, DebugCounter,&ThreadScene::JobAArg, this, 1);
     }
     // Frame Graph
     //Histogram/ ImGui Histogram

@@ -4,9 +4,9 @@
 #include "Denix/Core.h"
 #include "Denix/Core/Timer.h"
 
-namespace  Denix
+namespace Denix
 {
-      enum class Priority
+    enum class Priority
     {
         LATENT, NORMAL, HIGH, CRITICAL
     };
@@ -31,7 +31,11 @@ namespace  Denix
     struct Counter
     {
         Counter() = default;
-        Counter(int _value) : m_Value(_value) {}
+
+        Counter(int _value) : m_Value(_value)
+        {
+        }
+
         void Increment()
         {
             ++m_Value;
@@ -42,21 +46,23 @@ namespace  Denix
             --m_Value;
             //m_ConditionVar.notify_all();
         }
-        
+
         std::atomic_int m_Value{0};
         //std::mutex m_Mutex;
-       // std::condition_variable m_ConditionVar;
+        // std::condition_variable m_ConditionVar;
     };
-    
+
     struct JobDeclaration
     {
         JobDeclaration() = default;
-        
-        template <typename Func>
-        JobDeclaration(std::string _name, Priority _priority, const Ref<Counter>& _waitCounter, Func&& _entryPoint)
-            : m_Name(std::move(_name)), m_WaitCounter(_waitCounter), m_EntryPoint(std::forward<Func>(_entryPoint)), m_Priority(_priority)
+
+        JobDeclaration(const std::string& name, Priority priority, Ref<Counter> waitCounter,
+                       std::function<void()> entryPoint)
+            : m_Name(name), m_EntryPoint(std::move(entryPoint)), m_Priority(priority),
+              m_WaitCounter(std::move(waitCounter)), m_Timer(ObjectInit(name))
         {
         }
+
 
         /**
          * @brief Job name. Used for debugging purposes

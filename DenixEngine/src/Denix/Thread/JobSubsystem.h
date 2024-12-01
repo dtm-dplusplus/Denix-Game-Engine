@@ -2,6 +2,7 @@
 #include "Denix/System/Subsystem.h"
 
 #include "Denix/Thread/Thread.h"
+#include <queue>
 #include <concurrent_priority_queue.h>
 
 namespace Denix
@@ -40,25 +41,30 @@ namespace Denix
         template <typename Func, typename... Args>
     static void AddJob(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter, Func&& _func, Args&&... _args)
     {
-            Ref<JobDeclaration> job = MakeRef<JobDeclaration>();
-            job->m_Name = _name;
-            job->m_Priority = _priority;
-            job->m_WaitCounter =  _waitCounter? _waitCounter : MakeRef<Counter>(1);
-            job->m_EntryPoint = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...);
-            
-        s_JobSubsystem->m_Jobs.push(std::move(job));
-    }
-        
-        /**
-         * 
-         * @param _job
-         */
-    static void AddJob(Ref<JobDeclaration> _job)
+            Ref<JobDeclaration> job;
+        if (s_JobSubsystem->m_ConstructLambaJob)
         {
-            if (!_job) return;
-            s_JobSubsystem->m_Jobs.push(std::move(_job));
+            job =  MakeRef<JobDeclaration>(
+                _name,
+                _priority,
+                _waitCounter ? _waitCounter : MakeRef<Counter>(1),
+                static_cast<std::function<void()>>([func = std::forward<Func>(_func), args = std::make_tuple(std::forward<Args>(_args)...)]() mutable {
+                    std::apply(func, std::move(args));
+                }));
+        }
+        else
+        {
+            job =  MakeRef<JobDeclaration>(
+                _name,
+                _priority,
+                _waitCounter ? _waitCounter : MakeRef<Counter>(1),
+                std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
         }
 
+            s_JobSubsystem->m_Jobs.push(std::move(job));
+    }
+        
+    
         static Ref<Thread> GetThread(std::thread::id _id)
         {
            for (const auto& thread: s_JobSubsystem->m_WorkerThreads)
@@ -79,7 +85,10 @@ namespace Denix
         };
 
         Concurrency::concurrent_priority_queue <Ref<JobDeclaration>, JobComparator> m_Jobs;
+        //std::priority_queue<Ref<JobDeclaration>, std::vector<Ref<JobDeclaration>>, JobComparator> m_Jobs;
+        std::atomic_bool m_QueueFree = true;
         size_t m_JobsDone;
+        bool m_ConstructLambaJob = true;
 
         static Ref<JobSubsystem> Get() { return s_JobSubsystem->shared_from_this(); }
         static JobSubsystem* s_JobSubsystem;

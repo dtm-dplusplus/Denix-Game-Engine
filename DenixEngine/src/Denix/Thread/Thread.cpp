@@ -3,8 +3,8 @@
 
 #include "JobSubsystem.h"
 
-int Denix::Thread::s_WaitForCounterSleepTime = 10000;
-int Denix::Thread::s_WaitForJobSleepTime = 10000;
+int Denix::Thread::s_WaitForCounterSleepTime = 50;
+int Denix::Thread::s_WaitForJobSleepTime = 100;
 
 void Denix::Thread::Work()
 {
