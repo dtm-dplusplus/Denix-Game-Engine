@@ -5,27 +5,33 @@
 
 int Denix::Thread::s_WaitForCounterSleepTime = 1;
 int Denix::Thread::s_WaitForJobSleepTime = 110;
+bool Denix::Thread::s_ShouldProfile = false;
 
 void Denix::Thread::Work()
 {
     while (m_ShouldWork)
     {
-        m_Job = JobSubsystem::GetJob();
+        m_Job = JobSubsystem::RequestJob();
         if (m_Job)
         {
-            m_IsWorking = true;
+            // Execute the job
             m_Job->m_Timer.Start();
             m_Job->m_EntryPoint();
             m_Job->m_Timer.Stop();
             m_Job->m_WaitCounter->Decrement();
-            m_Job = nullptr;
 
-            // Let the scheduler know that the job is done
-            m_JobsDone++;
-            m_IsWorking = false;
+            // Profile the thread
+            if (s_ShouldProfile)
+            {
+                m_JobExecCount++;
+                m_ThreadExecTime += m_Job->m_Timer.GetElapsed();
+                m_ThreadSleepTime += static_cast<float>(s_WaitForJobSleepTime) * 0.000000001f; // Convert to seconds. We sleep right after this loop so we can add the sleep time here
+            }
+
+            m_Job = nullptr;
         }
 
-        // Wait briefly to allow jobs to populate the queue and be prioritized
+        // Wait briefly to allow jobs to populate the queue and be prioritized & Reduce CPU usage
         std::this_thread::sleep_for(std::chrono::nanoseconds(s_WaitForJobSleepTime));
     }
 }

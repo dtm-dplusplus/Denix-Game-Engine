@@ -16,9 +16,9 @@ namespace Denix
     public:
         Thread()
         {
-            m_IsWorking = false;
             m_ShouldWork = true;
             m_ThreadIDInt = 0;
+            m_JobExecCount = 0;
         }
 
         ~Thread()
@@ -73,7 +73,6 @@ namespace Denix
             if (m_Thread.joinable())
             {
                 m_Thread.join();
-                m_IsWorking = false;
                 DE_LOG(LogThread, Trace, "Thread {} joined", m_ThreadIDInt)
             }
             else
@@ -120,9 +119,9 @@ namespace Denix
         std::mutex m_Mutex;
         
         Ref<JobDeclaration> m_Job;
-        int m_JobsDone = 0;
 
-        bool m_IsWorking;
+        
+        
         bool m_ShouldWork;
 
         static int s_WaitForCounterSleepTime;
@@ -130,10 +129,33 @@ namespace Denix
         
         static int s_WaitForJobSleepTime;
 
+
+        // Thread Profiling - These are not thread safe and should be managed by the JobSubsystem
+        /**
+         * @brief Should the thread profile itself. Global setting
+         */
+        static bool s_ShouldProfile;
+
+        
+        /**
+         * @brief Number of jobs executed by the thread
+         */
+        size_t m_JobExecCount;
+        
+        /**
+         * @brief Total time the thread spent executing jobs
+         */
+        float m_ThreadExecTime;
+
+        /**
+         * @brief Total time the thread spent sleeping. Only accounts for time in the Work() function
+         */
+        float m_ThreadSleepTime;
+
         friend class JobSubsystem;
     };
 
-    inline void WaitForCounter(Counter* _counter)
+    inline void WaitForCounter(const Counter* _counter)
     {
         if (!_counter) return;
 

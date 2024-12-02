@@ -2,7 +2,6 @@
 #include "Denix/System/Subsystem.h"
 
 #include "Denix/Thread/Thread.h"
-#include <queue>
 #include <concurrent_priority_queue.h>
 
 namespace Denix
@@ -13,7 +12,8 @@ namespace Denix
         JobSubsystem()
         {
             s_JobSubsystem = this;
-            m_JobsDone = 0;
+            m_AvailableThreads = 0;
+            //m_JobExecCount = 0;
             DE_LOG_CREATE(LogThread)
             DE_LOG_CREATE(LogJob)
         }
@@ -23,6 +23,7 @@ namespace Denix
             s_JobSubsystem = nullptr;
         }
 
+        // Delete Copy and Move Constructors. Ensure only one instance of JobSubsystem
         JobSubsystem(const JobSubsystem& _other) = delete;
         JobSubsystem(JobSubsystem&& _other) noexcept = delete;
         JobSubsystem& operator=(const JobSubsystem& _other) = delete;
@@ -50,17 +51,20 @@ namespace Denix
             s_JobSubsystem->m_Jobs.push(std::move(job));
         }
 
-
-        static Ref<Thread> GetThread(std::thread::id _id)
+       static void ToggleThreadProfiling()
         {
-            for (const auto& thread : s_JobSubsystem->m_WorkerThreads)
-                if (thread->m_ThreadID == _id) return thread;
+            // Clear the profiling data
+            for (auto& thread : s_JobSubsystem->m_WorkerThreads)
+            {
+                thread->m_JobExecCount = 0;
+                thread->m_ThreadExecTime = 0.0f;
+                thread->m_ThreadSleepTime = 0.0f;
+            }
 
-            return nullptr;
+            // Toggle the profiling. The Thread::Work() function will profile the thread if this is true
+            Thread::s_ShouldProfile = !Thread::s_ShouldProfile;
+            DE_LOG(LogThread, Info, "Thread Profiling: {}", Thread::s_ShouldProfile? "Enabled" : "Disabled")
         }
-
-        std::vector<Ref<Thread>> m_WorkerThreads;
-        size_t m_SystemThreadCount = 0;
 
         struct JobComparator
         {
@@ -70,22 +74,48 @@ namespace Denix
             }
         };
 
-        Concurrency::concurrent_priority_queue<Ref<JobDeclaration>, JobComparator> m_Jobs;
-        //std::priority_queue<Ref<JobDeclaration>, std::vector<Ref<JobDeclaration>>, JobComparator> m_Jobs;
-        std::atomic_bool m_QueueFree = true;
-        size_t m_JobsDone;
-        bool m_ConstructLambaJob = true;
+        static uint32_t GetAvailableThreads() { return s_JobSubsystem->m_AvailableThreads; }
+        static uint32_t GetActiveThreads() { return s_JobSubsystem->m_ActiveThreads; }
+        
+        static size_t GetJobQueueSize() { return s_JobSubsystem->m_Jobs.size(); }
 
+        static std::vector<Ref<Thread>> GetWorkerThreads() { return s_JobSubsystem->m_WorkerThreads; }
+        
         static Ref<JobSubsystem> Get() { return s_JobSubsystem->shared_from_this(); }
-        static JobSubsystem* s_JobSubsystem;
-
+        
     private:
-        static Ref<JobDeclaration> GetJob();
+        /**
+         * 
+         * @return 
+         */
+        static Ref<JobDeclaration> RequestJob();
 
         void Initialize() override;
 
         void Deinitialize() override;
 
+        /**
+      * Thread Safe queue of jobs. Uses Custom JobComparator to sort jobs by priority
+      * AddJob() pushes jobs to the queue. RequestJob() pops the top job from the queue. 
+      * Microsoft Implementation of a concurrent_priority_queue https://learn.microsoft.com/en-us/cpp/parallel/concrt/reference/concurrent-priority-queue-class?view=msvc-170
+      */
+        Concurrency::concurrent_priority_queue<Ref<JobDeclaration>, JobComparator> m_Jobs;
+
+        static JobSubsystem* s_JobSubsystem;
+
+        std::vector<Ref<Thread>> m_WorkerThreads;
+
+        
+        /**
+         * Number of threads available on the system - Excluding the main thread
+         */
+        uint32_t m_AvailableThreads;
+
+        /**
+         * Number of threads actively working - Excluding the main thread
+         */
+        uint32_t m_ActiveThreads;
+        
         friend class Engine;
         friend class Thread;
     };
