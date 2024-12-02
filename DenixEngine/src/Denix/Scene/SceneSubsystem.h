@@ -30,7 +30,9 @@ namespace Denix
 		
 		void CleanRubbish();
 		bool m_SceneThreaded = false;
-
+		bool m_BatchUpdate = true;
+		int m_SceneBatchSize = 50;
+		int m_SceneBatchCount = 0;
 	public:
 		void Initialize() override;
 

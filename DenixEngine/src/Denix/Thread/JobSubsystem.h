@@ -7,8 +7,7 @@
 
 namespace Denix
 {
-    
-    class JobSubsystem: public Subsystem, public std::enable_shared_from_this<JobSubsystem>
+    class JobSubsystem : public Subsystem, public std::enable_shared_from_this<JobSubsystem>
     {
     public:
         JobSubsystem()
@@ -18,6 +17,7 @@ namespace Denix
             DE_LOG_CREATE(LogThread)
             DE_LOG_CREATE(LogJob)
         }
+
         ~JobSubsystem() override
         {
             s_JobSubsystem = nullptr;
@@ -39,36 +39,22 @@ namespace Denix
          * @param _args 
          */
         template <typename Func, typename... Args>
-    static void AddJob(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter, Func&& _func, Args&&... _args)
-    {
-            Ref<JobDeclaration> job;
-        if (s_JobSubsystem->m_ConstructLambaJob)
+        static void AddJob(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter,
+                           Func&& _func, Args&&... _args)
         {
-            job =  MakeRef<JobDeclaration>(
-                _name,
-                _priority,
-                _waitCounter ? _waitCounter : MakeRef<Counter>(1),
-                static_cast<std::function<void()>>([func = std::forward<Func>(_func), args = std::make_tuple(std::forward<Args>(_args)...)]() mutable {
-                    std::apply(func, std::move(args));
-                }));
-        }
-        else
-        {
-            job =  MakeRef<JobDeclaration>(
+            Ref<JobDeclaration> job = MakeRef<JobDeclaration>(
                 _name,
                 _priority,
                 _waitCounter ? _waitCounter : MakeRef<Counter>(1),
                 std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
+            s_JobSubsystem->m_Jobs.push(std::move(job));
         }
 
-            s_JobSubsystem->m_Jobs.push(std::move(job));
-    }
-        
-    
+
         static Ref<Thread> GetThread(std::thread::id _id)
         {
-           for (const auto& thread: s_JobSubsystem->m_WorkerThreads)
-               if(thread->m_ThreadID == _id) return thread;
+            for (const auto& thread : s_JobSubsystem->m_WorkerThreads)
+                if (thread->m_ThreadID == _id) return thread;
 
             return nullptr;
         }
@@ -78,13 +64,13 @@ namespace Denix
 
         struct JobComparator
         {
-            bool operator() (const Ref<JobDeclaration>& _lhs, const Ref<JobDeclaration>& _rhs) const
+            bool operator()(const Ref<JobDeclaration>& _lhs, const Ref<JobDeclaration>& _rhs) const
             {
                 return _lhs->m_Priority < _rhs->m_Priority;
             }
         };
 
-        Concurrency::concurrent_priority_queue <Ref<JobDeclaration>, JobComparator> m_Jobs;
+        Concurrency::concurrent_priority_queue<Ref<JobDeclaration>, JobComparator> m_Jobs;
         //std::priority_queue<Ref<JobDeclaration>, std::vector<Ref<JobDeclaration>>, JobComparator> m_Jobs;
         std::atomic_bool m_QueueFree = true;
         size_t m_JobsDone;

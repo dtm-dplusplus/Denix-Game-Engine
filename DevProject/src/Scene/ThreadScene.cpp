@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "implot.h"
 #include "Denix/Engine.h"
+#include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Thread/JobSubsystem.h"
 
 using namespace  Denix;
@@ -50,6 +51,9 @@ void ThreadScene::DebugUI(float _deltaTime)
     ImGui::SeparatorText("Engine Thread Settings");
     ImGui::DragInt("Wait For Counter Sleep Time", &Thread::s_WaitForCounterSleepTime);
     ImGui::DragInt("Wait For Job Sleep Time", &Thread::s_WaitForJobSleepTime);
+    ImGui::DragInt("Batch Size", &SceneSubsystem::Get()->m_SceneBatchSize);
+    ImGui::Checkbox("Batch Update", &SceneSubsystem::Get()->m_BatchUpdate);
+    ImGui::Text("Batch Count: %d", SceneSubsystem::Get()->m_SceneBatchCount);
     ImGui::Checkbox("Parallel Loop", RenderParallel.get());
     //ImGui::Checkbox("Dummy Subsystem A", &Engine::Get()->m_DummySubsystemA);
     //ImGui::Checkbox("Dummy Subsystem B", &Engine::Get()->m_DummySubsystemB);
