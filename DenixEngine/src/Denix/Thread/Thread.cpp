@@ -11,7 +11,10 @@ void Denix::Thread::Work()
 {
     while (m_ShouldWork)
     {
-        m_Job = JobSubsystem::RequestJob();
+        // Request a job from the job queue
+        if (m_Active) m_Job = JobSubsystem::RequestJob();
+
+        // If a job was found in the queue, execute it
         if (m_Job)
         {
             // Execute the job

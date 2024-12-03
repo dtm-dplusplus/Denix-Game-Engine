@@ -12,7 +12,7 @@ namespace Denix
         JobSubsystem()
         {
             s_JobSubsystem = this;
-            m_AvailableThreads = 0;
+            m_SystemThreads = 0;
             //m_JobExecCount = 0;
             DE_LOG_CREATE(LogThread)
             DE_LOG_CREATE(LogJob)
@@ -62,10 +62,29 @@ namespace Denix
             }
 
             // Toggle the profiling. The Thread::Work() function will profile the thread if this is true
-            Thread::s_ShouldProfile = !Thread::s_ShouldProfile;
             DE_LOG(LogThread, Info, "Thread Profiling: {}", Thread::s_ShouldProfile? "Enabled" : "Disabled")
         }
 
+        static void UpdateActiveThreads()
+        {
+            // Clamp the active threads to the system thread count
+            s_JobSubsystem->m_ActiveWorkerThreads = std::clamp(s_JobSubsystem->m_ActiveWorkerThreads, 1, s_JobSubsystem->m_AvailableWorkerThreads);
+            DE_LOG(LogJob, Trace, "Set Active Worker Threads: {}", s_JobSubsystem->m_ActiveWorkerThreads)
+            DE_LOG(LogJob, Trace, "Available {}", s_JobSubsystem->m_AvailableWorkerThreads)
+            
+            // Update the worker threads
+            for (int i = 0; i < s_JobSubsystem->m_AvailableWorkerThreads; i++)
+            {
+                if (i < s_JobSubsystem->m_ActiveWorkerThreads)
+                {
+                    s_JobSubsystem->m_WorkerThreads[i]->m_Active = true;
+                }
+                else
+                {
+                    s_JobSubsystem->m_WorkerThreads[i]->m_Active = false;
+                }
+            }
+        }
         struct JobComparator
         {
             bool operator()(const Ref<JobDeclaration>& _lhs, const Ref<JobDeclaration>& _rhs) const
@@ -74,9 +93,10 @@ namespace Denix
             }
         };
 
-        static uint32_t GetAvailableThreads() { return s_JobSubsystem->m_AvailableThreads; }
-        static uint32_t GetActiveThreads() { return s_JobSubsystem->m_ActiveThreads; }
-        
+        static int GetSystemThreads() { return s_JobSubsystem->m_SystemThreads; }
+    
+        static int GetActiveThreads() { return s_JobSubsystem->m_ActiveWorkerThreads; }
+        static int& GetActiveThreadsRef() { return s_JobSubsystem->m_ActiveWorkerThreads; }
         static size_t GetJobQueueSize() { return s_JobSubsystem->m_Jobs.size(); }
 
         static std::vector<Ref<Thread>> GetWorkerThreads() { return s_JobSubsystem->m_WorkerThreads; }
@@ -107,14 +127,19 @@ namespace Denix
 
         
         /**
-         * Number of threads available on the system - Excluding the main thread
+         * Number of threads available on the system
          */
-        uint32_t m_AvailableThreads;
+        int m_SystemThreads;
 
         /**
-         * Number of threads actively working - Excluding the main thread
+         * Number of worker threads initialized
          */
-        uint32_t m_ActiveThreads;
+        int m_AvailableWorkerThreads;
+
+        /**
+         * Number of worker threads currently active. Can be adjusted at runtime
+         */
+        int m_ActiveWorkerThreads;
         
         friend class Engine;
         friend class Thread;

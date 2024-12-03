@@ -112,7 +112,7 @@ namespace Denix
             m_ThreadIDInt = std::stoi(ss.str());
         }
 
-        // private:
+        // private: @TODO: Make private Add Get Set
         std::thread m_Thread;
         std::thread::id m_ThreadID;
         size_t m_ThreadIDInt;
@@ -122,8 +122,13 @@ namespace Denix
 
         
         
-        bool m_ShouldWork;
+        /**
+         * @brief Determines the lifetime of the thread. If false, the thread will exit
+         */
+        bool m_ShouldWork = true;
 
+        bool m_Active = true;
+        
         static int s_WaitForCounterSleepTime;
 
         

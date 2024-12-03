@@ -19,10 +19,11 @@ void Denix::JobSubsystem::Initialize()
     DE_LOG(LogJob, Warn, "Thread Subsystem Initializing")
     
     // Get Thread Information
-    if (const uint32_t threads = std::thread::hardware_concurrency(); threads > 0)
+    if (const int threadCount = std::thread::hardware_concurrency(); threadCount > 0)
     {
-        m_AvailableThreads = threads - 1;  // Subtract 1 for main thread
-        m_ActiveThreads = m_AvailableThreads;
+        m_SystemThreads = threadCount;
+        m_AvailableWorkerThreads = m_SystemThreads - 1;
+        m_ActiveWorkerThreads = m_AvailableWorkerThreads;
     }
     else
     {
@@ -31,17 +32,16 @@ void Denix::JobSubsystem::Initialize()
         throw std::runtime_error(error);
     }
 
-    DE_LOG(LogJob, Trace, "Threads Available {} ", m_AvailableThreads)
 
     // Initialize the worker threads - Subtract 1 for main thread
-    for (size_t i = 0; i < m_AvailableThreads - 1; i++)
+    for (size_t i = 0; i < m_ActiveWorkerThreads; i++)
     {
         m_WorkerThreads.emplace_back(MakeRef<Thread>());
         m_WorkerThreads.back()->InitWorkerThread();
     }
 
-    DE_LOG(LogJob, Trace, "Number of System threads: {}", m_AvailableThreads)
-    DE_LOG(LogJob, Trace, "Initialized {} worker threads", m_WorkerThreads.size())
+    DE_LOG(LogJob, Trace, "System threads: {}", m_SystemThreads)
+    DE_LOG(LogJob, Trace, "Worker threads: {}", m_ActiveWorkerThreads)
     DE_LOG(LogJob, Info, "Thread Subsystem Initialized")
 }
 
