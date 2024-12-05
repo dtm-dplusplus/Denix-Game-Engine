@@ -48,7 +48,9 @@ namespace Denix
                 _priority,
                 _waitCounter ? _waitCounter : MakeRef<Counter>(1),
                 std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
-            s_JobSubsystem->m_Jobs.push(std::move(job));
+
+            s_JobSubsystem->JobProfileBuffer.push_back(job);
+            s_JobSubsystem->m_Jobs.push(job);
         }
 
        static void ToggleThreadProfiling()
@@ -102,7 +104,8 @@ namespace Denix
         static std::vector<Ref<Thread>> GetWorkerThreads() { return s_JobSubsystem->m_WorkerThreads; }
         
         static Ref<JobSubsystem> Get() { return s_JobSubsystem->shared_from_this(); }
-        
+
+        std::vector<Ref<JobDeclaration>> JobProfileBuffer;
     private:
         /**
          * 
