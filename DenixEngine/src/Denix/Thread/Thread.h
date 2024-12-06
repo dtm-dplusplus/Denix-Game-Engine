@@ -135,11 +135,7 @@ namespace Denix
         static int s_WaitForJobSleepTime;
 
 
-        // Thread Profiling - These are not thread safe and should be managed by the JobSubsystem
-        /**
-         * @brief Should the thread profile itself. Global setting
-         */
-        static bool s_ShouldProfile;
+        
 
         
         /**
@@ -157,6 +153,13 @@ namespace Denix
          */
         float m_ThreadSleepTime;
 
+    private:
+        // Thread Profiling - These are not thread safe and should be managed by the JobSubsystem
+        /**
+         * @brief Should the thread profile itself. Global setting
+         */
+        static bool s_ShouldProfile;
+        
         friend class JobSubsystem;
     };
 

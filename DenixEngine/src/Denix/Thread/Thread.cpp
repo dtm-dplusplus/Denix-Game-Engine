@@ -18,16 +18,16 @@ void Denix::Thread::Work()
         if (m_Job)
         {
             // Execute the job
-            m_Job->m_Timer.Start();
+            m_Job->m_JobProfile->Start();
             m_Job->m_EntryPoint();
-            m_Job->m_Timer.Stop();
+            m_Job->m_JobProfile->End();
             m_Job->m_WaitCounter->Decrement();
 
             // Profile the thread
             if (s_ShouldProfile)
             {
                 m_JobExecCount++;
-                m_ThreadExecTime += m_Job->m_Timer.GetElapsed();
+                m_ThreadExecTime += m_Job->m_JobProfile->GetDuration();
                 m_ThreadSleepTime += static_cast<float>(s_WaitForJobSleepTime) * 0.000000001f; // Convert to seconds. We sleep right after this loop so we can add the sleep time here
             }
 

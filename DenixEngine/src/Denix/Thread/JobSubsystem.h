@@ -4,8 +4,12 @@
 #include "Denix/Thread/Thread.h"
 #include <concurrent_priority_queue.h>
 
+#include "Denix/Profile/Profile.h"
+
 namespace Denix
 {
+
+    
     class JobSubsystem : public Subsystem, public std::enable_shared_from_this<JobSubsystem>
     {
     public:
@@ -31,6 +35,11 @@ namespace Denix
 
         /**
          * 
+         * @return 
+         */
+        static bool IsProfiling() { return Thread::s_ShouldProfile; }
+        /**
+         * 
          * @tparam Func 
          * @tparam Args 
          * @param _name 
@@ -43,19 +52,35 @@ namespace Denix
         static void AddJob(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter,
                            Func&& _func, Args&&... _args)
         {
+            Ref<JobProfile> profile;
+            if (s_JobSubsystem->JobProfileBuffer.contains(_name))
+                profile = s_JobSubsystem->JobProfileBuffer[_name];
+            else
+            {
+                profile = MakeRef<JobProfile>(ObjectInit{_name});
+                s_JobSubsystem->JobProfileBuffer[_name] = profile;
+            }
+                
+            
             Ref<JobDeclaration> job = MakeRef<JobDeclaration>(
                 _name,
                 _priority,
                 _waitCounter ? _waitCounter : MakeRef<Counter>(1),
-                std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...));
+                profile,
+                std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
+                );
 
-            s_JobSubsystem->JobProfileBuffer.push_back(job);
             s_JobSubsystem->m_Jobs.push(job);
         }
 
-       static void ToggleThreadProfiling()
+        static void StartProfiling()
         {
-            // Clear the profiling data
+
+            // Setup Buffer
+            s_JobSubsystem->JobProfileBuffer.clear();
+            s_JobSubsystem->JobProfileBuffer.reserve(1000);
+
+            // Setup Threads
             for (auto& thread : s_JobSubsystem->m_WorkerThreads)
             {
                 thread->m_JobExecCount = 0;
@@ -63,10 +88,16 @@ namespace Denix
                 thread->m_ThreadSleepTime = 0.0f;
             }
 
-            // Toggle the profiling. The Thread::Work() function will profile the thread if this is true
-            DE_LOG(LogThread, Info, "Thread Profiling: {}", Thread::s_ShouldProfile? "Enabled" : "Disabled")
+            // Set the profiling flag for the threads
+            Thread::s_ShouldProfile = true;
         }
 
+        static void StopProfiling()
+        {
+            Thread::s_ShouldProfile = false;
+            DE_LOG(LogThread, Info, "Thread Profiling: Disabled")
+        }
+        
         static void UpdateActiveThreads()
         {
             // Clamp the active threads to the system thread count
@@ -105,7 +136,7 @@ namespace Denix
         
         static Ref<JobSubsystem> Get() { return s_JobSubsystem->shared_from_this(); }
 
-        std::vector<Ref<JobDeclaration>> JobProfileBuffer;
+        std::unordered_map<std::string, Ref<JobProfile>> JobProfileBuffer;
     private:
         /**
          * 

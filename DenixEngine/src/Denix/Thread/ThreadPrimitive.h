@@ -1,8 +1,10 @@
 ﻿#pragma once
+#include <algorithm>
 #include <functional>
 
 #include "Denix/Core.h"
 #include "Denix/Core/Timer.h"
+#include "Denix/Profile/Profile.h"
 
 namespace Denix
 {
@@ -52,17 +54,46 @@ namespace Denix
         // std::condition_variable m_ConditionVar;
     };
 
-    struct JobDeclaration
+    class JobProfile: public Profile
     {
-        JobDeclaration() = default;
-
-        JobDeclaration(const std::string& name, Priority priority, Ref<Counter> waitCounter,
-                       std::function<void()> entryPoint)
-            : m_Name(name), m_EntryPoint(std::move(entryPoint)), m_Priority(priority),
-              m_WaitCounter(std::move(waitCounter)), m_Timer(ObjectInit(name))
+    public:
+        JobProfile(const ObjectInit& _objInit)
+            : Profile(_objInit)
         {
         }
 
+        void End() override
+        {
+            m_Timer->Stop();
+
+            // Record the duration
+            float  duration = m_Timer->GetDuration() * 1000.0f;
+            m_DurationRecords.push_back(duration);
+        
+            // Update the minimum and maximum durations
+            if (m_MinimumDuration == 0.0f) m_MinimumDuration = duration;
+            else m_MinimumDuration = std::min(duration, m_MinimumDuration);
+
+            m_MaximumDuration = std::max(duration, m_MaximumDuration);
+
+            float durationSum = [&] { float sum =0.0f; for(const float d: m_DurationRecords) sum += d; return sum; }();
+            m_AverageDuration = durationSum / static_cast<float>(m_DurationRecords.size());
+        }
+    };
+    
+    struct JobDeclaration
+    {
+        JobDeclaration(const std::string& _name, const Priority _priority, Ref<Counter> _waitCounter, const Ref<JobProfile>& _profile,
+                       std::function<void()> _entryPoint)
+            : m_ID(s_IDCounter++), m_Name(_name), m_EntryPoint(std::move(_entryPoint)),
+              m_Priority(_priority),
+              m_WaitCounter(std::move(_waitCounter)), m_JobProfile(_profile)
+        {
+        }
+
+        size_t m_ID;
+
+       // size_t m_FrameID;
 
         /**
          * @brief Job name. Used for debugging purposes
@@ -73,9 +104,6 @@ namespace Denix
          * @brief Jobs entry point function
          */
         std::function<void()> m_EntryPoint;
-
-        /*template <typename... Args>
-        std::tuple<Args...> m_Args;*/
 
         /**
          * @brief Job priority
@@ -91,6 +119,9 @@ namespace Denix
         /**
          * @brief Timer to keep track of how long the job takes to execute
         */
-        Timer m_Timer;
+        Ref<Profile> m_JobProfile;
+
+
+       inline static size_t s_IDCounter = 0;
     };
 }

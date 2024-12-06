@@ -313,9 +313,8 @@ namespace Denix
 				for (size_t i = 0; i < actorCount; i += m_SceneBatchSize)
 				{
 					sceneCounter->Increment();
-					++m_SceneBatchCount;
 					auto end = std::min(i + m_SceneBatchSize, actorCount); 
-					JobSubsystem::AddJob("UpdateBatch", Priority::NORMAL, sceneCounter, [start = i, end, dt = _deltaTime, &objects]
+					JobSubsystem::AddJob("UpdateBatch "+ ++m_SceneBatchCount, Priority::NORMAL, sceneCounter, [start = i, end, dt = _deltaTime, &objects]
 					{
 						for (size_t j = start; j < end; ++j) {
 							objects[j]->Update(dt);

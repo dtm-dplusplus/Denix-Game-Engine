@@ -53,8 +53,8 @@ namespace Denix
 
         Ref<Timer> m_Timer;
 
-        void Start();
-        void End();
+        virtual void Start();
+        virtual void End();
 
         float GetAverageDuration() const { return m_AverageDuration; }
         float GetDuration() const;
@@ -86,7 +86,7 @@ namespace Denix
          * Lets the profile know if it should visualize itself in the ProfileSubsystem.
          */
         bool m_Visualize = false;
-    private:
+    protected:
         /**
          * The number of durations recorded before averaging.
          * This is reset to 0 when the average is calculated.

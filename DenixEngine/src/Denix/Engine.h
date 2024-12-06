@@ -35,12 +35,7 @@ namespace Denix
         Engine& operator=(const Engine& _other) = delete;
         Engine& operator=(Engine&& _other) noexcept = delete;
 
-        virtual void Initialize();
-        virtual void Deinitialize();
-        void ParallelLoop();
-        void SequentialLoop();
-
-        void Run();
+       
         void LoadConfig();
         void SaveConfig();
         Ref<Asset> GetStartupScene() const;
@@ -51,8 +46,6 @@ namespace Denix
         std::string GetProjectName() const { return m_ProjectName; }
 
     public:
-        Ref<bool> m_ParallelLoop = MakeRef<bool>(true);
-
         void DummySubsystemA();
         void DummySubsystemB();
         bool m_DummySubsystemA = true;
@@ -62,9 +55,15 @@ namespace Denix
         std::string m_ProjectName;
         Ref<Asset> m_StartupScene;
         std::string m_EngineConfigPath;
-    private:
-        static Engine* s_Engine;
 
+        virtual void Initialize();
+        virtual void Deinitialize();
+        
+    private:
+        void EngineLoop();
+
+        void Run();
+        
         template<typename  T, typename ... Args>
         Ref<T> InitalizeSubsystem(Args&& ... _args)
         {
@@ -85,6 +84,14 @@ namespace Denix
             return subsystem;
         }
 
+        
+        /**
+         * @brief Pointer to the engine instance
+         */
+        static Engine* s_Engine;
+
+        size_t m_FrameID;
+        
         // Useful vector for deinitializing subsystems in reverse order
         std::vector<Subsystem*> m_Subsystems;
 

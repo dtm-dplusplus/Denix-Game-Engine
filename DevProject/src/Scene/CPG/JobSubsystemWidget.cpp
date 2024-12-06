@@ -12,9 +12,10 @@ namespace Denix
     {
         EditorWidget::Update(_deltaTime);
 
-        static std::vector<Ref<JobDeclaration>>& jobProfiles = JobSubsystem::Get()->JobProfileBuffer;
+        static std::unordered_map<std::string, Ref<JobProfile>>& jobProfiles = JobSubsystem::Get()->JobProfileBuffer;
         static Ref<JobSubsystem> jobSubsystem = JobSubsystem::Get();
         std::vector<Ref<Thread>> threads = jobSubsystem->GetWorkerThreads();
+        bool isProfiling = JobSubsystem::IsProfiling();
         if (ImGui::CollapsingHeader("Job Subsystem"), ImGuiTreeNodeFlags_DefaultOpen)
         {
             ImGui::Text("System Threads Available: %d", jobSubsystem->GetActiveThreads());
@@ -30,10 +31,22 @@ namespace Denix
 
             if (ImGui::TreeNode("Profiling"))
             {
-                if (ImGui::Checkbox("Thread Profiling", &Thread::s_ShouldProfile))
-                    JobSubsystem::ToggleThreadProfiling();
-
-                if (Thread::s_ShouldProfile)
+                if (isProfiling)
+                {
+                    if (ImGui::Button("Stop Profiling"))
+                    {
+                        jobSubsystem->StopProfiling();
+                    }
+                }
+                else
+                {
+                    if (ImGui::Button("Start Profiling"))
+                    {
+                        jobSubsystem->StartProfiling();
+                    }
+                }
+                
+                if (isProfiling)
                 {
                     // Calc Load Difference
                     float jobLoadMin = threads[0]->m_JobExecCount, jobLoadMax = 0;
@@ -79,22 +92,8 @@ namespace Denix
                 ImGui::TreePop();
             }
 
-                        {
-                // Create item list
-                static ImVector<MyItem> items;
-                if (items.Size == 0)
-                {
-                    items.resize(50, MyItem());
-                    for (int n = 0; n < items.Size; n++)
-                    {
-                        const int template_n = n % IM_ARRAYSIZE(template_items_names);
-                        MyItem& item = items[n];
-                        item.ID = n;
-                        item.Name = template_items_names[template_n];
-                        item.Quantity = (n * n - n) % 20; // Assign default quantities
-                    }
-                }
-
+            if (!isProfiling)
+            {
                 // Options
                 static ImGuiTableFlags flags =
                     ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable |
@@ -132,43 +131,35 @@ namespace Denix
                     // - ImGuiTableColumnFlags_DefaultSort
                     // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending / ImGuiTableColumnFlags_NoSortDescending
                     // - ImGuiTableColumnFlags_PreferSortAscending / ImGuiTableColumnFlags_PreferSortDescending
-                    ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_WidthFixed,
-                                            0.0f, MyItemColumnID_ID);
                     ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
-                    ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_WidthFixed,
-                                            0.0f, MyItemColumnID_Action);
-                    ImGui::TableSetupColumn(
-                        "Quantity", ImGuiTableColumnFlags_PreferSortDescending | ImGuiTableColumnFlags_WidthStretch,
-                        0.0f, MyItemColumnID_Quantity);
+                    ImGui::TableSetupColumn("Avg", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
+                    ImGui::TableSetupColumn("Min", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
+                    ImGui::TableSetupColumn("Max", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
                     ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
                     ImGui::TableHeadersRow();
 
-                    // Sort our data if sort specs have been changed!
+                    /*// Sort our data if sort specs have been changed!
                     if (ImGuiTableSortSpecs* sort_specs = ImGui::TableGetSortSpecs())
                         if (sort_specs->SpecsDirty)
                         {
                             MyItem::SortWithSortSpecs(sort_specs, items.Data, items.Size);
                             sort_specs->SpecsDirty = false;
-                        }
+                        }*/
 
                     // Demonstrate using clipper for large vertical lists
-                    ImGuiListClipper clipper;
-                    clipper.Begin(items.Size);
-                    while (clipper.Step())
-                        for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; row_n++)
+                    for (const auto& profile : jobProfiles | std::views::values)
                         {
                             // Display a data item
-                            MyItem* item = &items[row_n];
-                            ImGui::PushID(item->ID);
+                            ImGui::PushID(profile->GetName().c_str());
                             ImGui::TableNextRow();
                             ImGui::TableNextColumn();
-                            ImGui::Text("%04d", item->ID);
+                            ImGui::TextUnformatted(profile->GetName().c_str());
                             ImGui::TableNextColumn();
-                            ImGui::TextUnformatted(item->Name);
+                            ImGui::Text("%f", profile->GetAverageDuration());
                             ImGui::TableNextColumn();
-                            ImGui::SmallButton("None");
+                            ImGui::Text("%f", profile->m_MinimumDuration);
                             ImGui::TableNextColumn();
-                            ImGui::Text("%d", item->Quantity);
+                            ImGui::Text("%f", profile->m_MaximumDuration);
                             ImGui::PopID();
                         }
                     ImGui::EndTable();

@@ -19,7 +19,6 @@ public:
     
 
     Ref<Counter> DebugCounter;
-    Ref<bool> RenderParallel;
 
     ActorGridSpawner m_GridSpawner;
     Ref<JobSubsystemWidget> m_JobSubsystemWidget;

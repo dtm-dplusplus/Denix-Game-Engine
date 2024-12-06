@@ -22,8 +22,10 @@ namespace Denix
 	Engine::Engine()
 	{
 		s_Engine = this;
+
+		m_FrameID = 0;
+		
 		m_StartupScene = nullptr;
-		m_ParallelLoop = MakeRef<bool>(true);
 
 		// Initialize Logger
 		Logger::Initialize();
@@ -119,13 +121,16 @@ namespace Denix
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
 	}
 
-	void Engine::ParallelLoop()
+	void Engine::EngineLoop()
 	{
 		while(m_WindowSubsystem->m_Window->IsOpen())
 		{
 			// Setup timer system for the new frame.
 			m_TimerSubsystem->BeginFrame();
 			m_ProfileSubsystem->Update(m_TimerSubsystem->m_FrameTime);
+
+			// Flush the job profile buffer
+		//	m_JobSubsystem->JobProfileBuffer.clear();
 			
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
 			DE_PROFILE(Input Poll)
@@ -193,6 +198,8 @@ namespace Denix
 			WaitForCounter(cleanCounter.get());
 			
 			m_TimerSubsystem->EndFrame();
+
+			m_FrameID++;
 		}
 	}
 
@@ -210,73 +217,11 @@ namespace Denix
 		DE_PROFILE_END(Dummy Subsystem B)
 	}
 	
-	void Engine::SequentialLoop()
-	{
-		while(m_WindowSubsystem->m_Window->IsOpen())
-		{
-			// Setup timer system for the new frame.
-			m_TimerSubsystem->BeginFrame();
-			m_ProfileSubsystem->Update(m_TimerSubsystem->m_FrameTime);
-			
-			// Poll input & Events. Events will be dispatched to the appropriate subsystems
-			DE_PROFILE(Input Poll)
-			m_InputSubsystem->Poll();
-			DE_PROFILE_END(Input Poll)
-
-			
-			// Clear the offscreen frame buffer
-			DE_PROFILE(New Window Buffer)
-			m_UISubsystem->NewFrame();
-			m_WindowSubsystem->m_Window->ClearBuffer();
-			m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->m_FrameBuffer->Bind();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			DE_PROFILE_END(New Window Buffer)
-			
-			// Prepare physics system for scene update
-			DE_PROFILE(Physics PreUpdate)
-			m_PhysicsSubsystem->PreUpdate(m_TimerSubsystem->m_DeltaTime);
-			DE_PROFILE_END(Physics PreUpdate)
-
-			// Update the UI & Editor for any changes
-			DE_PROFILE(Editor Update)
-			m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			DE_PROFILE_END(Editor Update)
-
-			// Update the scene. The majority of the client game logic will be here
-			m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-
-			// Update the physics system. Collision detection and resolution will be here
-			m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			
-			// Render the scene. This runs on the main thread as it requires the opengl context
-			m_RendererSubsystem->RenderScene();
-
-			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
-			DE_PROFILE(Draw Viewport)
-			FrameBuffer::Unbind();
-			m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
-			m_UISubsystem->RenderUI(); // Swap buffers and render UI
-			m_WindowSubsystem->m_Window->SwapBuffers();
-			m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
-			DE_PROFILE_END(Draw Viewport)
-			
-			// Run the garbage collector
-			DE_PROFILE(Clean Rubbish)
-			m_SceneSubsystem->CleanRubbish();
-			DE_PROFILE_END(Clean Rubbish)
-
-			m_TimerSubsystem->EndFrame();
-		}
-	}
-
 	void Engine::Run()
 	{
 		Initialize();
 
-		// Engine Loop
-		if (*m_ParallelLoop) ParallelLoop();
-		else SequentialLoop();
+		EngineLoop();
 		
 		Deinitialize();
 	}
@@ -301,11 +246,6 @@ namespace Denix
 					DE_LOG(LogEngine, Warn, "Load Engine Config: Startup Scene Not Found")
 				}
 			}
-
-			if(const YAML::Node& startSceneNode = cfg["Parallel Loop"])
-			{
-				m_ParallelLoop = MakeRef<bool>(startSceneNode.as<bool>());
-			}
 		}
 		catch(const std::exception& e)
 		{
@@ -326,7 +266,6 @@ namespace Denix
 			cfgEmitter << YAML::Comment("DENIX ENGINE CONFIGURATION");
 			cfgEmitter << YAML::BeginMap;
 			cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << (m_StartupScene? m_StartupScene->GetAssetPath() : "");
-			cfgEmitter << YAML::Key << "Parallel Loop" << YAML::Value <<  *m_ParallelLoop;
 			cfgEmitter << YAML::EndMap;
 			
 			if(FileSubsystem::WriteFile(m_EngineConfigPath, cfgEmitter.c_str()))

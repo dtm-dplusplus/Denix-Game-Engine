@@ -17,8 +17,6 @@ ThreadScene::ThreadScene()
 void ThreadScene::BeginScene()
 {
     Scene::BeginScene();
-
-    RenderParallel = Engine::Get()->m_ParallelLoop;
 }
 
 void ThreadScene::Update(float _deltaTime)
