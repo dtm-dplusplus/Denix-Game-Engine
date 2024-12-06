@@ -148,13 +148,20 @@ namespace Denix
 			
 			
 			// Prepare physics system for scene update
-			m_PhysicsSubsystem->PreUpdate(m_TimerSubsystem->m_DeltaTime);
+			Ref<Counter> prePhysicsCounter = MakeRef<Counter>(1);
+			JobSubsystem::AddJob("Pre Physics Update", Priority::NORMAL, prePhysicsCounter, &PhysicsSubsystem::PreUpdate, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			WaitForCounter(prePhysicsCounter.get());
 
-			// Job Subsystem Test
-			// UI & Editor should be part of the same job group. Editor relies on UI to be updated first.
-			// Therefore we must WaitForCounter individually to ensure these two jobs are executed serially.
-			// We will build a  job builder which can queue these jobs and ensure they run serially
-			// Currently, jobs are added to the job subsystem and executed instantly. In the future they should be scheduled in some kind of group/bucket
+			// Update the physics system. Collision detection and resolution will be here
+			Ref<Counter> physicsCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, physicsCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			WaitForCounter(physicsCounter.get());
+			
+			// Update the scene. The majority of the client game logic will be here. Do this in parallel with the rendering
+			Ref<Counter> sceneCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime, sceneCounter);
+			WaitForCounter(sceneCounter.get());
+			
 			// Update the UI & Editor for any changes
 			Ref<Counter> uiCounter = MakeRef<Counter>(1);
 			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
@@ -162,26 +169,9 @@ namespace Denix
 
 			// Run on main due to opengl context when initializing the scene
 			m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
-			
-			// Run dummy subsystem whilst rendering & Scene
-			//Ref<Counter> dummyCounter = MakeRef<Counter>(2);
-			//m_JobSubsystem->AddJob( "Dummy Subsystem A", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemA, this);
-			//m_JobSubsystem->AddJob( "Dummy Subsystem B", Priority::NORMAL, dummyCounter, &Engine::DummySubsystemB, this);
-			
-			// Update the scene. The majority of the client game logic will be here. Do this in parallel with the rendering
-			//Ref<Counter> sceneCounter = MakeRef<Counter>(1);
-			//m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime); // Try scatter gather pattern for scene update
-			
-			// Update the physics system. Collision detection and resolution will be here
-			//m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
 
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			m_RendererSubsystem->RenderScene();
-
-			//WaitForCounter(*sceneCounter);
-			
-			//WaitForCounter(*dummyCounter);
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			DE_PROFILE(Draw Viewport)

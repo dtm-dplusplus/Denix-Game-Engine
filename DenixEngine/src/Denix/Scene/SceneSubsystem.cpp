@@ -248,7 +248,7 @@ namespace Denix
 		DE_PROFILE_END(Clean Rubbish)
 	}
 
-	void SceneSubsystem::Update(float _deltaTime)
+	void SceneSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 	{
 		DE_PROFILE(Scene Update)
 
@@ -303,7 +303,6 @@ namespace Denix
 		if(m_SceneThreaded)
 		{
 			size_t actorCount = m_ActiveScene->m_Actors.size();
-			Ref<Counter> sceneCounter = MakeRef<Counter>();
 			auto& objects = m_ActiveScene->m_Actors;
 			// Submit jobs for each actor
 			DE_PROFILE(Submit Scene Jobs)
@@ -312,9 +311,9 @@ namespace Denix
 				m_SceneBatchCount =0;
 				for (size_t i = 0; i < actorCount; i += m_SceneBatchSize)
 				{
-					sceneCounter->Increment();
+					_waitCounter->Increment();
 					auto end = std::min(i + m_SceneBatchSize, actorCount); 
-					JobSubsystem::AddJob("UpdateBatch "+ ++m_SceneBatchCount, Priority::NORMAL, sceneCounter, [start = i, end, dt = _deltaTime, &objects]
+					JobSubsystem::AddJob("UpdateBatch "+ ++m_SceneBatchCount, Priority::NORMAL, _waitCounter, [start = i, end, dt = _deltaTime, &objects]
 					{
 						for (size_t j = start; j < end; ++j) {
 							objects[j]->Update(dt);
@@ -325,13 +324,9 @@ namespace Denix
 			else
 			{
 				for (auto& actor : m_ActiveScene->m_Actors)
-					JobSubsystem::AddJob("Actor Update", Priority::NORMAL, sceneCounter, &Actor::Update, actor, _deltaTime);
+					JobSubsystem::AddJob("Actor Update: " + actor->GetName(), Priority::NORMAL, _waitCounter, &Actor::Update, actor, _deltaTime);
 			}
 			DE_PROFILE_END(Submit Scene Jobs)
-
-			DE_PROFILE(Wait For Scene jobs)
-			WaitForCounter(sceneCounter.get());
-			DE_PROFILE_END(Wait For Scene jobs)
 		}
 		else
 		{

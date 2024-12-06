@@ -122,7 +122,7 @@ namespace Denix
                 ImGui::CheckboxFlags("ImGuiTableFlags_SizingFixedFit", &flags, ImGuiTableFlags_SizingFixedFit); //HelpMarker("Columns default to _WidthStretch with default width weights proportional to each columns contents.");
                 PopStyleCompact();
 
-                if (ImGui::BeginTable("table_sorting", 4, flags, ImVec2(0.0f, /*TEXT_BASE_HEIGHT * */ 15), 0.0f))
+                if (ImGui::BeginTable("table_sorting", 6, flags, ImVec2(0.0f, /*TEXT_BASE_HEIGHT * */ 15), 0.0f))
                 {
                     // Declare columns
                     // We use the "user_id" parameter of TableSetupColumn() to specify a user id that will be stored in the sort specifications.
@@ -131,10 +131,12 @@ namespace Denix
                     // - ImGuiTableColumnFlags_DefaultSort
                     // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending / ImGuiTableColumnFlags_NoSortDescending
                     // - ImGuiTableColumnFlags_PreferSortAscending / ImGuiTableColumnFlags_PreferSortDescending
-                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
-                    ImGui::TableSetupColumn("Avg", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
-                    ImGui::TableSetupColumn("Min", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
-                    ImGui::TableSetupColumn("Max", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
+                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 0.0f, 0);
+                    ImGui::TableSetupColumn("Count", ImGuiTableColumnFlags_WidthFixed, 0.0f, 1);
+                    ImGui::TableSetupColumn("Time", ImGuiTableColumnFlags_WidthFixed, 0.0f, 2);
+                    ImGui::TableSetupColumn("Avg", ImGuiTableColumnFlags_WidthFixed, 0.0f, 3);
+                    ImGui::TableSetupColumn("Min", ImGuiTableColumnFlags_WidthFixed, 0.0f, 4);
+                    ImGui::TableSetupColumn("Max", ImGuiTableColumnFlags_WidthFixed, 0.0f, 5);
                     ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
                     ImGui::TableHeadersRow();
 
@@ -154,6 +156,10 @@ namespace Denix
                             ImGui::TableNextRow();
                             ImGui::TableNextColumn();
                             ImGui::TextUnformatted(profile->GetName().c_str());
+                            ImGui::TableNextColumn();
+                            ImGui::Text("%d", profile->m_DurationRecords.size());
+                            ImGui::TableNextColumn();
+                            ImGui::Text("%f", profile->m_ExecTime);
                             ImGui::TableNextColumn();
                             ImGui::Text("%f", profile->GetAverageDuration());
                             ImGui::TableNextColumn();

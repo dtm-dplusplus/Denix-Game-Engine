@@ -78,7 +78,10 @@ namespace Denix
 
             float durationSum = [&] { float sum =0.0f; for(const float d: m_DurationRecords) sum += d; return sum; }();
             m_AverageDuration = durationSum / static_cast<float>(m_DurationRecords.size());
+            m_ExecTime = duration;
         }
+
+        float m_ExecTime = 0.0f;
     };
     
     struct JobDeclaration

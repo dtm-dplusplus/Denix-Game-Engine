@@ -18,9 +18,9 @@ void Denix::Thread::Work()
         if (m_Job)
         {
             // Execute the job
-            m_Job->m_JobProfile->Start();
+            if (s_ShouldProfile) m_Job->m_JobProfile->Start();
             m_Job->m_EntryPoint();
-            m_Job->m_JobProfile->End();
+             if (s_ShouldProfile) m_Job->m_JobProfile->End();
             m_Job->m_WaitCounter->Decrement();
 
             // Profile the thread

@@ -38,7 +38,7 @@ namespace Denix
 
 		void Deinitialize() override;
 
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
 		static void SerializeScene();
 		static bool SerializeScene(const Scene* _scene);
