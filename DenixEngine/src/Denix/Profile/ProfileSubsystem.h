@@ -27,7 +27,8 @@ namespace Denix
 		static void EndProfile(const std::string& _name);
 
 		std::map<std::string, Ref<Profile>>& GetProfiles() { return m_Profiles; }
-		
+
+		bool m_ClearProfiles;
 	private:
 		static ProfileSubsystem* s_ProfileSubsystem;
 

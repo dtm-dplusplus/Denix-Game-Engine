@@ -22,7 +22,8 @@ namespace Denix
             ImGui::Text("Worker Threads Available: %d", jobSubsystem->GetActiveThreads());
             ImGui::Text("Worker Threads Active: %d", jobSubsystem->GetActiveThreads());
             ImGui::Text("Jobs queued: %d", jobSubsystem->GetJobQueueSize());
-
+            ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_SceneThreaded);
+            
             if (ImGui::InputInt("Active Threads", &jobSubsystem->GetActiveThreadsRef()))
             {
                 JobSubsystem::UpdateActiveThreads();

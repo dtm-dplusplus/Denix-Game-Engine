@@ -185,9 +185,9 @@ namespace Denix
 			});
 			
 			// Run the garbage collector
-			Ref<Counter> cleanCounter = MakeRef<Counter>(1);
-			m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, cleanCounter, &SceneSubsystem::CleanRubbish, m_SceneSubsystem.get());
-			WaitForCounter(cleanCounter.get());
+			Ref<Counter> garbageCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, garbageCounter, &SceneSubsystem::CleanRubbish, m_SceneSubsystem.get());
+			WaitForCounter(garbageCounter.get());
 			
 			m_TimerSubsystem->EndFrame();
 

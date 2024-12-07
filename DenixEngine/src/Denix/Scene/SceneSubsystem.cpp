@@ -213,36 +213,15 @@ namespace Denix
 		// Cleanup rubbish objects here. TEMP loop, will be moved to a queue
 		for (const auto& actor : m_ActiveScene->m_Actors)
 		{
-			if(!actor) continue;
-			if (actor->IsRubbish())
-			{
-				// This will remove registered Components & other neccessary cleanups
-				if (m_ActiveScene->IsPlaying()) actor->EndPlay();
-				actor->EndScene();
+			if (!actor) continue;
+			if (!actor->IsRubbish()) continue;
+			
+			// This will remove registered Components & other neccessary cleanups
+			if (m_ActiveScene->IsPlaying()) actor->EndPlay();
+			actor->EndScene();
 
-				// Check for scene types and remove from member lists
-				if (Ref<Light> light = CastRef<Light>(actor))
-				{
-					switch ((LightType)light->GetLightType())
-					{ 
-						case LightType::Directional:
-						{
-							m_ActiveScene->m_DirLight = nullptr;
-						} break;
-						
-						case LightType::Point:
-						{
-							m_ActiveScene->m_PointLights.erase(std::find(m_ActiveScene->m_PointLights.begin(), m_ActiveScene->m_PointLights.end(), light));
-						} break;
-
-						case LightType::Spot:
-						{
-							m_ActiveScene->m_SpotLights.erase(std::find(m_ActiveScene->m_SpotLights.begin(), m_ActiveScene->m_SpotLights.end(), light));
-						} break;
-					}
-				}
-				std::erase(m_ActiveScene->m_Actors, actor);
-			}
+			m_ActiveScene->m_ActorNames.erase(actor->GetName());
+			std::erase(m_ActiveScene->m_Actors, actor);
 		}
 
 		DE_PROFILE_END(Clean Rubbish)

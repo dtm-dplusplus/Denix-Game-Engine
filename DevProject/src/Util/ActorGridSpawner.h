@@ -14,9 +14,8 @@ public:
 
         // Adjust vector
         std::vector<Ref<Actor>>& _sceneObjects = _scene->GetSceneObjects();
-        _sceneObjects.clear();
-        _sceneObjects.shrink_to_fit();
-
+       for (const auto& actor : _sceneObjects)  actor->Destroy();
+        
         Timer spawnTime;
         spawnTime.Start();
         // Spawn cube grid
@@ -24,7 +23,9 @@ public:
         {
             for (int j = 0; j < GridSize; j++)
             {
+                DE_PROFILE(SpawnActor);
                 _scene->SpawnActor<Cube>(glm::vec3(i * 2.5f, j * 2.5f, 0.0f));
+                DE_PROFILE_END(SpawnActor);
             }
         }
         spawnTime.Stop();

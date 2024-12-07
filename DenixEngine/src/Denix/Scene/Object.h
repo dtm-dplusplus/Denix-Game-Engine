@@ -50,7 +50,7 @@ namespace Denix
 		 * Global Unique Identifier 
 		 * @return The GUID of the object
 		 */
-    	unsigned int GetGUID() const { return m_GUID; }
+    	size_t GetGUID() const { return m_GUID; }
     	
 		bool IsRubbish() const { return m_IsRubbish; }
 
@@ -72,7 +72,7 @@ namespace Denix
     private:
 		/* Name and ID should be hashed in some way in the future */
 		/* Unique Identifier */
-		unsigned int m_GUID;
+		size_t m_GUID;
 
 		/* Name of the object */
 		std::string m_Name;

@@ -17,22 +17,16 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
 
     ImGui::Begin("Profiler");
 
-    if (ImGui::CollapsingHeader("Thread", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
-    {
-        ImGui::Text("Thread Count: %d", std::thread::hardware_concurrency());
-        ImGui::SeparatorText("Scene Thread");
-        ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_SceneThreaded);
-    }
-
     const auto& profiles = ProfileSubsystem::Get()->GetProfiles();
     const float elaspedTime = TimerSubsystem::GetProgramElapsedTime();
 
-    ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
+    //ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
     ImGui::Text("Program time: %fms", TimerSubsystem::GetProgramElapsedTime());
     ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTime());
     ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
 
-
+    if (ImGui::Button("Clear Profile Data")) ProfileSubsystem::Get()->m_ClearProfiles = true;
+    
     static float history = 5.0f;
     ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
 
@@ -57,7 +51,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
     {
         if (ImGui::TreeNode(name.c_str()))
         {
-            ImGui::Text("Frame Percentage: %.2f%%", profile->m_FramePercentage * 100.0f);
+            //ImGui::Text("Frame Percentage: %.2f%%", profile->m_FramePercentage * 100.0f);
             ImGui::Text("Duration: %fms", profile->GetDuration());
             ImGui::Text("Minimum Duration: %fms", profile->m_MinimumDuration);
             ImGui::Text("Maximum Duration: %fms", profile->m_MaximumDuration);

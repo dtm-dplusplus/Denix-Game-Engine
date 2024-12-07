@@ -12,7 +12,7 @@ namespace Denix
     SceneOrganizerWidget::SceneOrganizerWidget(const WRef<Scene>& _scene) : SceneEditorWidget({"SceneOrganizer"}, _scene)
     {
         m_SceneRef = _scene;
-        m_SelectionIndex = -1;
+        m_SelectionIndex = _scene.lock()->GetSceneObjects().size() - 1;
         m_AddActorWidget = MakeRef<AddActorWidget>(_scene);
         m_SceneSettingsWidget = MakeRef<SceneSettingsWidget>(_scene);
     }
@@ -24,6 +24,11 @@ namespace Denix
         if(!m_SceneRef.lock()) return;
 
         std::vector<Ref<Actor>>& sceneObjects = m_SceneRef.lock()->GetSceneObjects();
+
+        if (sceneObjects.empty())
+        {
+            ResetSelection();
+        }
         
         // Scene Objects
         ImGui::SetNextWindowDockID(UISubsystem::Get()->DockLeftID, ImGuiCond_Appearing);
@@ -59,6 +64,7 @@ namespace Denix
                 {
                     sceneObjects[i]->Destroy();
                     ImGui::CloseCurrentPopup();
+                    ResetSelection();
                 }
                 ImGui::EndPopup();
             }
@@ -96,9 +102,11 @@ namespace Denix
 
     Ref<Actor> SceneOrganizerWidget::GetSelectedObject() const
     {
-        if (ValidateSelection())
+        if (!ValidateSelection()) return nullptr;
+        
+        if (Ref<Actor> selectedObject = m_SceneRef.lock()->GetSceneObjects().at(m_SelectionIndex))
         {
-            return m_SceneRef.lock()->GetSceneObjects()[m_SelectionIndex];
+            return selectedObject;
         }
 
         return nullptr;
@@ -106,6 +114,6 @@ namespace Denix
 
     bool SceneOrganizerWidget::ValidateSelection() const
     {
-        return m_SelectionIndex >= 0 && m_SceneRef.lock()->GetSceneObjects().size() -1;
+        return m_SelectionIndex >= 0 && m_SceneRef.lock()->GetSceneObjects().size();
     }
 }

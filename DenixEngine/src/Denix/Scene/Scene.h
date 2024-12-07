@@ -4,6 +4,7 @@
 #include "Object/Shapes/Shapes.h"
 #include "Object/Light/LightObject.h"
 #include "Camera.h"
+#include "Denix/Profile/ProfileSubsystem.h"
 
 
 namespace Denix
@@ -111,30 +112,45 @@ namespace Denix
 		template <class T = Actor, typename... Args>
 		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f))
 		{
+			DE_PROFILE(SpawnActor - Check Derived)
+			
 			// Check if T is derived from Actor
 			static_assert(std::is_base_of_v<Actor, T>, "T must be derived from Actor");
-			
+			DE_PROFILE_END(SpawnActor - Check Derived)
+
+			DE_PROFILE(SpawnActor - Create Actor)
 			if (Ref<Actor> obj = MakeRef<T>(std::forward<Args>(_args)...))
 			{
+				DE_PROFILE_END(SpawnActor - Create Actor)
+
+				DE_PROFILE(SpawnActor - Validate Name)
 				// Validate Name. We cannont have two objects with the same name
-				if (GetActorByName(obj->m_Name))
+				if (m_ActorNames.contains(obj->GetName()))
 				{
 					int copy = 1;
-					while(GetActorByName(obj->m_Name + std::to_string(copy))) copy++;
-					obj->m_Name+= std::to_string(copy);
+					while (m_ActorNames.contains(obj->GetName() + std::to_string(copy))) copy++;
+					obj->m_Name += std::to_string(copy);
 				}
-					
+				m_ActorNames.insert(obj->m_Name);
+				DE_PROFILE_END(SpawnActor - Validate Name)
+
+				DE_PROFILE(SpawnActor - Set Transform)
 				// Set Transform Component
 				obj->m_TransformComponent->m_Position = _position;
 				obj->m_TransformComponent->m_Rotation = _rotation;
+				DE_PROFILE_END(SpawnActor - Set Transform)
 
+				DE_PROFILE(SpawnActor - Begin Scene)
 				// Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
 				obj->BeginScene();
 				if (m_IsPlaying) obj->BeginPlay();						
+				DE_PROFILE_END(SpawnActor - Begin Scene)
 
+				DE_PROFILE(SpawnActor - Add to Scene)
 				// Add the object to the scene
 				m_Actors.push_back(std::move(obj));
-
+				DE_PROFILE_END(SpawnActor - Add to Scene)
+				
 				// Retrun the actor reference as it's derived type
 				return CastRef<T>(m_Actors.back());
 			}
@@ -223,7 +239,12 @@ namespace Denix
 			return actors;
 		}
 		
-
+		/**
+		 * Map of actors in the scene
+		 * Used to quickly find actors by name
+		 */
+		std::unordered_set<std::string> m_ActorNames;
+		
 	protected:
 
 		/** Name of the scene. Must be uniqiue */
@@ -248,6 +269,8 @@ namespace Denix
 		/** List of Objects in the scene */
 		std::vector<Ref<Actor>> m_Actors;
 
+		
+		
 		Ref<Camera> m_ViewportCamera;
 
 		Ref<Camera> m_ActiveCamera;

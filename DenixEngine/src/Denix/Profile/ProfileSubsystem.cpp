@@ -10,6 +10,7 @@ namespace Denix
     ProfileSubsystem::ProfileSubsystem()
     {
         s_ProfileSubsystem = this;
+        m_ClearProfiles = false;
         DE_LOG_CREATE(LogProfile)
     }
 
@@ -47,10 +48,20 @@ namespace Denix
     void ProfileSubsystem::Update(float _deltaTime)
     {
         Subsystem::Update(_deltaTime);
-
-        for (const auto& profile : m_Profiles | std::views::values)
+        
+        if(m_ClearProfiles)
         {
-            profile->m_FramePercentage = profile->m_AverageDuration / _deltaTime;
+            for(auto& profile : m_Profiles | std::views::values)
+            {
+                profile->m_DurationRecords.clear();
+                profile->m_DurationRecords.assign(profile->m_AverageDurationCount, 0.0f);
+                profile->m_DurationCount = 0;
+                profile->m_AverageDuration = 0.0f;
+                profile->m_Buffer = ProfileBuffer();
+                profile->m_MinimumDuration = 0.0f;
+                profile->m_MaximumDuration = 0.0f;
+            }
+            m_ClearProfiles = false;
         }
     }
 
