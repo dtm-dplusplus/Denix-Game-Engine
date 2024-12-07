@@ -127,25 +127,24 @@ namespace Denix
 		{
 			// Setup timer system for the new frame.
 			m_TimerSubsystem->BeginFrame();
-			m_ProfileSubsystem->Update(m_TimerSubsystem->m_FrameTime);
 
-			// Flush the job profile buffer
-		//	m_JobSubsystem->JobProfileBuffer.clear();
+			Ref<Counter> profileCounter = MakeRef<Counter>(1);
+			m_JobSubsystem->AddJob("Update Profiles", Priority::NORMAL, profileCounter, &ProfileSubsystem::Update, m_ProfileSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			WaitForCounter(profileCounter.get());
 			
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
-			DE_PROFILE(Input Poll)
-			m_InputSubsystem->Poll();
-			DE_PROFILE_END(Input Poll)
-
+			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, nullptr, &InputSubsystem::Poll, m_InputSubsystem.get());
 			
 			// Clear the offscreen frame buffer
-			DE_PROFILE(New Window Buffer)
-			m_UISubsystem->NewFrame();
-			m_WindowSubsystem->m_Window->ClearBuffer();
-			m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->m_FrameBuffer->Bind();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			DE_PROFILE_END(New Window Buffer)
-			
+			m_JobSubsystem->AddJobInline("Clear Frame Buffer", Priority::NORMAL, nullptr, [this]
+			{
+				DE_PROFILE(Clear Frame Buffer)
+				m_UISubsystem->NewFrame();
+				m_WindowSubsystem->m_Window->ClearBuffer();
+				m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->m_FrameBuffer->Bind();
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				DE_PROFILE_END(Clear Frame Buffer)
+			});
 			
 			// Prepare physics system for scene update
 			Ref<Counter> prePhysicsCounter = MakeRef<Counter>(1);
@@ -168,19 +167,22 @@ namespace Denix
 			WaitForCounter(uiCounter.get());
 
 			// Run on main due to opengl context when initializing the scene
-			m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime);
+			m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, nullptr, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 
 			// Render the scene. This runs on the main thread as it requires the opengl context
-			m_RendererSubsystem->RenderScene();
-			
+			m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, nullptr, &RendererSubsystem::RenderScene, m_RendererSubsystem.get());
+
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
-			DE_PROFILE(Draw Viewport)
-			FrameBuffer::Unbind();
-			m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
-			m_UISubsystem->RenderUI(); // Swap buffers and render UI
-			m_WindowSubsystem->m_Window->SwapBuffers();
-			m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
-			DE_PROFILE_END(Draw Viewport)
+			m_JobSubsystem->AddJobInline("Draw Viewport", Priority::NORMAL, nullptr, [this]()
+			{
+				DE_PROFILE(Draw Viewport)
+				FrameBuffer::Unbind();
+				m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
+				m_UISubsystem->RenderUI(); // Swap buffers and render UI
+				m_WindowSubsystem->m_Window->SwapBuffers();
+				m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
+				DE_PROFILE_END(Draw Viewport)
+			});
 			
 			// Run the garbage collector
 			Ref<Counter> cleanCounter = MakeRef<Counter>(1);

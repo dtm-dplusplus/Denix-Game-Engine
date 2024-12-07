@@ -2,6 +2,7 @@
 #include "Thread.h"
 
 #include "JobSubsystem.h"
+#include "JobDecleration.h"
 
 int Denix::Thread::s_WaitForCounterSleepTime = 1;
 int Denix::Thread::s_WaitForJobSleepTime = 110;
@@ -17,8 +18,11 @@ void Denix::Thread::Work()
         // If a job was found in the queue, execute it
         if (m_Job)
         {
-            // Execute the job
-            if (s_ShouldProfile) m_Job->m_JobProfile->Start();
+            if (s_ShouldProfile)
+            {
+                m_Job->m_ThreadIndex = m_ThreadIndex;
+                m_Job->m_JobProfile->Start();
+            }
             m_Job->m_EntryPoint();
              if (s_ShouldProfile) m_Job->m_JobProfile->End();
             m_Job->m_WaitCounter->Decrement();

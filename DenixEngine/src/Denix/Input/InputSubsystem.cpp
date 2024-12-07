@@ -1,6 +1,7 @@
 #include "InputSubsystem.h"
 
 #include "backends/imgui_impl_sdl3.h"
+#include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
 
 namespace Denix
@@ -34,7 +35,7 @@ namespace Denix
 
 	void InputSubsystem::Poll()
 	{
-		//m_Event = SDL_Event();
+		DE_PROFILE(Input Poll)
 		SDL_Event event;
 
         m_MouseData.WheelY = 0;
@@ -121,6 +122,8 @@ namespace Denix
             default: ;
             }
 		}
+
+		DE_PROFILE_END(Input Poll)
 	}
 
 	void InputSubsystem::InputPanel()

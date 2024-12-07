@@ -34,9 +34,9 @@ void Denix::JobSubsystem::Initialize()
 
 
     // Initialize the worker threads - Subtract 1 for main thread
-    for (size_t i = 0; i < m_ActiveWorkerThreads; i++)
+    for (int i = 0; i < m_ActiveWorkerThreads; i++)
     {
-        m_WorkerThreads.emplace_back(MakeRef<Thread>());
+        m_WorkerThreads.emplace_back(MakeRef<Thread>(i+1));
         m_WorkerThreads.back()->InitWorkerThread();
     }
 

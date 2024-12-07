@@ -28,7 +28,7 @@ namespace Denix
                 JobSubsystem::UpdateActiveThreads();
             }
 
-
+            ImGui::SetNextItemOpen(true);
             if (ImGui::TreeNode("Profiling"))
             {
                 if (isProfiling)
@@ -92,9 +92,8 @@ namespace Denix
                 ImGui::TreePop();
             }
 
-            if (!isProfiling)
-            {
-                // Options
+            
+            // Options
                 static ImGuiTableFlags flags =
                     ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable |
                     ImGuiTableFlags_Sortable | ImGuiTableFlags_SortMulti
@@ -122,7 +121,7 @@ namespace Denix
                 ImGui::CheckboxFlags("ImGuiTableFlags_SizingFixedFit", &flags, ImGuiTableFlags_SizingFixedFit); //HelpMarker("Columns default to _WidthStretch with default width weights proportional to each columns contents.");
                 PopStyleCompact();
 
-                if (ImGui::BeginTable("table_sorting", 6, flags, ImVec2(0.0f, /*TEXT_BASE_HEIGHT * */ 15), 0.0f))
+                if (ImGui::BeginTable("table_sorting", 7, flags, ImVec2(0.0f, /*TEXT_BASE_HEIGHT * */ 15), 0.0f))
                 {
                     // Declare columns
                     // We use the "user_id" parameter of TableSetupColumn() to specify a user id that will be stored in the sort specifications.
@@ -131,6 +130,7 @@ namespace Denix
                     // - ImGuiTableColumnFlags_DefaultSort
                     // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending / ImGuiTableColumnFlags_NoSortDescending
                     // - ImGuiTableColumnFlags_PreferSortAscending / ImGuiTableColumnFlags_PreferSortDescending
+                    ImGui::TableSetupColumn("Thread", ImGuiTableColumnFlags_WidthFixed, 0.0f, 0);
                     ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 0.0f, 0);
                     ImGui::TableSetupColumn("Count", ImGuiTableColumnFlags_WidthFixed, 0.0f, 1);
                     ImGui::TableSetupColumn("Time", ImGuiTableColumnFlags_WidthFixed, 0.0f, 2);
@@ -149,11 +149,14 @@ namespace Denix
                         }*/
 
                     // Demonstrate using clipper for large vertical lists
-                    for (const auto& profile : jobProfiles | std::views::values)
+                    if (jobProfiles.size() > 0)
+                        for (const auto& profile : jobProfiles | std::views::values)
                         {
                             // Display a data item
                             ImGui::PushID(profile->GetName().c_str());
                             ImGui::TableNextRow();
+                            ImGui::TableNextColumn();
+                            ImGui::Text("%d", profile->m_LastThreadIndex);
                             ImGui::TableNextColumn();
                             ImGui::TextUnformatted(profile->GetName().c_str());
                             ImGui::TableNextColumn();
@@ -161,7 +164,7 @@ namespace Denix
                             ImGui::TableNextColumn();
                             ImGui::Text("%f", profile->m_ExecTime);
                             ImGui::TableNextColumn();
-                            ImGui::Text("%f", profile->GetAverageDuration());
+                            ImGui::Text("%f", profile->m_AverageDuration);
                             ImGui::TableNextColumn();
                             ImGui::Text("%f", profile->m_MinimumDuration);
                             ImGui::TableNextColumn();
@@ -170,7 +173,6 @@ namespace Denix
                         }
                     ImGui::EndTable();
                 }
-            }
         }
     }
 }

@@ -9,16 +9,20 @@
 
 namespace Denix
 {
-  
-    
+    struct JobDeclaration;
+
+
     class Thread
     {
     public:
-        Thread()
+        Thread(const int _index)
         {
             m_ShouldWork = true;
             m_ThreadIDInt = 0;
             m_JobExecCount = 0;
+            m_ThreadExecTime = 0.0f;
+            m_ThreadSleepTime = 0.0f;
+            m_ThreadIndex = _index;
         }
 
         ~Thread()
@@ -34,7 +38,6 @@ namespace Denix
             m_Thread = std::thread(std::forward<Func>(_func), std::forward<Args>(_args)...);
             m_ThreadID = m_Thread.get_id();
             SetThreadIDInt();
-            DE_LOG(LogThread, Info, "Thread: {} created", m_ThreadIDInt)
         }
 
         void InitWorkerThread()
@@ -42,7 +45,7 @@ namespace Denix
             m_Thread = std::thread(&Thread::Work, this);
             m_ThreadID = m_Thread.get_id();
             SetThreadIDInt();
-            DE_LOG(LogThread, Info, "Thread: {} created", m_ThreadIDInt)
+            DE_LOG(LogThread, Info, "Thread Index: {} ID: {}", m_ThreadIndex, m_ThreadIDInt)
         }
 
         // Delete copy constructor and copy assignment operator
@@ -116,8 +119,7 @@ namespace Denix
         std::thread m_Thread;
         std::thread::id m_ThreadID;
         size_t m_ThreadIDInt;
-        std::mutex m_Mutex;
-        
+        int m_ThreadIndex;        
         Ref<JobDeclaration> m_Job;
 
         

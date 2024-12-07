@@ -4,7 +4,9 @@
 #include "Denix/Thread/Thread.h"
 #include <concurrent_priority_queue.h>
 
-#include "Denix/Profile/Profile.h"
+#include "JobProfile.h"
+#include "JobDecleration.h"
+#include "ThreadPrimitive.h"
 
 namespace Denix
 {
@@ -70,15 +72,48 @@ namespace Denix
                 std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
                 );
 
+            profile->m_Jobs.push_back(job);
             s_JobSubsystem->m_Jobs.push(job);
         }
 
+        template <typename Func, typename... Args>
+        static void AddJobInline(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter,
+                           Func&& _func, Args&&... _args)
+        {
+            Ref<JobProfile> profile;
+            if (s_JobSubsystem->JobProfileBuffer.contains(_name))
+                profile = s_JobSubsystem->JobProfileBuffer[_name];
+            else
+            {
+                profile = MakeRef<JobProfile>(ObjectInit{_name});
+                s_JobSubsystem->JobProfileBuffer[_name] = profile;
+            }
+                
+            
+            Ref<JobDeclaration> job = MakeRef<JobDeclaration>(
+                _name,
+                _priority,
+                _waitCounter ? _waitCounter : MakeRef<Counter>(1),
+                profile,
+                std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
+                );
+            
+            job->m_ThreadIndex = 0;
+            profile->m_Jobs.push_back(job);
+
+            // Execute the job
+            if (Thread::s_ShouldProfile) job->m_JobProfile->Start();
+            job->m_EntryPoint();
+            if (Thread::s_ShouldProfile) job->m_JobProfile->End();
+            job->m_WaitCounter->Decrement();
+        }
+        
         static void StartProfiling()
         {
 
             // Setup Buffer
             s_JobSubsystem->JobProfileBuffer.clear();
-            s_JobSubsystem->JobProfileBuffer.reserve(1000);
+            s_JobSubsystem->JobProfileBuffer.reserve(100);
 
             // Setup Threads
             for (auto& thread : s_JobSubsystem->m_WorkerThreads)
