@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "Denix/Core.h"
+#include "Denix/Core/TimePrimitive.h"
 
 namespace Denix
 {
@@ -43,6 +45,43 @@ namespace Denix
         }
 
         std::atomic_int m_Value{0};
+    };
+
+    struct JobDeclaration
+    {
+        JobDeclaration(std::string _name, const Priority _priority, Ref<Counter> _waitCounter,
+                       std::function<void()> _entryPoint):
+            m_Name(std::move(
+                _name)), m_EntryPoint(std::move(_entryPoint)),
+            m_Priority(_priority),
+            m_WaitCounter(std::move(_waitCounter)), m_ThreadIndex(-1)
+        {
+        }
+
+        /**
+         * @brief Job name. Used for debugging purposes
+         */
+        std::string m_Name;
+
+        /**
+         * @brief Jobs entry point function
+         */
+        std::function<void()> m_EntryPoint;
+
+        /**
+         * @brief Job priority
+         */
+        Priority m_Priority;
+
+        /**
+         * @brief Counter to keep track of how many jobs we are waiting on before a job group is finished.
+         * Should probably be moved to some kind of job buidler which sets up dependencies
+         */
+        Ref<Counter> m_WaitCounter;
+
+        TimeEvent m_JobTime;
+
+        int m_ThreadIndex;
     };
     
 }

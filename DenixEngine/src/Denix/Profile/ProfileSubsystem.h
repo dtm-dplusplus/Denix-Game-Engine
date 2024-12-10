@@ -8,8 +8,13 @@
 #define DE_PROFILE(name) ProfileSubsystem::StartProfile(#name);
 #define DE_PROFILE_END(name) ProfileSubsystem::EndProfile(#name);
 
+#define DE_PROFILE_JOB(job) ProfileSubsystem::StartJobProfile(job);
+#define DE_PROFILE_JOB_END(job) ProfileSubsystem::EndJobProfile(job);
+
 namespace Denix
 {
+	struct JobDeclaration;
+
 	class ProfileSubsystem final : public Subsystem
 	{
 	public:
@@ -34,6 +39,9 @@ namespace Denix
 		static void StartProfile(const std::string& _name);
 		static void EndProfile(const std::string& _name);
 
+		static void StartJobProfile(const Ref<JobDeclaration>& _job);
+		static void EndJobProfile(const Ref<JobDeclaration>& _job);
+		
 		static Ref<ProfileSession> GetActiveProfileSession() { return s_ProfileSubsystem->m_ActiveProfileSession; }
 
 		Ref<ProfileSession> m_ActiveProfileSession;

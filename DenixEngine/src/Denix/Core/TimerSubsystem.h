@@ -28,16 +28,6 @@ namespace Denix
 		void BeginFrame();
 
 		void EndFrame();
-
-		/**
-		 * 
-		 * @return the time elapsed since the start of the program (seconds)
-		 */
-		static float GetElapsedTime()
-		{
-			return std::chrono::duration<float>(
-				std::chrono::high_resolution_clock::now() - s_TimerSubsystem->m_StartTimePoint).count();
-		}
 		
 		static int GetFPS();
 		static int& GetMaxFPS() { return s_TimerSubsystem->m_MaxFPS; }
@@ -47,7 +37,6 @@ namespace Denix
 		static float GetDeltaTime() {return s_TimerSubsystem->m_DeltaTime; }
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
 
-		Ref<Timer> m_FrameTimer;
 		std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimePoint;
 		Ref<Profile> m_EngineProfile;
 
@@ -64,7 +53,7 @@ namespace Denix
 		/**
 		 * Time taken for frame to complete in seconds
 		 */
-		float m_FrameTimeS;
+		float m_FrameTimeMs;
 
 		/**
 		 * Game specifc frame time

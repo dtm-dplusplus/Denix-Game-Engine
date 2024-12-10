@@ -2,38 +2,37 @@
 
 #include "Denix/Scene/Object.h"
 #include "Denix/Core/Timer.h"
-#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 namespace Denix
 {
     class Timer;
 
-    struct ProfileData
+    struct DurationBuffer
     {
-        std::vector<glm::vec2> ProfileResults;
+        std::vector<TimeEvent> ProfileResults;
 
-        ProfileData()
+        DurationBuffer()
         {
             // Reserve to reduce reallocations during profiling
             ProfileResults.reserve(5000);
         }
 
         /**
-         * 
-         * @param x The start time of the profile
-         * @param y The duration of the profile
+         * Save the profile result. Duration is calculated from the start and end time as the 3rd element in the vector.
+         * @param _result
          */
-        void SaveResult(float x, float y) { ProfileResults.emplace_back(x, y); }
+        void SaveResult(const TimeEvent _result) { ProfileResults.push_back(_result);}
 
         
         /**
          * Returns the last completed  profile result
          * @return glm::vec2<float,float> Profile Start Time, Profile Duration
          */
-        glm::vec2 GetLastResult() const
+        TimeEvent GetLastResult() const
         {
             if (!ProfileResults.empty()) return ProfileResults.back();
-            return {0.0f, 0.0f};
+            return {};
         }
         
         void Erase() { if (!ProfileResults.empty()) ProfileResults.resize(0);}
@@ -51,15 +50,13 @@ namespace Denix
 
         Ref<Timer> m_Timer;
 
-        float m_CurrentProfileStartTime;
-        
         virtual void Start();
         virtual void End();
 
         float GetAverageDuration() const { return m_AverageDuration; }
 
-        float GetLastProfileDuration() const { return m_Timer->GetDuration();}
-        glm::vec2 GetLastProfileResult() const { return m_Buffer.GetLastResult(); }
+        float GetLastProfileDuration() const { return GetLastProfileResult().Duration;}
+        TimeEvent GetLastProfileResult() const { return m_DurationBuffer.GetLastResult(); }
 
         /**
          * The average duration of the profile.
@@ -75,7 +72,7 @@ namespace Denix
          */
         inline static int s_AverageDurationCount = 30;
 
-        ProfileData m_Buffer;
+        DurationBuffer m_DurationBuffer;
         
         friend class ProfileSubsystem;
     };

@@ -5,8 +5,8 @@
 #include <concurrent_priority_queue.h>
 
 #include "JobProfile.h"
-#include "JobDecleration.h"
 #include "ThreadPrimitive.h"
+#include "Denix/Profile/ProfileSubsystem.h"
 
 namespace Denix
 {
@@ -54,25 +54,13 @@ namespace Denix
         static void AddJob(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter,
                            Func&& _func, Args&&... _args)
         {
-            Ref<JobProfile> profile;
-            if (s_JobSubsystem->JobProfileBuffer.contains(_name))
-                profile = s_JobSubsystem->JobProfileBuffer[_name];
-            else
-            {
-                profile = MakeRef<JobProfile>(ObjectInit{_name});
-                s_JobSubsystem->JobProfileBuffer[_name] = profile;
-            }
-                
-            
             Ref<JobDeclaration> job = MakeRef<JobDeclaration>(
                 _name,
                 _priority,
                 _waitCounter ? _waitCounter : MakeRef<Counter>(1),
-                profile,
                 std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
                 );
 
-            profile->m_Jobs.push_back(job);
             s_JobSubsystem->m_Jobs.push(job);
         }
 
@@ -80,40 +68,29 @@ namespace Denix
         static void AddJobInline(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter,
                            Func&& _func, Args&&... _args)
         {
-            Ref<JobProfile> profile;
-            if (s_JobSubsystem->JobProfileBuffer.contains(_name))
-                profile = s_JobSubsystem->JobProfileBuffer[_name];
-            else
-            {
-                profile = MakeRef<JobProfile>(ObjectInit{_name});
-                s_JobSubsystem->JobProfileBuffer[_name] = profile;
-            }
-                
-            
             Ref<JobDeclaration> job = MakeRef<JobDeclaration>(
                 _name,
                 _priority,
                 _waitCounter ? _waitCounter : MakeRef<Counter>(1),
-                profile,
                 std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
                 );
-            
+
+            // Hardcoded to the main thread
             job->m_ThreadIndex = 0;
-            profile->m_Jobs.push_back(job);
 
             // Execute the job
-            if (Thread::s_ShouldProfile) job->m_JobProfile->Start();
+            if (Thread::s_ShouldProfile) DE_PROFILE_JOB(job)
             job->m_EntryPoint();
-            if (Thread::s_ShouldProfile) job->m_JobProfile->End();
+            if (Thread::s_ShouldProfile) DE_PROFILE_JOB_END(job)
             job->m_WaitCounter->Decrement();
         }
         
-        static void StartProfiling()
+        static void StartThreadProfiling()
         {
 
             // Setup Buffer
-            s_JobSubsystem->JobProfileBuffer.clear();
-            s_JobSubsystem->JobProfileBuffer.reserve(100);
+            //s_JobSubsystem->JobProfileBuffer.clear();
+            //s_JobSubsystem->JobProfileBuffer.reserve(100);
 
             // Setup Threads
             for (auto& thread : s_JobSubsystem->m_WorkerThreads)
@@ -127,7 +104,7 @@ namespace Denix
             Thread::s_ShouldProfile = true;
         }
 
-        static void StopProfiling()
+        static void StopThreadProfiling()
         {
             Thread::s_ShouldProfile = false;
             DE_LOG(LogThread, Info, "Thread Profiling: Disabled")
@@ -167,11 +144,11 @@ namespace Denix
         static int& GetActiveThreadsRef() { return s_JobSubsystem->m_ActiveWorkerThreads; }
         static size_t GetJobQueueSize() { return s_JobSubsystem->m_Jobs.size(); }
 
-        static std::vector<Ref<Thread>> GetWorkerThreads() { return s_JobSubsystem->m_WorkerThreads; }
+        static std::vector<Ref<Thread>>& GetWorkerThreads() { return s_JobSubsystem->m_WorkerThreads; }
         
         static Ref<JobSubsystem> Get() { return s_JobSubsystem->shared_from_this(); }
 
-        std::unordered_map<std::string, Ref<JobProfile>> JobProfileBuffer;
+      //  std::unordered_map<std::string, Ref<JobProfile>> JobProfileBuffer;
     private:
         /**
          * 

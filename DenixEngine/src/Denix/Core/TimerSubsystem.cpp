@@ -28,8 +28,7 @@ namespace Denix
 	{
 		Subsystem::Initialize();
 		DE_LOG(LogTimer, Warn, "Initializing TimerSubsystem")
-		m_StartTimePoint = std::chrono::high_resolution_clock::now();
-		m_FrameTimer = MakeRef<Timer>(ObjectInit("FrameTimer"), true);
+		Timer::m_ProgramStartTimePoint = std::chrono::high_resolution_clock::now();
 		m_EngineProfile = MakeRef<Profile>(ObjectInit("EngineProfile"));
 		DE_LOG(LogTimer, Info, "TimerSubsystem Initialized")
 	}
@@ -49,24 +48,24 @@ namespace Denix
 		// Calculate the time taken for the frame to complete
 		m_EngineProfile->End();
 		
-		m_FrameTime = m_EngineProfile->GetAverageDuration();
-		m_FrameTimeS = m_FrameTime * 0.001f;
+		m_FrameTime = m_EngineProfile->GetLastProfileDuration();// m_EngineProfile->GetAverageDuration();
+		DE_LOG(Log, Warn, "Last Frame Time {}", m_FrameTime)
+		m_FrameTimeMs = m_FrameTime * 1000.0f;
 
 		// Calculate the delta time, accounting for the game time speed which can be used to slow down or speed up the game.
-		m_DeltaTime = m_GameTimeSpeed * m_FrameTimeS;
+		m_DeltaTime = m_GameTimeSpeed * m_FrameTime;
 
 		static int frameCounter = 0;
 		frameCounter++;
 
-		static float timeInFrame = 0.0f;
-		timeInFrame += m_FrameTimeS;
+		static Timer fpsTimer = Timer({"Frame Timer"});
 
 		// Calculate the frames per second. When a second has passed, reset the frame counter and update the frames per second.
-		if (timeInFrame >= 1.0f)
+		if (fpsTimer.GetElapsed() >= 1.0f)
 		{
 			m_FramesPerSecond = frameCounter;
 			frameCounter = 0;
-			timeInFrame = 0.0f;
+			fpsTimer.Reset();
 		}
 	}
 
@@ -76,8 +75,5 @@ namespace Denix
 	}
 
 	float TimerSubsystem::GetFrameTime() { return s_TimerSubsystem->m_FrameTime; }
-	float TimerSubsystem::GetFrameTimeMs()
-	{
-		return s_TimerSubsystem->m_FrameTimeS;
-	}
+	float TimerSubsystem::GetFrameTimeMs() {return s_TimerSubsystem->m_FrameTimeMs;}
 }

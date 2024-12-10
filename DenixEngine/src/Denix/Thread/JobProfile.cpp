@@ -1,12 +1,17 @@
 #include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
 #include "JobProfile.h"
-#include "JobDecleration.h"
+
+void Denix::JobProfile::Start()
+{
+    Profile::Start();
+
+    
+}
 
 void Denix::JobProfile::End()
 {
     m_Timer->Stop();
 
-    if (m_Jobs.back()->m_ThreadIndex > -1) m_LastThreadIndex = m_Jobs.back()->m_ThreadIndex;
     // Record the duration
     float  duration = m_Timer->GetDuration() * 1000.0f;
     //m_DurationRecords.push_back(duration);
@@ -19,5 +24,5 @@ void Denix::JobProfile::End()
 
     /*float durationSum = [&] { float sum =0.0f; for(const float d: m_DurationRecords) sum += d; return sum; }();
     m_AverageDuration = durationSum / static_cast<float>(m_DurationRecords.size());*/
-    m_ExecTime = duration;
+    //m_ExecTime = duration;
 }

@@ -8,18 +8,35 @@ namespace Denix
 {
     struct JobDeclaration;
 
+    struct JobBuffer
+    {
+        std::vector<Ref<JobDeclaration>> JobResults;
+
+        JobBuffer()
+        {
+            // Reserve to reduce reallocations during profiling
+            JobResults.reserve(5000);
+        }
+
+        /**
+         * 
+         */
+        void SaveJobResult(const Ref<JobDeclaration>& _job) { JobResults.push_back(_job); }
+    };
+    
     class JobProfile: public Profile
     {
     public:
+        JobProfile() = default;
+        
         JobProfile(const ObjectInit& _objInit)
             : Profile(_objInit)
         {
         }
 
+        void Start() override;
         void End() override;
 
-        std::vector<Ref<JobDeclaration>> m_Jobs;
-        int m_LastThreadIndex = 0;
-        float m_ExecTime = 0.0f;
+        JobBuffer m_JobBuffer;
     };
 }

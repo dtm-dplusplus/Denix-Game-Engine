@@ -2,7 +2,7 @@
 #include "Thread.h"
 
 #include "JobSubsystem.h"
-#include "JobDecleration.h"
+#include "Denix/Profile/ProfileSubsystem.h"
 
 int Denix::Thread::s_WaitForCounterSleepTime = 1;
 int Denix::Thread::s_WaitForJobSleepTime = 110;
@@ -21,17 +21,17 @@ void Denix::Thread::Work()
             if (s_ShouldProfile)
             {
                 m_Job->m_ThreadIndex = m_ThreadIndex;
-                m_Job->m_JobProfile->Start();
+                DE_PROFILE_JOB(m_Job)
             }
             m_Job->m_EntryPoint();
-             if (s_ShouldProfile) m_Job->m_JobProfile->End();
+             if (s_ShouldProfile) DE_PROFILE_JOB_END(m_Job)
             m_Job->m_WaitCounter->Decrement();
 
             // Profile the thread
             if (s_ShouldProfile)
             {
                 m_JobExecCount++;
-                m_ThreadExecTime += m_Job->m_JobProfile->GetLastProfileDuration();
+                m_ThreadExecTime += m_Job->m_JobTime.Duration;
                 m_ThreadSleepTime += static_cast<float>(s_WaitForJobSleepTime) * 0.000000001f; // Convert to seconds. We sleep right after this loop so we can add the sleep time here
             }
 
