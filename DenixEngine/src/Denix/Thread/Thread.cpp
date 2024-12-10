@@ -31,7 +31,7 @@ void Denix::Thread::Work()
             if (s_ShouldProfile)
             {
                 m_JobExecCount++;
-                m_ThreadExecTime += m_Job->m_JobProfile->GetDuration();
+                m_ThreadExecTime += m_Job->m_JobProfile->GetLastProfileDuration();
                 m_ThreadSleepTime += static_cast<float>(s_WaitForJobSleepTime) * 0.000000001f; // Convert to seconds. We sleep right after this loop so we can add the sleep time here
             }
 

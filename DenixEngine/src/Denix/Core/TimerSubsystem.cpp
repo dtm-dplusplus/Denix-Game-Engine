@@ -28,9 +28,9 @@ namespace Denix
 	{
 		Subsystem::Initialize();
 		DE_LOG(LogTimer, Warn, "Initializing TimerSubsystem")
+		m_StartTimePoint = std::chrono::high_resolution_clock::now();
 		m_FrameTimer = MakeRef<Timer>(ObjectInit("FrameTimer"), true);
 		m_EngineProfile = MakeRef<Profile>(ObjectInit("EngineProfile"));
-		m_EngineProfile->m_Visualize = true;
 		DE_LOG(LogTimer, Info, "TimerSubsystem Initialized")
 	}
 
@@ -49,7 +49,7 @@ namespace Denix
 		// Calculate the time taken for the frame to complete
 		m_EngineProfile->End();
 		
-		m_FrameTime = m_EngineProfile->GetDuration();
+		m_FrameTime = m_EngineProfile->GetAverageDuration();
 		m_FrameTimeS = m_FrameTime * 0.001f;
 
 		// Calculate the delta time, accounting for the game time speed which can be used to slow down or speed up the game.

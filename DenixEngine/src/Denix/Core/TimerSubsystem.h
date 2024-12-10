@@ -8,27 +8,35 @@ namespace Denix
 {
 	class Profile;
 
-	class TimerSubsystem : public Subsystem
+	class TimerSubsystem final : public Subsystem
 	{
 	public:
 		TimerSubsystem();
+		~TimerSubsystem() override;
 
-		~TimerSubsystem();
-
+		TimerSubsystem(const TimerSubsystem& _other) = delete;
+		TimerSubsystem(TimerSubsystem&& _other) noexcept = delete;
+		TimerSubsystem& operator=(const TimerSubsystem& _other) = delete;
+		TimerSubsystem& operator=(TimerSubsystem&& _other) noexcept = delete;
+		
 		static TimerSubsystem* Get() { return s_TimerSubsystem; }
 
-		void Initialize();
+		void Initialize() override;
 
-		void Deinitialize();
+		void Deinitialize() override;
 
 		void BeginFrame();
 
 		void EndFrame();
 
-		template<typename Period = std::chrono::seconds>
-		static float GetProgramElapsedTime()
+		/**
+		 * 
+		 * @return the time elapsed since the start of the program (seconds)
+		 */
+		static float GetElapsedTime()
 		{
-			return s_TimerSubsystem->m_FrameTimer->GetElapsed<Period>();
+			return std::chrono::duration<float>(
+				std::chrono::high_resolution_clock::now() - s_TimerSubsystem->m_StartTimePoint).count();
 		}
 		
 		static int GetFPS();
@@ -40,6 +48,7 @@ namespace Denix
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
 
 		Ref<Timer> m_FrameTimer;
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimePoint;
 		Ref<Profile> m_EngineProfile;
 
 	private:

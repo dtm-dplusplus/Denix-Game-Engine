@@ -10,7 +10,6 @@ namespace Denix
     ProfileSubsystem::ProfileSubsystem()
     {
         s_ProfileSubsystem = this;
-        m_ClearProfiles = false;
         DE_LOG_CREATE(LogProfile)
     }
 
@@ -45,52 +44,46 @@ namespace Denix
         Subsystem::Deinitialize();
     }
 
-    void ProfileSubsystem::Update(float _deltaTime)
+    void ProfileSubsystem::StartProfileSession()
     {
-        Subsystem::Update(_deltaTime);
-        
-        if(m_ClearProfiles)
+        if (s_ProfileSubsystem->m_ActiveProfileSession)
         {
-            for(auto& profile : m_Profiles | std::views::values)
-            {
-                profile->m_DurationRecords.clear();
-                profile->m_DurationRecords.assign(profile->m_AverageDurationCount, 0.0f);
-                profile->m_DurationCount = 0;
-                profile->m_AverageDuration = 0.0f;
-                profile->m_Buffer = ProfileBuffer();
-                profile->m_MinimumDuration = 0.0f;
-                profile->m_MaximumDuration = 0.0f;
-            }
-            m_ClearProfiles = false;
+            DE_LOG(LogProfile, Warn, "Profile Session already active")
+            return;
         }
+        
+        s_ProfileSubsystem->m_ProfileSessions.emplace_back(MakeRef<ProfileSession>(ObjectInit("ProfileSession " + std::to_string(s_ProfileSubsystem->m_ProfileSessions.size()))));
+        s_ProfileSubsystem->m_ActiveProfileSession = s_ProfileSubsystem->m_ProfileSessions.back();
+        DE_LOG(LogProfile, Info, "Profile Session Started")
     }
 
-    void ProfileSubsystem::StartProfile(const std::string& _name)
+    void ProfileSubsystem::EndProfileSession()
     {
-        // Check if profile exists - This usually only happens when the profile is created in the DE_PROFILE macro
-        if (!s_ProfileSubsystem->m_Profiles.contains(_name))
+        if (!s_ProfileSubsystem->m_ActiveProfileSession)
         {
-           s_ProfileSubsystem-> m_Profiles[_name] = MakeRef<Profile>(ObjectInit(_name));
+            DE_LOG(LogProfile, Warn, "No active Profile Session to end")
+            return;
         }
 
-        if(const Ref<Profile>& profile = s_ProfileSubsystem->m_Profiles[_name])
-        {
-            profile->Start();
-        }
+        DE_LOG(LogProfile, Info, "Profile Session Ended")
+        // Do end of session processing
+        
+        // clear active session
+        s_ProfileSubsystem->m_ActiveProfileSession = nullptr;
+    }
+    void ProfileSubsystem::StartProfile(const std::string& _name)
+    {
+        // Check if we have an active profile session to record the profile
+        if (!s_ProfileSubsystem->m_ActiveProfileSession) return;
+        
+        s_ProfileSubsystem->m_ActiveProfileSession->StartProfile(_name);
     }
 
     void ProfileSubsystem::EndProfile(const std::string& _name)
     {
-        // Check if profile exists. We don't want to create a new profile if it doesn't exist.
-        if(!s_ProfileSubsystem->m_Profiles.contains(_name))
-        {
-            DE_LOG(LogProfile, Error, "Profile does not exist: {}", _name.c_str())
-            return;
-        }
-
-        if(const Ref<Profile>& profile = s_ProfileSubsystem->m_Profiles[_name])
-        {
-            profile->End();
-        }
+        // Check if we have an active profile session to record the profile
+        if (!s_ProfileSubsystem->m_ActiveProfileSession) return;
+        
+       s_ProfileSubsystem->m_ActiveProfileSession->EndProfile(_name);
     }
 }

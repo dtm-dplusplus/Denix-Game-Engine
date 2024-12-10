@@ -8,38 +8,35 @@ namespace Denix
 {
     class Timer;
 
-    struct ProfileBuffer
+    struct ProfileData
     {
-        int MaxSize;
-        int Offset;
-        std::vector<glm::vec2> Data;
+        std::vector<glm::vec2> ProfileResults;
 
-        ProfileBuffer(int max_size = 2000)
+        ProfileData()
         {
-            MaxSize = max_size;
-            Offset = 0;
-            Data.reserve(MaxSize);
+            // Reserve to reduce reallocations during profiling
+            ProfileResults.reserve(5000);
         }
 
-        void AddPoint(float x, float y)
-        {
-            if (Data.size() < MaxSize)
-                Data.emplace_back(x, y);
-            else
-            {
-                Data[Offset] = glm::vec2(x, y);
-                Offset = (Offset + 1) % MaxSize;
-            }
-        }
+        /**
+         * 
+         * @param x The start time of the profile
+         * @param y The duration of the profile
+         */
+        void SaveResult(float x, float y) { ProfileResults.emplace_back(x, y); }
 
-        void Erase()
+        
+        /**
+         * Returns the last completed  profile result
+         * @return glm::vec2<float,float> Profile Start Time, Profile Duration
+         */
+        glm::vec2 GetLastResult() const
         {
-            if (Data.size() > 0)
-            {
-                Data.resize(0);
-                Offset = 0;
-            }
+            if (!ProfileResults.empty()) return ProfileResults.back();
+            return {0.0f, 0.0f};
         }
+        
+        void Erase() { if (!ProfileResults.empty()) ProfileResults.resize(0);}
     };
     
     /**
@@ -49,18 +46,21 @@ namespace Denix
     class Profile: public Object
     {
     public:
+        Profile() = default;
         Profile(const ObjectInit& _objInit);
 
         Ref<Timer> m_Timer;
 
+        float m_CurrentProfileStartTime;
+        
         virtual void Start();
         virtual void End();
 
         float GetAverageDuration() const { return m_AverageDuration; }
-        float GetDuration() const;
 
-        std::vector<float> m_DurationRecords;
-        
+        float GetLastProfileDuration() const { return m_Timer->GetDuration();}
+        glm::vec2 GetLastProfileResult() const { return m_Buffer.GetLastResult(); }
+
         /**
          * The average duration of the profile.
          */
@@ -69,31 +69,13 @@ namespace Denix
         float m_MinimumDuration;
 
         float m_MaximumDuration;
+        
         /**
          * Number of durations to average.
          */
-        int m_AverageDurationCount;
+        inline static int s_AverageDurationCount = 30;
 
-        /**
-        * Percentage of the frame time the profile took.
-        * Updated by the ProfileSubsystem.
-        */
-        float m_FramePercentage;
-
-        ProfileBuffer m_Buffer;
-
-        /**
-         * Lets the profile know if it should visualize itself in the ProfileSubsystem.
-         */
-        bool m_Visualize = false;
-    protected:
-        /**
-         * The number of durations recorded before averaging.
-         * This is reset to 0 when the average is calculated.
-         */
-        int m_DurationCount;
-
-       
+        ProfileData m_Buffer;
         
         friend class ProfileSubsystem;
     };

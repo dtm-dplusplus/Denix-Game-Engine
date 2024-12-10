@@ -161,7 +161,7 @@ namespace Denix
                             ImGui::TableNextColumn();
                             ImGui::TextUnformatted(profile->GetName().c_str());
                             ImGui::TableNextColumn();
-                            ImGui::Text("%d", profile->m_DurationRecords.size());
+                            ImGui::Text("%d", profile->m_Buffer.ProfileResults.size());
                             ImGui::TableNextColumn();
                             ImGui::Text("%f", profile->m_ExecTime);
                             ImGui::TableNextColumn();

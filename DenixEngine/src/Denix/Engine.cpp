@@ -128,10 +128,6 @@ namespace Denix
 			// Setup timer system for the new frame.
 			m_TimerSubsystem->BeginFrame();
 
-			Ref<Counter> profileCounter = MakeRef<Counter>(1);
-			m_JobSubsystem->AddJob("Update Profiles", Priority::NORMAL, profileCounter, &ProfileSubsystem::Update, m_ProfileSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			WaitForCounter(profileCounter.get());
-			
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
 			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, nullptr, &InputSubsystem::Poll, m_InputSubsystem.get());
 			
