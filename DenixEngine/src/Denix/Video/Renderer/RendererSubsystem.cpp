@@ -15,7 +15,11 @@ namespace Denix
 	{
 		DE_PROFILE(Render Scene)
 
-		if (!s_RendererSubSystem->m_Enabled) return;
+		if (!s_RendererSubSystem->m_Enabled)
+		{
+			DE_PROFILE_END(Render Scene)
+			return;
+		}
 
 		// Render the scene based on the viewport mode
 		switch (static_cast<ViewportMode>(m_ViewportMode))

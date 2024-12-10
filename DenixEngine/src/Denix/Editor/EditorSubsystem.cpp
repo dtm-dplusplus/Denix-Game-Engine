@@ -197,6 +197,7 @@ namespace Denix
 			if (ImGui::BeginMenu("Tools"))
 			{
 				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_SceneThreaded);
+				ImGui::Checkbox("Renderer Enabled", &RendererSubsystem::Get()->IsEnabled());
 				if(ImGui::BeginMenu("Reflection"))
 				{
 					for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)

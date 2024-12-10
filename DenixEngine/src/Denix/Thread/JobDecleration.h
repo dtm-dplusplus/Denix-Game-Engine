@@ -26,18 +26,18 @@ namespace Denix
         /**
          * @brief Job priority
          */
-        Denix::Priority m_Priority;
+        Priority m_Priority;
 
         /**
          * @brief Counter to keep track of how many jobs we are waiting on before a job group is finished.
          * Should probably be moved to some kind of job buidler which sets up dependencies
          */
-        Denix::Ref<Denix::Counter> m_WaitCounter;
+        Ref<Counter> m_WaitCounter;
 
         /**
          * @brief Timer to keep track of how long the job takes to execute
         */
-        Denix::Ref<Denix::Profile> m_JobProfile;
+        Ref<Profile> m_JobProfile;
 
         int m_ThreadIndex;
         

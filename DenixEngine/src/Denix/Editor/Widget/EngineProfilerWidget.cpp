@@ -46,7 +46,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
     {
         const float elaspedTime = TimerSubsystem::GetElapsedTime();
         std::unordered_map<std::string, Profile>& profiles = activeProfileSession->GetProfiles();
-        static float history = 5.0f;
+        static float history = 10.0f;
 
         // Use these to adjust the plot axis
         // static float profileMinDuration = 0.0f;
