@@ -48,8 +48,7 @@ namespace Denix
 		// Calculate the time taken for the frame to complete
 		m_EngineProfile->End();
 		
-		m_FrameTime = m_EngineProfile->GetLastProfileDuration();// m_EngineProfile->GetAverageDuration();
-		DE_LOG(Log, Warn, "Last Frame Time {}", m_FrameTime)
+		m_FrameTime = m_EngineProfile->GetLastProfileDuration();
 		m_FrameTimeMs = m_FrameTime * 1000.0f;
 
 		// Calculate the delta time, accounting for the game time speed which can be used to slow down or speed up the game.
