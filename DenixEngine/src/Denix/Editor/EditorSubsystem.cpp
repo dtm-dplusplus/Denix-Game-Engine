@@ -196,7 +196,7 @@ namespace Denix
 			// Scene Properties
 			if (ImGui::BeginMenu("Tools"))
 			{
-				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_SceneThreaded);
+				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_BatchUpdateActors);
 				ImGui::Checkbox("Renderer Enabled", &RendererSubsystem::Get()->IsEnabled());
 				if(ImGui::BeginMenu("Reflection"))
 				{

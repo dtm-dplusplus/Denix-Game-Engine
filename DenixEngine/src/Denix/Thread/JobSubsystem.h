@@ -39,24 +39,12 @@ namespace Denix
         /**
          * \brief Constructs the JobSubsystem.
          */
-        JobSubsystem()
-        {
-            s_JobSubsystem = this;
-            m_SystemThreads = 0;
-            m_ActiveWorkerThreads = 0;
-            m_AvailableWorkerThreads = 0;
-            
-            DE_LOG_CREATE(LogThread)
-            DE_LOG_CREATE(LogJob)
-        }
+        JobSubsystem();
 
         /**
         * \brief Destructs the JobSubsystem.
         */
-        ~JobSubsystem() override
-        {
-            s_JobSubsystem = nullptr;
-        }
+        ~JobSubsystem() override;
 
         // Delete Copy and Move Constructors. Ensure only one instance of JobSubsystem
         JobSubsystem(const JobSubsystem& _other) = delete;
@@ -84,10 +72,21 @@ namespace Denix
         static void AddJob(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter,
                            Func&& _func, Args&&... _args)
         {
+            // Validate Wait Counter
+            if (!_waitCounter)
+            {
+                DE_LOG(LogJob, Error, "Wait Counter is null. Job not added: {}", _name)
+                return;
+            }
+
+            // Increment the wait counter
+            _waitCounter->Increment();
+
+            // Create the job
             Ref<JobDeclaration> job = MakeRef<JobDeclaration>(
                 _name,
                 _priority,
-                _waitCounter ? _waitCounter : MakeRef<Counter>(1),
+                _waitCounter,
                 std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
                 );
 
@@ -111,10 +110,20 @@ namespace Denix
         static void AddJobInline(const std::string& _name, const Priority _priority, const Ref<Counter>& _waitCounter,
                            Func&& _func, Args&&... _args)
         {
+            // Validate Wait Counter
+            if (!_waitCounter)
+            {
+                DE_LOG(LogJob, Error, "Wait Counter is null. Job not added: {}", _name)
+                return;
+            }
+
+            // Increment the wait counter
+            _waitCounter->Increment();
+            
             Ref<JobDeclaration> job = MakeRef<JobDeclaration>(
                 _name,
                 _priority,
-                _waitCounter ? _waitCounter : MakeRef<Counter>(1),
+                _waitCounter,
                 std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
                 );
 
@@ -127,32 +136,50 @@ namespace Denix
             if (Thread::s_ShouldProfile) DE_PROFILE_JOB_END(job)
             job->m_WaitCounter->Decrement();
         }
+        
 
         /**
-        * \brief Starts profiling for all threads.
-        */
-        static void StartThreadProfiling()
-        {
-            // Setup Threads
-            for (auto& thread : s_JobSubsystem->m_WorkerThreads)
-            {
-                thread->m_JobExecCount = 0;
-                thread->m_ThreadExecTime = 0.0f;
-                thread->m_ThreadSleepTime = 0.0f;
-            }
-
-            // Set the profiling flag for the threads
-            Thread::s_ShouldProfile = true;
-        }
-
-        /**
-         * \brief Stops profiling for all threads.
+         * \brief Parallel For Each function.
+         *
+         * This function divides the collection of objects into batches and creates a job for each batch.
+         * Each job will execute the provided function on a subset of the objects.
+         * If the batch size is below the batch threshold, a single job will be created.
+         *
+         * \tparam T The type of the objects in the collection.
+         * \tparam Func The type of the function to execute.
+         * \tparam Args The types of the arguments to pass to the function.
+         * \param _namePrefix The prefix for the job names.
+         * \param _priority The priority of the jobs.
+         * \param _waitCounter The counter to wait on before executing the jobs.
+         * \param _objects The collection of objects to process.
+         * \param _func The function to execute on each object.
+         * \param _args The arguments to pass to the function.
          */
-        static void StopThreadProfiling()
-        {
-            Thread::s_ShouldProfile = false;
-            DE_LOG(LogThread, Info, "Thread Profiling: Disabled")
-        }
+        template <typename T, typename Func, typename... Args>
+            static void AddJobFor(const std::string& _namePrefix, const Priority _priority, const Ref<Counter>& _waitCounter, std::vector<T>& _objects, Func&& _func, Args&&... _args)
+            {
+                const size_t objectCount = _objects.size();
+                if (objectCount == 0)
+                {
+                    DE_LOG(LogJob, Error, "Vector is empty. No jobs added: {}", _namePrefix)
+                    return;
+                }
+                
+                // Prepare batch sizes
+                size_t batchSize, batchMax;
+                CalculateBatchSize(objectCount, batchSize, batchMax);
+                 s_JobSubsystem->m_CurrentBatchCount = batchMax;
+
+                for (size_t begin = 0, batchIndex = 0; batchIndex < batchMax; ++batchIndex, begin += batchSize)
+                {
+                    size_t end = std::min(begin + batchSize, objectCount);
+                    
+                    AddJob(_namePrefix + std::to_string(batchIndex), _priority, _waitCounter, [begin, end, &_objects, _func, _args...]
+                    {
+                        for (size_t j = begin; j < end; ++j) std::invoke(_func, _objects[j], _args...);
+                    });
+                }
+            }
 
         /**
        * \brief Updates the number of active worker threads based on m_ActiveWorkerThreads
@@ -160,27 +187,9 @@ namespace Denix
        * Active worker threads is clamped to the available worker threads.
        * Threads will complete their current job before being deactivated.
        */
-        static void UpdateActiveThreads()
-        {
-            // Clamp the active threads to the system thread count
-            s_JobSubsystem->m_ActiveWorkerThreads = std::clamp(s_JobSubsystem->m_ActiveWorkerThreads, 1, s_JobSubsystem->m_AvailableWorkerThreads);
-            DE_LOG(LogJob, Trace, "Set Active Worker Threads: {}", s_JobSubsystem->m_ActiveWorkerThreads)
-            DE_LOG(LogJob, Trace, "Available {}", s_JobSubsystem->m_AvailableWorkerThreads)
-            
-            // Update the worker threads
-            for (int i = 0; i < s_JobSubsystem->m_AvailableWorkerThreads; i++)
-            {
-                if (i < s_JobSubsystem->m_ActiveWorkerThreads)
-                {
-                    s_JobSubsystem->m_WorkerThreads[i]->m_Active = true;
-                }
-                else
-                {
-                    s_JobSubsystem->m_WorkerThreads[i]->m_Active = false;
-                }
-            }
-        }
-        
+        static void UpdateActiveThreads();
+
+        static bool& IsAutoBatchingEnabled() { return s_JobSubsystem->m_AutoBatchingEnabled; }
         
         /**
         * \brief Gets the number of system threads.
@@ -202,6 +211,7 @@ namespace Denix
          */
         static int& GetActiveThreadsRef() { return s_JobSubsystem->m_ActiveWorkerThreads; }
 
+        static size_t GetBatchSize() { return s_JobSubsystem->m_CurrentBatchCount; }
         /**
          * \brief Gets the size of the job queue.
          *
@@ -233,6 +243,34 @@ namespace Denix
      */
     static Ref<JobDeclaration> RequestJob();
 
+    static void CalculateBatchSize(const size_t objectCount, size_t& _batchSize, size_t& _batchCount)
+    {
+        if (objectCount < s_JobSubsystem->m_BatchUpdateThreshold)
+        {
+            _batchSize = objectCount;
+            _batchCount = 1;
+            return;
+        }
+
+        // 100 objects
+        // 100 / 15 threads = 6.6
+        _batchSize = objectCount / s_JobSubsystem->m_ActiveWorkerThreads;
+        _batchCount = objectCount > s_JobSubsystem->m_ActiveWorkerThreads
+                   ? objectCount / s_JobSubsystem->m_ActiveWorkerThreads
+                   : objectCount;
+    }
+
+        
+        /**
+        * \brief Starts profiling for all threads.
+        */
+        static void StartThreadProfiling();
+
+        /**
+         * \brief Stops profiling for all threads.
+         */
+        static void StopThreadProfiling();
+
         /**
          * \brief Initializes the JobSubsystem.
          *
@@ -258,6 +296,11 @@ namespace Denix
         static JobSubsystem* s_JobSubsystem; 
 
         std::vector<Ref<Thread>> m_WorkerThreads;
+
+        size_t m_ManualBatchSize;
+        size_t m_BatchUpdateThreshold;
+        size_t m_CurrentBatchCount;
+        bool m_AutoBatchingEnabled;
         
         /**
          * Number of threads available on the system
@@ -280,6 +323,8 @@ namespace Denix
         int m_ActiveWorkerThreads;
         
         friend class Engine;
+        friend class ProfileSubsystem;
+        friend class Editor;
         friend class Thread;
     };
 }

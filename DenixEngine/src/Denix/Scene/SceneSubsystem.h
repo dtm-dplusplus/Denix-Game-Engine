@@ -1,7 +1,5 @@
 #pragma once
 
-#include <typeindex>
-
 #include "Denix/Core.h"
 #include "Denix/Resource/Asset.h"
 #include "Denix/Scene/Scene.h"
@@ -10,8 +8,6 @@
 
 namespace Denix
 {
-
-	
 	/* Subsystem that manages the scenes
 	* A scene must always be loaded in order to render anything
 	*/ 
@@ -27,12 +23,14 @@ namespace Denix
 			s_SceneSubsystem = nullptr;
 		}
 
+		SceneSubsystem(const SceneSubsystem& _other) = delete;
+		SceneSubsystem(SceneSubsystem&& _other) noexcept = delete;
+		SceneSubsystem& operator=(const SceneSubsystem& _other) = delete;
+		SceneSubsystem& operator=(SceneSubsystem&& _other) noexcept = delete;
 		
 		void CleanRubbish();
-		bool m_SceneThreaded = false;
-		bool m_BatchUpdate = true;
-		int m_SceneBatchSize = 50;
-		int m_SceneBatchCount = 0;
+
+		bool m_BatchUpdateActors;
 	public:
 		void Initialize() override;
 

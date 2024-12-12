@@ -13,33 +13,21 @@ namespace Denix
 
         static Ref<JobSubsystem> jobSubsystem = JobSubsystem::Get();
         std::vector<Ref<Thread>> threads = jobSubsystem->GetWorkerThreads();
-        if (ImGui::CollapsingHeader("Job Subsystem"), ImGuiTreeNodeFlags_DefaultOpen)
-        {
-            ImGui::Text("System Threads Available: %d", jobSubsystem->GetActiveThreads());
-            ImGui::Text("Worker Threads Available: %d", jobSubsystem->GetActiveThreads());
-            ImGui::Text("Worker Threads Active: %d", jobSubsystem->GetActiveThreads());
-            ImGui::Text("Jobs queued: %d", jobSubsystem->GetJobQueueSize());
-            ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_SceneThreaded);
-            
-            if (ImGui::InputInt("Active Threads", &jobSubsystem->GetActiveThreadsRef()))
-            {
-                JobSubsystem::UpdateActiveThreads();
-            }
 
-            if (ImGui::TreeNode("Thread Settings"))
-            {
-                ImGui::DragInt("Wait For Counter Sleep Time", &Thread::s_WaitForCounterSleepTime);
-                ImGui::DragInt("Wait For Job Sleep Time", &Thread::s_WaitForJobSleepTime);
-                ImGui::TreePop();
-            }
+        ImGui::Text("System Threads Available: %d", jobSubsystem->GetActiveThreads());
+        ImGui::Text("Worker Threads Available: %d", jobSubsystem->GetActiveThreads());
+        ImGui::Text("Worker Threads Active: %d", jobSubsystem->GetActiveThreads());
+        ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_BatchUpdateActors);
+        
+        if (ImGui::InputInt("Active Threads", &jobSubsystem->GetActiveThreadsRef())) JobSubsystem::UpdateActiveThreads();
 
-            if (ImGui::TreeNode("Batch Settings"))
-            {
-                ImGui::DragInt("Batch Size", &SceneSubsystem::Get()->m_SceneBatchSize);
-                ImGui::Checkbox("Batch Update", &SceneSubsystem::Get()->m_BatchUpdate);
-                ImGui::Text("Batch Count: %d", SceneSubsystem::Get()->m_SceneBatchCount);
-                ImGui::TreePop();
-            }
-        }
+       ImGui::SeparatorText("Thread Profiling");
+        ImGui::DragInt("Wait For Counter Sleep Time", &Thread::s_WaitForCounterSleepTime);
+        ImGui::DragInt("Wait For Job Sleep Time", &Thread::s_WaitForJobSleepTime);
+
+        ImGui::SeparatorText("Batching");
+        ImGui::Checkbox("Auto Batching", &JobSubsystem::IsAutoBatchingEnabled());
+        ImGui::Text("Batch Count: %d", JobSubsystem::GetBatchSize());
+        ImGui::Checkbox("Batch Update", &SceneSubsystem::Get()->m_BatchUpdateActors);
     }
 }

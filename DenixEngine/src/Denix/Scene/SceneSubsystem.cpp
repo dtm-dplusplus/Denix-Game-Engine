@@ -202,8 +202,7 @@ namespace Denix
 	{
 		s_SceneSubsystem = this;
 		m_StartupScene = _startupScene;
-		m_SceneThreaded = true;
-		
+		m_BatchUpdateActors = true;
 	}
 
 	void SceneSubsystem::CleanRubbish()
@@ -258,53 +257,13 @@ namespace Denix
 			cam->Update(_deltaTime);
 		}
 		DE_PROFILE_END(Camera Update)
-
-		// Actor Update Metrics
-		// 1 - 0.014ms
-		// 10 - 0.084ms
-		// 25 - 0.2ms
-		// 50 - 0.4ms
-		// 100 - 0.8ms
-		// 500 - 4ms, 3.54 to submit jobs
-
-		// 1 Actor
-		// 0.003ms init job Ref vector
-		// 0.012ms to construct Ref job
-		// 0.001ms submit job
-
-		// 1024 Actors
-		// 0.04ms init job vector
-		// 14.5ms submit jobs
-		// 0.005ms wait for counter
-		// 15.6ms total parllel scene update
-		// 12.2ms total sequential scene update
+		
 		// Scene update implementation
-		if(m_SceneThreaded)
+		if(m_BatchUpdateActors)
 		{
-			size_t actorCount = m_ActiveScene->m_Actors.size();
-			auto& objects = m_ActiveScene->m_Actors;
 			// Submit jobs for each actor
 			DE_PROFILE(Submit Scene Jobs)
-			if (m_BatchUpdate)
-			{
-				m_SceneBatchCount =0;
-				for (size_t i = 0; i < actorCount; i += m_SceneBatchSize)
-				{
-					_waitCounter->Increment();
-					auto end = std::min(i + m_SceneBatchSize, actorCount); 
-					JobSubsystem::AddJob("Update Actor Batch "+ std::to_string(m_SceneBatchCount++), Priority::NORMAL, _waitCounter, [start = i, end, dt = _deltaTime, &objects]
-					{
-						for (size_t j = start; j < end; ++j) {
-							objects[j]->Update(dt);
-						}
-					});
-				}
-			}
-			else
-			{
-				for (auto& actor : m_ActiveScene->m_Actors)
-					JobSubsystem::AddJob("Actor Update: " + actor->GetName(), Priority::NORMAL, _waitCounter, &Actor::Update, actor, _deltaTime);
-			}
+			JobSubsystem::AddJobFor("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
 			DE_PROFILE_END(Submit Scene Jobs)
 		}
 		else
@@ -316,14 +275,7 @@ namespace Denix
 			}
 			DE_PROFILE_END(Actor Update)
 		}
-		
-		
-		/*for (const auto& actor : m_ActiveScene->m_Actors)
-		{
-			// Update the Actor -  This will always be here
-			actor->Update(_deltaTime);
-		}*/
-		
+
 		// Client Scene Update
 		m_ActiveScene->Update(_deltaTime);
 		
