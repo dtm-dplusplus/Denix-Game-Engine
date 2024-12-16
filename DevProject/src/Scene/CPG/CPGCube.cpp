@@ -1,5 +1,7 @@
 #include "CPGCube.h"
 
+#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Thread/JobSubsystem.h"
 #include "Util/ActorGridSpawner.h"
 
 CPGCube::CPGCube()
@@ -26,5 +28,36 @@ void CPGCube::Update(float _deltaTime)
         pos.y = ActorGridSpawner::SpawnHeight;
         m_PhysicsComponent->GetVelocity() = glm::vec3(0.0f);
         m_PhysicsComponent->GetAngularVelocity() = glm::vec3(0.0f);
+
+        // Load a random model from the model store
+        JobSubsystem::AddJob("Random Model",  Priority::LATENT, MakeRef<Counter>(1), [this]
+        {
+            static size_t modelStoreSize = ResourceSubsystem::GetModelStore().size();
+            static std::unordered_map<std::string, Ref<Model>> modelStore = ResourceSubsystem::GetModelStore();
+            static size_t textureStoreSize = ResourceSubsystem::GetTextureStore().size();
+            static std::unordered_map<std::string, Ref<Texture>> textureStore = ResourceSubsystem::GetTextureStore();
+
+            size_t index = Math::Rand(0, modelStoreSize - 1);
+            size_t i = 0;
+            for (auto model: modelStore | std::views::keys)
+            {
+                if (i++ == index)
+                {
+                    m_MeshComponent->SetModel(modelStore[model]);
+                    break;
+                }
+            }
+
+            index = Math::Rand(0, textureStoreSize - 1);
+            i = 0;
+            for (auto texture: textureStore | std::views::keys)
+            {
+                if (i++ == index)
+                {
+                    m_RenderComponent->GetMaterial()->GetBaseTexture()  = textureStore[texture];
+                    break;
+                }
+            }
+        });
     }
 }

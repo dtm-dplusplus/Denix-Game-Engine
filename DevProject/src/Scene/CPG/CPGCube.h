@@ -11,4 +11,5 @@ public:
 
     void BeginPlay() override;
     void Update(float _deltaTime) override;
+    inline static bool ChangeModel = true;
 };

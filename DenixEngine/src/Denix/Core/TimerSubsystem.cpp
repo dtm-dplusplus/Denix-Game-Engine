@@ -49,8 +49,8 @@ namespace Denix
 		const float frameTimeMs = m_EngineProfile->m_Timer->GetElapsedMs();
 
 		// Implement max frame rate
-		const float minFrameTime = 1000.0f / static_cast<float>(m_MaxFPS);
-		if (frameTimeMs < minFrameTime)
+		if (const float minFrameTime = 1000.0f / static_cast<float>(m_MaxFPS);
+			frameTimeMs < minFrameTime && m_MaxFPS > 0)
 		{
 			const float sleepTime = minFrameTime - frameTimeMs;
 			Timer waitTimer = Timer(ObjectInit("WaitTimer"), true);

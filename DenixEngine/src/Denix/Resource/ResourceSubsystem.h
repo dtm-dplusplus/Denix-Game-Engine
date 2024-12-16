@@ -60,7 +60,6 @@ namespace Denix
         static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_ResourceSubsystem->m_MaterialStore; }
 
         // Textures
-        static void AddTexture(const Ref<Texture>& _texture);
         static Ref<Texture> LoadTexture(const std::string& _path);
 
         static Ref<Texture> GetTexture(const std::string& _path);

@@ -107,6 +107,11 @@ namespace Denix
 					// We should do validation to check if the file is a valid asset - Skip for now
 				}
 				// Texture Check
+				if (path.find(".png") != std::string::npos)
+				{
+					// We should do validation to check if the file is a valid asset - Skip for now
+					LoadTexture(path);
+				}
 				// Shader Check
 				// Model Check
 
@@ -116,7 +121,7 @@ namespace Denix
 		}
 		
 		// TEXTURES
-		LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)");
+		//LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)");
 
 		// MATERIALS
 		if(!GetMaterial(FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset"))
@@ -239,23 +244,6 @@ namespace Denix
 	
 
 	////////////////////////  TEXTURES ///////////////////////////////
-	void ResourceSubsystem::AddTexture(const Ref<Texture>& _texture)
-	{
-		if (s_ResourceSubsystem->m_TextureStore.contains(_texture->GetFileLocation()))
-		{
-			DE_LOG(LogResource, Error, "Add Texture: A texture name: {} is already loaded", _texture->GetTextureName())
-				return;
-		}
-
-		if (!_texture->LoadTexture())
-		{
-			DE_LOG(LogResource, Error, "Add Texture: Failed to load texture: {}", _texture->GetTextureName())
-				return;
-		}
-		
-		s_ResourceSubsystem->m_TextureStore[_texture->GetFileLocation()] = _texture;
-	}
-
 	Ref<Texture> ResourceSubsystem::LoadTexture(const std::string& _path)
 	{
 		// Check it isn't already loaded
