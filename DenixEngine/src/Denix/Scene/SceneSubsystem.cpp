@@ -183,9 +183,6 @@ namespace Denix
 		if (s_SceneSubsystem->m_ActiveScene)
 		{
 			s_SceneSubsystem->m_ActiveScene->EndPlay();
-			//m_ActiveScene->EndScene();
-
-			//m_ActiveScene = nullptr;
 
 			// Need to establish a better way of handling scenes
 			
@@ -250,30 +247,26 @@ namespace Denix
 		}
 
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
-		DE_PROFILE(Camera Update)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
 			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
 			cam->Update(_deltaTime);
 		}
-		DE_PROFILE_END(Camera Update)
 		
 		// Scene update implementation
+		Ref<Counter> actorCounter = MakeRef<Counter>();
 		if(m_BatchUpdateActors)
 		{
 			// Submit jobs for each actor
-			DE_PROFILE(Submit Scene Jobs)
-			JobSubsystem::AddJobFor("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
-			DE_PROFILE_END(Submit Scene Jobs)
+			JobSubsystem::AddJobFor("Actor Update", Priority::NORMAL, actorCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
+			WaitForCounter(actorCounter.get());
 		}
 		else
 		{
-			DE_PROFILE(Actor Update)
 			for (auto actor: m_ActiveScene->m_Actors)
 			{
 				actor->Update(_deltaTime);
 			}
-			DE_PROFILE_END(Actor Update)
 		}
 
 		// Client Scene Update

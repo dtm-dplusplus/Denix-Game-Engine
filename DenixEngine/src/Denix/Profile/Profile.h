@@ -45,7 +45,13 @@ namespace Denix
     class Profile: public Object
     {
     public:
-        Profile() = default;
+        Profile()
+        {
+            m_Timer = MakeRef<Timer>(ObjectInit("Profile Timer"));
+            m_AverageDuration = 0.0f;
+            m_MinimumDuration = 0.0f;
+            m_MaximumDuration = 0.0f;
+        }
         Profile(const ObjectInit& _objInit);
 
         Ref<Timer> m_Timer;

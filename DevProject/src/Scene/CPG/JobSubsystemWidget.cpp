@@ -28,6 +28,6 @@ namespace Denix
         ImGui::SeparatorText("Batching");
         ImGui::Checkbox("Auto Batching", &JobSubsystem::IsAutoBatchingEnabled());
         ImGui::Text("Batch Count: %d", JobSubsystem::GetBatchSize());
-        ImGui::Checkbox("Batch Update", &SceneSubsystem::Get()->m_BatchUpdateActors);
+        ImGui::DragInt("Batch Threshold", &jobSubsystem->GetBatchUpdateThreshold());
     }
 }

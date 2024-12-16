@@ -34,6 +34,7 @@ namespace Denix
 		static float GetFrameTime();
 		static float GetFrameTimeMs();
 
+		static float GetFrameTimeMsAverage();
 		static float GetDeltaTime() {return s_TimerSubsystem->m_DeltaTime; }
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
 

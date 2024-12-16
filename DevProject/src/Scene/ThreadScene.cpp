@@ -44,9 +44,17 @@ void ThreadScene::DebugUI(float _deltaTime)
     ImGui::Begin(GetName().c_str());
     if (ImGui::CollapsingHeader("Dev Stuff", ImGuiTreeNodeFlags_DefaultOpen))
     {
+        ImGui::Checkbox("Batch Update Actors", &SceneSubsystem::Get()->m_BatchUpdateActors);
         ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, 100);
         ImGui::SameLine();
-        if (ImGui::Button("Spawn Grid")) m_GridSpawner.SpawnGrid(shared_from_this());
+        if (ImGui::Button("Spawn Grid"))
+        {
+            m_GridSpawner.SpawnGrid(shared_from_this());
+            for (auto actor: m_Actors)
+            {
+                actor->GetPhysicsComponent()->SimulatePhysics() = true;
+            }
+        }
     }
 
      m_JobSubsystemWidget->Update(_deltaTime);
