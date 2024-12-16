@@ -1,12 +1,11 @@
 #pragma once
 
+#include <GL/glew.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
 
 #include "Denix/Core.h"
 #include "Denix/Core/Math.h"
-
-//#include "GL/glew.h"
 
 namespace Denix
 {

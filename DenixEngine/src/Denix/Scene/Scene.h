@@ -238,7 +238,8 @@ namespace Denix
 
 			return actors;
 		}
-		
+
+
 		/**
 		 * Map of actors in the scene
 		 * Used to quickly find actors by name
@@ -280,6 +281,10 @@ namespace Denix
 		std::vector<Ref<PointLight>> m_PointLights;
 		std::vector<Ref<SpotLight>> m_SpotLights;
 
+	private:
+		void ClearScene();
+
+		
 		friend class SceneSubsystem;
 		friend class RendererSubsystem;
 		friend class EditorSubsystem;

@@ -56,4 +56,13 @@ namespace Denix
 		
         m_Actors.push_back(std::move(_obj));
     }
+
+    void Scene::ClearScene()
+    {
+        m_Actors.clear();
+        m_ActorNames.clear();
+        m_PointLights.clear();
+        m_SpotLights.clear();
+        m_DirLight = nullptr;
+    }
 }

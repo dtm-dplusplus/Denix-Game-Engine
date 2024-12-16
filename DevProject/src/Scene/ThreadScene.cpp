@@ -22,19 +22,6 @@ void ThreadScene::BeginScene()
 void ThreadScene::Update(float _deltaTime)
 {
     Scene::Update(_deltaTime);
-
-    // Get the first Actor in the scene and oscillate its position
-    //static float moveDir= 1.0f;
-    /*if (m_Actors.size() > 0)
-    {
-        Ref<Actor> actor = m_Actors[0];
-        glm::vec3& position = actor->GetTransformComponent()->GetPosition();
-        if (position.x > 2.0f) moveDir = -1.0f;
-        else if (position.x < -2.0f) moveDir = 1.0f;
-        position.x += moveDir * 3.0f * _deltaTime;        
-    }*/
-
-    if (DebugCounter) WaitForCounter(DebugCounter.get());
 }
 
 void ThreadScene::DebugUI(float _deltaTime)
@@ -45,15 +32,25 @@ void ThreadScene::DebugUI(float _deltaTime)
     if (ImGui::CollapsingHeader("Dev Stuff", ImGuiTreeNodeFlags_DefaultOpen))
     {
         ImGui::Checkbox("Batch Update Actors", &SceneSubsystem::Get()->m_BatchUpdateActors);
+        ImGui::SeparatorText("Spawner");
+        ImGui::DragFloat("Spawn Height", &ActorGridSpawner::SpawnHeight, 1.0f, 0.0f, 1000.0f);
         ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, 100);
         ImGui::SameLine();
         if (ImGui::Button("Spawn Grid"))
         {
             m_GridSpawner.SpawnGrid(shared_from_this());
-            for (auto actor: m_Actors)
+            /*for (auto actor: m_Actors)
             {
                 actor->GetPhysicsComponent()->SimulatePhysics() = true;
-            }
+            }*/
+        }
+
+        static float min = 0.0f, max = 100.0f;
+        ImGui::DragFloat("Min", &min, 1.0f, 0.0f, 100.0f);
+        ImGui::DragFloat("Max", &max, 1.0f, 0.0f, 100.0f);
+        if (ImGui::Button("Spawn Random"))
+        {
+            DE_LOG(Log, Trace,"Random: {}", Math::RandF(min, max))
         }
     }
 

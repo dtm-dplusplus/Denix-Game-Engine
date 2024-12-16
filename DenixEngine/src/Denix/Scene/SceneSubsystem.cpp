@@ -51,11 +51,11 @@ namespace Denix
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitialized")
 	}
 
-	Ref<Camera> SceneSubsystem::GetActiveCamera() const
+	Ref<Camera> SceneSubsystem::GetActiveCamera()
 	{
-		if (m_ActiveScene)
+		if (s_SceneSubsystem->m_ActiveScene)
 		{
-			return m_ActiveScene->GetViewportCamera();
+			return s_SceneSubsystem->m_ActiveScene->GetViewportCamera();
 		}
 
 		DE_LOG(LogScene, Error, "No active scene")
@@ -185,7 +185,7 @@ namespace Denix
 			s_SceneSubsystem->m_ActiveScene->EndPlay();
 
 			// Need to establish a better way of handling scenes
-			
+			s_SceneSubsystem->LoadScene(s_SceneSubsystem->m_ActiveScene);
 			DE_LOG(LogScene, Trace, "Scene Stopped")
 		}
 	}
@@ -341,6 +341,9 @@ namespace Denix
 			DE_LOG(LogScene, Error, "Scene {} has no asset associated with it", _scene->GetName())
 			return;
 		}
+
+		// For whatever reason, Clear any data held by the scene
+		_scene->ClearScene();
 		
 		// Load the scene data from the asset file
 		YAML::Node sceneNode = YAML::LoadFile(_scene->m_SceneAsset->GetAssetPath());

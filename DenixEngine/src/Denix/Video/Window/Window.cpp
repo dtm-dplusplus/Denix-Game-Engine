@@ -2,6 +2,10 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
+
+#include "Denix/Scene/SceneSubsystem.h"
+
+//#include "Denix/Scene/SceneSubsystem.h"
 //#include "GL/glew.h"
 //#include "imgui.h"
 //#include "Denix/Video/GL/Shader.h"
@@ -105,7 +109,7 @@ namespace Denix
 			case SDL_EVENT_WINDOW_CLOSE_REQUESTED: // Additioanl CHeck e.window.windowID == SDL_GetWindowID(m_SDL_GLWindow)
 			{
 				/**< The window manager requests that the window be closed */
-				m_IsOpen = false;
+				RequestClose();
 				DE_LOG(LogWindow, Trace, "Window Close Event")
 			}
 				break;
@@ -127,7 +131,8 @@ namespace Denix
 					/**< Window has been resized to data1xdata2 */
 				m_WinX = _event->window.data1;
 				m_WinY = _event->window.data2;
-				//glViewport(0, 0, m_WinX, m_WinY);
+				glViewport(0, 0, m_WinX, m_WinY);
+				SceneSubsystem::GetActiveCamera()->GetViewport()->m_FrameBuffer->Resize(m_WinX, m_WinY);
 
 				DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", m_WinX, m_WinY)
 			}
@@ -162,6 +167,7 @@ namespace Denix
 					  in an event watcher, the window handle is still valid and can still be used to retrieve any userdata
 					  associated with the window. Otherwise, the handle has already been destroyed and all resources
 					  associated with it are invalid */
+				RequestClose();
 			    }	break;
 
 		default:	break;

@@ -21,6 +21,7 @@ public:
 		ReflectionSubsystem::Register<CPGScene>();
 		ReflectionSubsystem::Register<PhysicsScene>();
 		ReflectionSubsystem::Register<ThreadScene>();
+		ReflectionSubsystem::Register<CPGCube>();
 	}
 
 	void Initialize() override

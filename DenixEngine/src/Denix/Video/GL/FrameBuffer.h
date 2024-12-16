@@ -33,7 +33,20 @@ namespace Denix
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 
+		void Resize(int _width, int _height)
+		{
+	    glBindFramebuffer(GL_FRAMEBUFFER, m_FboID);
 
+	    glBindTexture(GL_TEXTURE_2D, m_TexID);
+	    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	    glBindTexture(GL_TEXTURE_2D, 0);
+
+	    glBindRenderbuffer(GL_RENDERBUFFER, m_RboId);
+	    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _width, _height);
+	    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 		void Bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_FboID); }
 		static void Unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 		GLuint GetTexureID() { return m_TexID; }

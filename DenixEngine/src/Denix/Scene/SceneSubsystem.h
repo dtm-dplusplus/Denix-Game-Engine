@@ -57,7 +57,7 @@ namespace Denix
 
 		static Ref<Scene> GetActiveScene() { return s_SceneSubsystem->m_ActiveScene; }
 
-		Ref<Camera> GetActiveCamera() const;
+		static Ref<Camera> GetActiveCamera();
 
 	public:
 		static bool LoadScene(const Ref<Scene>& _scene);

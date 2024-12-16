@@ -3,9 +3,9 @@
 m_SceneObjects:
   -  # Object Data
     m_Object:
-      m_GUID: 116769
+      m_GUID: 751988
       m_Name: Cube
-      m_ClassName: Cube
+      m_ClassName: CPGCube
 # Render Component
     m_RenderComponent:
       m_IsVisible: true
@@ -35,7 +35,7 @@ m_SceneObjects:
       m_Moveability: 0
 # Physics Component
     m_PhysicsComponent:
-      m_SimulatePhysics: false
+      m_SimulatePhysics: true
       m_SimulateGravity: true
       m_Collider: Cube
       m_ColliderVisible: false

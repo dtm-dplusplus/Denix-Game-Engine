@@ -75,6 +75,11 @@ namespace Denix
 			m_CameraUp = _cameraUp;
 		}
 
+		Ref<Viewport> GetViewport() const
+		{
+			return m_Viewport;
+		}
+		
 		// Camera Properties
 	public:
 		bool m_IsPerspective = true;
