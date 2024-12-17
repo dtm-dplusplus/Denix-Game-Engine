@@ -35,5 +35,5 @@ public:
     }
     
     int GridSize = 10;
-   inline static float SpawnHeight = 100.0f;
+   inline static float SpawnHeight = 25.0f;
 };

@@ -8,6 +8,9 @@ CPGCube::CPGCube()
 {
     m_ClassName = "CPGCube";
     m_PhysicsComponent->SimulatePhysics() = true;
+
+    // Create a copy of the material
+    m_RenderComponent->GetMaterial() = MakeRef<Material>(m_RenderComponent->GetMaterial());
 }
 
 void CPGCube::BeginPlay()
@@ -23,41 +26,44 @@ void CPGCube::Update(float _deltaTime)
 
     // Reset the cube if it falls below the ground
     glm::vec3& pos = m_TransformComponent->GetPosition();
-    if (pos.y < -10.0f)
+    if (pos.y < 0.0f)
     {
         pos.y = ActorGridSpawner::SpawnHeight;
         m_PhysicsComponent->GetVelocity() = glm::vec3(0.0f);
         m_PhysicsComponent->GetAngularVelocity() = glm::vec3(0.0f);
 
         // Load a random model from the model store
-        JobSubsystem::AddJob("Random Model",  Priority::LATENT, MakeRef<Counter>(1), [this]
+        if ( AsyncModelChange) JobSubsystem::AddJob("Random Model " + GetName(),  Priority::LATENT, MakeRef<Counter>(1), &CPGCube::RandomModel, this);
+        else RandomModel();
+    }
+}
+
+void CPGCube::RandomModel()
+{
+    static size_t modelStoreSize = ResourceSubsystem::GetModelStore().size();
+    static std::unordered_map<std::string, Ref<Model>> modelStore = ResourceSubsystem::GetModelStore();
+    static size_t textureStoreSize = ResourceSubsystem::GetTextureStore().size();
+    static std::unordered_map<std::string, Ref<Texture>> textureStore = ResourceSubsystem::GetTextureStore();
+
+    size_t index = Math::Rand(0, modelStoreSize - 1);
+    size_t i = 0;
+    for (auto model: modelStore | std::views::keys)
+    {
+        if (i++ == index)
         {
-            static size_t modelStoreSize = ResourceSubsystem::GetModelStore().size();
-            static std::unordered_map<std::string, Ref<Model>> modelStore = ResourceSubsystem::GetModelStore();
-            static size_t textureStoreSize = ResourceSubsystem::GetTextureStore().size();
-            static std::unordered_map<std::string, Ref<Texture>> textureStore = ResourceSubsystem::GetTextureStore();
+            m_MeshComponent->SetModel(modelStore[model]);
+            break;
+        }
+    }
 
-            size_t index = Math::Rand(0, modelStoreSize - 1);
-            size_t i = 0;
-            for (auto model: modelStore | std::views::keys)
-            {
-                if (i++ == index)
-                {
-                    m_MeshComponent->SetModel(modelStore[model]);
-                    break;
-                }
-            }
-
-            index = Math::Rand(0, textureStoreSize - 1);
-            i = 0;
-            for (auto texture: textureStore | std::views::keys)
-            {
-                if (i++ == index)
-                {
-                    m_RenderComponent->GetMaterial()->GetBaseTexture()  = textureStore[texture];
-                    break;
-                }
-            }
-        });
+    index = Math::Rand(0, textureStoreSize - 1);
+    i = 0;
+    for (auto texture: textureStore | std::views::keys)
+    {
+        if (i++ == index)
+        {
+            m_RenderComponent->GetMaterial()->GetBaseTexture()  = textureStore[texture];
+            break;
+        }
     }
 }
