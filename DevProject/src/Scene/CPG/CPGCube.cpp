@@ -32,9 +32,7 @@ void CPGCube::Update(float _deltaTime)
         m_PhysicsComponent->GetVelocity() = glm::vec3(0.0f);
         m_PhysicsComponent->GetAngularVelocity() = glm::vec3(0.0f);
 
-        // Load a random model from the model store
-        if ( AsyncModelChange) JobSubsystem::AddJob("Random Model " + GetName(),  Priority::LATENT, MakeRef<Counter>(1), &CPGCube::RandomModel, this);
-        else RandomModel();
+        RandomModel();
     }
 }
 

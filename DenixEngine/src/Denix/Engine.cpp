@@ -200,20 +200,6 @@ namespace Denix
 		}
 	}
 
-	void Engine::DummySubsystemA()
-	{
-		DE_PROFILE(Dummy Subsystem A)
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		DE_PROFILE_END(Dummy Subsystem A)
-	}
-
-	void Engine::DummySubsystemB()
-	{
-		DE_PROFILE(Dummy Subsystem B)
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		DE_PROFILE_END(Dummy Subsystem B)
-	}
-	
 	void Engine::Run()
 	{
 		Initialize();

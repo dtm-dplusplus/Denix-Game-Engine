@@ -258,7 +258,7 @@ namespace Denix
 		if(m_BatchUpdateActors)
 		{
 			// Submit jobs for each actor
-			JobSubsystem::AddJobFor("Actor Update", Priority::NORMAL, actorCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
+			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, actorCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
 			WaitForCounter(actorCounter.get());
 		}
 		else

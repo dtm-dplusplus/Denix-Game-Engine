@@ -158,7 +158,7 @@ namespace Denix
          * \param _args The arguments to pass to the function.
          */
         template <typename T, typename Func, typename... Args>
-        static void AddJobFor(const std::string& _namePrefix, const Priority _priority,
+        static void AddJobBatch(const std::string& _namePrefix, const Priority _priority,
                               const Ref<Counter>& _waitCounter, std::vector<T>& _objects, Func&& _func, Args&&... _args)
         {
             const size_t objectCount = _objects.size();
@@ -183,14 +183,14 @@ namespace Denix
             // count = 144
             // bMod = 144/15 = 9 Remainder
             // bSize = 144/15 = 9
-            const size_t batchSize = objectCount / s_JobSubsystem->m_AvailableWorkerThreads;
+            const size_t batchSize = objectCount / s_JobSubsystem->m_ActiveWorkerThreads;
 
             s_JobSubsystem->m_CurrentBatchCount = batchSize;
 
             if (objectCount > s_JobSubsystem->m_BatchUpdateThreshold && objectCount > s_JobSubsystem->
                 m_AvailableWorkerThreads)
             {
-                for (size_t batchIndex = 0; batchIndex < s_JobSubsystem->m_AvailableWorkerThreads; batchIndex++)
+                for (size_t batchIndex = 0; batchIndex < s_JobSubsystem->m_ActiveWorkerThreads; batchIndex++)
                 {
                     size_t begin = batchIndex * batchSize;
                     size_t end = begin + batchSize;
