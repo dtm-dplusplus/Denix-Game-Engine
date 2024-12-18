@@ -26,9 +26,11 @@ Denix::JobSubsystem::~JobSubsystem()
 void Denix::JobSubsystem::UpdateActiveThreads()
 {
     // Clamp the active threads to the system thread count
-    s_JobSubsystem->m_ActiveWorkerThreads = std::clamp(s_JobSubsystem->m_ActiveWorkerThreads, 1, s_JobSubsystem->m_AvailableWorkerThreads);
-    DE_LOG(LogJob, Trace, "Set Active Worker Threads: {} of {}", s_JobSubsystem->m_ActiveWorkerThreads, s_JobSubsystem->m_AvailableWorkerThreads)
-            
+    s_JobSubsystem->m_ActiveWorkerThreads = std::clamp(s_JobSubsystem->m_ActiveWorkerThreads, 1,
+                                                       s_JobSubsystem->m_AvailableWorkerThreads);
+    DE_LOG(LogJob, Trace, "Set Active Worker Threads: {} of {}", s_JobSubsystem->m_ActiveWorkerThreads,
+           s_JobSubsystem->m_AvailableWorkerThreads)
+
     // Update the worker threads
     for (int i = 0; i < s_JobSubsystem->m_AvailableWorkerThreads; i++)
     {
@@ -41,7 +43,7 @@ Denix::Ref<Denix::JobDeclaration> Denix::JobSubsystem::RequestJob()
 {
     Ref<JobDeclaration> job;
     s_JobSubsystem->m_Jobs.try_pop(job);
-    return job? job : nullptr;
+    return job ? job : nullptr;
 }
 
 void Denix::JobSubsystem::StartThreadProfiling()
@@ -61,7 +63,19 @@ void Denix::JobSubsystem::StartThreadProfiling()
 void Denix::JobSubsystem::StopThreadProfiling()
 {
     Thread::s_ShouldProfile = false;
-    DE_LOG(LogThread, Info, "Thread Profiling: Disabled")
+
+    if (const Ref<ProfileSession> activeProfileSession = ProfileSubsystem::GetActiveProfileSession())
+    {
+        for (const auto& thread : s_JobSubsystem->m_WorkerThreads)
+        {
+            activeProfileSession->m_ThreadData.push_back({
+                .m_ThreadID= thread->m_ThreadIDInt, .m_JobExecCount= thread->m_JobExecCount, .m_ThreadExecTime= thread->
+                m_ThreadExecTime, .m_ThreadSleepTime= thread->m_ThreadSleepTime
+            });
+        }
+    }
+    else
+        DE_LOG(LogThread, Info, "Thread Profiling: Disabled")
 }
 
 void Denix::JobSubsystem::Initialize()
@@ -69,7 +83,7 @@ void Denix::JobSubsystem::Initialize()
     Subsystem::Initialize();
 
     DE_LOG(LogJob, Warn, "Thread Subsystem Initializing")
-    
+
     // Get Thread Information
     if (const int threadCount = std::thread::hardware_concurrency(); threadCount > 0)
     {
@@ -88,7 +102,7 @@ void Denix::JobSubsystem::Initialize()
     // Initialize the worker threads - Subtract 1 for main thread
     for (int i = 0; i < m_ActiveWorkerThreads; i++)
     {
-        m_WorkerThreads.emplace_back(MakeRef<Thread>(i+1));
+        m_WorkerThreads.emplace_back(MakeRef<Thread>(i + 1));
         m_WorkerThreads.back()->InitWorkerThread();
     }
 

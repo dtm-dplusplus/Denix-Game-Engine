@@ -4,7 +4,7 @@
 #include "Denix/Editor/Widget/Scene/ActorDetailsWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneOrganizerWidget.h"
 #include "Denix/Editor/Widget/AssetBrowserWidget.h"
-#include "Denix/Editor/Widget/EngineProfilerWidget.h"
+#include "Denix/Editor/Widget/Profile/EngineProfilerWidget.h"
 #include "Denix/Editor/Widget/InputDebuggerWidget.h"
 #include "Denix/Thread/JobSubsystem.h"
 #include "Widget/PerformanceSettingsWidget.h"

@@ -95,7 +95,7 @@ namespace Denix
                     associated with the window. Otherwise, the handle has already been destroyed and all resources
                     associated with it are invalid */
 
-                    WindowSubsystem::GetWindow()->WindowEvent(&event);
+                    //WindowSubsystem::GetWindow()->WindowEvent(&event);
                 }
                 break;
 

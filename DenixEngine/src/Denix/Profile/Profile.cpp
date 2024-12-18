@@ -42,6 +42,6 @@ namespace Denix
             durationSum += data.Duration;
             if (count++ >= s_AverageDurationCount) break;
         }
-            m_AverageDuration = durationSum / static_cast<float>(s_AverageDurationCount);
+        m_AverageDuration = durationSum / static_cast<float>(s_AverageDurationCount);
     }
 }

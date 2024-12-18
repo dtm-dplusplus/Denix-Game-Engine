@@ -55,7 +55,8 @@ namespace Denix
         
         s_ProfileSubsystem->m_ProfileSessions.emplace_back(MakeRef<ProfileSession>(ObjectInit("ProfileSession " + std::to_string(s_ProfileSubsystem->m_ProfileSessions.size()))));
         s_ProfileSubsystem->m_ActiveProfileSession = s_ProfileSubsystem->m_ProfileSessions.back();
-
+        s_ProfileSubsystem->m_ActiveProfileSession->m_IsProfiling = true;
+        
         JobSubsystem::StartThreadProfiling();
         DE_LOG(LogProfile, Info, "Profile Session Started")
     }
@@ -71,7 +72,8 @@ namespace Denix
         DE_LOG(LogProfile, Info, "Profile Session Ended")
         // Do end of session processing
         JobSubsystem::StopThreadProfiling();
-
+        s_ProfileSubsystem->m_ActiveProfileSession->m_IsProfiling = false;
+        
         // clear active session
         s_ProfileSubsystem->m_ActiveProfileSession = nullptr;
     }
@@ -80,7 +82,7 @@ namespace Denix
         // Check if we have an active profile session to record the profile
         if (!s_ProfileSubsystem->m_ActiveProfileSession) return;
         
-        s_ProfileSubsystem->m_ActiveProfileSession->StartProfile(_name);
+        s_ProfileSubsystem->m_ActiveProfileSession->StartInlineProfile(_name);
     }
 
     void ProfileSubsystem::EndProfile(const std::string& _name)
@@ -88,7 +90,7 @@ namespace Denix
         // Check if we have an active profile session to record the profile
         if (!s_ProfileSubsystem->m_ActiveProfileSession) return;
         
-       s_ProfileSubsystem->m_ActiveProfileSession->EndProfile(_name);
+       s_ProfileSubsystem->m_ActiveProfileSession->EndInlineProfile(_name);
     }
 
     void ProfileSubsystem::StartJobProfile(const Ref<JobDeclaration>& _job)

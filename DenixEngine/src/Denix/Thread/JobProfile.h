@@ -34,7 +34,6 @@ namespace Denix
         {
         }
 
-        void Start() override;
         void End() override;
 
         JobBuffer m_JobBuffer;

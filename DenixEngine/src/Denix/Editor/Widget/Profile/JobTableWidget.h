@@ -1,7 +1,7 @@
 ﻿#pragma once
-
-#include "Denix/Editor/EditorWidget.h"
 #include "imgui.h"
+#include "Denix/Editor/EditorWidget.h"
+
 
     //const ImGuiTableSortSpecs* MyItem::s_current_sort_specs = NULL;
 //const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
@@ -86,11 +86,14 @@ static void PopStyleCompact();
 
 namespace Denix
 {
-    class EngineProfilerWidget: public EditorWidget
+    class ProfileSession;
+
+    class JobTableWidget final : public EditorWidget
     {
     public:
-        EngineProfilerWidget();
-
+        JobTableWidget();
         void Update(float _deltaTime) override;
+
+        Ref<ProfileSession> m_ProfileSession;
     };
 }

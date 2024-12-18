@@ -59,9 +59,17 @@ namespace Denix
         virtual void Start();
         virtual void End();
 
+        float GetMinDuration() const { return m_MinimumDuration; }
+        float GetMinDurationMs() const { return m_MinimumDuration * 1000.0f; }
+
+        float GetMaxDuration() const { return m_MaximumDuration; }
+        float GetMaxDurationMs() const { return m_MaximumDuration * 1000.0f; }
+        
         float GetAverageDuration() const { return m_AverageDuration; }
+        float GetAverageDurationMs() const { return m_AverageDuration * 1000.0f; }
 
         float GetLastProfileDuration() const { return GetLastProfileResult().Duration;}
+        float GetLastPorifleDurationMs() const { return GetLastProfileResult().Duration * 1000.0f; }
         TimeEvent GetLastProfileResult() const { return m_DurationBuffer.GetLastResult(); }
 
         /**
