@@ -10,5 +10,6 @@ namespace Denix
         PerformanceSettingsWidget();
 
         void Update(float _deltaTime) override;
+        static void Show();
     };
 }

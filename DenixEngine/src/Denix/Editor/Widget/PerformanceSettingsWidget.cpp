@@ -16,5 +16,16 @@ void Denix::PerformanceSettingsWidget::Update(float _deltaTime)
     ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
     ImGui::SliderFloat("Game Speed", &TimerSubsystem::GetGameTimeSpeed(), 0.0f, 2.0f);
     ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
+
+    
     ImGui::End();
+}
+
+void Denix::PerformanceSettingsWidget::Show()
+{
+    ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
+    ImGui::Text("Frame time: %.2fms", TimerSubsystem::GetFrameTimeMs());
+    ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+    ImGui::Text("Program time: %.2fs", TimerSubsystem::GetProgramElaspedTime());
+    
 }

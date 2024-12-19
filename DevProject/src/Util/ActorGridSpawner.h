@@ -24,10 +24,7 @@ public:
         {
             for (int j = 0; j < GridSize; j++)
             {
-                DE_PROFILE(SpawnActor);
                 _scene->SpawnActor<CPGCube>(glm::vec3((float)i * 2.5f, SpawnHeight, (float)j * 2.5f));
-                
-                DE_PROFILE_END(SpawnActor);
             }
         }
         spawnTime.Stop();

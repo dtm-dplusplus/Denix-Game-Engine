@@ -28,6 +28,7 @@ void ThreadScene::DebugUI(float _deltaTime)
 {
     Scene::DebugUI(_deltaTime);
 
+    ImGui::SetNextItemWidth(500);
     ImGui::Begin(GetName().c_str());
     if (ImGui::CollapsingHeader("Dev Stuff", ImGuiTreeNodeFlags_DefaultOpen))
     {

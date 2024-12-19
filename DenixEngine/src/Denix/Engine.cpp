@@ -170,7 +170,7 @@ namespace Denix
 			Ref<Counter> editorCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 			WaitForCounter(editorCounter.get());
-			
+
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			Ref<Counter> renderCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter, &RendererSubsystem::RenderScene, m_RendererSubsystem.get());

@@ -21,16 +21,21 @@ namespace Denix
         {
             // Reserve to reduce reallocations during profiling.
             m_InlineProfiles.reserve(25);
+            m_SessionTimer = MakeRef<Timer>(_objInit.Name + "Timer");
         }
         ~ProfileSession() override = default;
 
         std::unordered_map<std::string, Profile>& GetInlineProfiles() { return m_InlineProfiles; }
         std::unordered_map<std::string, JobProfile>& GetJobProfiles() { return m_JobProfiles; }
         std::vector<ThreadData>& GetThreadData() { return m_ThreadData; }
+
+        Ref<Timer> GetSessionTimer() const { return m_SessionTimer; }
         
         bool IsProfiling() const { return m_IsProfiling; }
         
     private:
+        void StartSession();
+        void EndSession();
         void StartInlineProfile(const std::string& _name);
         void EndInlineProfile(const std::string& _name);
 
@@ -45,6 +50,8 @@ namespace Denix
         std::unordered_map<std::string, JobProfile> m_JobProfiles;
 
         std::vector<ThreadData> m_ThreadData;
+
+        Ref<Timer> m_SessionTimer;
         
         bool m_IsProfiling = false;
 

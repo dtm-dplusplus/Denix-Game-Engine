@@ -26,19 +26,18 @@ namespace Denix
 		void Deinitialize() override;
 
 		void BeginFrame();
-
 		void EndFrame();
-		
+
+		static float GetProgramElaspedTime();
 		static int GetFPS();
-		static int& GetMaxFPS() { return s_TimerSubsystem->m_MaxFPS; }
+		static int& GetMaxFPS() { return s_TimerSubsystem->m_MaxLimitFPS; }
 		static float GetFrameTime();
 		static float GetFrameTimeMs();
-
 		static float GetFrameTimeMsAverage();
+		
 		static float GetDeltaTime() {return s_TimerSubsystem->m_DeltaTime; }
 		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
 
-		std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimePoint;
 		Ref<Profile> m_EngineProfile;
 
 	private:
@@ -52,11 +51,6 @@ namespace Denix
 		float m_FrameTime;
 		
 		/**
-		 * Time taken for frame to complete in seconds
-		 */
-		float m_FrameTimeMs;
-
-		/**
 		 * Game specifc frame time
 		 */
 		float m_DeltaTime;
@@ -68,9 +62,9 @@ namespace Denix
 
 		
 		/**
-		 * Maximum frames per second
+		 * 
 		 */
-		int m_MaxFPS;
+		int m_MaxLimitFPS;
 
 		
 		std::vector<Ref<Timer>> m_Timers;

@@ -16,7 +16,7 @@ namespace Denix
 		m_DeltaTime = 0.167f;
 		m_FramesPerSecond = 60;
 		m_GameTimeSpeed = 1.0f;
-		m_MaxFPS = 60;
+		m_MaxLimitFPS = 60;
 	}
 
 	TimerSubsystem::~TimerSubsystem()
@@ -49,8 +49,10 @@ namespace Denix
 		const float frameTimeMs = m_EngineProfile->m_Timer->GetElapsedMs();
 
 		// Implement max frame rate
-		if (const float minFrameTime = 1000.0f / static_cast<float>(m_MaxFPS);
-			frameTimeMs < minFrameTime && m_MaxFPS > 0)
+		// We Should potentially skip draw calls instead of waiting here.
+		// need to check if vsync is enabled.
+		if (const float minFrameTime = 1000.0f / static_cast<float>(m_MaxLimitFPS);
+			frameTimeMs < minFrameTime && m_MaxLimitFPS > 0)
 		{
 			const float sleepTime = minFrameTime - frameTimeMs;
 			Timer waitTimer = Timer(ObjectInit("WaitTimer"), true);
@@ -60,7 +62,6 @@ namespace Denix
 		// Calculate the real time taken for the frame to complete
 		m_EngineProfile->End();
 		m_FrameTime = m_EngineProfile->GetLastProfileDuration();
-		m_FrameTimeMs = m_FrameTime * 1000.0f;
 
 		// Calculate the delta time, accounting for the game time speed which can be used to slow down or speed up the game.
 		m_DeltaTime = m_GameTimeSpeed * m_FrameTime;
@@ -78,8 +79,11 @@ namespace Denix
 			frameCounter = 0;
 			timeInFrame = 0.0f;
 		}
+	}
 
-		
+	float TimerSubsystem::GetProgramElaspedTime()
+	{
+		return Timer::GetProgramElaspedTime();
 	}
 
 	int TimerSubsystem::GetFPS()
@@ -88,7 +92,7 @@ namespace Denix
 	}
 
 	float TimerSubsystem::GetFrameTime() { return s_TimerSubsystem->m_FrameTime; }
-	float TimerSubsystem::GetFrameTimeMs() {return s_TimerSubsystem->m_FrameTimeMs;}
+	float TimerSubsystem::GetFrameTimeMs() {return s_TimerSubsystem->m_FrameTime * 1000.0f; }
 
 	float TimerSubsystem::GetFrameTimeMsAverage()
 	{ return s_TimerSubsystem->m_EngineProfile->m_AverageDuration * 1000.0f; }

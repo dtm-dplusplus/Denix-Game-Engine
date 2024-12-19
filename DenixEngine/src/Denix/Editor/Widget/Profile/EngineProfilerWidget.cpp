@@ -25,11 +25,10 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
 
     ImGui::Begin("Profiler Widget");
 
-    ImGui::SeparatorText("Performance Settings");
-    ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
     ImGui::SeparatorText("Engine Metrics");
-    ImGui::Text("Program time: %fs", elaspedTime);
-    ImGui::Text("Frame time: %fms", TimerSubsystem::GetFrameTimeMs());
+    ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
+    ImGui::Text("Program time: %.2fs", elaspedTime);
+    ImGui::Text("Frame time: %.2fms", TimerSubsystem::GetFrameTimeMs());
     ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
 
     ImGui::SeparatorText("Profiler Settings");
@@ -51,46 +50,57 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
 
         const Ref<Profile>& engprofile = TimerSubsystem::Get()->m_EngineProfile;
 
-        if (session->IsProfiling())
-        {
-            static float yAxisScale = 1000.0f; // Example scaling factor
-            if (ImPlot::BeginPlot("Profile Visualizer", "Elapsed Time (s)", "Frame Time (ms)", ImVec2(-1, 0),
+        /*if (ImPlot::BeginPlot("Engine Frame Time", "Elapsed Time (s)", "Frame Time (ms)", ImVec2(-1, 0),
                               ImPlotFlags_None,
                               ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
-            {
-                ImPlot::SetupAxisLimits(ImAxis_X1, elaspedTime - history, elaspedTime, ImGuiCond_Always);
-                // ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0f, engprofile->GetAverageDurationMs() * 1.25f, ImGuiCond_Always);
-                ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
-
-                // Apply a scaling factor to the Y-axis
-           
-                ImPlot::SetupAxisScale(ImAxis_Y1, yAxisScale);
-            
-                for (const auto& [name, profile] : inlineProfiles)
-                {
-                    if (profile.m_DurationBuffer.ProfileResults.empty()) continue;
-                    ImPlot::PlotLine(name.c_str(), &profile.m_DurationBuffer.ProfileResults[0].StartTime,
-                                     &profile.m_DurationBuffer.ProfileResults[0].Duration,
-                                     profile.m_DurationBuffer.ProfileResults.size(), 0, 0, 3 * sizeof(float));
-                }
-                ImPlot::EndPlot();
-            }
-        }
+        {
+            ImPlot::SetupAxisLimits(ImAxis_X1, elaspedTime - history, elaspedTime, ImGuiCond_Always);
+            ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+        }*/
+        
+        
 
         if (ImGui::TreeNode(session->GetName().c_str()))
         {
+            ImGui::SeparatorText("Profile Session");
+            ImGui::Text("Start Time: %f", session->GetSessionTimer()->GetStartTime());
+            if (!session->IsProfiling())
+            {
+                ImGui::Text("End Time: %f", session->GetSessionTimer()->GetEndTime());
+                ImGui::Text("Duration: %f", session->GetSessionTimer()->GetDuration());
+            }
+            
+            ImGui::SeparatorText("Profiles");
             if (ImGui::TreeNode("Inline Profiles"))
             {
-                for (const auto& [name, profile] : inlineProfiles)
+                static float yAxisScale = 0.001f; // Example scaling factor
+                if (ImPlot::BeginPlot("Profile Visualizer", "Elapsed Time (s)", "Frame Time (s)", ImVec2(-1, 0),
+                                  ImPlotFlags_None,
+                                  ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
                 {
-                    if (ImGui::TreeNode(name.c_str()))
+                    float sessionElapsedTime = session->IsProfiling()? elaspedTime : session->GetSessionTimer()->GetEndTime();
+                    ImPlot::SetupAxisLimits(ImAxis_X1, sessionElapsedTime - history, sessionElapsedTime, ImGuiCond_Always);
+                    ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
+
+                    // Apply a scaling factor to the Y-axis
+                    for (const auto& [name, profile] : inlineProfiles)
                     {
-                        ImGui::Text("Minimum Duration: %fms", profile.GetMinDurationMs());
-                        ImGui::Text("Maximum Duration: %fms", profile.GetMaxDurationMs());
-                        ImGui::Text("Average Duration: %fms", profile.GetAverageDurationMs());
-                        ImGui::TreePop();
+                        if (profile.m_DurationBuffer.ProfileResults.empty()) continue;
+                        ImPlot::PlotLine(name.c_str(), &profile.m_DurationBuffer.ProfileResults[0].EndTime,
+                                         &profile.m_DurationBuffer.ProfileResults[0].Duration,
+                                         profile.m_DurationBuffer.ProfileResults.size(), 0, 0, 3 * sizeof(float));
+
+                        if (ImGui::TreeNode(name.c_str()))
+                        {
+                            ImGui::Text("Minimum Duration: %fms", profile.GetMinDurationMs());
+                            ImGui::Text("Maximum Duration: %fms", profile.GetMaxDurationMs());
+                            ImGui::Text("Average Duration: %fms", profile.GetAverageDurationMs());
+                            ImGui::TreePop();
+                        }
                     }
+                    ImPlot::EndPlot();
                 }
+                
                 ImGui::TreePop();
             }
 

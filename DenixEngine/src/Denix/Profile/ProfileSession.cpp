@@ -3,6 +3,18 @@
 
 #include "Denix/Thread/JobProfile.h"
 
+void Denix::ProfileSession::StartSession()
+{
+    m_IsProfiling = true;
+    m_SessionTimer->Start();
+}
+
+void Denix::ProfileSession::EndSession()
+{
+    m_SessionTimer->Stop();
+    m_IsProfiling = false;
+}
+
 void Denix::ProfileSession::StartInlineProfile(const std::string& _name)
 {
     Profile& profile = GetInlineProfile(_name);
