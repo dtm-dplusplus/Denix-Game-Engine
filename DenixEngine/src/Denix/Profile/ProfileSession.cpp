@@ -14,6 +14,15 @@ void ProfileSession::StartSession()
 void ProfileSession::EndSession()
 {
     m_SessionTimer->Stop();
+
+    // Calculate thread data for visualization
+    for (auto thread: m_ThreadData)
+    {
+        m_ThreadJobCounts.push_back(thread.m_JobExecCount);
+        m_ThreadJobExecTimes.push_back(thread.m_ThreadExecTime);
+        m_ThreadSleepTimes.push_back(thread.m_ThreadSleepTime);
+    }
+
     m_IsProfiling = false;
 }
 
@@ -39,6 +48,7 @@ void ProfileSession::EndJobProfile(const Ref<JobDeclaration>& _job)
 {
     Ref<JobProfile> jobProfile = GetJobProfile(_job->m_Name);
     jobProfile->End();
+    _job->m_JobTime = jobProfile->GetLastProfileResult();
 }
 
 Ref<Profile> ProfileSession::GetInlineProfile(const std::string& _name)

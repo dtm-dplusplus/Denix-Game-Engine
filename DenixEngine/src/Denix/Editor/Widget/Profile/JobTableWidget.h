@@ -34,7 +34,6 @@ namespace Denix
         void Update(float _deltaTime) override;
         // Comparison function for sorting job profiles
        
-
         Ref<ProfileSession> m_ProfileSession;
     };
 }

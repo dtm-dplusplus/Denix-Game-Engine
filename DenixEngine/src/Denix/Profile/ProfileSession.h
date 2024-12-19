@@ -29,6 +29,10 @@ namespace Denix
         }
         ~ProfileSession() override = default;
 
+        Ref<Timer> GetSessionTimer() const { return m_SessionTimer; }
+
+        bool IsProfiling() const { return m_IsProfiling; }
+        
         std::unordered_map<std::string, Ref<Profile>>& GetInlineProfileMap() { return m_InlineProfileMap; }
         std::vector<Ref<Profile>>& GetInlineProfiles() { return m_InlineProfiles; }
         
@@ -36,11 +40,13 @@ namespace Denix
         std::vector<Ref<JobProfile>>& GetJobProfiles() { return m_JobProfiles; }
         
         std::vector<ThreadData>& GetThreadData() { return m_ThreadData; }
+        std::vector<int>& GetThreadJobCounts() { return m_ThreadJobCounts; }
+        std::vector<float>& GetThreadJobExecTimes() { return m_ThreadJobExecTimes; }
+        std::vector<float>& GetThreadSleepTimes() { return m_ThreadSleepTimes; }
+        
+       
 
-        Ref<Timer> GetSessionTimer() const { return m_SessionTimer; }
-
-        bool IsProfiling() const { return m_IsProfiling; }
-
+       
     private:
         void StartSession();
         void EndSession();
@@ -60,6 +66,10 @@ namespace Denix
         std::vector<Ref<JobProfile>> m_JobProfiles;
         
         std::vector<ThreadData> m_ThreadData;
+        std::vector<int> m_ThreadJobCounts;
+        std::vector<float> m_ThreadJobExecTimes;
+        std::vector<float> m_ThreadSleepTimes;
+        
         Ref<Timer> m_SessionTimer;
         bool m_IsProfiling = false;
 
