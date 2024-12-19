@@ -42,7 +42,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
     // Display  Profile Sessions
     for (const auto& session : profileSessions)
     {
-        std::unordered_map<std::string, Profile>& inlineProfiles = session->GetInlineProfiles();
+        std::unordered_map<std::string, Ref<Profile>>& inlineProfiles = session->GetInlineProfileMap();
         static float history = 10.0f;
 
         ImGui::SeparatorText("Profile Data");
@@ -85,16 +85,16 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
                     // Apply a scaling factor to the Y-axis
                     for (const auto& [name, profile] : inlineProfiles)
                     {
-                        if (profile.m_DurationBuffer.ProfileResults.empty()) continue;
-                        ImPlot::PlotLine(name.c_str(), &profile.m_DurationBuffer.ProfileResults[0].EndTime,
-                                         &profile.m_DurationBuffer.ProfileResults[0].Duration,
-                                         profile.m_DurationBuffer.ProfileResults.size(), 0, 0, 3 * sizeof(float));
+                        if (profile->m_DurationBuffer.ProfileResults.empty()) continue;
+                        ImPlot::PlotLine(name.c_str(), &profile->m_DurationBuffer.ProfileResults[0].EndTime,
+                                         &profile->m_DurationBuffer.ProfileResults[0].Duration,
+                                         profile->m_DurationBuffer.ProfileResults.size(), 0, 0, 3 * sizeof(float));
 
                         if (ImGui::TreeNode(name.c_str()))
                         {
-                            ImGui::Text("Minimum Duration: %fms", profile.GetMinDurationMs());
-                            ImGui::Text("Maximum Duration: %fms", profile.GetMaxDurationMs());
-                            ImGui::Text("Average Duration: %fms", profile.GetAverageDurationMs());
+                            ImGui::Text("Minimum Duration: %fms", profile->GetMinDurationMs());
+                            ImGui::Text("Maximum Duration: %fms", profile->GetMaxDurationMs());
+                            ImGui::Text("Average Duration: %fms", profile->GetAverageDurationMs());
                             ImGui::TreePop();
                         }
                     }

@@ -3,77 +3,66 @@
 
 #include "Denix/Thread/JobProfile.h"
 
-void Denix::ProfileSession::StartSession()
+using namespace Denix;
+
+void ProfileSession::StartSession()
 {
     m_IsProfiling = true;
     m_SessionTimer->Start();
 }
 
-void Denix::ProfileSession::EndSession()
+void ProfileSession::EndSession()
 {
     m_SessionTimer->Stop();
     m_IsProfiling = false;
 }
 
-void Denix::ProfileSession::StartInlineProfile(const std::string& _name)
+void ProfileSession::StartInlineProfile(const std::string& _name)
 {
-    Profile& profile = GetInlineProfile(_name);
-    profile.Start();
+    Ref<Profile> profile = GetInlineProfile(_name);
+    profile->Start();
 }
 
-void Denix::ProfileSession::EndInlineProfile(const std::string& _name)
+void ProfileSession::EndInlineProfile(const std::string& _name)
 {
-    Profile& profile = GetInlineProfile(_name);
-    profile.End();
+    Ref<Profile> profile = GetInlineProfile(_name);
+    profile->End();
 }
 
-void Denix::ProfileSession::StartJobProfile(const Ref<JobDeclaration>& _job)
+void ProfileSession::StartJobProfile(const Ref<JobDeclaration>& _job)
 {
-    JobProfile& jobProfile = GetJobProfile(_job->m_Name);
-    jobProfile.Start();
+    Ref<JobProfile> jobProfile = GetJobProfile(_job->m_Name);
+    jobProfile->Start();
 }
 
-void Denix::ProfileSession::EndJobProfile(const Ref<JobDeclaration>& _job)
+void ProfileSession::EndJobProfile(const Ref<JobDeclaration>& _job)
 {
-    JobProfile& jobProfile = GetJobProfile(_job->m_Name);
-    jobProfile.End();
-    
-    //jobProfile.m_JobBuffer.SaveJobResult(_job);
-    
-
-    // Calculate the average duration. We average the last m_AverageDurationCount durations
-    /*if (jobProfile.m_JobBuffer.JobResults.size() < Profile::s_AverageDurationCount) return;
-
-    float durationSum = 0.0f;
-    int count = 0;
-    for (const auto& jobData : std::ranges::views::reverse(jobProfile.m_JobBuffer.JobResults))
-    {
-        durationSum += jobData->m_JobTime.Duration;
-        if (count++ >= Profile::s_AverageDurationCount) break;
-    }
-    jobProfile.m_AverageDuration = durationSum / static_cast<float>(Profile::s_AverageDurationCount);*/
+    Ref<JobProfile> jobProfile = GetJobProfile(_job->m_Name);
+    jobProfile->End();
 }
 
-Denix::Profile& Denix::ProfileSession::GetInlineProfile(const std::string& _name)
+Ref<Profile> ProfileSession::GetInlineProfile(const std::string& _name)
 {
     // Create profile if it doesn't exist. Occurs on first instance of profile
-    if (!m_InlineProfiles.contains(_name))
+    if (!m_InlineProfileMap.contains(_name))
     {
-        m_InlineProfiles[_name] = Profile({_name});
+        m_InlineProfiles.push_back(MakeRef<Profile>(_name));
+        m_InlineProfileMap[_name] = m_InlineProfiles.back();
         DE_LOG(LogProfile, Trace, "Profile {} created", _name)
     }
     
-    return m_InlineProfiles[_name];
+    return m_InlineProfileMap[_name];
 }
 
-Denix::JobProfile& Denix::ProfileSession::GetJobProfile(const std::string& _name)
+Ref<JobProfile> ProfileSession::GetJobProfile(const std::string& _name)
 {
     // Create job profile if it doesn't exist. Occurs on first instance of profile
-    if (!m_JobProfiles.contains(_name))
+    if (!m_JobProfilesMap.contains(_name))
     {
-        m_JobProfiles[_name] = JobProfile({_name});
+        m_JobProfiles.push_back(MakeRef<JobProfile>(_name));
+        m_JobProfilesMap[_name] = m_JobProfiles.back();
         DE_LOG(LogProfile, Trace, "Job Profile {} created", _name)
     }
 
-    return m_JobProfiles[_name];
+    return m_JobProfilesMap[_name];
 }
