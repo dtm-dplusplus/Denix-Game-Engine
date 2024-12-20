@@ -194,7 +194,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
                                     ImPlot::SetupLegend(ImPlotLocation_East, ImPlotLegendFlags_Outside);
                                     ImPlot::SetupAxes("Threads","Count",ImPlotAxisFlags_AutoFit,ImPlotAxisFlags_AutoFit);
                                     ImPlot::SetupAxisTicks(ImAxis_X1,&positions[0], groups, &xLabels[0]);
-                                    ImPlot::PlotBars(ilabels[graphType],&session->m_ThreadJobCounts[0],groups,size,0,flags);
+                                    ImPlot::PlotBars(ilabels[graphType],&session->GetThreadJobCounts()[0],groups,size,0,flags);
                                     ImPlot::EndPlot();
                                 }
                                 break;
@@ -206,7 +206,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
                                         ImPlot::SetupLegend(ImPlotLocation_East, ImPlotLegendFlags_Outside);
                                         ImPlot::SetupAxes("Threads","Time (s)",ImPlotAxisFlags_AutoFit,ImPlotAxisFlags_AutoFit);
                                         ImPlot::SetupAxisTicks(ImAxis_X1,&positions[0], groups, &xLabels[0]);
-                                        ImPlot::PlotBars(ilabels[graphType],&session->m_ThreadJobExecTimes[0],groups,size,0,flags);
+                                        ImPlot::PlotBars(ilabels[graphType],&session->GetThreadJobExecTimes()[0],groups,size,0,flags);
                                         ImPlot::EndPlot();
                                     }
                                 }
@@ -218,7 +218,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
                                     ImPlot::SetupLegend(ImPlotLocation_East, ImPlotLegendFlags_Outside);
                                     ImPlot::SetupAxes("Threads","Time (s)",ImPlotAxisFlags_AutoFit,ImPlotAxisFlags_AutoFit);
                                     ImPlot::SetupAxisTicks(ImAxis_X1,&positions[0], groups, &xLabels[0]);
-                                    ImPlot::PlotBars(ilabels[graphType],&session->m_ThreadSleepTimes[0],groups,size,0,flags);
+                                    ImPlot::PlotBars(ilabels[graphType],&session->GetThreadSleepTimes()[0],groups,size,0,flags);
                                     ImPlot::EndPlot();
                                 }
                             }

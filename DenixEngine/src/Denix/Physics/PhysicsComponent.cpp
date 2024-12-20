@@ -155,6 +155,8 @@ namespace Denix
 
     void PhysicsComponent::StepSimulation(float _deltaTime)
     {
+        if (!m_SimulatePhysics || m_SteppedThisFrame) return;
+        
         // Calculate the net force - Null effect if Drag = 0
         m_Force -= m_LinearDrag * m_Velocity;
         m_Torque -= m_AngularDrag * m_AngularVelocity;

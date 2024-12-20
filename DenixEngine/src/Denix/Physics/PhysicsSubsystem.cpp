@@ -3,6 +3,7 @@
 #include "Denix/Physics/PhysicsComponent.h"
 #include "Denix/Physics/Collider.h"
 #include "Denix/Profile/ProfileSubsystem.h"
+#include "Denix/Thread/JobSubsystem.h"
 
 namespace Denix
 {
@@ -53,17 +54,21 @@ namespace Denix
 
 	void PhysicsSubsystem::Update(float _deltaTime)
 	{
+		if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
+
 		DE_PROFILE(Physics Update)
-		
-		if (!m_Enabled) return;
-		if (!m_ActiveScene->IsPlaying()) return;
-		
+		DE_PROFILE(Physics Collision)
 		if(m_CollisionDetectionEnabled) CollisionDetectionPhase(_deltaTime);
+		DE_PROFILE_END(Physics Collision)
 
+		DE_PROFILE(Physics Response)
 		if (m_CollisionResponseEnabled) CollisionResonsePhase(_deltaTime);
+		DE_PROFILE_END(Physics Response)
 
+		DE_PROFILE(Physics Simulation)
 		PhysicsSimulationPhase(_deltaTime);
-
+		DE_PROFILE_END(Physics Simulation)
+		
 		DE_PROFILE_END(Physics Update)
 	}
  
@@ -270,12 +275,10 @@ namespace Denix
 
 	void PhysicsSubsystem::PhysicsSimulationPhase(float _deltaTime)
 	{
-		for (const auto& physicsComp : m_PhysicsComponents)
-		{
-			if (!physicsComp->m_SimulatePhysics) continue;
-
-			if (!physicsComp->m_SteppedThisFrame) physicsComp->StepSimulation(_deltaTime);
-		}
+		// Submit batch job
+		Ref<Counter> pCompCounter = MakeRef<Counter>();
+		JobSubsystem::AddJobBatch("Physics Simulation", Priority::NORMAL, pCompCounter, m_PhysicsComponents, &PhysicsComponent::StepSimulation, _deltaTime);
+		WaitForCounter(pCompCounter.get());
 	}
 	void PhysicsSubsystem::ImpulseResponse(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB)
 	{

@@ -17,7 +17,7 @@ void CPGCube::BeginPlay()
 {
     Cube::BeginPlay();
 
-    m_PhysicsComponent->GetMass() = Math::RandF(10.0f, 100.0f);
+    m_PhysicsComponent->GetMass() = Math::RandF(10.0f, 1000.0f);
 }
 
 void CPGCube::Update(float _deltaTime)

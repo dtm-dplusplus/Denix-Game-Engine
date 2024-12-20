@@ -24,7 +24,10 @@ namespace Denix
         ProfileSession(const ObjectInit& _objInit): Object(_objInit)
         {
             // Reserve to reduce reallocations during profiling.
-            m_InlineProfileMap.reserve(25);
+            m_InlineProfileMap.reserve(50);
+            m_InlineProfiles.reserve(50);
+            m_JobProfilesMap.reserve(50);
+            m_JobProfiles.reserve(50);
             m_SessionTimer = MakeRef<Timer>(_objInit.Name + "Timer");
         }
         ~ProfileSession() override = default;
