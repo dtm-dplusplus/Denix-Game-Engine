@@ -27,11 +27,6 @@ namespace Denix
 
 		~Collider() override = default;
 
-		void Update(float _deltaTime) override
-		{
-			m_TransformComponent->Update(_deltaTime);
-		}
-
 		ColliderType GetColliderType() { return (ColliderType)m_ColliderType; }
 		ColliderType& GetColliderTypeRef() { return (ColliderType&)m_ColliderType; }
 		void SetColliderType(ColliderType _type) { m_ColliderType = (int)_type; }
@@ -138,6 +133,8 @@ namespace Denix
 		glm::vec3 m_Max = { 0.5f, 0.5f, 0.5f };
 
 		friend class PhysicsComponent;
+		friend class PhysicsSubsystem;
+		friend class Actor;
 	};
 
 	class SphereCollider : public Collider
@@ -152,5 +149,9 @@ namespace Denix
 
 	private:
 		float m_Radius = 0.5f;
+
+		friend class PhysicsComponent;
+		friend class PhysicsSubsystem;
+		friend class Actor;
 	};
 }

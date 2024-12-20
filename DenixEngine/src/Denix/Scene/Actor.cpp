@@ -4,7 +4,9 @@
 
 #include "yaml-cpp/yaml.h"
 #include "Denix/Core/YAMLHelper.h"
+#include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Resource/Asset.h"
+#include "Denix/Thread/JobSubsystem.h"
 
 namespace Denix
 {
@@ -195,4 +197,48 @@ namespace Denix
 
     void Actor::OnTriggerExit(Ref<Actor> _other)
     {}
+
+    void Actor::Destroy()
+    {
+        // Add more clean up code here
+        MarkRubbish();
+    }
+
+    void Actor::BeginScene()
+    {
+        BaseObject::BeginScene();
+
+        for (const auto& component : m_Components) component->BeginScene();
+    }
+
+    void Actor::EndScene()
+    {
+        for (const auto& component : m_Components) component->EndScene();
+
+        BaseObject::EndScene();
+    }
+
+    void Actor::BeginPlay()
+    {
+        BaseObject::BeginPlay();
+
+        for (const auto& component : m_Components) component->BeginPlay();
+    }
+
+    void Actor::EndPlay()
+    {
+        for (const auto& component : m_Components) component->EndPlay();
+
+        BaseObject::EndPlay();
+    }
+
+    void Actor::Update(float _deltaTime)
+    {
+        BaseObject::Update(_deltaTime);
+
+        for(const auto& component : m_Components)
+        {
+            component->Update(_deltaTime);
+        }
+    }
 }

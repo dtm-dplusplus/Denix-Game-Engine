@@ -11,7 +11,8 @@ namespace Denix
 		m_BroadCollider->GetRadius() = 2.0f;
     }
 
-    PhysicsComponent::PhysicsComponent(const Ref<TransformComponent>& _parentTransform)
+    PhysicsComponent::PhysicsComponent(const Ref<TransformComponent>& _parentTransform): 
+        Component(ObjectInit("Physics Component")), m_Collider(nullptr)
     {
         m_ParentTransform = _parentTransform;
         m_BroadCollider = MakeRef<SphereCollider>();
@@ -47,10 +48,11 @@ namespace Denix
         m_Velocity += m_Acceleration * _deltaTime;
 
         // Calculate new displacement at time t + dt
-        m_ParentTransform->GetPosition() += m_Velocity * _deltaTime;
+        m_ParentTransform->m_Position += m_Velocity * _deltaTime;
 
         ////////////* Angular */////////////////////
-
+        if (!m_RotationEnabled) return;
+        
         // Calulate angular momentum
         m_AngularMomentum += m_Torque * _deltaTime;
 
@@ -61,10 +63,10 @@ namespace Denix
         m_AngularVelocity = m_ObjectInteriaTensorInverse * m_AngularMomentum;
 
         // Reconstruct skew matrix
-         glm::mat3 skewMatrix = glm::mat3(
+         /*glm::mat3 skewMatrix = glm::mat3(
              0.0f, -m_AngularVelocity.z, m_AngularVelocity.y,
              m_AngularVelocity.z, 0.0f, -m_AngularVelocity.x,
-             -m_AngularVelocity.y, m_AngularVelocity.x, 0.0f);
+             -m_AngularVelocity.y, m_AngularVelocity.x, 0.0f);*/
 
         // Update rotation matrix
         ComputeRotationMatrix(_deltaTime);
@@ -126,30 +128,27 @@ namespace Denix
 
         m_ParentTransform->m_PhysicsRotationOverride = m_SimulatePhysics;
 
-        if (m_Collider)
+        if (!m_Collider) return;
+        
+        m_Collider->m_TransformComponent->m_Position = m_ParentTransform->m_Position;
+
+        switch (m_Collider->GetColliderType())
         {
-            m_Collider->m_TransformComponent->SetPosition(m_ParentTransform->GetPosition());
-
-            switch (m_Collider->GetColliderType())
+        case ColliderType::Cube:
             {
-            case ColliderType::Cube:
-                {
-                    if (!m_CollisonDimesionOverride)
-                    {
-                        CastRef<CubeCollider>(m_Collider)->GetDimensions() = m_ParentTransform->GetScale();
-                    }
-                } break;
+                if (!m_CollisonDimesionOverride)
+                    CastRef<CubeCollider>(m_Collider)->m_Dimensions= m_ParentTransform->m_Scale;
+            } break;
 
-            case ColliderType::Sphere:
-                {
-                    Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
-                    m_MomentOfInertia = (2.0 / 5.0) * m_Mass * pow(sphereCol->GetRadius(), 2);
-                    m_ParentTransform->SetScale(glm::vec3(sphereCol->GetRadius() * 2.0f));
-                    m_Collider->GetTransformComponent()->SetScale(m_ParentTransform->GetScale());
-                } break;
-            }
-
-            m_Collider->Update(_deltaTime);
+        case ColliderType::Sphere:
+            {
+                if(const Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider))
+               {
+                    m_MomentOfInertia = 0.4f * m_Mass * (sphereCol->m_Radius * sphereCol->m_Radius);
+                    m_ParentTransform->m_Scale = glm::vec3(sphereCol->m_Radius * 2.0f);
+                    m_Collider->m_TransformComponent->m_Scale = m_ParentTransform->m_Scale;
+               }
+            } break;
         }
     }
 
@@ -161,21 +160,7 @@ namespace Denix
         m_Force -= m_LinearDrag * m_Velocity;
         m_Torque -= m_AngularDrag * m_AngularVelocity;
 
-        if (m_Collider)
-        {
-            m_Collider->Update(_deltaTime);
-        }
-
-        switch (m_StepMethod)
-        {
-        case StepMethod::Euler:
-            ComputeStepEuler(_deltaTime);
-            break;
-
-        case StepMethod::RK2:
-            ComputeStepRK2(_deltaTime);
-            break;
-        }
+        ComputeStepEuler(_deltaTime);
 
         m_SteppedThisFrame = true;
     }

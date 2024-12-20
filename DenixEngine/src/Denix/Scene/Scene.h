@@ -100,6 +100,7 @@ namespace Denix
 
 		void Update(float _deltaTime) override
 		{
+			BaseObject::Update(_deltaTime);
 			DebugUI(_deltaTime);
 		}
 

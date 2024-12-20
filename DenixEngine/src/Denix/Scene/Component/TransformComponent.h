@@ -41,32 +41,9 @@ namespace Denix
 		void UnregisterComponent() override;
 
 
-		void Update(float _deltaTime) override
-		{
-			m_Model = glm::translate(glm::mat4(1.0f), m_Position);
-		
-			if (m_PhysicsRotationOverride)
-			{
-				glm::mat4 rotationMatrix = glm::mat4(m_RotationMatrix);
-				m_Model *= rotationMatrix;
-			}
-			else
-			{
-				m_Model = glm::rotate(m_Model, glm::radians(m_Rotation.x), glm::vec3(1, 0, 0));
-				m_Model = glm::rotate(m_Model, glm::radians(m_Rotation.y), glm::vec3(0, 1, 0));
-				m_Model = glm::rotate(m_Model, glm::radians(m_Rotation.z), glm::vec3(0, 0, 1));
-			}
+		void Update(float _deltaTime) override;
 
-			m_Model = glm::scale(m_Model, m_Scale);
-		}
-
-		void UpdateRotationVectorFromMatrix()
-		{
-			// Update Rotation Vector
-			m_Rotation.x = fmod(m_Rotation.x, 360.f);
-			m_Rotation.y = fmod(m_Rotation.y, 360.f);
-			m_Rotation.z = fmod(m_Rotation.z, 360.f);
-		}
+		void UpdateRotationVectorFromMatrix();
 		Moveability GetMoveability() const { return static_cast<Moveability>(m_Moveability); }
 		int& GetMoveabilityI() { return m_Moveability; }
 		void SetMoveability(const Moveability _moveability)
@@ -101,7 +78,7 @@ namespace Denix
 
 		// Will be a flag in future
 		bool m_MoveabilityChanged = false;
-
+		
 		bool m_PhysicsRotationOverride = false;
 
 		glm::vec3 m_Position = glm::vec3(0.f);

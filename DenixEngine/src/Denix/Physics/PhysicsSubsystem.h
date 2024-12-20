@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include <concurrent_priority_queue.h>
+#include <concurrent_vector.h>
+
 #include "Denix/System/Subsystem.h"
 #include "Denix/Core/Logger.h"
 #include "Denix/Physics/PhysicsComponent.h"
@@ -78,7 +81,9 @@ namespace Denix
 		static void SetActiveScene(const Ref<Scene>& _scene) { s_PhysicsSubSystem->m_ActiveScene = _scene; }
 
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
-
+		std::vector<Ref<PhysicsComponent>> m_StaticPhysicsComponents;
+		std::vector<Ref<PhysicsComponent>> m_DynamicPhysicsComponents;		
+		
 		std::vector<CollisionEvent> m_CollisionEvents;
 
 		Ref<Scene> m_ActiveScene;

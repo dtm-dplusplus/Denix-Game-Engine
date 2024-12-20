@@ -29,15 +29,14 @@ namespace Denix
 		void Serialize(YAML::Emitter& _out) override;
 		void Deserialize(const YAML::Node& _in) override;
 
-		    
-
 		template<class T, typename ... Args>
 		Ref<T> AddComponent(Args&& ... _args)
 		{
 			if(Ref<T> component = MakeRef<T>(std::forward<Args>(_args)...))
 			{
 				component->m_Parent = this;
-				m_Components[ReflectionHelper::GetDEClassName<T>()] = component;
+				m_Components.push_back(component);
+				m_ComponentMap[ReflectionHelper::GetDEClassName<T>()] = component;
 				return component;
 			}
 
@@ -47,14 +46,11 @@ namespace Denix
 		template<typename T>
 		Ref<T> GetComponent() const
 		{
-			for (const auto& [compClass, comp] : m_Components)
-			{
-				if (const std::string className = ReflectionHelper::GetDEClassName<T>();
-					comp->m_ClassName == className)
-				{
-					return CastRef<T>(comp);
-				}
-			}
+			if (!m_ComponentMap.contains(ReflectionHelper::GetDEClassName<T>()))
+				return nullptr;
+
+			if (Ref<T> component = CastRef<T>(m_ComponentMap.at(ReflectionHelper::GetDEClassName<T>())))
+				return component;
 
 			return nullptr;
 		}
@@ -75,66 +71,20 @@ namespace Denix
 		virtual void OnTriggerStay(Ref<Actor> _other);
 		virtual void OnTriggerExit(Ref<Actor> _other);
 
-		void Destroy()
-		{
-			// Add more clean up code here
-			MarkRubbish();
-		}
+		void Destroy();
 
 	public:
-		void BeginScene() override
-		{
-			BaseObject::BeginScene();
+		void BeginScene() override;
+		void EndScene() override;
 
-			for (const auto& component : m_Components | std::views::values)
-			{
-				component->BeginScene();
-			}
-		}
+		void BeginPlay() override;
+		void EndPlay() override;
 
-		void EndScene() override
-		{
-			for (const auto& component : m_Components | std::views::values)
-			{
-				component->EndScene();
-			}
-
-			BaseObject::EndScene();
-		}
-
-
-		void BeginPlay() override
-		{
-			BaseObject::BeginPlay();
-
-			for (const auto& component : m_Components | std::views::values)
-			{
-				component->BeginPlay();
-			}
-		}
-
-		void EndPlay() override
-		{
-			for (const auto& component : m_Components | std::views::values)
-			{
-				component->EndPlay();
-			}
-
-			BaseObject::EndPlay();
-		}
-
-		void Update(float _deltaTime) override
-		{
-			BaseObject::Update(_deltaTime);
-
-			for(const auto& component : m_Components | std::views::values)
-			{
-			    component->Update(_deltaTime);
-            }
-		}
+		void Update(float _deltaTime) override;
 
 	protected:
-		std::map<std::string, Ref<Component>> m_Components;
+		std::unordered_map<std::string, Ref<Component>> m_ComponentMap;
+		std::vector<Ref<Component>> m_Components;
 
 		Ref<TransformComponent> m_TransformComponent;
 

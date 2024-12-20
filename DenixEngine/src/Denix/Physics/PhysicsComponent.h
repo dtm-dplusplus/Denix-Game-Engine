@@ -64,7 +64,8 @@ namespace Denix
 			m_Torque += _torque;
 		}
 
-		
+		bool m_RotationEnabled = true;
+
 
 	private:
 		/* Physics Component Settings */
@@ -95,6 +96,7 @@ namespace Denix
 
 		bool m_ImpulseEnabled = true;
 
+		
 		/** Method used to step the physics simulation */
 		StepMethod m_StepMethod = StepMethod::RK2;
 
