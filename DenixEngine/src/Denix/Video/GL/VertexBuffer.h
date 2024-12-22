@@ -135,5 +135,6 @@ namespace Denix
 
 		friend class MeshComponent;
 		friend class Mesh;
+		friend class RendererSubsystem;
 	};
 }

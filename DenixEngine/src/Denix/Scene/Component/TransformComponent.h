@@ -93,5 +93,6 @@ namespace Denix
 		friend class SceneSubsystem;
 		friend class PhysicsComponent;
 		friend class PhysicsSubsystem;
+		friend class RendererSubsystem;
 	};
 }
