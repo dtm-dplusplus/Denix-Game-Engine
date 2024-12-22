@@ -18,7 +18,6 @@ struct Material
 uniform sampler2D u_Texture;
 
 uniform Material u_Material;
-uniform vec3 u_CameraPosition;
 
 void main()
 {

@@ -79,6 +79,9 @@ namespace Denix
 		TextureSettings m_Settings;
 
 		std::string m_FilePath;
+
+		friend class RenderComponent;
+		friend class RendererSubsystem;
 	};
 }
 

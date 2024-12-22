@@ -254,17 +254,20 @@ namespace Denix
 
 		GLint GetUniform(const std::string& _uniform)
 		{
-			if (const GLint uniform = glGetUniformLocation(m_GL_ID, _uniform.c_str()); uniform != -1)
+			// Cache Uniform Result
+			if (!m_ShaderUniforms.contains(_uniform))
 			{
-				m_ShaderUniforms[_uniform] = uniform;
-				//DE_LOG(LogShader, Trace, "Uniform {} found", _uniform)
-				return uniform;
+				if (const GLint uniform = glGetUniformLocation(m_GL_ID, _uniform.c_str()); uniform != -1)
+				{
+					m_ShaderUniforms[_uniform] = uniform;
+					return uniform;
+				}
+				
+				DE_LOG(LogShader, Error, "Failed to get uniform: {}", _uniform)
+				return -1;
 			}
-			else
-			{
-				//DE_LOG(LogShader, Error, "Uniform {} not found", _uniform)
-				return uniform;
-			}
+
+			return  m_ShaderUniforms[_uniform];
 		}
 
 		GLuint GetGL_ID() const { return m_GL_ID; }

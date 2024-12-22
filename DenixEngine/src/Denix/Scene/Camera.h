@@ -109,6 +109,8 @@ namespace Denix
 		glm::mat4 m_View = glm::mat4(1.0f);
 		
 		friend class Engine;
+		friend class RendererSubsystem;
 		friend class Scene;
+		friend class SceneSubsystem;
 	};
 }

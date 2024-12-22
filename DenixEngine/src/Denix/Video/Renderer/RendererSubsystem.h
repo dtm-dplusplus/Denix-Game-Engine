@@ -33,12 +33,7 @@ namespace Denix
 	public:
 		static RendererSubsystem* Get() { return s_RendererSubSystem; }
 
-		void Initialize() override
-		{
-			Subsystem::Initialize();
-			DE_LOG(LogRenderer, Warn, "Initializing RendererSubsystem")
-			DE_LOG(LogRenderer, Info, "RendererSubsystem Initialized")
-		}
+		void Initialize() override;
 
 		void Deinitialize() override
 		{
@@ -48,23 +43,13 @@ namespace Denix
 
 	private:
 		void RenderScene();
-		void RenderDefaultViewport();
-		void RenderUnlitViewport();
-		void RenderWireframeViewport();
-		void RenderCollisionViewport();
-
-		void RenderLighting();
-		void RenderCollider(const Ref<class PhysicsComponent>& _component);
+		void RenderDefaultViewport() const;
 
 		static void SetActiveScene(const Ref<Scene>& _scene);
 
 		static RendererSubsystem* s_RendererSubSystem;
 		
-		std::vector<std::tuple<
-			Ref<RenderComponent>, 
-			Ref<TransformComponent>, 
-			Ref<MeshComponent>>> m_RendererComponents;
-
+		Ref<Shader> m_DefaultShader;
 		Ref<Scene> m_ActiveScene;
 
 		glm::vec3 m_WireframeColor = glm::vec3(1.0f, 1.0f, 1.0f);

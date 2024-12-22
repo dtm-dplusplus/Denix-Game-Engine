@@ -96,5 +96,6 @@ namespace Denix
 
 		friend class SceneSubsystem;
 		friend class Scene;
+		friend class RendererSubsystem;
 	};
 }
