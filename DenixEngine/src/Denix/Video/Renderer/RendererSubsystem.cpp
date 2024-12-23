@@ -55,10 +55,11 @@ namespace Denix
                            GL_FALSE, glm::value_ptr(
                                s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_View));
 
-        glUniform3f(m_DefaultShader->GetUniform("u_CameraPosition"), 
+        /*glUniform3f(m_DefaultShader->GetUniform("u_CameraPosition"), 
             s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_TransformComponent->m_Position.x,
             s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_TransformComponent->m_Position.y,
             s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_TransformComponent->m_Position.z);
+            */
 
         
         for (const Ref<Actor>& actor : s_RendererSubSystem->m_ActiveScene->m_Actors)
