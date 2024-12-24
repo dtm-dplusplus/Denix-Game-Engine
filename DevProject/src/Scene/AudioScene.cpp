@@ -313,10 +313,6 @@ ALenum sdlFormatToALFormat(SDL_AudioSpec& wavSpec) {
     return AL_NONE; // Unsupported format
 }
 
-AudioScene::AudioScene()
-{
-}
-
 using namespace Denix;
 
 void AudioScene::BeginScene()
@@ -328,17 +324,20 @@ void AudioScene::BeginScene()
     // Load WAV file
     
 
+    Clip = MakeRef<AudioClip>();
+    
     AudioData audioData;
-    if (!SDL_LoadWAV( (Denix::FileSubsystem::GetContentRoot() + "test.wav").c_str(), &audioData.WavSpec, &audioData.WavBuffer, &audioData.WavLength)) {
+    if (!SDL_LoadWAV( (Denix::FileSubsystem::GetContentRoot() + "Audio/test.wav").c_str(), &audioData.WavSpec, &audioData.WavBuffer, &audioData.WavLength)) {
         DE_LOG(LogAudio, Error, "Failed to load WAV file")
     }
 
     // Create OpenAL buffer and source
-    ALuint buffer;
-    alCall(alGenBuffers, 1, &buffer);
+    /*ALuint buffer;
+    alCall(alGenBuffers, 1, &buffer);*/
+    
 
     // Copy audio data to OpenAL buffer
-    alCall(alBufferData, buffer, sdlFormatToALFormat(audioData.WavSpec), audioData.WavBuffer, audioData.WavLength, audioData.WavSpec.freq);
+    alCall(alBufferData, Clip->m_Buffer.m_Buffer, sdlFormatToALFormat(audioData.WavSpec), audioData.WavBuffer, audioData.WavLength, audioData.WavSpec.freq);
   
     ALuint source;
     alCall(alGenSources, 1, &source);
@@ -350,19 +349,19 @@ void AudioScene::BeginScene()
     SDL_free(audioData.WavBuffer);
 
     // Attach buffer to source
-    alSourcei(source, AL_BUFFER, buffer);
+    alSourcei(source, AL_BUFFER, Clip->m_Buffer.m_Buffer);
 
     // Play the audio
     alSourcePlay(source);
 
     // Wait for the audio to finish
-    ALint state;
+    /*ALint state;
     do {
         alGetSourcei(source, AL_SOURCE_STATE, &state);
-    } while (state == AL_PLAYING);
+    } while (state == AL_PLAYING);*/
 
     // Clean up
-    alDeleteSources(1, &source);
-    alDeleteBuffers(1, &buffer);
+    // alDeleteSources(1, &source);
+    // alDeleteBuffers(1, &buffer);
     //SDL_Freew(wavBuffer);
 }

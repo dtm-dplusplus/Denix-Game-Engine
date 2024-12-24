@@ -1,10 +1,15 @@
 ﻿#pragma once
+#include "Denix/Audio/AudioClip.h"
 #include "Denix/Scene/Scene.h"
 
-class AudioScene: public Denix::Scene
+namespace Denix
 {
-public:
-    AudioScene();
+    class AudioScene: public Scene
+    {
+    public:
+        AudioScene() = default;
+        void BeginScene() override;
 
-   void BeginScene() override;
-};
+        Ref<AudioClip> Clip;
+    };
+}
