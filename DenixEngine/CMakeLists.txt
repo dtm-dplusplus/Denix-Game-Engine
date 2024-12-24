@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Create Imgui Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/DenixEngine/contrib/imgui)
-set_property(TARGET Imgui PROPERTY FOLDER DenixEngine/Depend/Imgui)
+set_property(TARGET Imgui PROPERTY FOLDER Depend/Imgui)
 
 # Get all source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
@@ -36,21 +36,29 @@ include_directories(${PROJECT_NAME}
         ${SOURCE_DIR}/contrib/OpenAL/include
 )
 
-# Create the Engine library
+# Create Audio Subsystem Library
+file(GLOB_RECURSE AUDIO_SOURCE CONFIGURE_DEPENDS
+        ${SOURCE_DIR}/src/Denix/Audio/*.cpp
+        ${SOURCE_DIR}/src/Denix/Audio/*.h
+)
+add_library(AudioSubsystem STATIC ${AUDIO_SOURCE})
+set_property(TARGET AudioSubsystem PROPERTY FOLDER DenixEngine/Audio)
+
+# Create the Engine library & Solution Folder
 add_library(DenixEngine STATIC ${SOURCE_FILES})
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
 
 # Add Precompiled Header - We Can add multiple precompiled headers
 target_precompile_headers(DenixEngine PUBLIC ${SOURCE_DIR}/src/depch.h)
 
 
-# Set solution folder for DenixEngine
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
+
 
 # Set dependencies for DenixEngine
-add_dependencies(${PROJECT_NAME} Imgui)
-#add_dependencies(${PROJECT_NAME} SDL3::SDL3)
-#add_dependencies(${PROJECT_NAME} assimp)
-#add_dependencies(${PROJECT_NAME} yaml-cpp::yaml-cpp)
+add_dependencies(${PROJECT_NAME}
+        Imgui
+        AudioSubsystem
+)
 
 # Enable Edit and Continue for MSVC
 if(MSVC)
