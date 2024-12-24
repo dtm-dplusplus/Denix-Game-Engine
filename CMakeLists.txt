@@ -125,9 +125,9 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
-        COMMAND ${CMAKE_COMMAND} -E copy
-        $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/OpenAL/bin/Win64/soft_oal.dll>
-        $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/OpenAL/bin/Win64/soft_oal.dll> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/OpenAL/bin/Win64 $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
         # TEMP - Copy of assets edited in runtime
         COMMAND ${CMAKE_COMMAND} -E copy_directory

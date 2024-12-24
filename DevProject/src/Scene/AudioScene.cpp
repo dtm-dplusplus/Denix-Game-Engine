@@ -1,12 +1,13 @@
 ﻿#include "AudioScene.h"
 
-#include <fstream>
 
+#include <fstream>
 #include "al/al.h"
 #include "al/alc.h"
 #include "al/alext.h"
 
 #define alCall(function, ...) alCallImpl(__FILE__, __LINE__, function, __VA_ARGS__)
+
 
 bool check_al_errors(const std::string& filename, const std::uint_fast32_t line)
 {
@@ -293,81 +294,93 @@ char* load_wav(const std::string& filename,
     return data;
 }
 
+ALenum sdlFormatToALFormat(SDL_AudioSpec& wavSpec) {
+    if (wavSpec.format == SDL_AUDIO_U8) {
+        if (wavSpec.channels == 1) {
+            return AL_FORMAT_MONO8;
+        } else if (wavSpec.channels == 2) {
+            return AL_FORMAT_STEREO8;
+        }
+    } else if (wavSpec.format == SDL_AUDIO_S16) {
+        if (wavSpec.channels == 1) {
+            return AL_FORMAT_MONO16;
+        } else if (wavSpec.channels == 2) {
+            return AL_FORMAT_STEREO16;
+        }
+    }
+    return AL_NONE; // Unsupported format
+}
+
+AudioScene::AudioScene()
+{
+}
+
 void AudioScene::BeginScene()
 {
     Scene::BeginScene();
-    // https://indiegamedev.net/2020/02/15/the-complete-guide-to-openal-with-c-part-1-playing-a-sound/
-    ALCdevice* openALDevice = alcOpenDevice(nullptr);
-    if(!openALDevice)
+
+    DE_LOG_CREATE(LogAudio)
+
+    // Load WAV file
+    struct AudioData
     {
-        DE_LOG(LogAudio, Error, "ERROR: Could not open audio device")
+        SDL_AudioSpec WavSpec;
+        Uint32 WavLength;
+        Uint8* WavBuffer;
+    };
+
+    AudioData audioData;
+    if (!SDL_LoadWAV( (Denix::FileSubsystem::GetContentRoot() + "test.wav").c_str(), &audioData.WavSpec, &audioData.WavBuffer, &audioData.WavLength)) {
+        DE_LOG(LogAudio, Error, "Failed to load WAV file")
     }
 
-    ALCcontext* openALContext;
-    if(!alcCall(alcCreateContext, openALContext, openALDevice, openALDevice, nullptr) || !openALContext)
-    {
-        DE_LOG(LogAudio, Error, "ERROR: Could not create audio context")
-    }
-    ALCboolean contextMadeCurrent = false;
-    if(!alcCall(alcMakeContextCurrent, contextMadeCurrent, openALDevice, openALContext)
-       || contextMadeCurrent != ALC_TRUE)
-    {
-        DE_LOG(LogAudio, Error, "ERROR: Could not make context current")
+    // Initialize OpenAL
+    ALCdevice* device = alcOpenDevice(NULL);
+    if (!device) {
+        DE_LOG(LogAudio, Error, "Failed to open OpenAL device")
     }
 
-    std::uint8_t channels;
-    std::int32_t sampleRate;
-    std::uint8_t bitsPerSample;
-    char* soundData; //= load_wav(Denix::FileSubsystem::GetContentRoot() + "test.wav", channels, sampleRate, bitsPerSample, soundData);
-    /*if(!)
-    {
-        DE_LOG(LogAudio, Error, "ERROR: Could not load wav file")
-    }*/
+    ALCcontext* context = alcCreateContext(device, NULL);
+    if (!context) {
+        DE_LOG(LogAudio, Error, "Failed to create OpenAL context")
+    }
+    alcMakeContextCurrent(context);
 
+    // Create OpenAL buffer and source
     ALuint buffer;
     alCall(alGenBuffers, 1, &buffer);
 
-    ALenum format;
-    if(channels == 1 && bitsPerSample == 8)
-        format = AL_FORMAT_MONO8;
-    else if(channels == 1 && bitsPerSample == 16)
-        format = AL_FORMAT_MONO16;
-    else if(channels == 2 && bitsPerSample == 8)
-        format = AL_FORMAT_STEREO8;
-    else if(channels == 2 && bitsPerSample == 16)
-        format = AL_FORMAT_STEREO16;
-    else
-    {
-        DE_LOG(LogAudio, Error, "ERROR: unrecognised wave format: {} channels, {} bps", channels, bitsPerSample)
-    }
-
-    alCall(alBufferData, buffer, format, soundData, sizeof(soundData), sampleRate);
-   // soundData.clear(); // erase the sound in RAM
-
+    
+    
+    // Copy audio data to OpenAL buffer
+    alCall(alBufferData, buffer, sdlFormatToALFormat(audioData.WavSpec), audioData.WavBuffer, audioData.WavLength, audioData.WavSpec.freq);
+  
     ALuint source;
     alCall(alGenSources, 1, &source);
-    alCall(alSourcef, source, AL_PITCH, 1);
-    alCall(alSourcef, source, AL_GAIN, 1.0f);
-    alCall(alSource3f, source, AL_POSITION, 0, 0, 0);
-    alCall(alSource3f, source, AL_VELOCITY, 0, 0, 0);
-    alCall(alSourcei, source, AL_LOOPING, AL_FALSE);
-    alCall(alSourcei, source, AL_BUFFER, buffer);
+    // alCall(alSourcef, source, AL_PITCH, 1);
+    // alCall(alSourcef, source, AL_GAIN, 1.0f);
+    // alCall(alSource3f, source, AL_POSITION, 0, 0, 0);
+    // alCall(alSource3f, source, AL_VELOCITY, 0, 0, 0);
+    alCall(alSourcei, source, AL_LOOPING, AL_TRUE);
+    SDL_free(audioData.WavBuffer);
 
-    alCall(alSourcePlay, source);
+    // Attach buffer to source
+    alSourcei(source, AL_BUFFER, buffer);
 
-    ALint state = AL_PLAYING;
+    // Play the audio
+    alSourcePlay(source);
 
-    while(state == AL_PLAYING)
-    {
-        alCall(alGetSourcei, source, AL_SOURCE_STATE, &state);
-    }
+    // Wait for the audio to finish
+    ALint state;
+    do {
+        alGetSourcei(source, AL_SOURCE_STATE, &state);
+    } while (state == AL_PLAYING);
 
-    alCall(alDeleteSources, 1, &source);
-    alCall(alDeleteBuffers, 1, &buffer);
-
-    alcCall(alcMakeContextCurrent, contextMadeCurrent, openALDevice, nullptr);
-    alcCall(alcDestroyContext, openALDevice, openALContext);
-
-    ALCboolean closed;
-    alcCall(alcCloseDevice, closed, openALDevice, openALDevice);
+    // Clean up
+    alDeleteSources(1, &source);
+    alDeleteBuffers(1, &buffer);
+    alcMakeContextCurrent(nullptr);
+    alcDestroyContext(context);
+    alcCloseDevice(device);
+    //SDL_Freew(wavBuffer);
 }
