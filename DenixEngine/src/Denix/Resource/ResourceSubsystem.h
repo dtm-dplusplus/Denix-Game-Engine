@@ -41,9 +41,10 @@ namespace Denix
             return s_ResourceSubsystem->m_ShaderStore;
         }
 
-        static void AddShader(const Ref<Shader>& _shader);
+        Ref<Shader> LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name);
 
         static bool ReloadShader(Ref<Shader>& _shader);
+
         
         static Ref<Shader> GetShader(const std::string& _name);
         static Ref<Shader> GetDefaultShader() { return s_ResourceSubsystem->m_DefaultShader; }
@@ -52,16 +53,20 @@ namespace Denix
         Ref<Shader> m_ViewportShader;
         
         // Materials
-        static void AddMaterial(const Ref<Material>& _ref);
+        static Ref<Material> LoadMaterial(const Ref<Asset>& _matAsset);
 
         static Ref<Material> GetMaterial(const std::string& _path);
-
+        static Ref<Material> GetDefaultMaterial() { return s_ResourceSubsystem->m_DefaultMaterial; }
+        Ref<Material> m_DefaultMaterial;
+        
         static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_ResourceSubsystem->m_MaterialStore; }
 
         // Textures
         static Ref<Texture> LoadTexture(const std::string& _path);
-
         static Ref<Texture> GetTexture(const std::string& _path);
+        static Ref<Texture> GetDefaultTexture() { return s_ResourceSubsystem->m_DefaultTexture; }
+        Ref<Texture> m_DefaultTexture;
+        
         static Ref<Texture> GetTextureByPath(const std::string& _path);
 
         static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_ResourceSubsystem->m_TextureStore; }

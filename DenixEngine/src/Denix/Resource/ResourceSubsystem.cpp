@@ -39,7 +39,6 @@ namespace Denix
 		std::vector<ShaderSource> defaultShaders;
 		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Vertex.glsl)");
 		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Fragment.glsl)");
-			
 		if (LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = GetShader("DefaultShader");
 		else throw std::runtime_error("Default Shader not loaded");
 		
@@ -49,6 +48,15 @@ namespace Denix
 		if (LoadShader(viewportShaders, "ViewportShader")) m_ViewportShader = GetShader("FBShader");
 		else throw std::runtime_error("Viewport Shader not loaded");
 
+
+		std::string defMatPath = FileSubsystem::GetEngineContentRoot() + R"(materials\MAT_Default.asset)";
+		if (Ref<Material> defMat = LoadMaterial(MakeRef<Asset>(defMatPath))) m_DefaultMaterial = defMat;
+		else throw std::runtime_error("Default Material not loaded");
+			
+		std::string defTexPath = FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)";
+		if (Ref<Texture> defTex = LoadTexture(defTexPath)) m_DefaultTexture = defTex;
+		else throw std::runtime_error("Default Texture not loaded");
+			
 		// Search Project directory for assets
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(FileSubsystem::GetContentRoot()))
 		{
@@ -103,7 +111,7 @@ namespace Denix
 				m_AssetStore.push_back(asset);
 			}
 		}
-		
+
 	    DE_LOG(LogResource, Info, "Resource Subsystem Initialized")
 	}
 
@@ -135,21 +143,16 @@ namespace Denix
 	}
 
 	////////////////////////  SHADERS ///////////////////////////////
-	void ResourceSubsystem::AddShader(const Ref<Shader>& _shader)
-	{
-		
-	}
-
 	Ref<Shader> ResourceSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
 	{
 		// Check if the shader already exists
-		if (s_ResourceSubsystem->ShaderExists(_name))
+		if (s_ResourceSubsystem->m_ShaderStore.contains(_name))
 		{
 			DE_LOG(LogShader, Error, "GLShader already exists: {}", _name)
 			return nullptr;
 		}
 
-		
+		// Create a new shader
 		if (const Ref<Shader> program = MakeRef<Shader>(ObjectInit(_name)))
 		{
 			if (!program->m_GL_ID) return nullptr;
@@ -204,7 +207,7 @@ namespace Denix
 
 	Ref<Shader> ResourceSubsystem::GetShader(const std::string& _name)
 	{
-		if (ShaderExists(_name))
+		if (s_ResourceSubsystem->m_ShaderStore.contains(_name))
 		{
 			return s_ResourceSubsystem->m_ShaderStore[_name];
 		}
@@ -246,16 +249,23 @@ namespace Denix
 	}
 
 	////////////////////////  MATERIALS ///////////////////////////////
-	void ResourceSubsystem::AddMaterial(const Ref<Material>& _ref)
+	Ref<Material> ResourceSubsystem::LoadMaterial(const Ref<Asset>& _matAsset)
 	{
-		if (s_ResourceSubsystem->m_MaterialStore.contains(_ref->GetName()))
+		if (s_ResourceSubsystem->m_MaterialStore.contains(_matAsset->m_AssetName))
 		{
-			DE_LOG(LogResource, Error, "Add Material: A material name: {} is already loaded", _ref->GetName())
-			return;
+			DE_LOG(LogResource, Error, "Load Material: A material name: {} is already loaded", _matAsset->m_AssetName)
+			return s_ResourceSubsystem->m_MaterialStore[_matAsset->m_AssetName];
 		}
 
-		s_ResourceSubsystem->m_MaterialStore[_ref->GetName()] = _ref;
-		DE_LOG(LogResource, Trace, "Material Loaded: {}", _ref->GetName())
+		if (Ref<Material> material = MakeRef<Material>(_matAsset))
+		{
+			s_ResourceSubsystem->m_MaterialStore[_matAsset->m_AssetName] = material;
+			DE_LOG(LogResource, Trace, "Material Loaded: {}", _matAsset->m_AssetName)
+			return material;
+		}
+		
+		DE_LOG(LogResource, Error, "Failed to load material: {}", _matAsset->m_AssetName)
+		return nullptr;
 	}
 
 	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _path)
