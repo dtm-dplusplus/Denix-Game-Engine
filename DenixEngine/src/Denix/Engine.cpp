@@ -13,6 +13,7 @@
 #include "Denix/Resource/ResourceSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Core/TimerSubsystem.h"
+#include "Denix/Audio/AudioSubsystem.h"
 #include "Profile/ProfileSubsystem.h"
 
 namespace Denix
@@ -82,6 +83,8 @@ namespace Denix
 
 		m_WindowSubsystem = InitalizeSubsystem<WindowSubsystem>();
 
+		m_AudioSubsystem = InitalizeSubsystem<AudioSubsystem>();
+		
 		m_ResourceSubsystem = InitalizeSubsystem<ResourceSubsystem>();
 
 		// set the engine config path

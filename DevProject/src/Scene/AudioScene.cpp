@@ -1,6 +1,6 @@
 ﻿#include "AudioScene.h"
 
-
+#include "Denix/Audio/AudioSubsystem.h"
 #include <fstream>
 #include "al/al.h"
 #include "al/alc.h"
@@ -78,7 +78,7 @@ bool check_alc_errors(const std::string& filename, const std::uint_fast32_t line
             std::cerr << "ALC_INVALID_VALUE: an invalid value was passed to an OpenAL function";
             break;
         case ALC_INVALID_DEVICE:
-            std::cerr << "ALC_INVALID_DEVICE: a bad device was passed to an OpenAL function";
+            std::cerr << "ALC_INVALID_DEVICE: a bad m_Device was passed to an OpenAL function";
             break;
         case ALC_INVALID_CONTEXT:
             std::cerr << "ALC_INVALID_CONTEXT: a bad context was passed to an OpenAL function";
@@ -298,13 +298,15 @@ ALenum sdlFormatToALFormat(SDL_AudioSpec& wavSpec) {
     if (wavSpec.format == SDL_AUDIO_U8) {
         if (wavSpec.channels == 1) {
             return AL_FORMAT_MONO8;
-        } else if (wavSpec.channels == 2) {
+        }
+        if (wavSpec.channels == 2) {
             return AL_FORMAT_STEREO8;
         }
     } else if (wavSpec.format == SDL_AUDIO_S16) {
         if (wavSpec.channels == 1) {
             return AL_FORMAT_MONO16;
-        } else if (wavSpec.channels == 2) {
+        }
+        if (wavSpec.channels == 2) {
             return AL_FORMAT_STEREO16;
         }
     }
@@ -315,6 +317,8 @@ AudioScene::AudioScene()
 {
 }
 
+using namespace Denix;
+
 void AudioScene::BeginScene()
 {
     Scene::BeginScene();
@@ -322,36 +326,17 @@ void AudioScene::BeginScene()
     DE_LOG_CREATE(LogAudio)
 
     // Load WAV file
-    struct AudioData
-    {
-        SDL_AudioSpec WavSpec;
-        Uint32 WavLength;
-        Uint8* WavBuffer;
-    };
+    
 
     AudioData audioData;
     if (!SDL_LoadWAV( (Denix::FileSubsystem::GetContentRoot() + "test.wav").c_str(), &audioData.WavSpec, &audioData.WavBuffer, &audioData.WavLength)) {
         DE_LOG(LogAudio, Error, "Failed to load WAV file")
     }
 
-    // Initialize OpenAL
-    ALCdevice* device = alcOpenDevice(NULL);
-    if (!device) {
-        DE_LOG(LogAudio, Error, "Failed to open OpenAL device")
-    }
-
-    ALCcontext* context = alcCreateContext(device, NULL);
-    if (!context) {
-        DE_LOG(LogAudio, Error, "Failed to create OpenAL context")
-    }
-    alcMakeContextCurrent(context);
-
     // Create OpenAL buffer and source
     ALuint buffer;
     alCall(alGenBuffers, 1, &buffer);
 
-    
-    
     // Copy audio data to OpenAL buffer
     alCall(alBufferData, buffer, sdlFormatToALFormat(audioData.WavSpec), audioData.WavBuffer, audioData.WavLength, audioData.WavSpec.freq);
   
@@ -379,8 +364,5 @@ void AudioScene::BeginScene()
     // Clean up
     alDeleteSources(1, &source);
     alDeleteBuffers(1, &buffer);
-    alcMakeContextCurrent(nullptr);
-    alcDestroyContext(context);
-    alcCloseDevice(device);
     //SDL_Freew(wavBuffer);
 }
