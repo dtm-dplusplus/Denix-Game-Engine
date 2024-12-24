@@ -26,7 +26,6 @@ namespace Denix
 		std::string FileName;
 		std::string Source;
 		GLenum Type = 0;
-		bool IsCompiled = false;
 	};
 
 	/*struct ShaderTypePair
@@ -213,34 +212,24 @@ namespace Denix
 			return GL_FALSE;
 		}
 
-		bool CompileProgram(bool sourceFromPath = true)
+		bool CompileProgram()
 		{
+			if (m_ShaderSources.empty())
+			{
+				DE_LOG(LogShader, Error, "No shader sources to compile: {}", GetName())
+				return false;
+			}
+			
 			for (ShaderSource& source : m_ShaderSources)
 			{
 				// Check Shader Source
-				if (sourceFromPath)
+				if (source.Source.empty())
 				{
-					// Read Shader File
-					if (const std::string& sourceData = FileSubsystem::ReadFile(source.Path); !sourceData.empty())
-					{
-						source.Source = sourceData;
-					}
-					else
-					{
-						DE_LOG(LogShader, Error, "Failed to read shader file: {}", source.Path)
+					DE_LOG(LogShader, Error, "Failed to read shader source: {}", source.Path)
 						return false;
-					}
 				}
 				
-				if (CompileShader(source))
-				{
-					source.IsCompiled = true;
-				}
-				else
-				{
-					source.IsCompiled = false;
-					return false;
-				}
+				if (!CompileShader(source)) return false;
 			}
 
 			if (!LinkProgram())
@@ -273,10 +262,6 @@ namespace Denix
 		GLuint GetGL_ID() const { return m_GL_ID; }
 
 		std::vector<ShaderSource>& GetShaderSources() { return m_ShaderSources; }
-		void SetShaderSources(const std::vector<ShaderSource>& _sources)
-		{
-			m_ShaderSources = _sources;
-		}
 
 	private:
 		GLuint m_GL_ID;
@@ -285,5 +270,6 @@ namespace Denix
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
 
 		friend class ResourceSubsystem;
+		friend class RendererSubsystem;
 	};
 }

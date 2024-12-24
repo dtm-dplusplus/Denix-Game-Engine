@@ -103,5 +103,7 @@ protected:
 
     // Asset directory
     std::string m_AssetDirectory;
+
+    friend class ResourceSubsystem;
 };
 }

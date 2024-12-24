@@ -8,6 +8,7 @@
 #include "Denix/Video/GL/Mesh.h"
 #include "Denix/Video/GL/Model.h"
 #include "Denix/Resource/Asset.h"
+#include "Denix/Audio/AudioClip.h"
 #include "yaml-cpp/yaml.h"
 
 namespace fs = std::filesystem;
@@ -35,48 +36,18 @@ namespace Denix
 		DE_LOG(LogResource, Warn, "Resource Subsystem Initializing")
 
 		// Iniatlize Default Assets
-		// SHADERS
-		{
-			std::vector<ShaderSource> debugShaders;
-			debugShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\DebugVertex.glsl)");
-			debugShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\DebugFragment.glsl)");
-			LoadShader(debugShaders, "DebugShader");
-		}
-
-		{
-			std::vector<ShaderSource> defaultShaders;
-			defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Vertex.glsl)");
-			defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Fragment.glsl)");
-			LoadShader(defaultShaders, "DefaultShader");
-		}
-
-		{
-			std::vector<ShaderSource> unlitShaders;
-			unlitShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\UnlitVertex.glsl)");
-			unlitShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\UnlitFragment.glsl)");
-			LoadShader(unlitShaders, "UnlitShader");
-		}
-
-		{
-			std::vector<ShaderSource> wireframeShaders;
-			wireframeShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\WireframeVertex.glsl)");
-			wireframeShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\WireframeFragment.glsl)");
-			LoadShader(wireframeShaders, "WireframeShader");
-		}
-
-		{
-			std::vector<ShaderSource> viewportShaders;
-			viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBVertex.glsl)");
-			viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBFragment.glsl)");
-			LoadShader(viewportShaders, "FBShader");
-		}
-
-		{
-			std::vector<ShaderSource> textShaders;
-			textShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\TextVertex.glsl)");
-			textShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\TextFragment.glsl)");
-			LoadShader(textShaders, "TextShader");
-		}
+		std::vector<ShaderSource> defaultShaders;
+		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Vertex.glsl)");
+		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Fragment.glsl)");
+			
+		if (LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = GetShader("DefaultShader");
+		else throw std::runtime_error("Default Shader not loaded");
+		
+		std::vector<ShaderSource> viewportShaders;
+		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBVertex.glsl)");
+		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBFragment.glsl)");
+		if (LoadShader(viewportShaders, "ViewportShader")) m_ViewportShader = GetShader("FBShader");
+		else throw std::runtime_error("Viewport Shader not loaded");
 
 		// Search Project directory for assets
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(FileSubsystem::GetContentRoot()))
@@ -86,54 +57,53 @@ namespace Denix
 			{
 				Ref<Asset> asset = MakeRef<Asset>(path);
 
-				// Scene Check
-				if (path.find(".asset") != std::string::npos)
+				// DE_ASSET Validation
+				if (asset->m_AssetExtension == ".asset")
 				{
-					const std::string sceneData = FileSubsystem::ReadFile(path);
-					if (sceneData.find("DE_ASSET_SCENE") != std::string::npos)
+					const std::string assetData = FileSubsystem::ReadFile(path);
+
+					// Scene Asset
+					if (assetData.find("DE_ASSET_SCENE") != std::string::npos)
 					{
+						// We don't need to load the scene asset here
 						m_SceneStore.push_back(asset);
 					}
-				}
-				// Material Check - Not a safe check
-				if(path.find("MAT") != std::string::npos)
-				{
-					// We should check the material file to see if it is a valid asset - Skip for now
-					YAML::Node matNode = YAML::LoadFile(path);
-					Ref<Material> material = MakeRef<Material>(asset);
-					// Check Texture
-					m_MaterialStore[asset->GetAssetName()] = material; // Friendly name is redunant as we are checking by asset path now
-					
-					// We should do validation to check if the file is a valid asset - Skip for now
-				}
-				// Texture Check
-				if (path.find(".png") != std::string::npos)
-				{
-					// We should do validation to check if the file is a valid asset - Skip for now
-					LoadTexture(path);
-				}
-				// Shader Check
-				// Model Check
 
-				// We should do validation to check if the file is a valid asset - Skip for now
+					// Material Asset
+					else if (assetData.find("DE_ASSET_MATERIAL") != std::string::npos)
+					{
+						m_MaterialStore[asset->GetAssetName()] = MakeRef<Material>(asset);
+					}
+				}
+
+				// NON DE_ASSET Validation
+				else
+				{
+					// Texture Asset
+					if (asset->m_AssetExtension == ".png" || asset->m_AssetExtension == ".jpg")
+					{
+						// Probably not a good idea to load all textures at startup
+						LoadTexture(path);
+					}
+				
+					// Shader Check
+					
+					// Model Check
+					else if (asset->m_AssetExtension == ".obj")
+					{
+						LoadModel(asset->m_AssetName, path);
+					}
+					// Audio Asset
+					else if (asset->m_AssetExtension == ".wav")
+					{
+						m_AudioClipStore[asset->m_AssetName] = MakeRef<AudioClip>(asset);
+					}
+				}
+				
 				m_AssetStore.push_back(asset);
 			}
 		}
 		
-		// TEXTURES
-		//LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)");
-
-		// MATERIALS
-		if(!GetMaterial(FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset"))
-			throw std::runtime_error("Default Material Asset not loaded");
-
-		// Models
-		LoadModel("SM_Plane", FileSubsystem::GetEngineContentRoot() + R"(models\Plane.obj)");
-		LoadModel("SM_Cube", FileSubsystem::GetEngineContentRoot() + R"(models\Cube.obj)");
-		LoadModel("SM_Sphere", FileSubsystem::GetEngineContentRoot() + R"(models\Sphere.obj)");
-		LoadModel("SM_Cone", FileSubsystem::GetEngineContentRoot() + R"(models\Cone.obj)");
-		LoadModel("SM_Cylinder", FileSubsystem::GetEngineContentRoot() + R"(models\Cylinder.obj)");
-
 	    DE_LOG(LogResource, Info, "Resource Subsystem Initialized")
 	}
 
@@ -167,34 +137,36 @@ namespace Denix
 	////////////////////////  SHADERS ///////////////////////////////
 	void ResourceSubsystem::AddShader(const Ref<Shader>& _shader)
 	{
-		if (s_ResourceSubsystem->ShaderExists(_shader->GetName()))
-		{
-			DE_LOG(LogShader, Error, "GLShader already exists: {}", _shader->GetName())
-				return;
-		}
-
-		s_ResourceSubsystem->m_ShaderStore[_shader->GetName()] = _shader;
+		
 	}
 
-	bool ResourceSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
+	Ref<Shader> ResourceSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
 	{
+		// Check if the shader already exists
+		if (s_ResourceSubsystem->ShaderExists(_name))
+		{
+			DE_LOG(LogShader, Error, "GLShader already exists: {}", _name)
+			return nullptr;
+		}
+
+		
 		if (const Ref<Shader> program = MakeRef<Shader>(ObjectInit(_name)))
 		{
-			if (!program->GetGL_ID()) return false;
+			if (!program->m_GL_ID) return nullptr;
 
-			program->SetShaderSources(_shaders);
+			program->m_ShaderSources = _shaders;
 
-			if (!program->CompileProgram()) return false;
+			if (!program->CompileProgram()) return nullptr;
 
-			AddShader(program);
+			s_ResourceSubsystem->m_ShaderStore[_name] = program;
 
 			DE_LOG(LogShader, Trace, "Shader Loaded: {}", _name)
 			
-			return true;
+			return program;
 		}
 
 		DE_LOG(LogShader, Error, "Failed to load shader: {}", _name)
-		return false;
+		return nullptr;
 	}
 
 	bool ResourceSubsystem::ReloadShader(Ref<Shader>& _shader)
@@ -204,10 +176,10 @@ namespace Denix
 		
 		if (!testShader->GetGL_ID()) return false;
 
-		testShader->SetShaderSources(_shader->GetShaderSources());
+		testShader->m_ShaderSources = _shader->GetShaderSources();
 
 		// Compile the new shader
-		if (!testShader->CompileProgram(false))
+		if (!testShader->CompileProgram())
 		{
 			DE_LOG(LogResource, Error, "Shader Recompile failed: {}", _shader->GetName())
 			return false;

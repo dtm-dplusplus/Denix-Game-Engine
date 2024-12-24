@@ -7,6 +7,7 @@
 
 namespace Denix
 {
+    class AudioClip;
     class Asset;
     class Mesh;
     class Model;
@@ -42,16 +43,14 @@ namespace Denix
 
         static void AddShader(const Ref<Shader>& _shader);
 
-        static bool LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name);
         static bool ReloadShader(Ref<Shader>& _shader);
         
         static Ref<Shader> GetShader(const std::string& _name);
-
-        static bool ShaderExists(const std::string& _name)
-        {
-            return s_ResourceSubsystem->m_ShaderStore.contains(_name);
-        }
-       
+        static Ref<Shader> GetDefaultShader() { return s_ResourceSubsystem->m_DefaultShader; }
+        static Ref<Shader> GetViewportShader() { return s_ResourceSubsystem->m_ViewportShader; }
+        Ref<Shader> m_DefaultShader;
+        Ref<Shader> m_ViewportShader;
+        
         // Materials
         static void AddMaterial(const Ref<Material>& _ref);
 
@@ -88,6 +87,9 @@ namespace Denix
 
         void Deinitialize() override;
 
+        // Audio
+        std::unordered_map<std::string, Ref<AudioClip>> m_AudioClipStore;
+        
         static ResourceSubsystem* Get() { return s_ResourceSubsystem; }
 
     private:

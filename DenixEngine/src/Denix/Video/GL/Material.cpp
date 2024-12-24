@@ -29,7 +29,7 @@ namespace Denix
 
 	void Material::Serialize(YAML::Emitter& _out)
 	{
-		_out << YAML::Comment("DE_ASSET: Material");
+		_out << YAML::Comment("DE_ASSET_MATERIAL");
 		_out << YAML::Key << "m_Material" << YAML::BeginMap;
 		_out << YAML::Key << "m_Asset" << YAML::Value << (m_Asset? m_Asset->GetAssetPath() : "");
 		_out << YAML::Key << "m_BaseTexture" << YAML::Value << (m_BaseTexture? m_BaseTexture->GetFileLocation() : "");
