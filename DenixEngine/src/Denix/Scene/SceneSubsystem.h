@@ -18,8 +18,6 @@ namespace Denix
 
 		~SceneSubsystem() override
 		{
-			m_ActiveScene = nullptr;
-
 			s_SceneSubsystem = nullptr;
 		}
 

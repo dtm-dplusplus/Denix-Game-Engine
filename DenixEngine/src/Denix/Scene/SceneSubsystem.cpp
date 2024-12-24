@@ -48,6 +48,10 @@ namespace Denix
 
 	void SceneSubsystem::Deinitialize()
 	{
+		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitializing")
+		m_ActiveScene->ClearScene();
+		m_LoadedScenes.clear();
+		m_StartupScene = nullptr;
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitialized")
 	}
 

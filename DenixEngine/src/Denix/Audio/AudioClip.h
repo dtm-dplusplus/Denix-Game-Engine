@@ -1,34 +1,34 @@
 ﻿#pragma once
-#include <al/al.h>
+
+#include "AudioPrimitive.h"
 
 #include "Denix/Scene/Object.h"
 
 namespace Denix
 {
-    struct AudioBuffer
-    {
-        void GenBuffer();
-        void BufferData( ALenum format, const ALvoid* data, ALsizei size, ALsizei samplerate );
-        uint32_t m_Buffer;
-    };
+    class Asset;
+    struct AudioBuffer;
 
-    struct AudioSource
-    {
-        void GenSource();
-        uint32_t m_Source;
-    };
+    
     
     class AudioClip: public Object
     {
     public:
-        AudioClip();
-        AudioClip(const ObjectInit& _objInit);
+        AudioClip(const Ref<Asset>& _audioClipAsset);
         ~AudioClip() override;
 
-        void Play() const;
-        void Stop() const;
+        uint32_t GetBuffer() const { return m_Buffer; }
+        uint32_t GetWavLength() const { return m_WavLength; }
+        
+        Ref<Asset> m_AudioClpAsset;
 
-        AudioBuffer m_Buffer;
-        AudioSource m_Source;
+        SDL_AudioSpec m_ClipSpec;
+
+    private:
+        uint32_t m_Buffer;
+        uint32_t m_WavLength;
+
+        friend class AudioSource;
+        friend class AudioSubsystem;
     };
 }
