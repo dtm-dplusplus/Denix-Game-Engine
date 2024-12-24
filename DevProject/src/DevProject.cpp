@@ -1,4 +1,5 @@
  #include "Denix.h"
+#include "Scene/AudioScene.h"
 
 #include "Scene/CPGScene.h"
 #include "Scene/DevScene.h"
@@ -21,6 +22,7 @@ public:
 		ReflectionSubsystem::Register<CPGScene>();
 		ReflectionSubsystem::Register<PhysicsScene>();
 		ReflectionSubsystem::Register<ThreadScene>();
+		ReflectionSubsystem::Register<AudioScene>();
 		ReflectionSubsystem::Register<CPGCube>();
 	}
 
