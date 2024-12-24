@@ -75,7 +75,7 @@ namespace Denix
                 assert(false, e.what());
             }
 
-            m_Subsystems.push_back(subsystem.get());
+            m_Subsystems.push_back(subsystem);
             return subsystem;
         }
 
@@ -88,7 +88,7 @@ namespace Denix
         size_t m_FrameID;
         
         // Useful vector for deinitializing subsystems in reverse order
-        std::vector<Subsystem*> m_Subsystems;
+        std::vector<Ref<Subsystem>> m_Subsystems;
 
         Ref<JobSubsystem> m_JobSubsystem;
 

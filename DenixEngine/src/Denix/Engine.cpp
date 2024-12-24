@@ -116,10 +116,28 @@ namespace Denix
 		SaveConfig();
 		
 		// Deinitialie SubSystems in the reverse order of initialization
-		for (const auto& subsystem : std::views::reverse(m_Subsystems))
+		for (auto& subsystem : std::views::reverse(m_Subsystems))
 		{
 			subsystem->Deinitialize();
+			subsystem = nullptr;
 		}
+		m_Subsystems.clear();
+
+		// Clear Subsystem pointers
+		m_JobSubsystem = nullptr;
+		m_TimerSubsystem = nullptr;
+		m_ReflectionSubsystem = nullptr;
+		m_FileSubsystem = nullptr;
+		m_ProfileSubsystem = nullptr;
+		m_WindowSubsystem = nullptr;
+		m_AudioSubsystem = nullptr;
+		m_ResourceSubsystem = nullptr;
+		m_RendererSubsystem = nullptr;
+		m_UISubsystem = nullptr;
+		m_PhysicsSubsystem = nullptr;
+		m_InputSubsystem = nullptr;
+		m_SceneSubsystem = nullptr;
+		m_EditorSubsystem = nullptr;
 		
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
 	}

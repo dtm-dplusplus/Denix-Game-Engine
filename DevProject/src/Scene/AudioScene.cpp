@@ -4,6 +4,7 @@
 #include "Denix/Resource/Asset.h"
 
 #include "imgui.h"
+#include "Denix/Audio/AudioSource.h"
 
 using namespace Denix;
 
@@ -13,6 +14,8 @@ void AudioScene::BeginScene()
 
     ClipAsset = MakeRef<Asset>(FileSubsystem::GetContentRoot() + "Audio\\music.wav");
     Clip = MakeRef<AudioClip>(ClipAsset);
+    Source = MakeRef<AudioSource>("Audio Source_" + Clip->GetName());
+    Source->SetAudioClip(Clip);
 }
 
 void AudioScene::DebugUI(float _deltaTime)
@@ -20,31 +23,31 @@ void AudioScene::DebugUI(float _deltaTime)
     Scene::DebugUI(_deltaTime);
 
     ImGui::Begin("Audio Scene");
-    switch (Clip->m_State)
+    switch (Source->GetState())
     {
-    case AudioClipState::Playing:
+    case SourceState::Playing:
         {
             if (ImGui::Button("Pause"))
-                Clip->Pause();
+                Source->Pause();
 
             if (ImGui::Button("Stop"))
-                Clip->Stop();
+                Source->Stop();
         }
         break;
 
-    case AudioClipState::Paused:
+    case SourceState::Paused:
         {
             if (ImGui::Button("Resume"))
-                Clip->Play();
+                Source->Play();
 
             if (ImGui::Button("Stop"))
-                Clip->Stop();
+                Source->Stop();
         }
         break;
 
     default:
         if (ImGui::Button("Play"))
-            Clip->Play();
+            Source->Play();
         break;
     }
     ImGui::End();

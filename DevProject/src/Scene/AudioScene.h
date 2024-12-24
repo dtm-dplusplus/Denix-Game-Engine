@@ -3,6 +3,11 @@
 
 namespace Denix
 {
+    class AudioSource;
+}
+
+namespace Denix
+{
     class AudioClip;
 
     class AudioScene: public Scene
@@ -13,6 +18,7 @@ namespace Denix
 
         void DebugUI(float _deltaTime) override;
         Ref<AudioClip> Clip;
+        Ref<AudioSource> Source;
         Ref<Asset> ClipAsset;
     };
 }
