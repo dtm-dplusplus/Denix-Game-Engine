@@ -3,45 +3,62 @@
 #include "al/al.h"
 #include "al/alc.h"
 #include "al/alext.h"
+#include "Denix/Resource/Asset.h"
 
-void Denix::AudioBuffer::GenBuffer()
+Denix::AudioClip::AudioClip(const Ref<Asset>& _audioClipAsset): Object({_audioClipAsset->GetAssetName()})
 {
-    alGenBuffers(1, &m_Buffer);
+    m_AudioClpAsset = _audioClipAsset;
+
+    uint8_t* audioBuffer;
+    if (!SDL_LoadWAV( m_AudioClpAsset->GetAssetPath().c_str(), &m_ClipSpec, &audioBuffer, &m_WavLength)) {
+        alCall(alDeleteBuffers, 1, &m_Buffer);
+        alCall(alDeleteSources, 1, &m_Source);
+        SDL_free(audioBuffer);
+        DE_LOG(LogAudio, Error, "Failed to load WAV File: {}", _audioClipAsset->GetAssetName())
+        return;
+    }
+
+    // Create OpenAL buffer and source
+    alCall(alGenBuffers,1, &m_Buffer);
+    alCall(alGenSources, 1, &m_Source);
+    
+    // Copy audio data to OpenAL buffer
+    alCall(alBufferData, m_Buffer, SDL_AL_Format(m_ClipSpec), audioBuffer, m_WavLength, m_ClipSpec.freq);
+  
+    
+    // alCall(alSourcef, source, AL_PITCH, 1);
+    // alCall(alSourcef, source, AL_GAIN, 1.0f);
+    // alCall(alSource3f, source, AL_POSITION, 0, 0, 0);
+    // alCall(alSource3f, source, AL_VELOCITY, 0, 0, 0);
+    alCall(alSourcei, m_Source, AL_LOOPING, AL_TRUE);
+    SDL_free(audioBuffer);
+
+    // Attach buffer to source
+    alCall(alSourcei, m_Source, AL_BUFFER, m_Buffer);
+
+    m_State = AudioClipState::Stopped;
 }
-
-void Denix::AudioBuffer::BufferData(ALenum format, const ALvoid* data, ALsizei size, ALsizei samplerate)
-{
-    alBufferData( m_Buffer, format, data, size, samplerate );
-}
-
-void Denix::AudioSource::GenSource()
-{
-    alGenSources(1, &m_Source);
-}
-
-
-Denix::AudioClip::AudioClip()
-{
-    m_Buffer.GenBuffer();
-    m_Source.GenSource();
-    //alSourcei(m_Source.m_Source, AL_BUFFER, m_Buffer.m_Buffer);
-}
-
-Denix::AudioClip::AudioClip(const ObjectInit& _objInit): Object(_objInit)
-{}
 
 Denix::AudioClip::~AudioClip()
 {
-    alDeleteBuffers(1, &m_Buffer.m_Buffer);
-    alDeleteSources(1, &m_Source.m_Source);
+    alCall(alDeleteBuffers, 1, &m_Buffer);
+    alCall(alDeleteSources, 1, &m_Source);
 }
 
 void Denix::AudioClip::Play() const
 {
-    alSourcePlay(m_Source.m_Source);
+    alCall(alSourcePlay, m_Source);
+    m_State = AudioClipState::Playing;
 }
 
 void Denix::AudioClip::Stop() const
 {
-    alSourceStop(m_Source.m_Source);
+    alCall(alSourceStop, m_Source);
+    m_State = AudioClipState::Stopped;
+}
+
+void Denix::AudioClip::Pause() const
+{
+    alCall(alSourcePause, m_Source);
+    m_State = AudioClipState::Paused;
 }

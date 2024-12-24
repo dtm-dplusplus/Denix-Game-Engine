@@ -6,16 +6,9 @@
 #include "al/al.h"
 #include "al/alc.h"
 #include "al/alext.h"
-
+#include "AudioClip.h"
 namespace Denix
 {
-    struct AudioData
-    {
-        SDL_AudioSpec WavSpec;
-        Uint32 WavLength;
-        Uint8* WavBuffer;
-    };
-    
     class AudioSubsystem: public Subsystem
     {
     public:

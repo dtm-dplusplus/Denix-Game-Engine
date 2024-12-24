@@ -15,6 +15,7 @@
 /* Data Structures */
 #include <string>
 #include <string_view>
+#include <cstdint>
 
 
 /* IO */
