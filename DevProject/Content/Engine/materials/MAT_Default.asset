@@ -1,0 +1,12 @@
+# DE_ASSET: Material
+# DE_ASSET: Material
+m_Material:
+  m_Asset: C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\Build\DevProject\Content\Engine\Material\MAT_Default.asset
+  m_BaseTexture: C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\Build\DevProject\Content\Engine\textures\DefaultTexture.png
+  m_BaseColor:
+    - 1
+    - 1
+    - 0
+  m_Shader: DefaultShader
+  m_SpecularIntensity: 0.5
+  m_SpecularPower: 0.5

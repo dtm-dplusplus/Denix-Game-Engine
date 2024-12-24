@@ -42,11 +42,14 @@ namespace Denix
 
         static void AddShader(const Ref<Shader>& _shader);
 
+        
         static bool LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name);
         static bool ReloadShader(Ref<Shader>& _shader);
         
         static Ref<Shader> GetShader(const std::string& _name);
-
+        static Ref<Shader> GetDefaultShader() { return s_ResourceSubsystem->m_DefaultShader; }
+        Ref<Shader> m_DefaultShader;
+        
         static bool ShaderExists(const std::string& _name)
         {
             return s_ResourceSubsystem->m_ShaderStore.contains(_name);
@@ -55,6 +58,9 @@ namespace Denix
         // Materials
         static void AddMaterial(const Ref<Material>& _ref);
 
+        static Ref<Material> GetDefaultMaterial() { return s_ResourceSubsystem->m_DefaultMaterial; }
+        Ref<Material> m_DefaultMaterial;
+        
         static Ref<Material> GetMaterial(const std::string& _path);
 
         static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_ResourceSubsystem->m_MaterialStore; }
@@ -63,8 +69,9 @@ namespace Denix
         static Ref<Texture> LoadTexture(const std::string& _path);
 
         static Ref<Texture> GetTexture(const std::string& _path);
-        static Ref<Texture> GetTextureByPath(const std::string& _path);
-
+        static Ref<Texture> GetDefaultTexture() { return s_ResourceSubsystem->m_DefaultTexture; }
+        Ref<Texture> m_DefaultTexture;
+        
         static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_ResourceSubsystem->m_TextureStore; }
 
         // Meshes
@@ -83,14 +90,13 @@ namespace Denix
 
         static std::vector<Ref<Asset>>& GetAssetStore() { return s_ResourceSubsystem->m_AssetStore; }
         static Ref<Asset> GetAsset(const std::string& _path);
-    public:
-        void Initialize() override;
-
-        void Deinitialize() override;
 
         static ResourceSubsystem* Get() { return s_ResourceSubsystem; }
 
     private:
+        void Initialize() override;
+
+        void Deinitialize() override;
         static ResourceSubsystem* s_ResourceSubsystem;
 
 		std::unordered_map<std::string, Ref<Shader>> m_ShaderStore;
@@ -107,30 +113,7 @@ namespace Denix
         std::vector<Ref<Asset>> m_AssetStore;
 
         std::vector<Ref<Asset>> m_SceneStore;
-
-        // TODO: Implement this
-        /*Ref<Asset> GetShaderType(const std::string& _source) const
-        {
-            if (const auto keywordIt = _source.find_first_of(g_SHADER_KEYWORD))
-            {
-                std::string type;
-
-                for (auto typeIt = keywordIt + g_SHADER_KEYWORD_OFFSET;
-                    _source[typeIt] != ' ' && _source[typeIt] != '\n'; typeIt++)
-                {
-                    type += _source[typeIt];
-                }
-
-                // Return the type if we find it
-                for (const auto& [StringType, EnumType] : g_SHADER_TYPES)
-                    if (type == StringType) return EnumType;
-
-            }
-
-            DE_LOG(LogShader, Error, "Shader Keyword DE_SHADER not found or invalid type")
-
-            return GL_FALSE;
-        }*/
         
+        friend class Engine;
     };
 }

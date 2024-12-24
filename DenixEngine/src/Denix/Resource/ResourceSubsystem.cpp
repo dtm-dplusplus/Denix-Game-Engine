@@ -37,31 +37,12 @@ namespace Denix
 		// Iniatlize Default Assets
 		// SHADERS
 		{
-			std::vector<ShaderSource> debugShaders;
-			debugShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\DebugVertex.glsl)");
-			debugShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\DebugFragment.glsl)");
-			LoadShader(debugShaders, "DebugShader");
-		}
-
-		{
 			std::vector<ShaderSource> defaultShaders;
 			defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Vertex.glsl)");
 			defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Fragment.glsl)");
-			LoadShader(defaultShaders, "DefaultShader");
-		}
-
-		{
-			std::vector<ShaderSource> unlitShaders;
-			unlitShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\UnlitVertex.glsl)");
-			unlitShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\UnlitFragment.glsl)");
-			LoadShader(unlitShaders, "UnlitShader");
-		}
-
-		{
-			std::vector<ShaderSource> wireframeShaders;
-			wireframeShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\WireframeVertex.glsl)");
-			wireframeShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\WireframeFragment.glsl)");
-			LoadShader(wireframeShaders, "WireframeShader");
+			
+			if (LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = GetShader("DefaultShader");
+			else throw std::runtime_error("Default Shader not loaded");
 		}
 
 		{
@@ -69,13 +50,6 @@ namespace Denix
 			viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBVertex.glsl)");
 			viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBFragment.glsl)");
 			LoadShader(viewportShaders, "FBShader");
-		}
-
-		{
-			std::vector<ShaderSource> textShaders;
-			textShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\TextVertex.glsl)");
-			textShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\TextFragment.glsl)");
-			LoadShader(textShaders, "TextShader");
 		}
 
 		// Search Project directory for assets
@@ -113,6 +87,7 @@ namespace Denix
 					LoadTexture(path);
 				}
 				// Shader Check
+				
 				// Model Check
 
 				// We should do validation to check if the file is a valid asset - Skip for now
@@ -121,10 +96,15 @@ namespace Denix
 		}
 		
 		// TEXTURES
-		//LoadTexture(FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)");
-
+		if(Ref<Texture> defTex = LoadTexture(FileSubsystem::GetEngineContentRoot() + "textures\\DefaultTexture.png"))
+			m_DefaultTexture = defTex;
+		else
+			throw std::runtime_error("Default Texture Asset not loaded");
+		
 		// MATERIALS
-		if(!GetMaterial(FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset"))
+		if(Ref<Material> defMat = GetMaterial(FileSubsystem::GetEngineContentRoot() + "materials\\MAT_Default.asset"))
+			m_DefaultMaterial = defMat;
+		else
 			throw std::runtime_error("Default Material Asset not loaded");
 
 		// Models
@@ -249,8 +229,8 @@ namespace Denix
 		// Check it isn't already loaded
 		if (s_ResourceSubsystem->m_TextureStore.contains(_path))
 		{
-			DE_LOG(LogResource, Error, "Load Texture: A texture name: {} is already loaded", _path)
-				return nullptr;
+			DE_LOG(LogResource, Warn, "Load Texture: A texture name: {} is already loaded", _path)
+				return s_ResourceSubsystem->m_TextureStore[_path];
 		}
 
 		Ref<Texture> texture = MakeRef<Texture>(_path);
