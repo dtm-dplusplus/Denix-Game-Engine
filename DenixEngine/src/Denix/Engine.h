@@ -7,6 +7,7 @@ int main(int argc, char** argv);
 
 namespace Denix
 {
+    class AudioSubsystem;
     class JobSubsystem;
     class Asset;
     class Subsystem;
@@ -102,6 +103,8 @@ namespace Denix
 
         Ref<ResourceSubsystem> m_ResourceSubsystem;
 
+        Ref<AudioSubsystem> m_AudioSubsystem;
+        
         Ref<SceneSubsystem> m_SceneSubsystem;
 
         Ref<PhysicsSubsystem> m_PhysicsSubsystem;

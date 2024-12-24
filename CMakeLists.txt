@@ -41,6 +41,7 @@ include_directories(${PROJECT_NAME}
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/include # Temp fix as config.h generated in binary dir
         ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/stb
         ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp/include
+        ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/OpenAL/include
 )
 
 # Set the C++ flags to enable multi-processor compilation
@@ -84,6 +85,7 @@ target_link_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/SDL3/bin/${CMAKE_BUILD_TYPE}
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/bin/${CMAKE_BUILD_TYPE}
+        PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/OpenAL/libs/Win64
      #   PUBLIC $<TARGET_LINKER_FILE_DIR:assimp>
         # PUBLIC $<TARGET_LINKER_FILE_DIR:yaml-cpp>
 )
@@ -92,6 +94,7 @@ target_link_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         PUBLIC DenixEngine.lib
         PUBLIC opengl32.lib
+        PUBLIC OpenAL32.lib
         # PUBLIC SDL3::SDL3
         PUBLIC SDL3.lib
         PUBLIC glew32.lib
@@ -121,6 +124,10 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>
+
+
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_BINARY_DIR}/DenixEngine/contrib/OpenAL/bin/Win64 $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
         # TEMP - Copy of assets edited in runtime
         COMMAND ${CMAKE_COMMAND} -E copy_directory

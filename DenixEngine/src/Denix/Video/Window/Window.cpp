@@ -15,9 +15,9 @@ namespace Denix
     bool SDL_GLWindow::Initialize()
     {
         //Initialize SDL
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) < 0)
+        if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO))
         {
-            // DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", SDL_GetError())
+             DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", SDL_GetError())
             return false;
         }
         DE_LOG(Log, Trace, "SDL Init success")
