@@ -11,7 +11,7 @@ Denix::Viewport::Viewport(const ObjectInit& _objInit): Object(_objInit)
     m_FrameBuffer = MakeRef<FrameBuffer>(m_Width, m_Height);
     m_Mesh = MakeRef<Mesh>();
     m_Mesh->CreateViewportMesh();
-    m_Shader = ResourceSubsystem::GetViewportShader();
+    m_Shader = ResourceSubsystem::GetFrameBufferShader();
 }
 
 Denix::Viewport::Viewport(const int _width, const int _height, const ObjectInit& _objInit) : Object(_objInit)

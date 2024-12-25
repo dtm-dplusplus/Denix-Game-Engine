@@ -34,7 +34,16 @@ namespace Denix
 
 	void EditorSubsystem::Deinitialize()
 	{
-		DE_LOG(LogEditor, Trace, "Editor Subsystem Initialized")
+		m_ActiveScene.reset();
+		m_SceneOrganizerWidget.reset();
+		m_ActorDetailsWidget.reset();
+		m_AssetBrowserWidget.reset();
+		m_PerformanceSettingsWidget.reset();
+		m_EngineProfilerWidget.reset();
+		m_InputDebuggerWidget.reset();
+		Subsystem::Deinitialize();
+		
+		DE_LOG(LogEditor, Trace, "Editor Subsystem Deinitialized")
 	}
 
 	void EditorSubsystem::Update(float _deltaTime)
@@ -42,7 +51,7 @@ namespace Denix
 		
 
 		if(!m_Enabled) return;
-		if (!m_ActiveScene) return;
+		if (!m_ActiveScene.lock()) return;
 
 		
 		EditorWidget::m_DragSpeed = EditorWidget::m_DragSensitivity * _deltaTime;
@@ -135,7 +144,7 @@ namespace Denix
 			{
 				if(ImGui::MenuItem("Set as Startup Scene"))
 				{
-					Engine::SetStartupScene(m_ActiveScene->m_SceneAsset);
+					Engine::SetStartupScene(m_ActiveScene.lock()->m_SceneAsset);
 				}
 				ImGui::EndMenu();
 			}
@@ -172,7 +181,7 @@ namespace Denix
 				ImGui::EndMenu();
 			}
 
-			if (!m_ActiveScene->IsPlaying())
+			if (!m_ActiveScene.lock()->IsPlaying())
 			{
 				if (ImGui::Button("Play"))
 				{

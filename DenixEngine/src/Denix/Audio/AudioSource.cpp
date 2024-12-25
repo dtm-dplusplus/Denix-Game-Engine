@@ -2,6 +2,7 @@
 
 #include "AudioClip.h"
 #include "AudioPrimitive.h"
+#include "AudioSubsystem.h"
 
 #include "Denix/Core/Logger.h"
 
@@ -35,6 +36,15 @@ Denix::AudioSource::AudioSource(const ObjectInit& _objInit): Object(_objInit)
     s_MonoSources++;
 }
 
+Denix::AudioSource::~AudioSource()
+{
+    // Delete OpenAL source
+    alCall(alDeleteSources, 1, &m_Source);
+    s_MonoSources--;
+
+    m_AudioClip.reset();
+}
+
 void Denix::AudioSource::SetAudioClip(const Ref<AudioClip>& _audioClip)
 {
     if (!_audioClip)
@@ -45,12 +55,12 @@ void Denix::AudioSource::SetAudioClip(const Ref<AudioClip>& _audioClip)
 
     // Attach buffer to source
     m_AudioClip = _audioClip;
-    alCall(alSourcei, m_Source, AL_BUFFER, m_AudioClip->m_Buffer);
+    alCall(alSourcei, m_Source, AL_BUFFER, m_AudioClip.lock()->m_Buffer);
 }
 
 void Denix::AudioSource::Play() const
 {
-    if (!m_AudioClip)
+    if (!m_AudioClip.lock())
     {
         DE_LOG(LogAudio, Error, "Failed to play audio source. No audio clip attached. {}", GetName())
         return;

@@ -41,7 +41,7 @@ namespace Denix
 
 		float m_DragSpeed;
 		
-		Ref<Scene> m_ActiveScene;
+		WRef<Scene> m_ActiveScene;
 
 
 		Ref<SceneOrganizerWidget> m_SceneOrganizerWidget;

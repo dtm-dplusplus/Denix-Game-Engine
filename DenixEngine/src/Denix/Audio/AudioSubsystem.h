@@ -27,6 +27,10 @@ namespace Denix
         ALCdevice* m_Device;
         ALCcontext* m_Context;
 
+        std::vector<Ref<AudioSource>> m_AudioSources;
+
+        
         friend class Engine;
+        friend class AudioSource;
     };
 }

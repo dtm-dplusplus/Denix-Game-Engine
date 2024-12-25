@@ -5,6 +5,7 @@
 
 #include "imgui.h"
 #include "Denix/Audio/AudioSource.h"
+#include "Denix/Resource/ResourceSubsystem.h"
 
 using namespace Denix;
 
@@ -12,10 +13,20 @@ void AudioScene::BeginScene()
 {
     Scene::BeginScene();
 
-    ClipAsset = MakeRef<Asset>(FileSubsystem::GetContentRoot() + "Audio\\music.wav");
-    Clip = MakeRef<AudioClip>(ClipAsset);
-    Source = MakeRef<AudioSource>("Audio Source_" + Clip->GetName());
-    Source->SetAudioClip(Clip);
+    if (Ref<AudioClip> clip = ResourceSubsystem::GetAudioClip(FileSubsystem::GetContentRoot() + "Audio\\music.wav"))
+    {
+        Clip = clip;
+        Source = MakeRef<AudioSource>("Audio Source_" + clip->GetName());
+        Source->SetAudioClip(clip);
+    }
+}
+
+void AudioScene::EndScene()
+{
+    Scene::EndScene();
+
+    Source.reset();
+    Clip.reset();
 }
 
 void AudioScene::DebugUI(float _deltaTime)
@@ -23,32 +34,39 @@ void AudioScene::DebugUI(float _deltaTime)
     Scene::DebugUI(_deltaTime);
 
     ImGui::Begin("Audio Scene");
-    switch (Source->GetState())
+
+    auto clip = Clip.lock();
+    auto source = Source;
+    
+    if (clip && source)
     {
-    case SourceState::Playing:
+        switch (source->GetState())
         {
-            if (ImGui::Button("Pause"))
-                Source->Pause();
+        case SourceState::Playing:
+            {
+                if (ImGui::Button("Pause"))
+                    source->Pause();
 
-            if (ImGui::Button("Stop"))
-                Source->Stop();
+                if (ImGui::Button("Stop"))
+                    source->Stop();
+            }
+            break;
+
+        case SourceState::Paused:
+            {
+                if (ImGui::Button("Resume"))
+                    source->Play();
+
+                if (ImGui::Button("Stop"))
+                    source->Stop();
+            }
+            break;
+
+        default:
+            if (ImGui::Button("Play"))
+                source->Play();
+            break;
         }
-        break;
-
-    case SourceState::Paused:
-        {
-            if (ImGui::Button("Resume"))
-                Source->Play();
-
-            if (ImGui::Button("Stop"))
-                Source->Stop();
-        }
-        break;
-
-    default:
-        if (ImGui::Button("Play"))
-            Source->Play();
-        break;
     }
     ImGui::End();
 }

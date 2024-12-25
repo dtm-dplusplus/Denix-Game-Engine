@@ -27,7 +27,7 @@ namespace Denix
 
         Subsystem::PreUpdate(_deltaTime);
 
-        if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
+        if (!m_Enabled || !m_ActiveScene.lock()->IsPlaying()) return;
 
         DE_PROFILE(Physics PreUpdate)
 
@@ -38,7 +38,9 @@ namespace Denix
 
     void PhysicsSubsystem::Update(float _deltaTime)
     {
-        if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
+        auto activeScene = s_PhysicsSubSystem->m_ActiveScene.lock();
+        
+        if (!m_Enabled || !activeScene->IsPlaying()) return;
 
         DE_PROFILE(Physics Update)
 
@@ -55,7 +57,7 @@ namespace Denix
         
             comp->m_Force = comp->m_SimulateGravity
                                         ? glm::vec3(
-                                            0.0f, comp->m_Mass * -m_ActiveScene->
+                                            0.0f, comp->m_Mass * -activeScene->
                                             GetGravity(), 0.0f)
                                         : glm::vec3(0.0f);
         
@@ -220,7 +222,7 @@ namespace Denix
 
             glm::vec3 impulseVector = impulseEnergy * _collisionEvent.ColData.Normal;
 
-            _cubeCompA->m_Force = -glm::vec3(0.0f, _cubeCompA->m_Mass * -m_ActiveScene->GetGravity(), 0.0f);
+            _cubeCompA->m_Force = -glm::vec3(0.0f, _cubeCompA->m_Mass * -m_ActiveScene.lock()->GetGravity(), 0.0f);
             _cubeCompA->m_Velocity = impulseVector / _cubeCompA->m_Mass;
         }
     }
@@ -306,9 +308,10 @@ namespace Denix
 
         glm::vec3 impulse = j * normal;
 
+        auto activeScene = s_PhysicsSubSystem->m_ActiveScene.lock();
         // Add Contact Force
-        _compA->m_Force = -glm::vec3(0.0f, _compA->GetMass() * -m_ActiveScene->GetGravity(), 0.0f);
-        _compB->m_Force = -glm::vec3(0.0f, _compB->GetMass() * -m_ActiveScene->GetGravity(), 0.0f);
+        _compA->m_Force = -glm::vec3(0.0f, _compA->GetMass() * -activeScene->GetGravity(), 0.0f);
+        _compB->m_Force = -glm::vec3(0.0f, _compB->GetMass() * -activeScene->GetGravity(), 0.0f);
 
         _compA->m_Velocity += impulse * inverseMassA;
         _compB->m_Velocity -= impulse * inverseMassB;

@@ -48,9 +48,9 @@ namespace Denix
         
         static Ref<Shader> GetShader(const std::string& _name);
         static Ref<Shader> GetDefaultShader() { return s_ResourceSubsystem->m_DefaultShader; }
-        static Ref<Shader> GetViewportShader() { return s_ResourceSubsystem->m_ViewportShader; }
+        static Ref<Shader> GetFrameBufferShader() { return s_ResourceSubsystem->m_FramebufferShader; }
         Ref<Shader> m_DefaultShader;
-        Ref<Shader> m_ViewportShader;
+        Ref<Shader> m_FramebufferShader;
         
         // Materials
         static Ref<Material> LoadMaterial(const Ref<Asset>& _matAsset);
@@ -87,13 +87,19 @@ namespace Denix
 
         static std::vector<Ref<Asset>>& GetAssetStore() { return s_ResourceSubsystem->m_AssetStore; }
         static Ref<Asset> GetAsset(const std::string& _path);
+
+        // Audio
+        static Ref<AudioClip> LoadAudioClip(const Ref<Asset>& _audioClipAsset);
+        static Ref<AudioClip> GetAudioClip(const std::string& _path);
+        
+        std::unordered_map<std::string, Ref<AudioClip>> m_AudioClipStore;
+        
     public:
         void Initialize() override;
 
         void Deinitialize() override;
 
-        // Audio
-        std::unordered_map<std::string, Ref<AudioClip>> m_AudioClipStore;
+       
         
         static ResourceSubsystem* Get() { return s_ResourceSubsystem; }
 
@@ -114,30 +120,5 @@ namespace Denix
         std::vector<Ref<Asset>> m_AssetStore;
 
         std::vector<Ref<Asset>> m_SceneStore;
-
-        // TODO: Implement this
-        /*Ref<Asset> GetShaderType(const std::string& _source) const
-        {
-            if (const auto keywordIt = _source.find_first_of(g_SHADER_KEYWORD))
-            {
-                std::string type;
-
-                for (auto typeIt = keywordIt + g_SHADER_KEYWORD_OFFSET;
-                    _source[typeIt] != ' ' && _source[typeIt] != '\n'; typeIt++)
-                {
-                    type += _source[typeIt];
-                }
-
-                // Return the type if we find it
-                for (const auto& [StringType, EnumType] : g_SHADER_TYPES)
-                    if (type == StringType) return EnumType;
-
-            }
-
-            DE_LOG(LogShader, Error, "Shader Keyword DE_SHADER not found or invalid type")
-
-            return GL_FALSE;
-        }*/
-        
     };
 }

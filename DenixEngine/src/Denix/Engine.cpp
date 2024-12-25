@@ -124,21 +124,21 @@ namespace Denix
 		m_Subsystems.clear();
 
 		// Clear Subsystem pointers
-		m_JobSubsystem = nullptr;
-		m_TimerSubsystem = nullptr;
-		m_ReflectionSubsystem = nullptr;
-		m_FileSubsystem = nullptr;
-		m_ProfileSubsystem = nullptr;
-		m_WindowSubsystem = nullptr;
-		m_AudioSubsystem = nullptr;
-		m_ResourceSubsystem = nullptr;
-		m_RendererSubsystem = nullptr;
-		m_UISubsystem = nullptr;
-		m_PhysicsSubsystem = nullptr;
-		m_InputSubsystem = nullptr;
-		m_SceneSubsystem = nullptr;
 		m_EditorSubsystem = nullptr;
-		
+		m_SceneSubsystem = nullptr;
+		m_InputSubsystem = nullptr;
+		m_PhysicsSubsystem = nullptr;
+		m_UISubsystem = nullptr;
+		m_RendererSubsystem = nullptr;
+		m_ResourceSubsystem = nullptr;
+		m_AudioSubsystem = nullptr;
+		m_WindowSubsystem = nullptr;
+		m_ProfileSubsystem = nullptr;
+		m_FileSubsystem = nullptr;
+		m_ReflectionSubsystem = nullptr;
+		m_TimerSubsystem = nullptr;
+		m_JobSubsystem = nullptr;
+				
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
 	}
 

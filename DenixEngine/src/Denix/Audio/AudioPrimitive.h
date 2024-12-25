@@ -6,17 +6,16 @@
 #include <al/alc.h>
 #include <SDL3/SDL_audio.h>
 
-#define alCall(function, ...) alCallImpl(__FILE__, __LINE__, function, __VA_ARGS__)
-#define alcCall(function, device, ...) alcCallImpl(__FILE__, __LINE__, function, device, __VA_ARGS__)
+#define alCall(function, ...) alCallImpl(function, __VA_ARGS__)
+#define alcCall(function, device, ...) alcCallImpl(function, device, __VA_ARGS__)
 
 namespace Denix
 {
-    inline bool check_al_errors(const std::string& filename, const std::uint_fast32_t line)
+    inline bool check_al_errors()
     {
         ALenum error = alGetError();
         if (error != AL_NO_ERROR)
         {
-            std::cerr << "***ERROR*** (" << filename << ": " << line << ")\n";
             switch (error)
             {
             case AL_INVALID_NAME:
@@ -44,36 +43,31 @@ namespace Denix
     }
 
     template <typename alFunction, typename... Params>
-    auto alCallImpl(const char* filename,
-                    const std::uint_fast32_t line,
-                    alFunction function,
+    auto alCallImpl(alFunction function,
                     Params... params)
         -> std::enable_if_t<!std::is_same_v<void, decltype(function(params...))>, decltype(function(params...))>
     {
         auto ret = function(std::forward<Params>(params)...);
-        check_al_errors(filename, line);
+        check_al_errors();
         return ret;
     }
 
 
     template <typename alFunction, typename... Params>
-    auto alCallImpl(const char* filename,
-                    const std::uint_fast32_t line,
-                    alFunction function,
+    auto alCallImpl(alFunction function,
                     Params... params)
         -> std::enable_if_t<std::is_same_v<void, decltype(function(params...))>, bool>
     {
         function(std::forward<Params>(params)...);
-        return check_al_errors(filename, line);
+        return check_al_errors();
     }
 
 
-    inline bool check_alc_errors(const std::string& filename, const std::uint_fast32_t line, ALCdevice* device)
+    inline bool check_alc_errors(ALCdevice* device)
     {
         ALCenum error = alcGetError(device);
         if (error != ALC_NO_ERROR)
         {
-            std::cerr << "***ERROR*** (" << filename << ": " << line << ")\n";
             switch (error)
             {
             case ALC_INVALID_VALUE:
@@ -109,7 +103,7 @@ namespace Denix
         -> std::enable_if_t<std::is_same_v<void, decltype(function(params...))>, bool>
     {
         function(std::forward<Params>(params)...);
-        return check_alc_errors(filename, line, device);
+        return check_alc_errors(device);
     }
 
     template <typename alcFunction, typename ReturnType, typename... Params>
@@ -122,7 +116,7 @@ namespace Denix
         -> std::enable_if_t<!std::is_same_v<void, decltype(function(params...))>, bool>
     {
         returnValue = function(std::forward<Params>(params)...);
-        return check_alc_errors(filename, line, device);
+        return check_alc_errors(device);
     }
 
     inline ALenum SDL_AL_Format(const SDL_AudioSpec& wavSpec)

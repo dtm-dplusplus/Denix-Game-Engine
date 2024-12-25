@@ -30,6 +30,38 @@ namespace Denix
 		return nullptr;
 	}
 
+	Ref<AudioClip> ResourceSubsystem::LoadAudioClip(const Ref<Asset>& _audioClipAsset)
+	{
+		if (s_ResourceSubsystem->m_AudioClipStore.contains(_audioClipAsset->m_AssetPath))
+		{
+			DE_LOG(LogResource, Error, "Load AudioClip: An audio clip name: {} is already loaded", _audioClipAsset->m_AssetName)
+			return s_ResourceSubsystem->m_AudioClipStore[_audioClipAsset->m_AssetPath];
+		}
+
+		if (Ref<AudioClip> audioClip = MakeRef<AudioClip>(_audioClipAsset))
+		{
+			if (!audioClip->Load()) return nullptr;
+			
+			s_ResourceSubsystem->m_AudioClipStore[_audioClipAsset->m_AssetPath] = audioClip;
+			DE_LOG(LogResource, Trace, "Audio Clip Loaded: {}", _audioClipAsset->m_AssetName)
+			return audioClip;
+		}
+
+		return nullptr;
+	}
+
+	Ref<AudioClip> ResourceSubsystem::GetAudioClip(const std::string& _path)
+	{
+		if (s_ResourceSubsystem->m_AudioClipStore.contains(_path))
+		{
+			return s_ResourceSubsystem->m_AudioClipStore[_path];
+		}
+
+		DE_LOG(LogResource, Error, "Audio Clip not found: {}", _path)
+		
+		return nullptr;
+	}
+
 	void ResourceSubsystem::Initialize()
 	{
 		Subsystem::Initialize();
@@ -39,13 +71,13 @@ namespace Denix
 		std::vector<ShaderSource> defaultShaders;
 		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Vertex.glsl)");
 		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Fragment.glsl)");
-		if (LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = GetShader("DefaultShader");
+		if (Ref<Shader> defShader = LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = defShader;
 		else throw std::runtime_error("Default Shader not loaded");
 		
 		std::vector<ShaderSource> viewportShaders;
 		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBVertex.glsl)");
 		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBFragment.glsl)");
-		if (LoadShader(viewportShaders, "ViewportShader")) m_ViewportShader = GetShader("FBShader");
+		if (Ref<Shader> fbShader = LoadShader(viewportShaders, "FBShader")) m_FramebufferShader = fbShader;
 		else throw std::runtime_error("Viewport Shader not loaded");
 
 
@@ -104,7 +136,7 @@ namespace Denix
 					// Audio Asset
 					else if (asset->m_AssetExtension == ".wav")
 					{
-						m_AudioClipStore[asset->m_AssetName] = MakeRef<AudioClip>(asset);
+						LoadAudioClip(asset);
 					}
 				}
 				
@@ -120,8 +152,22 @@ namespace Denix
 		Subsystem::Deinitialize();
 
 		// Free all resources
+		m_MeshStore.clear();
+		m_ModelStore.clear();
+		
+		m_SceneStore.clear();
+		m_AssetStore.clear();
 		m_TextureStore.clear();
+		
+		m_ShaderStore.clear();
+		m_DefaultShader = nullptr;
+		m_FramebufferShader = nullptr;
 
+		m_MaterialStore.clear();
+		m_DefaultMaterial = nullptr;
+
+		m_AudioClipStore.clear();
+		
 		DE_LOG(LogResource, Trace, "Resource Subsystem Deinitialized")
 	}
 	
@@ -153,19 +199,18 @@ namespace Denix
 		}
 
 		// Create a new shader
-		if (const Ref<Shader> program = MakeRef<Shader>(ObjectInit(_name)))
+		if (const Ref<Shader> shader = MakeRef<Shader>(ObjectInit(_name)))
 		{
-			if (!program->m_GL_ID) return nullptr;
 
-			program->m_ShaderSources = _shaders;
+			shader->m_ShaderSources = _shaders;
 
-			if (!program->CompileProgram()) return nullptr;
+			if (!shader->CompileProgram()) return nullptr;
 
-			s_ResourceSubsystem->m_ShaderStore[_name] = program;
+			s_ResourceSubsystem->m_ShaderStore[_name] = shader;
 
 			DE_LOG(LogShader, Trace, "Shader Loaded: {}", _name)
 			
-			return program;
+			return shader;
 		}
 
 		DE_LOG(LogShader, Error, "Failed to load shader: {}", _name)
@@ -224,8 +269,8 @@ namespace Denix
 		// Check it isn't already loaded
 		if (s_ResourceSubsystem->m_TextureStore.contains(_path))
 		{
-			DE_LOG(LogResource, Error, "Load Texture: A texture name: {} is already loaded", _path)
-				return nullptr;
+			DE_LOG(LogResource, Warn, "Load Texture: A texture name: {} is already loaded", _path)
+				return s_ResourceSubsystem->m_TextureStore[_path];
 		}
 
 		Ref<Texture> texture = MakeRef<Texture>(_path);

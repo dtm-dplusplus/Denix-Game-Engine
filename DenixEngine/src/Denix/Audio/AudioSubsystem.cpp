@@ -44,6 +44,7 @@ void Denix::AudioSubsystem::Initialize()
 void Denix::AudioSubsystem::Deinitialize()
 {
     DE_LOG(LogAudio, Trace, "Deinitializing Audio Subsystem")
+    m_AudioSources.clear();
     alcMakeContextCurrent(nullptr);
     alcDestroyContext(m_Context);
     alcCloseDevice(m_Device);

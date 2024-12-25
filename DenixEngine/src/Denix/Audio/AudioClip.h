@@ -16,19 +16,21 @@ namespace Denix
     public:
         AudioClip(const Ref<Asset>& _audioClipAsset);
         ~AudioClip() override;
-
+        
         uint32_t GetBuffer() const { return m_Buffer; }
         uint32_t GetWavLength() const { return m_WavLength; }
         
-        Ref<Asset> m_AudioClpAsset;
+        WRef<Asset> m_AudioClpAsset;
 
         SDL_AudioSpec m_ClipSpec;
 
     private:
-        uint32_t m_Buffer;
-        uint32_t m_WavLength;
+        bool Load();
+        uint32_t m_Buffer = 0;
+        uint32_t m_WavLength = 0;
 
         friend class AudioSource;
         friend class AudioSubsystem;
+        friend class ResourceSubsystem;
     };
 }

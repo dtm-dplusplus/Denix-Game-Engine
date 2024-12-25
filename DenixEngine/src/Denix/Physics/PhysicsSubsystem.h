@@ -86,7 +86,7 @@ namespace Denix
 		
 		std::vector<CollisionEvent> m_CollisionEvents;
 
-		Ref<Scene> m_ActiveScene;
+		WRef<Scene> m_ActiveScene;
 
 		bool m_CollisionDetectionEnabled = true;
 		bool m_CollisionResponseEnabled = true;

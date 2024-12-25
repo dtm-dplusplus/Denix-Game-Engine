@@ -15,11 +15,11 @@ namespace Denix
         Paused = 2
     };
     
-    class AudioSource: public Object
+    class AudioSource: public Object, public std::enable_shared_from_this<AudioSource>
     {
     public:
         AudioSource(const ObjectInit& _objInit);
-
+        ~AudioSource() override;
         void Play() const;
         void Stop() const;
         void Pause() const;
@@ -36,7 +36,7 @@ namespace Denix
         glm::vec3 m_Velocity = {0.0f, 0.0f, 0.0f};
         bool m_Looping = false;
 
-        Ref<AudioClip> m_AudioClip;
+        WRef<AudioClip> m_AudioClip;
     private:
         uint32_t m_Source;
         
