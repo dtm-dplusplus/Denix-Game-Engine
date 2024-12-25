@@ -33,6 +33,17 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime)
     {
         ImGui::SeparatorText(actorRef->GetName().c_str());
 
+        // Component Preview
+        ImGui::SeparatorText("Components");
+        ImGui::BeginChild("Component List", ImVec2(ImGui::GetWindowWidth(), 100), true);
+        for (const auto& name : actorRef->GetComponentMap() | std::views::keys)
+        {
+           ImGui::Text(name.c_str());
+        }
+      
+        ImGui::EndChild();
+        
+        // Component Widgets
         TransformWidget(actorRef);
         CameraWidget(actorRef);
         LightWidget(actorRef);

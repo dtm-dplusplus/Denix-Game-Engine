@@ -55,6 +55,9 @@ namespace Denix
 			return nullptr;
 		}
 
+		std::vector<Ref<Component>> &GetComponents()  { return m_Components; }
+		std::unordered_map<std::string, Ref<Component>>& GetComponentMap() { return m_ComponentMap; }
+
 		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
