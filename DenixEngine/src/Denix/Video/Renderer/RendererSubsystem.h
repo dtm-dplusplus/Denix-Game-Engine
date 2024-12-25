@@ -49,8 +49,8 @@ namespace Denix
 
 		static RendererSubsystem* s_RendererSubSystem;
 		
-		Ref<Shader> m_DefaultShader;
-		Ref<Scene> m_ActiveScene;
+		WRef<Shader> m_DefaultShader;
+		WRef<Scene> m_ActiveScene;
 
 		glm::vec3 m_WireframeColor = glm::vec3(1.0f, 1.0f, 1.0f);
 		glm::vec3 m_StaticColliderColor = glm::vec3(0.0f, 1.0f, 0.0f);

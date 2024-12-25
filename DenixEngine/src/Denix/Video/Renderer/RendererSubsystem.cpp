@@ -36,7 +36,8 @@ namespace Denix
 
     void RendererSubsystem::RenderDefaultViewport() const
     {
-        if (!s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
+        Ref<Scene> activeScene = s_RendererSubSystem->m_ActiveScene.lock();
+        if (!activeScene->m_ActiveCamera)
         {
             DE_LOG(LogRender, Error, "No Active Camera in Scene")
             return;
@@ -44,25 +45,26 @@ namespace Denix
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        m_DefaultShader->Bind();
-
+        auto defaultShader = m_DefaultShader.lock();
+        defaultShader->Bind();
+        
         // Upload the camera matrices relative to Object
-        glUniformMatrix4fv(m_DefaultShader->GetUniform("u_Projection"), 1,
+        glUniformMatrix4fv(defaultShader->GetUniform("u_Projection"), 1,
                            GL_FALSE, glm::value_ptr(
-                               s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_Projection));
+                               activeScene->m_ActiveCamera->m_Projection));
 
-        glUniformMatrix4fv(m_DefaultShader->GetUniform("u_View"), 1,
+        glUniformMatrix4fv(defaultShader->GetUniform("u_View"), 1,
                            GL_FALSE, glm::value_ptr(
-                               s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_View));
+                               activeScene->m_ActiveCamera->m_View));
 
-        /*glUniform3f(m_DefaultShader->GetUniform("u_CameraPosition"), 
-            s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_TransformComponent->m_Position.x,
-            s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_TransformComponent->m_Position.y,
-            s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_TransformComponent->m_Position.z);
+        /*glUniform3f(defaultShader->GetUniform("u_CameraPosition"), 
+            activeScene->m_ActiveCamera->m_TransformComponent->m_Position.x,
+            activeScene->m_ActiveCamera->m_TransformComponent->m_Position.y,
+            activeScene->m_ActiveCamera->m_TransformComponent->m_Position.z);
             */
 
         
-        for (const Ref<Actor>& actor : s_RendererSubSystem->m_ActiveScene->m_Actors)
+        for (const Ref<Actor>& actor : activeScene->m_Actors)
         {
             if (!actor->m_RenderComponent->IsVisible() || !actor->m_RenderComponent->m_Material || !actor->m_MeshComponent->m_Model) continue;
 

@@ -15,10 +15,10 @@ namespace Denix
     public:
         AudioScene() = default;
         void BeginScene() override;
+        void EndScene() override;
 
         void DebugUI(float _deltaTime) override;
-        Ref<AudioClip> Clip;
+        WRef<AudioClip> Clip;
         Ref<AudioSource> Source;
-        Ref<Asset> ClipAsset;
     };
 }
