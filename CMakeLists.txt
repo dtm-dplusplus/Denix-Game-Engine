@@ -138,7 +138,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         
        COMMAND ${CMAKE_COMMAND} -E copy
        $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/yaml-cpp/bin/Debug/yaml-cppd.dll>
-       $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/yaml-cpp/bin/Debug/yaml-cpp.dll> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+       $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/yaml-cpp/bin/Release/yaml-cpp.dll> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${ENGINE_CONTRIB_DIR}/glew/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>

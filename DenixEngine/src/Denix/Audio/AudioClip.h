@@ -1,8 +1,7 @@
 ﻿#pragma once
 
 #include "AudioPrimitive.h"
-
-#include "Denix/Scene/Object.h"
+#include "Denix/Resource/Asset.h"
 
 namespace Denix
 {
@@ -11,17 +10,15 @@ namespace Denix
 
     
     
-    class AudioClip: public Object
+    class AudioClip: public Asset
     {
     public:
-        AudioClip(const Ref<Asset>& _audioClipAsset);
+        AudioClip(const AssetInit& _assetInit);
         ~AudioClip() override;
         
         uint32_t GetBuffer() const { return m_Buffer; }
         uint32_t GetWavLength() const { return m_WavLength; }
         
-        WRef<Asset> m_AudioClpAsset;
-
         SDL_AudioSpec m_ClipSpec;
 
     private:

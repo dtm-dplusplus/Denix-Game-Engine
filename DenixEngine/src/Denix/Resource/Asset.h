@@ -1,10 +1,20 @@
 ﻿#pragma once
 #include <string>
-
+#include <filesystem>
 #include "Denix/Core/Logger.h"
 
 namespace Denix
 {
+    struct AssetInit
+    {
+        // Constructors
+        AssetInit() : AssetPath{ "Asset" } {}
+        AssetInit(std::string _path) : AssetPath{ std::move(_path) }{}
+        
+        std::string AssetPath;
+    };
+
+    
 class Asset
 {
 public:
@@ -13,6 +23,15 @@ public:
     
     Asset(const std::string& _assetPath);
 
+   explicit Asset(const AssetInit& _assetInit)
+        : m_AssetPath(_assetInit.AssetPath),
+          m_AssetName(m_AssetPath.stem().string()),
+          m_AssetFileName(m_AssetPath.filename().string()),
+          m_AssetExtension(m_AssetPath.extension().string()),
+          m_AssetDirectory(m_AssetPath.parent_path().string() + "\\")
+    {
+    }
+   
     bool RenameAsset(const std::string& _newName)
     {
         // Add check for invalid characters
@@ -65,7 +84,7 @@ public:
      */
     std::string GetAssetPath() const
     {
-        return m_AssetPath;
+        return m_AssetPath.string();
     }
 
     /**
@@ -88,7 +107,10 @@ public:
     }
 
     
-protected:
+private:
+    // Filesystem Path
+    std::filesystem::path m_AssetPath;
+    
     // Asset name without extension
     std::string m_AssetName;
 
@@ -98,8 +120,7 @@ protected:
     // Asset file extension
     std::string m_AssetExtension;
     
-    // Asset file path
-    std::string m_AssetPath;
+    
 
     // Asset directory
     std::string m_AssetDirectory;

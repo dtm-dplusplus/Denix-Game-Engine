@@ -25,6 +25,7 @@ namespace Denix
         BaseObject(const ObjectInit& _objInit): Object(_objInit), m_ClassName("BaseObject") {}
         ~BaseObject() override = default;
 
+        std::string GetClassName() const { return m_ClassName; }
         
         // Called each frame if the game is playing
         virtual void BeginPlay() {}

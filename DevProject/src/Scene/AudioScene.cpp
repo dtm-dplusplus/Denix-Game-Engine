@@ -16,7 +16,7 @@ void AudioScene::BeginScene()
     if (Ref<AudioClip> clip = ResourceSubsystem::GetAudioClip(FileSubsystem::GetContentRoot() + "Audio\\music.wav"))
     {
         Clip = clip;
-        Source = MakeRef<AudioSource>("Audio Source_" + clip->GetName());
+        Source = MakeRef<AudioSource>("Audio Source_" + clip->GetAssetName());
         Source->SetAudioClip(clip);
     }
 }
