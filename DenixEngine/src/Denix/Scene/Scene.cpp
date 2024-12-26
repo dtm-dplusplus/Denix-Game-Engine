@@ -1,6 +1,6 @@
 ﻿#include "Denix/Scene/Scene.h"
 
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 
 namespace Denix
 {

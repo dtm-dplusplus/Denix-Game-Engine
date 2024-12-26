@@ -10,7 +10,7 @@
 #include "Denix/Video/Renderer/RendererSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Core/TimerSubsystem.h"
 #include "Denix/Audio/AudioSubsystem.h"
@@ -85,7 +85,7 @@ namespace Denix
 
 		m_AudioSubsystem = InitalizeSubsystem<AudioSubsystem>();
 		
-		m_ResourceSubsystem = InitalizeSubsystem<ResourceSubsystem>();
+		m_AssetSubsystem = InitalizeSubsystem<AssetSubsystem>();
 
 		// set the engine config path
 		m_EngineConfigPath = FileSubsystem::GetProjectRoot() + "Config\\Engine.cfg";
@@ -130,7 +130,7 @@ namespace Denix
 		m_PhysicsSubsystem = nullptr;
 		m_UISubsystem = nullptr;
 		m_RendererSubsystem = nullptr;
-		m_ResourceSubsystem = nullptr;
+		m_AssetSubsystem = nullptr;
 		m_AudioSubsystem = nullptr;
 		m_WindowSubsystem = nullptr;
 		m_ProfileSubsystem = nullptr;
@@ -235,7 +235,7 @@ namespace Denix
 			// Validate startup scene
 			if(const YAML::Node& startSceneNode = cfg["Startup Scene"])
 			{
-				if(Ref<Asset> startSceneAsset = ResourceSubsystem::GetSceneAsset(startSceneNode.as<std::string>()))
+				if(Ref<Asset> startSceneAsset = AssetSubsystem::GetSceneAsset(startSceneNode.as<std::string>()))
 				{
 					m_StartupScene = startSceneAsset;
 					DE_LOG(LogEngine, Info, "Loaded Engine Config: Startup Scene: {0}", startSceneAsset->GetAssetName())

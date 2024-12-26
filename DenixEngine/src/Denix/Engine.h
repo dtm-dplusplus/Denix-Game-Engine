@@ -18,7 +18,7 @@ namespace Denix
     class UISubsystem;
     class PhysicsSubsystem;
     class SceneSubsystem;
-    class ResourceSubsystem;
+    class AssetSubsystem;
     class FileSubsystem;
     class WindowSubsystem;
     class TimerSubsystem;
@@ -101,7 +101,7 @@ namespace Denix
 
         Ref<WindowSubsystem> m_WindowSubsystem;
 
-        Ref<ResourceSubsystem> m_ResourceSubsystem;
+        Ref<AssetSubsystem> m_AssetSubsystem;
 
         Ref<AudioSubsystem> m_AudioSubsystem;
         

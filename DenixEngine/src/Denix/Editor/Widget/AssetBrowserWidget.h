@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Denix/Editor/EditorWidget.h"
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 
 namespace Denix
 {

@@ -2,7 +2,7 @@
 #include "AssetBrowserWidget.h"
 #include "Denix/UI/UISubsystem.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Actor.h"
 #include "Denix/Scene/Object/Light/LightObject.h"
@@ -23,7 +23,7 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime)
 			
     if (ImGui::TreeNode("Materials"))
     {
-        for (const auto& mat : ResourceSubsystem::GetMaterialStore())
+        for (const auto& mat : AssetSubsystem::GetMaterialStore())
         {
             ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
         }
@@ -33,7 +33,7 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime)
     if (ImGui::TreeNode("Scenes"))
     {
                 
-        for (const auto& scene : ResourceSubsystem::GetSceneStore())
+        for (const auto& scene : AssetSubsystem::GetSceneStore())
         {
             ImGui::Text(scene->GetAssetName().c_str());
             ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());

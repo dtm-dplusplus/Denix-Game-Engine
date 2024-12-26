@@ -17,28 +17,28 @@ namespace Denix
 	class Texture;
     class Scene;
 
-    class ResourceSubsystem : public Subsystem
+    class AssetSubsystem : public Subsystem
     {
     public:
-        ResourceSubsystem()
+        AssetSubsystem()
         {
-            s_ResourceSubsystem = this;
-			DE_LOG_CREATE(LogResource)
+            s_AssetSubsystem = this;
+			DE_LOG_CREATE(LogAsset)
         }
 
-        ~ResourceSubsystem() override
+        ~AssetSubsystem() override
         {
-            s_ResourceSubsystem = nullptr;
+            s_AssetSubsystem = nullptr;
         }
 
         // Scenes
-        static std::vector<Ref<Asset>>  GetSceneStore() { return s_ResourceSubsystem->m_SceneStore; }
+        static std::vector<Ref<Asset>>  GetSceneStore() { return s_AssetSubsystem->m_SceneStore; }
         static Ref<Asset> GetSceneAsset(const std::string& _path);
         
         // Shaders
         static std::unordered_map<std::string, Ref<Shader>> GetShaderStore() 
         {
-            return s_ResourceSubsystem->m_ShaderStore;
+            return s_AssetSubsystem->m_ShaderStore;
         }
 
         Ref<Shader> LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name);
@@ -47,8 +47,8 @@ namespace Denix
 
         
         static Ref<Shader> GetShader(const std::string& _name);
-        static Ref<Shader> GetDefaultShader() { return s_ResourceSubsystem->m_DefaultShader; }
-        static Ref<Shader> GetFrameBufferShader() { return s_ResourceSubsystem->m_FramebufferShader; }
+        static Ref<Shader> GetDefaultShader() { return s_AssetSubsystem->m_DefaultShader; }
+        static Ref<Shader> GetFrameBufferShader() { return s_AssetSubsystem->m_FramebufferShader; }
         Ref<Shader> m_DefaultShader;
         Ref<Shader> m_FramebufferShader;
         
@@ -56,20 +56,20 @@ namespace Denix
         static Ref<Material> LoadMaterial(const Ref<Asset>& _matAsset);
 
         static Ref<Material> GetMaterial(const std::string& _path);
-        static Ref<Material> GetDefaultMaterial() { return s_ResourceSubsystem->m_DefaultMaterial; }
+        static Ref<Material> GetDefaultMaterial() { return s_AssetSubsystem->m_DefaultMaterial; }
         Ref<Material> m_DefaultMaterial;
         
-        static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_ResourceSubsystem->m_MaterialStore; }
+        static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_AssetSubsystem->m_MaterialStore; }
 
         // Textures
         static Ref<Texture> LoadTexture(const std::string& _path);
         static Ref<Texture> GetTexture(const std::string& _path);
-        static Ref<Texture> GetDefaultTexture() { return s_ResourceSubsystem->m_DefaultTexture; }
+        static Ref<Texture> GetDefaultTexture() { return s_AssetSubsystem->m_DefaultTexture; }
         Ref<Texture> m_DefaultTexture;
         
         static Ref<Texture> GetTextureByPath(const std::string& _path);
 
-        static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_ResourceSubsystem->m_TextureStore; }
+        static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_AssetSubsystem->m_TextureStore; }
 
         // Meshes
         static bool AddMesh(const Ref<Mesh>& _mesh);
@@ -81,11 +81,11 @@ namespace Denix
         static bool AddModel(const Ref<Model>& _mesh);
         static bool LoadModel(const std::string& _name, const std::string& _path);
         static Ref<Model> GetModel(const std::string& _name);
-		static std::unordered_map<std::string, Ref<Model>>& GetModelStore() { return s_ResourceSubsystem->m_ModelStore; }
+		static std::unordered_map<std::string, Ref<Model>>& GetModelStore() { return s_AssetSubsystem->m_ModelStore; }
 
-        static std::unordered_map<std::string, Ref<Mesh>>& GetMeshStore() { return s_ResourceSubsystem->m_MeshStore; }
+        static std::unordered_map<std::string, Ref<Mesh>>& GetMeshStore() { return s_AssetSubsystem->m_MeshStore; }
 
-        static std::vector<Ref<Asset>>& GetAssetStore() { return s_ResourceSubsystem->m_AssetStore; }
+        static std::vector<Ref<Asset>>& GetAssetStore() { return s_AssetSubsystem->m_AssetStore; }
         static Ref<Asset> GetAsset(const std::string& _path);
 
         // Audio
@@ -101,10 +101,10 @@ namespace Denix
 
        
         
-        static ResourceSubsystem* Get() { return s_ResourceSubsystem; }
+        static AssetSubsystem* Get() { return s_AssetSubsystem; }
 
     private:
-        static ResourceSubsystem* s_ResourceSubsystem;
+        static AssetSubsystem* s_AssetSubsystem;
 
 		std::unordered_map<std::string, Ref<Shader>> m_ShaderStore;
 

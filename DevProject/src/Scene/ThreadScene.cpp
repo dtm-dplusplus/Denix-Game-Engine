@@ -6,7 +6,7 @@
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Thread/JobSubsystem.h"
 #include "CPG/JobSubsystemWidget.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 using namespace Denix;
 

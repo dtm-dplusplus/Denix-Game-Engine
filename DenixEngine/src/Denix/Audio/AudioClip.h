@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "AudioPrimitive.h"
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 
 namespace Denix
 {
@@ -28,6 +28,6 @@ namespace Denix
 
         friend class AudioSource;
         friend class AudioSubsystem;
-        friend class ResourceSubsystem;
+        friend class AssetSubsystem;
     };
 }

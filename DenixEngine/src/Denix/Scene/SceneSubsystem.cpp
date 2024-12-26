@@ -1,12 +1,12 @@
 #include "SceneSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Video/Renderer/RendererSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 #include <omp.h>
 
 #include "Denix/Profile/ProfileSubsystem.h"

@@ -1,4 +1,4 @@
-#include "ResourceSubsystem.h"
+#include "AssetSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Scene/MeshData.h"
 #include "Denix/Video/Renderer/RenderComponent.h"
@@ -7,7 +7,7 @@
 #include "Denix/Video/GL/Material.h"
 #include "Denix/Video/GL/Mesh.h"
 #include "Denix/Video/GL/Model.h"
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 #include "Denix/Audio/AudioClip.h"
 #include "yaml-cpp/yaml.h"
 
@@ -15,11 +15,11 @@ namespace fs = std::filesystem;
 
 namespace Denix
 {
-	ResourceSubsystem* ResourceSubsystem::s_ResourceSubsystem = nullptr;
+	AssetSubsystem* AssetSubsystem::s_AssetSubsystem = nullptr;
 
-	Ref<Asset> ResourceSubsystem::GetAsset(const std::string& _path)
+	Ref<Asset> AssetSubsystem::GetAsset(const std::string& _path)
 	{
-		for (const auto& asset : s_ResourceSubsystem->m_AssetStore)
+		for (const auto& asset : s_AssetSubsystem->m_AssetStore)
 		{
 			if (asset->GetAssetPath() == _path)
 			{
@@ -30,42 +30,42 @@ namespace Denix
 		return nullptr;
 	}
 
-	Ref<AudioClip> ResourceSubsystem::LoadAudioClip(const Ref<Asset>& _audioClipAsset)
+	Ref<AudioClip> AssetSubsystem::LoadAudioClip(const Ref<Asset>& _audioClipAsset)
 	{
-		if (s_ResourceSubsystem->m_AudioClipStore.contains(_audioClipAsset->GetAssetPath()))
+		if (s_AssetSubsystem->m_AudioClipStore.contains(_audioClipAsset->GetAssetPath()))
 		{
-			DE_LOG(LogResource, Error, "Load AudioClip: An audio clip name: {} is already loaded", _audioClipAsset->m_AssetName)
-			return s_ResourceSubsystem->m_AudioClipStore[_audioClipAsset->GetAssetPath()];
+			DE_LOG(LogAsset, Error, "Load AudioClip: An audio clip name: {} is already loaded", _audioClipAsset->m_AssetName)
+			return s_AssetSubsystem->m_AudioClipStore[_audioClipAsset->GetAssetPath()];
 		}
 
 		if (Ref<AudioClip> audioClip = MakeRef<AudioClip>(AssetInit(_audioClipAsset->GetAssetPath())))
 		{
 			if (!audioClip->Load()) return nullptr;
 			
-			s_ResourceSubsystem->m_AudioClipStore[_audioClipAsset->GetAssetPath()] = audioClip;
-			DE_LOG(LogResource, Trace, "Audio Clip Loaded: {}", _audioClipAsset->m_AssetName)
+			s_AssetSubsystem->m_AudioClipStore[_audioClipAsset->GetAssetPath()] = audioClip;
+			DE_LOG(LogAsset, Trace, "Audio Clip Loaded: {}", _audioClipAsset->m_AssetName)
 			return audioClip;
 		}
 
 		return nullptr;
 	}
 
-	Ref<AudioClip> ResourceSubsystem::GetAudioClip(const std::string& _path)
+	Ref<AudioClip> AssetSubsystem::GetAudioClip(const std::string& _path)
 	{
-		if (s_ResourceSubsystem->m_AudioClipStore.contains(_path))
+		if (s_AssetSubsystem->m_AudioClipStore.contains(_path))
 		{
-			return s_ResourceSubsystem->m_AudioClipStore[_path];
+			return s_AssetSubsystem->m_AudioClipStore[_path];
 		}
 
-		DE_LOG(LogResource, Error, "Audio Clip not found: {}", _path)
+		DE_LOG(LogAsset, Error, "Audio Clip not found: {}", _path)
 		
 		return nullptr;
 	}
 
-	void ResourceSubsystem::Initialize()
+	void AssetSubsystem::Initialize()
 	{
 		Subsystem::Initialize();
-		DE_LOG(LogResource, Warn, "Resource Subsystem Initializing")
+		DE_LOG(LogAsset, Warn, "Asset Subsystem Initializing")
 
 		// Iniatlize Default Assets
 		std::vector<ShaderSource> defaultShaders;
@@ -144,14 +144,14 @@ namespace Denix
 			}
 		}
 
-	    DE_LOG(LogResource, Info, "Resource Subsystem Initialized")
+	    DE_LOG(LogAsset, Info, "Asset Subsystem Initialized")
 	}
 
-	void ResourceSubsystem::Deinitialize()
+	void AssetSubsystem::Deinitialize()
 	{
 		Subsystem::Deinitialize();
 
-		// Free all resources
+		// Free all Asset
 		m_MeshStore.clear();
 		m_ModelStore.clear();
 		
@@ -168,16 +168,16 @@ namespace Denix
 
 		m_AudioClipStore.clear();
 		
-		DE_LOG(LogResource, Trace, "Resource Subsystem Deinitialized")
+		DE_LOG(LogAsset, Trace, "Resource Subsystem Deinitialized")
 	}
 	
 
-	Ref<Asset> ResourceSubsystem::GetSceneAsset(const std::string& _path)
+	Ref<Asset> AssetSubsystem::GetSceneAsset(const std::string& _path)
 	{
 		// We Should validate the path first
 
 		// Check registered assets
-		for (const auto& asset : s_ResourceSubsystem->m_SceneStore)
+		for (const auto& asset : s_AssetSubsystem->m_SceneStore)
 		{
 			if (asset->GetAssetPath() == _path)
 			{
@@ -189,10 +189,10 @@ namespace Denix
 	}
 
 	////////////////////////  SHADERS ///////////////////////////////
-	Ref<Shader> ResourceSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
+	Ref<Shader> AssetSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
 	{
 		// Check if the shader already exists
-		if (s_ResourceSubsystem->m_ShaderStore.contains(_name))
+		if (s_AssetSubsystem->m_ShaderStore.contains(_name))
 		{
 			DE_LOG(LogShader, Error, "GLShader already exists: {}", _name)
 			return nullptr;
@@ -206,7 +206,7 @@ namespace Denix
 
 			if (!shader->CompileProgram()) return nullptr;
 
-			s_ResourceSubsystem->m_ShaderStore[_name] = shader;
+			s_AssetSubsystem->m_ShaderStore[_name] = shader;
 
 			DE_LOG(LogShader, Trace, "Shader Loaded: {}", _name)
 			
@@ -217,7 +217,7 @@ namespace Denix
 		return nullptr;
 	}
 
-	bool ResourceSubsystem::ReloadShader(Ref<Shader>& _shader)
+	bool AssetSubsystem::ReloadShader(Ref<Shader>& _shader)
 	{
 		// Create a new shader to check if it compiles
 		const Ref<Shader> testShader = MakeRef<Shader>(ObjectInit(_shader->GetName() + "_temp"));
@@ -229,7 +229,7 @@ namespace Denix
 		// Compile the new shader
 		if (!testShader->CompileProgram())
 		{
-			DE_LOG(LogResource, Error, "Shader Recompile failed: {}", _shader->GetName())
+			DE_LOG(LogAsset, Error, "Shader Recompile failed: {}", _shader->GetName())
 			return false;
 		}
 
@@ -238,23 +238,23 @@ namespace Denix
 		{
 			if(!FileSubsystem::WriteFile(shader.Path, shader.Source))
 			{
-				DE_LOG(LogResource, Error, "Failed to write shader source to disk: {}", shader.Path)
+				DE_LOG(LogAsset, Error, "Failed to write shader source to disk: {}", shader.Path)
 				return false;
 			}
 		}
 
 		// Reassign the new shader ID to the old shader
 		_shader->m_GL_ID = testShader->m_GL_ID;
-		DE_LOG(LogResource, Info, "Shader Recompiled successfully: {}", _shader->GetName())
+		DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetName())
 		
 		return true;
 	}
 
-	Ref<Shader> ResourceSubsystem::GetShader(const std::string& _name)
+	Ref<Shader> AssetSubsystem::GetShader(const std::string& _name)
 	{
-		if (s_ResourceSubsystem->m_ShaderStore.contains(_name))
+		if (s_AssetSubsystem->m_ShaderStore.contains(_name))
 		{
-			return s_ResourceSubsystem->m_ShaderStore[_name];
+			return s_AssetSubsystem->m_ShaderStore[_name];
 		}
 
 		DE_LOG(LogShader, Error, "GLShader not found: {}", _name)
@@ -264,58 +264,58 @@ namespace Denix
 	
 
 	////////////////////////  TEXTURES ///////////////////////////////
-	Ref<Texture> ResourceSubsystem::LoadTexture(const std::string& _path)
+	Ref<Texture> AssetSubsystem::LoadTexture(const std::string& _path)
 	{
 		// Check it isn't already loaded
-		if (s_ResourceSubsystem->m_TextureStore.contains(_path))
+		if (s_AssetSubsystem->m_TextureStore.contains(_path))
 		{
-			DE_LOG(LogResource, Warn, "Load Texture: A texture name: {} is already loaded", _path)
-				return s_ResourceSubsystem->m_TextureStore[_path];
+			DE_LOG(LogAsset, Warn, "Load Texture: A texture name: {} is already loaded", _path)
+				return s_AssetSubsystem->m_TextureStore[_path];
 		}
 
 		Ref<Texture> texture = MakeRef<Texture>(_path);
 
 		if (!texture->LoadTexture()) return nullptr;
 
-		s_ResourceSubsystem->m_TextureStore[_path] = texture;
-		DE_LOG(LogResource, Trace, "Texture loaded: {}", _path)
+		s_AssetSubsystem->m_TextureStore[_path] = texture;
+		DE_LOG(LogAsset, Trace, "Texture loaded: {}", _path)
 
 		return texture;
 	}
 	
-	Ref<Texture> ResourceSubsystem::GetTexture(const std::string& _path)
+	Ref<Texture> AssetSubsystem::GetTexture(const std::string& _path)
 	{
-		if (s_ResourceSubsystem->m_TextureStore.contains(_path))
+		if (s_AssetSubsystem->m_TextureStore.contains(_path))
 		{
-			return s_ResourceSubsystem->m_TextureStore[_path];
+			return s_AssetSubsystem->m_TextureStore[_path];
 		}
 
 		return nullptr;
 	}
 
 	////////////////////////  MATERIALS ///////////////////////////////
-	Ref<Material> ResourceSubsystem::LoadMaterial(const Ref<Asset>& _matAsset)
+	Ref<Material> AssetSubsystem::LoadMaterial(const Ref<Asset>& _matAsset)
 	{
-		if (s_ResourceSubsystem->m_MaterialStore.contains(_matAsset->m_AssetName))
+		if (s_AssetSubsystem->m_MaterialStore.contains(_matAsset->m_AssetName))
 		{
-			DE_LOG(LogResource, Error, "Load Material: A material name: {} is already loaded", _matAsset->m_AssetName)
-			return s_ResourceSubsystem->m_MaterialStore[_matAsset->m_AssetName];
+			DE_LOG(LogAsset, Error, "Load Material: A material name: {} is already loaded", _matAsset->m_AssetName)
+			return s_AssetSubsystem->m_MaterialStore[_matAsset->m_AssetName];
 		}
 
 		if (Ref<Material> material = MakeRef<Material>(_matAsset))
 		{
-			s_ResourceSubsystem->m_MaterialStore[_matAsset->m_AssetName] = material;
-			DE_LOG(LogResource, Trace, "Material Loaded: {}", _matAsset->m_AssetName)
+			s_AssetSubsystem->m_MaterialStore[_matAsset->m_AssetName] = material;
+			DE_LOG(LogAsset, Trace, "Material Loaded: {}", _matAsset->m_AssetName)
 			return material;
 		}
 		
-		DE_LOG(LogResource, Error, "Failed to load material: {}", _matAsset->m_AssetName)
+		DE_LOG(LogAsset, Error, "Failed to load material: {}", _matAsset->m_AssetName)
 		return nullptr;
 	}
 
-	Ref<Material> ResourceSubsystem::GetMaterial(const std::string& _path)
+	Ref<Material> AssetSubsystem::GetMaterial(const std::string& _path)
 	{
-		for (const auto& material : s_ResourceSubsystem->m_MaterialStore)
+		for (const auto& material : s_AssetSubsystem->m_MaterialStore)
 		{
 			if (material.second->GetAsset()->GetAssetPath() == _path)
 			{
@@ -329,56 +329,56 @@ namespace Denix
 	
 
 	////////////////////////  MESHES ///////////////////////////////
-	bool ResourceSubsystem::AddMesh(const Ref<Mesh>& _mesh)
+	bool AssetSubsystem::AddMesh(const Ref<Mesh>& _mesh)
 	{
-		if (s_ResourceSubsystem->m_MeshStore.contains(_mesh->GetName()))
+		if (s_AssetSubsystem->m_MeshStore.contains(_mesh->GetName()))
 		{
-			DE_LOG(LogResource, Error, "Load Mesh: A Mesh name: {} is already loaded", _mesh->GetName())
+			DE_LOG(LogAsset, Error, "Load Mesh: A Mesh name: {} is already loaded", _mesh->GetName())
 				return false;
 		}
 
-		DE_LOG(LogResource, Trace, "Mesh Loaded: {}", _mesh->GetName())
-			s_ResourceSubsystem->m_MeshStore[_mesh->GetName()] = _mesh;
+		DE_LOG(LogAsset, Trace, "Mesh Loaded: {}", _mesh->GetName())
+			s_AssetSubsystem->m_MeshStore[_mesh->GetName()] = _mesh;
 
 		return true;
 	}
 
-	bool ResourceSubsystem::LoadMesh(const std::string& _name, const float* _vertices, const unsigned int* _indices,
+	bool AssetSubsystem::LoadMesh(const std::string& _name, const float* _vertices, const unsigned int* _indices,
 	                                 const unsigned int _verticesCount, const unsigned int _numOfIndices)
 	{
-		if (s_ResourceSubsystem->m_MeshStore.contains(_name))
+		if (s_AssetSubsystem->m_MeshStore.contains(_name))
 		{
-			DE_LOG(LogResource, Error, "Load Mesh: A Mesh name: {} is already loaded",_name)
+			DE_LOG(LogAsset, Error, "Load Mesh: A Mesh name: {} is already loaded",_name)
 				return false;
 		}
 
 		const Ref<Mesh> mesh = MakeRef<Mesh>(_vertices, _indices, _verticesCount, _numOfIndices, ObjectInit(_name));
-		DE_LOG(LogResource, Trace, "Mesh Loaded: {}", mesh->GetName())
-		s_ResourceSubsystem->m_MeshStore[_name] = mesh;
+		DE_LOG(LogAsset, Trace, "Mesh Loaded: {}", mesh->GetName())
+		s_AssetSubsystem->m_MeshStore[_name] = mesh;
 
 		return true;
 	}
 
-	Ref<Mesh> ResourceSubsystem::GetMesh(const std::string& _name)
+	Ref<Mesh> AssetSubsystem::GetMesh(const std::string& _name)
 	{
-		if (s_ResourceSubsystem->m_MeshStore.contains(_name))
+		if (s_AssetSubsystem->m_MeshStore.contains(_name))
 		{
-			return s_ResourceSubsystem->m_MeshStore[_name];
+			return s_AssetSubsystem->m_MeshStore[_name];
 		}
 
 		return nullptr;
 	}
 
-	bool ResourceSubsystem::AddModel(const Ref<Model>& _mesh)
+	bool AssetSubsystem::AddModel(const Ref<Model>& _mesh)
 	{
 		return false;
 	}
 
-	bool ResourceSubsystem::LoadModel(const std::string& _name, const std::string& _path)
+	bool AssetSubsystem::LoadModel(const std::string& _name, const std::string& _path)
 	{
-		if (s_ResourceSubsystem->m_ModelStore.contains(_name))
+		if (s_AssetSubsystem->m_ModelStore.contains(_name))
 		{
-			DE_LOG(LogResource, Error, "Load Mesh: A Model name: {} is already loaded", _name)
+			DE_LOG(LogAsset, Error, "Load Mesh: A Model name: {} is already loaded", _name)
 				return false;
 		}
 
@@ -396,17 +396,17 @@ namespace Denix
 			}
 		}
 
-		DE_LOG(LogResource, Trace, "Model Loaded: {}", model->GetName())
-			s_ResourceSubsystem->m_ModelStore[_name] = model;
+		DE_LOG(LogAsset, Trace, "Model Loaded: {}", model->GetName())
+			s_AssetSubsystem->m_ModelStore[_name] = model;
 
 		return true;
 	}
 
-	Ref<Model> ResourceSubsystem::GetModel(const std::string& _name)
+	Ref<Model> AssetSubsystem::GetModel(const std::string& _name)
 	{
-		if (s_ResourceSubsystem->m_ModelStore.contains(_name))
+		if (s_AssetSubsystem->m_ModelStore.contains(_name))
 		{
-			return s_ResourceSubsystem->m_ModelStore[_name];
+			return s_AssetSubsystem->m_ModelStore[_name];
 		}
 
 		return nullptr;

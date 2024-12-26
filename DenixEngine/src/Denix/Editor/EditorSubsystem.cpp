@@ -89,7 +89,7 @@ namespace Denix
 			{
 				if (ImGui::BeginMenu("Open Scene", "Alt+F4"))
 				{ 
-					for (const auto& levelAsset : ResourceSubsystem::GetSceneStore())
+					for (const auto& levelAsset : AssetSubsystem::GetSceneStore())
 					{
 						if (ImGui::MenuItem(levelAsset->GetAssetName().c_str()))
 						{
@@ -105,7 +105,7 @@ namespace Denix
 					SceneSubsystem::SerializeScene();
 
 					// Temp method to save any changes to materials
-					for (const auto& mat : ResourceSubsystem::GetMaterialStore())
+					for (const auto& mat : AssetSubsystem::GetMaterialStore())
 					{
 						// Save Changes to asset - This should be done in the editor
 						YAML::Emitter matAsssetEmitter;

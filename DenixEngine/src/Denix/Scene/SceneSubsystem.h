@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/System/SubSystem.h"
 #include  "yaml-cpp/yaml.h"

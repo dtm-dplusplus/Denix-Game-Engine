@@ -1,11 +1,11 @@
 #include "Actor.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 #include "yaml-cpp/yaml.h"
 #include "Denix/Core/YAMLHelper.h"
 #include "Denix/Profile/ProfileSubsystem.h"
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 #include "Denix/Thread/JobSubsystem.h"
 
 namespace Denix
@@ -144,7 +144,7 @@ namespace Denix
             // Material
             if (const YAML::Node matNode = renderCompNode["m_Material"]; !matNode.IsDefined())
             {
-                m_RenderComponent->SetMaterial(ResourceSubsystem::GetMaterial(matNode["m_Material"].as<std::string>()));
+                m_RenderComponent->SetMaterial(AssetSubsystem::GetMaterial(matNode["m_Material"].as<std::string>()));
             }
         }
 
@@ -181,7 +181,7 @@ namespace Denix
         // Mesh Component
         if (const YAML::Node meshComp = _in["m_MeshComponent"]; meshComp)
         {
-            if (const Ref<Model> model = ResourceSubsystem::GetModel(meshComp["m_Mesh"].as<std::string>()))
+            if (const Ref<Model> model = AssetSubsystem::GetModel(meshComp["m_Mesh"].as<std::string>()))
             {
                 m_MeshComponent->SetModel(model); // Temp until asset scraper built
             }

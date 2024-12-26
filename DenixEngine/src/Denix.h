@@ -8,7 +8,7 @@
 
 #include "Denix/Input/InputSubsystem.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Scene/Scene.h"

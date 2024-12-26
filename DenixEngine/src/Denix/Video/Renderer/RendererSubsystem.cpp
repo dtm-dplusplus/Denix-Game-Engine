@@ -1,6 +1,6 @@
 #include "RendererSubsystem.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Actor.h"
@@ -15,7 +15,7 @@ namespace Denix
     {
         Subsystem::Initialize();
         DE_LOG(LogRenderer, Warn, "Initializing RendererSubsystem")
-        m_DefaultShader = ResourceSubsystem::GetShader("DefaultShader");
+        m_DefaultShader = AssetSubsystem::GetShader("DefaultShader");
         DE_LOG(LogRenderer, Info, "RendererSubsystem Initialized")
     }
 

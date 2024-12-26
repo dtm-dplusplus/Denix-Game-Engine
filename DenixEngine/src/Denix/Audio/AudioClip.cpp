@@ -3,7 +3,7 @@
 #include "al/al.h"
 #include "al/alc.h"
 #include "al/alext.h"
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 
 Denix::AudioClip::AudioClip(const AssetInit& _assetInit): Asset(_assetInit)
 {

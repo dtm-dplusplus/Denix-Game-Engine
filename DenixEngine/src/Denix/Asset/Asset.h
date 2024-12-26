@@ -41,7 +41,7 @@ public:
         {
             if (_newName.find(c) != std::string::npos)
             {
-                DE_LOG(LogResource, Error, "Invalid character in asset name: {0}", c)
+                DE_LOG(LogAsset, Error, "Invalid character in asset name: {0}", c)
                 return false;
             }
         }
@@ -49,7 +49,7 @@ public:
         // Add check for empty string or same name
         if( _newName.empty() || _newName == m_AssetName)
         {
-            DE_LOG (LogResource, Error, "Invalid asset name: {0}", _newName)
+            DE_LOG (LogAsset, Error, "Invalid asset name: {0}", _newName)
             return  false;
         }
             
@@ -125,6 +125,6 @@ private:
     // Asset directory
     std::string m_AssetDirectory;
 
-    friend class ResourceSubsystem;
+    friend class AssetSubsystem;
 };
 }

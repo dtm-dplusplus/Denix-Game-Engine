@@ -134,7 +134,7 @@ namespace Denix
 		std::vector<ShaderSource> m_ShaderSources;
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
 
-		friend class ResourceSubsystem;
+		friend class AssetSubsystem;
 		friend class RendererSubsystem;
 	};
 }

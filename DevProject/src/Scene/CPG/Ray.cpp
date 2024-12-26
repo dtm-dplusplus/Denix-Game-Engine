@@ -1,6 +1,6 @@
 ﻿#include "Ray.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 using namespace Denix;
 
@@ -12,7 +12,7 @@ Ray::Ray(): Cube({"Ray"})
     m_TransformComponent->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
     m_TransformComponent->SetScale(glm::vec3(0.1f, 1.0f, 0.1f));
     m_TransformComponent->SetMoveability(Moveability::Dynamic);
-    m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Cylinder"));
+    m_MeshComponent->SetModel(AssetSubsystem::GetModel("SM_Cylinder"));
     m_RenderComponent->SetMaterial([]
     {
         Ref<Material> mat = MakeRef<Material>(); mat->SetBaseColor(glm::vec3(1.0f)); return mat;

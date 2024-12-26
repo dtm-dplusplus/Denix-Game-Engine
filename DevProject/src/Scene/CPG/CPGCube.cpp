@@ -1,6 +1,6 @@
 #include "CPGCube.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Thread/JobSubsystem.h"
 #include "Util/ActorGridSpawner.h"
 
@@ -39,10 +39,10 @@ void CPGCube::Update(float _deltaTime)
 
 void CPGCube::RandomModel()
 {
-    static size_t modelStoreSize = ResourceSubsystem::GetModelStore().size();
-    static std::unordered_map<std::string, Ref<Model>> modelStore = ResourceSubsystem::GetModelStore();
-    static size_t textureStoreSize = ResourceSubsystem::GetTextureStore().size();
-    static std::unordered_map<std::string, Ref<Texture>> textureStore = ResourceSubsystem::GetTextureStore();
+    static size_t modelStoreSize = AssetSubsystem::GetModelStore().size();
+    static std::unordered_map<std::string, Ref<Model>> modelStore = AssetSubsystem::GetModelStore();
+    static size_t textureStoreSize = AssetSubsystem::GetTextureStore().size();
+    static std::unordered_map<std::string, Ref<Texture>> textureStore = AssetSubsystem::GetTextureStore();
 
     size_t index = Math::Rand(0, modelStoreSize - 1);
     size_t i = 0;

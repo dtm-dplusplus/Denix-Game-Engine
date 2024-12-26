@@ -2,7 +2,7 @@
 #include "ActorDetailsWidget.h"
 #include "Denix/UI/UISubsystem.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Actor.h"
 #include "Denix/Scene/Object/Light/LightObject.h"
@@ -387,7 +387,7 @@ void Denix::ActorDetailsWidget::MaterialSelectionWidget(Ref<RenderComponent>& _r
     if (ImGui::BeginCombo("##MaterialName", _rendComp->GetMaterial()->GetName().c_str(),
                           ImGuiComboFlags_WidthFitPreview))
     {
-        for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
+        for (auto& [fst, snd] : AssetSubsystem::GetMaterialStore())
         {
             ImGui::PushID(fst.c_str());
             if (ImGui::Selectable(fst.c_str(), false,
@@ -421,7 +421,7 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
     // Texture Selection
     if (ImGui::BeginCombo("##TextureSelection", preview.c_str(), ImGuiComboFlags_WidthFitPreview))
     {
-        for (auto& [fst, snd] : ResourceSubsystem::GetTextureStore())
+        for (auto& [fst, snd] : AssetSubsystem::GetTextureStore())
         {
             ImGui::PushID(snd->GetTextureName().c_str());
             ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100));
@@ -447,7 +447,7 @@ void Denix::ActorDetailsWidget::ShaderSelectionWidget(Ref<Material>& _material)
     {
         if (ImGui::BeginCombo("##ShaderName", shader->GetName().c_str()))
         {
-            for (auto& [fst, snd] : ResourceSubsystem::GetShaderStore())
+            for (auto& [fst, snd] : AssetSubsystem::GetShaderStore())
             {
                 ImGui::PushID(fst.c_str());
                 if (ImGui::Selectable(fst.c_str()))
@@ -473,7 +473,7 @@ void Denix::ActorDetailsWidget::MeshWidget(const Ref<Actor>& _selectedObject)
 
         if (ImGui::BeginCombo("##ModelName", preview.c_str()))
         {
-            for (auto& [fst, snd] : ResourceSubsystem::GetModelStore())
+            for (auto& [fst, snd] : AssetSubsystem::GetModelStore())
             {
                 ImGui::PushID(fst.c_str());
                 if (ImGui::Selectable(fst.c_str()))

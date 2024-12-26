@@ -1,5 +1,5 @@
 #include "LightObject.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 Denix::Light::Light(const ObjectInit& _objInit):
     Actor(_objInit),
@@ -12,7 +12,7 @@ Denix::Light::Light(const ObjectInit& _objInit):
 
     m_RenderComponent->SetAffectsLighting(false);
     m_RenderComponent->GetMaterial()->SetBaseColor({1.0f, 1.0f, 0.0f});
-    m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Cube"));
+    m_MeshComponent->SetModel(AssetSubsystem::GetModel("SM_Cube"));
 
     m_PhysicsComponent->SetCollisionDetectionEnabled(false);
 }

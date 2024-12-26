@@ -1,11 +1,11 @@
 ﻿#include "AudioScene.h"
 
 #include "Denix/Audio/AudioSubsystem.h"
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 
 #include "imgui.h"
 #include "Denix/Audio/AudioSource.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 using namespace Denix;
 
@@ -13,7 +13,7 @@ void AudioScene::BeginScene()
 {
     Scene::BeginScene();
 
-    if (Ref<AudioClip> clip = ResourceSubsystem::GetAudioClip(FileSubsystem::GetContentRoot() + "Audio\\music.wav"))
+    if (Ref<AudioClip> clip = AssetSubsystem::GetAudioClip(FileSubsystem::GetContentRoot() + "Audio\\music.wav"))
     {
         Clip = clip;
         Source = MakeRef<AudioSource>("Audio Source_" + clip->GetAssetName());

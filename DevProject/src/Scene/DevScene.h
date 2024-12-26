@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 #include "Denix/Scene/Scene.h"
 #include "Util/ActorGridSpawner.h"
 

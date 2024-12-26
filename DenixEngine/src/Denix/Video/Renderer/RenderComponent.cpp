@@ -1,6 +1,6 @@
 #include "RenderComponent.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 
 namespace Denix
@@ -8,9 +8,9 @@ namespace Denix
 
 	RenderComponent::RenderComponent(): Component(ObjectInit("Render Component"))
 	{
-		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
-		m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-		m_Material = ResourceSubsystem::GetDefaultMaterial();
+		m_Shader = AssetSubsystem::GetShader("DefaultShader");
+		m_Texture = AssetSubsystem::GetTexture("DefaultTexture");
+		m_Material = AssetSubsystem::GetDefaultMaterial();
 	}
 
 	RenderComponent::RenderComponent(Ref<RenderComponent> _other)
@@ -25,9 +25,9 @@ namespace Denix
 
 	RenderComponent::RenderComponent(const std::string& _parentName): Component(_parentName, ObjectInit("Render Component"))
 	{
-		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
-		m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-		m_Material = ResourceSubsystem::GetDefaultMaterial();
+		m_Shader = AssetSubsystem::GetShader("DefaultShader");
+		m_Texture = AssetSubsystem::GetTexture("DefaultTexture");
+		m_Material = AssetSubsystem::GetDefaultMaterial();
 	}
 
 	void RenderComponent::SetMaterial(const Ref<Material>& _material)
