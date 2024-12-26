@@ -5,15 +5,12 @@
 #include "al/alext.h"
 #include "Denix/Resource/Asset.h"
 
-Denix::AudioClip::AudioClip(const Ref<Asset>& _audioClipAsset): Object({_audioClipAsset->GetAssetName()})
+Denix::AudioClip::AudioClip(const AssetInit& _assetInit): Asset(_assetInit)
 {
-    m_AudioClpAsset = _audioClipAsset;
 }
 
 Denix::AudioClip::~AudioClip()
 {
-    m_AudioClpAsset.reset();
-    
     alCall(alDeleteBuffers, 1, &m_Buffer);
 }
 
@@ -21,11 +18,9 @@ bool Denix::AudioClip::Load()
 {
     uint8_t* audioBuffer;
 
-    auto audioClpAsset = m_AudioClpAsset.lock();
-    
-    if (!SDL_LoadWAV( audioClpAsset->GetAssetPath().c_str(), &m_ClipSpec, &audioBuffer, &m_WavLength)) {
+    if (!SDL_LoadWAV( GetAssetPath().c_str(), &m_ClipSpec, &audioBuffer, &m_WavLength)) {
         SDL_free(audioBuffer);
-        DE_LOG(LogAudio, Error, "Failed to load WAV File: {}", audioClpAsset->GetAssetName())
+        DE_LOG(LogAudio, Error, "Failed to load WAV File: {}", GetAssetName())
         return false;
     }
 
@@ -36,7 +31,7 @@ bool Denix::AudioClip::Load()
     if (m_Buffer == 0)
     {
         SDL_free(audioBuffer);
-        DE_LOG(LogAudio, Error, "Failed to create OpenAL buffer: {}", audioClpAsset->GetAssetName())
+        DE_LOG(LogAudio, Error, "Failed to create OpenAL buffer: {}", GetAssetName())
         return false;
     }
     

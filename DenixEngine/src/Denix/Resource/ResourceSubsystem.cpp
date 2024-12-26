@@ -32,17 +32,17 @@ namespace Denix
 
 	Ref<AudioClip> ResourceSubsystem::LoadAudioClip(const Ref<Asset>& _audioClipAsset)
 	{
-		if (s_ResourceSubsystem->m_AudioClipStore.contains(_audioClipAsset->m_AssetPath))
+		if (s_ResourceSubsystem->m_AudioClipStore.contains(_audioClipAsset->GetAssetPath()))
 		{
 			DE_LOG(LogResource, Error, "Load AudioClip: An audio clip name: {} is already loaded", _audioClipAsset->m_AssetName)
-			return s_ResourceSubsystem->m_AudioClipStore[_audioClipAsset->m_AssetPath];
+			return s_ResourceSubsystem->m_AudioClipStore[_audioClipAsset->GetAssetPath()];
 		}
 
-		if (Ref<AudioClip> audioClip = MakeRef<AudioClip>(_audioClipAsset))
+		if (Ref<AudioClip> audioClip = MakeRef<AudioClip>(AssetInit(_audioClipAsset->GetAssetPath())))
 		{
 			if (!audioClip->Load()) return nullptr;
 			
-			s_ResourceSubsystem->m_AudioClipStore[_audioClipAsset->m_AssetPath] = audioClip;
+			s_ResourceSubsystem->m_AudioClipStore[_audioClipAsset->GetAssetPath()] = audioClip;
 			DE_LOG(LogResource, Trace, "Audio Clip Loaded: {}", _audioClipAsset->m_AssetName)
 			return audioClip;
 		}
