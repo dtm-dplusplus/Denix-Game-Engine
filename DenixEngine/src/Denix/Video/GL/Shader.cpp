@@ -5,7 +5,6 @@ GLuint Denix::Shader::CreateProgram()
     if (const GLuint program = glCreateProgram())
     {
         m_GL_ID = program;
-        // DE_LOG(LogShader, Trace, "Created shader program ID: {}", program)
         return program;
     }
 
@@ -17,7 +16,6 @@ void Denix::Shader::DeleteProgram() const
 {
     if (m_GL_ID)
     {
-        // DE_LOG(LogShader, Trace, "Deleted shader program ID: {}", m_GL_ID)
         glDeleteProgram(m_GL_ID);
     }
 }
@@ -114,13 +112,13 @@ bool Denix::Shader::CompileProgram()
 {
     if (!m_GL_ID)
     {
-        DE_LOG(LogShader, Error, "Invalid shader program ID: {}", GetName())
+        DE_LOG(LogShader, Error, "Invalid shader program ID: {}", GetAssetDirectory())
         return false;
     }
 			
     if (m_ShaderSources.empty())
     {
-        DE_LOG(LogShader, Error, "No shader sources to compile: {}", GetName())
+        DE_LOG(LogShader, Error, "No shader sources to compile: {}", GetAssetDirectory())
         return false;
     }
 			

@@ -67,14 +67,14 @@ namespace Denix
 
 		// Iniatlize Default Assets
 		std::vector<ShaderSource> defaultShaders;
-		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Vertex.glsl)");
-		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Fragment.glsl)");
+		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Default\Vertex.glsl)");
+		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Default\Fragment.glsl)");
 		if (Ref<Shader> defShader = LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = defShader;
 		else throw std::runtime_error("Default Shader not loaded");
 		
 		std::vector<ShaderSource> viewportShaders;
-		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBVertex.glsl)");
-		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FBFragment.glsl)");
+		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FB\FBVertex.glsl)");
+		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FB\FBFragment.glsl)");
 		if (Ref<Shader> fbShader = LoadShader(viewportShaders, "FBShader")) m_FramebufferShader = fbShader;
 		else throw std::runtime_error("Viewport Shader not loaded");
 
@@ -186,38 +186,37 @@ namespace Denix
 	}
 
 	////////////////////////  SHADERS ///////////////////////////////
-	Ref<Shader> AssetSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name)
+	Ref<Shader> AssetSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _path)
 	{
 		// Check if the shader already exists
-		if (s_AssetSubsystem->m_ShaderStore.contains(_name))
+		if (s_AssetSubsystem->m_ShaderStore.contains(_path))
 		{
-			DE_LOG(LogShader, Error, "GLShader already exists: {}", _name)
+			DE_LOG(LogShader, Error, "GLShader already exists: {}", _path)
 			return nullptr;
 		}
 
 		// Create a new shader
-		if (const Ref<Shader> shader = MakeRef<Shader>(ObjectInit(_name)))
+		if (const Ref<Shader> shader = MakeRef<Shader>(_shaders[0].Path))
 		{
-
 			shader->m_ShaderSources = _shaders;
 
 			if (!shader->CompileProgram()) return nullptr;
 
-			s_AssetSubsystem->m_ShaderStore[_name] = shader;
+			s_AssetSubsystem->m_ShaderStore[_path] = shader;
 
-			DE_LOG(LogShader, Trace, "Shader Loaded: {}", _name)
+			DE_LOG(LogShader, Trace, "Shader Loaded: {}", _path)
 			
 			return shader;
 		}
 
-		DE_LOG(LogShader, Error, "Failed to load shader: {}", _name)
+		DE_LOG(LogShader, Error, "Failed to load shader: {}", _path)
 		return nullptr;
 	}
 
-	bool AssetSubsystem::ReloadShader(Ref<Shader>& _shader)
+	bool AssetSubsystem::ReloadShader(const Ref<Shader>& _shader)
 	{
 		// Create a new shader to check if it compiles
-		const Ref<Shader> testShader = MakeRef<Shader>(ObjectInit(_shader->GetName() + "_temp"));
+		const Ref<Shader> testShader = MakeRef<Shader>();
 		
 		if (!testShader->GetGL_ID()) return false;
 
@@ -226,7 +225,7 @@ namespace Denix
 		// Compile the new shader
 		if (!testShader->CompileProgram())
 		{
-			DE_LOG(LogAsset, Error, "Shader Recompile failed: {}", _shader->GetName())
+			DE_LOG(LogAsset, Error, "Shader Recompile failed: {}", _shader->GetAssetDirectory())
 			return false;
 		}
 
@@ -242,7 +241,7 @@ namespace Denix
 
 		// Reassign the new shader ID to the old shader
 		_shader->m_GL_ID = testShader->m_GL_ID;
-		DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetName())
+		DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetAssetDirectory())
 		
 		return true;
 	}

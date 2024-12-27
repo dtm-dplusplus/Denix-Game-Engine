@@ -40,9 +40,9 @@ namespace Denix
             return s_AssetSubsystem->m_ShaderStore;
         }
 
-        Ref<Shader> LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _name);
+        Ref<Shader> LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _path);
 
-        static bool ReloadShader(Ref<Shader>& _shader);
+        static bool ReloadShader(const Ref<Shader>& _shader);
 
         
         static Ref<Shader> GetShader(const std::string& _name);

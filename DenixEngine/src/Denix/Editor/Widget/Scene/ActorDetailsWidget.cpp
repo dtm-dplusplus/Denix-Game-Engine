@@ -341,7 +341,7 @@ void Denix::ActorDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject
         ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
 
         ImGui::Separator();
-        ImGui::Text(mat->GetShader()->GetName().c_str());
+        ImGui::Text(mat->GetShader()->GetAssetDirectory().c_str());
         ImGui::SameLine();
         if (ImGui::Button("Edit Shader"))
         {
@@ -445,7 +445,7 @@ void Denix::ActorDetailsWidget::ShaderSelectionWidget(Ref<Material>& _material)
     ImGui::SeparatorText("Shader");
     if (Ref<Shader> shader = _material->GetShader())
     {
-        if (ImGui::BeginCombo("##ShaderName", shader->GetName().c_str()))
+        if (ImGui::BeginCombo("##ShaderName", shader->GetAssetDirectory().c_str()))
         {
             for (auto& [fst, snd] : AssetSubsystem::GetShaderStore())
             {

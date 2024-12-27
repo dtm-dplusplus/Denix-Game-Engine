@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 
 #include "Denix/Core.h"
+#include "Denix/Asset/Asset.h"
 #include "Denix/Scene/Object.h"
 #include "Denix/Core/FileSubsystem.h"
 
@@ -49,58 +50,25 @@ namespace Denix
 	};
 
 
-	class Shader: public Object
+	class Shader: public Asset
 	{
 	public:
-		Shader(const Shader& other)
-			: Object(other),
-			  m_GL_ID(other.m_GL_ID),
-			  m_ShaderSources(other.m_ShaderSources),
-			  m_ShaderUniforms(other.m_ShaderUniforms)
+		Shader():
+			m_GL_ID(0)
 		{
+			CreateProgram();
 		}
 
-		Shader(Shader&& other) noexcept
-			:m_GL_ID(other.m_GL_ID),
-			  m_ShaderSources(std::move(other.m_ShaderSources)),
-			  m_ShaderUniforms(std::move(other.m_ShaderUniforms)),
-				Object(std::move(other))
-
-
-			  
-		{
-		}
-
-		Shader& operator=(const Shader& other)
-		{
-			if (this == &other)
-				return *this;
-			Object::operator =(other);
-			m_GL_ID = other.m_GL_ID;
-			m_ShaderSources = other.m_ShaderSources;
-			m_ShaderUniforms = other.m_ShaderUniforms;
-			return *this;
-		}
-
-		Shader& operator=(Shader&& other) noexcept
-		{
-			if (this == &other)
-				return *this;
-			Object::operator =(std::move(other));
-			m_GL_ID = other.m_GL_ID;
-			m_ShaderSources = std::move(other.m_ShaderSources);
-			m_ShaderUniforms = std::move(other.m_ShaderUniforms);
-			return *this;
-		}
-
-		Shader(const ObjectInit& _objInit): Object(_objInit)
+		Shader(const AssetInit& _assetInit):
+			Asset(_assetInit),
+			m_GL_ID(0)
 		{
 			CreateProgram();
 		}
 
 		~Shader() override
 		{
-			//DeleteProgram();
+			DeleteProgram();
 		}
 
 		void Bind() const { glUseProgram(m_GL_ID); }
@@ -133,7 +101,7 @@ namespace Denix
 
 		std::vector<ShaderSource> m_ShaderSources;
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
-
+		
 		friend class AssetSubsystem;
 		friend class RendererSubsystem;
 	};
