@@ -2,7 +2,6 @@
 
 #include "Denix/Core.h"
 #include "Denix/Core/Math.h"
-#include "Denix/Scene/Object.h"
 #include "Denix/Video/GL/VertexArray.h"
 #include "Denix/Video/GL/VertexBuffer.h"
 
@@ -29,14 +28,9 @@ namespace Denix
 			CreateMesh(_vertices, _indices, _verticesCount, _numOfIndices);
 		}
 
-        ~Mesh()
-        {
-	        m_VAO.reset();
-	        m_VBO.reset();
-        	m_IBO.reset();
-        }
+        ~Mesh() = default;
 
-		void CreateMesh(const float* _vertices, const unsigned int* _indices, const unsigned int _verticesCount, const unsigned int _numOfIndices)
+		void CreateMesh(const float* _vertices, const unsigned int* _indices, const unsigned int _verticesCount, const unsigned int _numOfIndices) const
 		{
 			m_VAO->Bind();
 
@@ -64,14 +58,14 @@ namespace Denix
 
 		void CreateViewportMesh()
         {
-			float quad[] = {
+			static float quad[] = {
 				-1.0f,  1.0f,  0.0f, 1.0f, // top left
 				-1.0f, -1.0f,  0.0f, 0.0f, // bottom left
 				 1.0f, -1.0f,  1.0f, 0.0f,	// bottom right
 				 1.0f,  1.0f,  1.0f, 1.0f // top right
 			};
 
-			unsigned int quadIndices[] = {
+			static unsigned int quadIndices[] = {
 				0, 1, 2,
 				2, 3, 0
 			};

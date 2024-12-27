@@ -14,14 +14,13 @@ namespace Denix
 		/**
 		 *  @brief Constructor for the Camera class
 		 * @param _position Option to set the position of the camera 
-		 * @param _objInit ObjectInitializer for the Actor 
 		 */
-		Camera(const ObjectInit& _objInit = {"Camera"}, const glm::vec3 _position = {0.0f, 5.0f, 25.0f}) : Actor(ObjectInit(_objInit))
+		Camera(const glm::vec3 _position = {0.0f, 5.0f, 25.0f}) : Actor({"Camera"}),
+			m_Viewport(MakeRef<Viewport>())
 		{
 			m_TransformComponent->SetPosition(_position);
 			m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
 			m_RenderComponent->SetIsVisible(false);
-			m_Viewport = MakeRef<Viewport>(GetName() + "_Viewport");
 		}
 		
 		~Camera() override = default;

@@ -49,7 +49,9 @@ namespace Denix
 		 * 
 		 * @return 
 		 */
-		static glm::vec2 GetWindowSize() { return s_WindowSubsystem->m_Window? s_WindowSubsystem->m_Window->GetWindowSize() : glm::vec2(0.0f); }
+		static glm::vec2 GetWindowSize() { return s_WindowSubsystem->m_Window->GetWindowSize(); }
+		static int GetWindowWidth() { return s_WindowSubsystem->m_Window->GetWidth(); }
+		static int GetWindowHeight() { return s_WindowSubsystem->m_Window->GetHeight(); }
 	private:
 		static WindowSubsystem* s_WindowSubsystem;
 

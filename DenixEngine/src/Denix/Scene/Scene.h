@@ -26,7 +26,7 @@ namespace Denix
 
 		virtual bool Load()
 		{
-			m_ViewportCamera = MakeRef<Camera>(ObjectInit("Viewport Camera"));
+			m_ViewportCamera = MakeRef<Camera>();
 
 			m_IsLoaded = true;
 
