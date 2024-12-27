@@ -19,6 +19,13 @@ namespace Denix
 {
 	SceneSubsystem* SceneSubsystem::s_SceneSubsystem{ nullptr };
 
+	SceneSubsystem::SceneSubsystem(const Ref<Asset>& _startupScene)
+	{
+		s_SceneSubsystem = this;
+		m_StartupScene = _startupScene;
+		m_BatchUpdateActors = true;
+	}
+	
 	void SceneSubsystem::Initialize()
 	{
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
@@ -194,12 +201,7 @@ namespace Denix
 		DE_LOG(LogScene, Trace, "Scene Paused")
 	}
 
-	SceneSubsystem::SceneSubsystem(const Ref<Asset>& _startupScene)
-	{
-		s_SceneSubsystem = this;
-		m_StartupScene = _startupScene;
-		m_BatchUpdateActors = true;
-	}
+	
 
 	void SceneSubsystem::CleanRubbish()
 	{
@@ -392,7 +394,7 @@ namespace Denix
 			if(!newActor)
 			{
 				newActor = MakeRef<Actor>();
-				DE_LOG(LogScene, Warn, "Failed to create actor with custom class. Using default class")
+				DE_LOG(LogScene, Error, "Failed to create actor with custom class. Using default class")
 			}
 			
 			// Deserialize the game object

@@ -225,7 +225,7 @@ namespace Denix
 		// Compile the new shader
 		if (!testShader->CompileProgram())
 		{
-			DE_LOG(LogAsset, Error, "Shader Recompile failed: {}", _shader->GetAssetDirectory())
+			DE_LOG(LogAsset, Error, "Shader Recompile failed: {}", _shader->GetDirectoryName())
 			return false;
 		}
 
@@ -241,7 +241,7 @@ namespace Denix
 
 		// Reassign the new shader ID to the old shader
 		_shader->m_GL_ID = testShader->m_GL_ID;
-		DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetAssetDirectory())
+		DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetDirectoryName())
 		
 		return true;
 	}

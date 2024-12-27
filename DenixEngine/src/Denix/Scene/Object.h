@@ -61,7 +61,8 @@ namespace Denix
     	 */
     	void MarkRubbish() { m_IsRubbish = true; }
 
-    	
+    	/* Class name of the object */
+    	std::string m_ClassName;
     private:
 		/* Name and ID should be hashed in some way in the future */
 		/* Unique Identifier */
@@ -70,8 +71,7 @@ namespace Denix
 		/* Name of the object */
 		std::string m_Name;
 
-    	/* Class name of the object */
-    	std::string m_ClassName;
+    	
 
 		/** Clean up value, if marked as rubbish, it will be deleted once the frame has finished*/
 		bool m_IsRubbish;

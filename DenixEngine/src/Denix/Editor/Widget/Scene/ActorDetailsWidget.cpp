@@ -300,12 +300,19 @@ void Denix::ActorDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject
         ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
 
         ImGui::Separator();
-        ImGui::Text(mat->GetShader()->GetAssetDirectory().c_str());
-        ImGui::SameLine();
-        if (ImGui::Button("Edit Shader"))
+        if (Ref<Shader> shader = mat->GetShader())
         {
-            m_ShaderEditor = MakeRef<ShaderEditor>(mat->GetShader());
-            ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Appearing);
+            ImGui::Text("Shader: %s", shader->GetDirectoryName().c_str());
+            if (ImGui::Button("Edit Shader"))
+            {
+                m_ShaderEditor = MakeRef<ShaderEditor>(shader);
+                ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Appearing);
+            }
+            if (m_ShaderEditor) m_ShaderEditor->Update();
+        }
+        else
+        {
+            ImGui::Text("No Shader Selected");
         }
         if (m_ShaderEditor) m_ShaderEditor->Update();
 
@@ -404,7 +411,7 @@ void Denix::ActorDetailsWidget::ShaderSelectionWidget(Ref<Material>& _material)
     ImGui::SeparatorText("Shader");
     if (Ref<Shader> shader = _material->GetShader())
     {
-        if (ImGui::BeginCombo("##ShaderName", shader->GetAssetDirectory().c_str()))
+        if (ImGui::BeginCombo("##ShaderName", shader->GetDirectoryName().c_str()))
         {
             for (auto& [fst, snd] : AssetSubsystem::GetShaderStore())
             {

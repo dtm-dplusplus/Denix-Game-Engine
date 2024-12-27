@@ -112,13 +112,13 @@ bool Denix::Shader::CompileProgram()
 {
     if (!m_GL_ID)
     {
-        DE_LOG(LogShader, Error, "Invalid shader program ID: {}", GetAssetDirectory())
+        DE_LOG(LogShader, Error, "Invalid shader program ID: {}", GetDirectoryName())
         return false;
     }
 			
     if (m_ShaderSources.empty())
     {
-        DE_LOG(LogShader, Error, "No shader sources to compile: {}", GetAssetDirectory())
+        DE_LOG(LogShader, Error, "No shader sources to compile: {}", GetDirectoryName())
         return false;
     }
 			

@@ -28,16 +28,7 @@ namespace Denix
 
     void Actor::Serialize(YAML::Emitter& _out)
     {
-        // Object Data. We can  serialize the object data here without the need for reflection.
-        _out << YAML::Comment("Object Data");
-        _out << YAML::Key << "m_Object" << YAML::BeginMap;
-        {
-            _out << YAML::Key << "m_GUID" << YAML::Value << GetGUID();
-            _out << YAML::Key << "m_Name" << YAML::Value << GetName();
-            _out << YAML::Key << "m_ClassName" << YAML::Value << GetClassName();
-        }
-        _out << YAML::EndMap;
-        // End Object Data
+        BaseObject::Serialize(_out);
         
         // Render Component
         _out << YAML::Newline << YAML::Comment("Render Component");
@@ -64,12 +55,6 @@ namespace Denix
             {
                 _out << YAML::Newline << YAML::Comment("Material");
                 _out << YAML::Key << "m_Material" << YAML::Value << (mat->GetAsset() ? mat->GetAsset()->GetAssetPath() : "");
-
-                // Save Material - Should be done in the editor.
-                YAML::Emitter matAsssetEmitter;
-                mat->Serialize(matAsssetEmitter);
-                FileSubsystem::WriteFile(mat->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
-                DE_LOG(LogScene, Info, "Saved Material: {}", mat->GetAsset()->GetAssetFileName())
             }
         }
         _out << YAML::EndMap;

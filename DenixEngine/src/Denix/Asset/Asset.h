@@ -26,7 +26,8 @@ public:
           m_AssetName(m_AssetPath.stem().string()),
           m_AssetFileName(m_AssetPath.filename().string()),
           m_AssetExtension(m_AssetPath.extension().string()),
-          m_AssetDirectory(m_AssetPath.parent_path().string() + "\\")
+          m_AssetDirectory(m_AssetPath.parent_path().string() + "\\"),
+        m_DirectoryName(m_AssetPath.parent_path().filename().string())
     {
     }
    
@@ -104,6 +105,10 @@ public:
         return m_AssetDirectory;
     }
 
+    std::string GetDirectoryName() const
+    {
+        return m_DirectoryName;
+    }
     
 private:
     // Filesystem Path
@@ -118,10 +123,10 @@ private:
     // Asset file extension
     std::string m_AssetExtension;
     
-    
-
     // Asset directory
     std::string m_AssetDirectory;
+
+    std::string m_DirectoryName;
 
     friend class AssetSubsystem;
 };

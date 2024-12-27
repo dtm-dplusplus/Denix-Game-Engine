@@ -3,6 +3,15 @@
 
 void Denix::BaseObject::Serialize(YAML::Emitter& _out)
 {
+    // Object Data. We can serialize the object data here without the need for reflection.
+    _out << YAML::Comment("Object Data");
+    _out << YAML::Key << "m_Object" << YAML::BeginMap;
+    {
+        _out << YAML::Key << "m_GUID" << YAML::Value << GetGUID();
+        _out << YAML::Key << "m_Name" << YAML::Value << GetName();
+        _out << YAML::Key << "m_ClassName" << YAML::Value << GetClassName();
+    }
+    _out << YAML::EndMap;
 }
 
 void Denix::BaseObject::Deserialize(const YAML::Node& _in)

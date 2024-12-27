@@ -82,16 +82,13 @@ namespace Denix
         
         std::unordered_map<std::string, Ref<AudioClip>> m_AudioClipStore;
         
-    public:
-        void Initialize() override;
-
-        void Deinitialize() override;
-
-       
-        
         static AssetSubsystem* Get() { return s_AssetSubsystem; }
 
     private:
+        void Initialize() override;
+
+        void Deinitialize() override;
+        
         static AssetSubsystem* s_AssetSubsystem;
 
 		std::unordered_map<std::string, Ref<Shader>> m_ShaderStore;
@@ -105,5 +102,7 @@ namespace Denix
         std::vector<Ref<Asset>> m_AssetStore;
 
         std::vector<Ref<Asset>> m_SceneStore;
+
+        friend class Engine;
     };
 }
