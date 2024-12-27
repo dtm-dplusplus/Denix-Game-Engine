@@ -23,19 +23,9 @@ namespace Denix
     class Object
 	{
 	public:
-    	Object()
-    	{
-    		m_GUID = GenID();
-    		m_IsRubbish = false;
-    		m_Name = ObjectInit().Name;
-    	}
+    	Object(): m_GUID{GenID()}, m_Name{ ObjectInit().Name }, m_IsRubbish{false} {}
     	
-    	Object(const ObjectInit& _object_init)
-    	{
-    		m_GUID = GenID();
-    		m_IsRubbish = false;
-    		m_Name = _object_init.Name;
-    	}
+    	Object(const ObjectInit& _object_init): m_GUID{GenID()}, m_Name{ _object_init.Name }, m_IsRubbish{false} {}
     	
 		// Destructors
 		virtual ~Object() = default;
@@ -45,6 +35,8 @@ namespace Denix
 		 * @return The name of the object
 		 */
 		std::string GetName() const { return m_Name; }
+
+    	std::string GetClassName() const { return m_ClassName; }
 
 		/**
 		 * Global Unique Identifier 
@@ -62,6 +54,7 @@ namespace Denix
 		 */
     	void SetName(const std::string& _name) { m_Name = _name; }
 
+		
 	    /**
     	 * Mark the object as rubbish, it will be deleted at the end of the frame
     	 * Use with caution, the object should be validated before marking.
@@ -77,6 +70,9 @@ namespace Denix
 		/* Name of the object */
 		std::string m_Name;
 
+    	/* Class name of the object */
+    	std::string m_ClassName;
+
 		/** Clean up value, if marked as rubbish, it will be deleted once the frame has finished*/
 		bool m_IsRubbish;
 
@@ -86,5 +82,6 @@ namespace Denix
     	friend class Engine;
     	friend class Scene;
     	friend class SceneSubsystem;
+    	friend class ReflectionSubsystem;
 	};
 }

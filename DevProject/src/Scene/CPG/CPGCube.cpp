@@ -6,7 +6,7 @@
 
 CPGCube::CPGCube()
 {
-    m_ClassName = "CPGCube";
+    // m_ClassName = "CPGCube";
     m_PhysicsComponent->SimulatePhysics() = true;
     m_PhysicsComponent->m_RotationEnabled = false;
 

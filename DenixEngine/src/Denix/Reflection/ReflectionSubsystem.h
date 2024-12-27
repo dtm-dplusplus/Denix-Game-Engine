@@ -25,7 +25,7 @@ namespace Denix
         {
             return s_ReflectionSubsystem;
         }
-        using CreateFunc = std::function<Ref<BaseObject>()>;
+        using CreateFunc = std::function<Ref<Object>()>;
        
         template<typename T>
         static void Register()
@@ -36,12 +36,12 @@ namespace Denix
             DE_LOG(LogScene, Info, "Registered class: {}", className)
         }
 
-        template <typename T = BaseObject>
+        template <typename T = Object>
         static Ref<T> Create(const std::string& _className)
         {
             if (const auto it = s_ReflectionSubsystem->m_CreateFuncs.find(_className); it != s_ReflectionSubsystem->m_CreateFuncs.end())
             {
-               if(Ref<BaseObject> obj = it->second())
+               if(Ref<Object> obj = it->second())
                {
                    obj->m_ClassName = _className;
                    return CastRef<T>(obj);
@@ -50,7 +50,7 @@ namespace Denix
             return nullptr;
         }
 
-       static Ref<BaseObject> GetType(const std::string& _className)
+       static Ref<Object> GetType(const std::string& _className)
         {
             if (const auto it = s_ReflectionSubsystem->m_CreateFuncs.find(_className); it != s_ReflectionSubsystem->m_CreateFuncs.end()) {
                 return it->second();

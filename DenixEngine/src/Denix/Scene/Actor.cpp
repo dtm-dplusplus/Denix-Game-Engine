@@ -34,7 +34,7 @@ namespace Denix
         {
             _out << YAML::Key << "m_GUID" << YAML::Value << GetGUID();
             _out << YAML::Key << "m_Name" << YAML::Value << GetName();
-            _out << YAML::Key << "m_ClassName" << YAML::Value << m_ClassName;
+            _out << YAML::Key << "m_ClassName" << YAML::Value << GetClassName();
         }
         _out << YAML::EndMap;
         // End Object Data
