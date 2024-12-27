@@ -1,11 +1,9 @@
 #include "AssetSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
-#include "Denix/Scene/MeshData.h"
 #include "Denix/Video/Renderer/RenderComponent.h"
 #include "Denix/Video/GL/Shader.h"
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Video/GL/Material.h"
-#include "Denix/Video/GL/Mesh.h"
 #include "Denix/Video/GL/Model.h"
 #include "Denix/Asset/Asset.h"
 #include "Denix/Audio/AudioClip.h"
@@ -131,7 +129,7 @@ namespace Denix
 					// Model Check
 					else if (asset->m_AssetExtension == ".obj")
 					{
-						LoadModel(asset->m_AssetName, path);
+						LoadModel(path);
 					}
 					// Audio Asset
 					else if (asset->m_AssetExtension == ".wav")
@@ -152,7 +150,6 @@ namespace Denix
 		Subsystem::Deinitialize();
 
 		// Free all Asset
-		m_MeshStore.clear();
 		m_ModelStore.clear();
 		
 		m_SceneStore.clear();
@@ -326,64 +323,21 @@ namespace Denix
 		return nullptr;
 	}
 
-	
-
-	////////////////////////  MESHES ///////////////////////////////
-	bool AssetSubsystem::AddMesh(const Ref<Mesh>& _mesh)
+	////////////////////////  MODEL ///////////////////////////////
+	bool AssetSubsystem::LoadModel(const std::string& _path)
 	{
-		if (s_AssetSubsystem->m_MeshStore.contains(_mesh->GetName()))
+		if (s_AssetSubsystem->m_ModelStore.contains(_path))
 		{
-			DE_LOG(LogAsset, Error, "Load Mesh: A Mesh name: {} is already loaded", _mesh->GetName())
+			DE_LOG(LogAsset, Error, "Load Model: A Model name: {} is already loaded", _path)
 				return false;
 		}
 
-		DE_LOG(LogAsset, Trace, "Mesh Loaded: {}", _mesh->GetName())
-			s_AssetSubsystem->m_MeshStore[_mesh->GetName()] = _mesh;
-
-		return true;
-	}
-
-	bool AssetSubsystem::LoadMesh(const std::string& _name, const float* _vertices, const unsigned int* _indices,
-	                                 const unsigned int _verticesCount, const unsigned int _numOfIndices)
-	{
-		if (s_AssetSubsystem->m_MeshStore.contains(_name))
+		const Ref<Model> model = MakeRef<Model>(_path);
+		if (!model->LoadModel())
 		{
-			DE_LOG(LogAsset, Error, "Load Mesh: A Mesh name: {} is already loaded",_name)
-				return false;
+			DE_LOG(LogAsset, Error, "Failed to load model: {}", _path)
+			return false;
 		}
-
-		const Ref<Mesh> mesh = MakeRef<Mesh>(_vertices, _indices, _verticesCount, _numOfIndices, ObjectInit(_name));
-		DE_LOG(LogAsset, Trace, "Mesh Loaded: {}", mesh->GetName())
-		s_AssetSubsystem->m_MeshStore[_name] = mesh;
-
-		return true;
-	}
-
-	Ref<Mesh> AssetSubsystem::GetMesh(const std::string& _name)
-	{
-		if (s_AssetSubsystem->m_MeshStore.contains(_name))
-		{
-			return s_AssetSubsystem->m_MeshStore[_name];
-		}
-
-		return nullptr;
-	}
-
-	bool AssetSubsystem::AddModel(const Ref<Model>& _mesh)
-	{
-		return false;
-	}
-
-	bool AssetSubsystem::LoadModel(const std::string& _name, const std::string& _path)
-	{
-		if (s_AssetSubsystem->m_ModelStore.contains(_name))
-		{
-			DE_LOG(LogAsset, Error, "Load Mesh: A Model name: {} is already loaded", _name)
-				return false;
-		}
-
-		const Ref<Model> model = MakeRef<Model>(_name, _path);
-		if (!model->m_IsLoaded) return false;
 
 		for (auto texture : model->m_Textures)
 		{
@@ -396,8 +350,8 @@ namespace Denix
 			}
 		}
 
-		DE_LOG(LogAsset, Trace, "Model Loaded: {}", model->GetName())
-			s_AssetSubsystem->m_ModelStore[_name] = model;
+		DE_LOG(LogAsset, Trace, "Model Loaded: {}", model->GetAssetName())
+			s_AssetSubsystem->m_ModelStore[_path] = model;
 
 		return true;
 	}

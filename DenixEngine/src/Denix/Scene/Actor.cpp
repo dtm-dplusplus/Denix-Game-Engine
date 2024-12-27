@@ -114,7 +114,7 @@ namespace Denix
         _out << YAML::Newline << YAML::Comment("Mesh Component");
         _out << YAML::Key << "m_MeshComponent" << YAML::BeginMap;
         {
-            _out << YAML::Key << "m_Mesh" << YAML::Value << m_MeshComponent->GetModel()->GetName(); // Temp until asset scraper built
+            _out << YAML::Key << "m_Mesh" << YAML::Value << m_MeshComponent->GetModel()->GetAssetName(); // Temp until asset scraper built
         }
         _out << YAML::EndMap;
         // End Mesh Component

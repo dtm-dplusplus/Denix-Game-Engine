@@ -469,7 +469,7 @@ void Denix::ActorDetailsWidget::MeshWidget(const Ref<Actor>& _selectedObject)
 
         const Ref<MeshComponent> meshComp = _selectedObject->GetMeshComponent();
         std::string preview = "Empty";
-        if (const Ref<Model> model = meshComp->GetModel()) preview = model->GetName();
+        if (const Ref<Model> model = meshComp->GetModel()) preview = model->GetAssetName();
 
         if (ImGui::BeginCombo("##ModelName", preview.c_str()))
         {
@@ -479,7 +479,7 @@ void Denix::ActorDetailsWidget::MeshWidget(const Ref<Actor>& _selectedObject)
                 if (ImGui::Selectable(fst.c_str()))
                 {
                     meshComp->SetModel(snd);
-                    DE_LOG(LogEditor, Info, "Model on {} set to: {}", _selectedObject->GetName(), snd->GetName())
+                    DE_LOG(LogEditor, Info, "Model on {} set to: {}", _selectedObject->GetName(), snd->GetAssetName())
                 }
                 ImGui::PopID();
             }

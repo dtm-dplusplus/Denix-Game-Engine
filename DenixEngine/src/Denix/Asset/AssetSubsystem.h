@@ -9,7 +9,6 @@ namespace Denix
 {
     class AudioClip;
     class Asset;
-    class Mesh;
     class Model;
     struct ShaderSource;
 	class Shader;
@@ -67,23 +66,12 @@ namespace Denix
         static Ref<Texture> GetDefaultTexture() { return s_AssetSubsystem->m_DefaultTexture; }
         Ref<Texture> m_DefaultTexture;
         
-        static Ref<Texture> GetTextureByPath(const std::string& _path);
-
         static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_AssetSubsystem->m_TextureStore; }
 
-        // Meshes
-        static bool AddMesh(const Ref<Mesh>& _mesh);
-        static bool LoadMesh(const std::string& _name, const float* _vertices, const unsigned int* _indices, unsigned int _verticesCount, unsigned int _numOfIndices);
-
-        static Ref<Mesh> GetMesh(const std::string& _name);
-
         // Models
-        static bool AddModel(const Ref<Model>& _mesh);
-        static bool LoadModel(const std::string& _name, const std::string& _path);
+        static bool LoadModel(const std::string& _path);
         static Ref<Model> GetModel(const std::string& _name);
 		static std::unordered_map<std::string, Ref<Model>>& GetModelStore() { return s_AssetSubsystem->m_ModelStore; }
-
-        static std::unordered_map<std::string, Ref<Mesh>>& GetMeshStore() { return s_AssetSubsystem->m_MeshStore; }
 
         static std::vector<Ref<Asset>>& GetAssetStore() { return s_AssetSubsystem->m_AssetStore; }
         static Ref<Asset> GetAsset(const std::string& _path);
@@ -108,10 +96,7 @@ namespace Denix
 
 		std::unordered_map<std::string, Ref<Shader>> m_ShaderStore;
 
-
         std::unordered_map<std::string, Ref<Material>> m_MaterialStore;
-
-        std::unordered_map<std::string, Ref<Mesh>> m_MeshStore;
 
 		std::unordered_map<std::string, Ref<Model>> m_ModelStore;
 

@@ -6,6 +6,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+#include "Denix/Asset/Asset.h"
+
 namespace Denix
 {
 	class Mesh;
@@ -15,20 +18,14 @@ namespace Denix
 	struct aiMesh;
 	struct aiScene;*/
 
-	class Model : public Object
+	class Model : public Asset
 	{
 	public:
-		Model(const ObjectInit& _objInit = {"Model"}): Object(_objInit) {}
-
-		Model(const std::string& _name, const std::string& _path) :
-			Object(ObjectInit(_name)), m_Path(_path) 
-		{
-			LoadModel(_path);
-		}
+		Model(const AssetInit& _assetInit = {"Model"}): Asset(_assetInit) {}
 
 		~Model(){}
 
-		bool LoadModel(const std::string& _path);
+		bool LoadModel();
 		void RenderModel();
 		void ClearModel()
 		{
@@ -56,7 +53,6 @@ namespace Denix
 		void LoadMaterials(const aiScene* _scene);
 
 		bool m_IsLoaded = false;
-		std::string m_Path;
 		std::vector<Ref<Mesh>> m_Meshes;
 		std::vector<Ref<Texture>> m_Textures;
 		std::vector<unsigned int> m_MeshToTex;

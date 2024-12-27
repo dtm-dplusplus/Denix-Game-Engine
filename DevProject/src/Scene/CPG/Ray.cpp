@@ -6,8 +6,9 @@ using namespace Denix;
 
 float Ray::m_MoveSpeed = 0.1f;
 
-Ray::Ray(): Cube({"Ray"})
+Ray::Ray()
 {
+    SetName("Ray");
     m_TransformComponent->SetPosition(m_Origin);
     m_TransformComponent->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
     m_TransformComponent->SetScale(glm::vec3(0.1f, 1.0f, 0.1f));

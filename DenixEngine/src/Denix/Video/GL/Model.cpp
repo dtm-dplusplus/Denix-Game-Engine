@@ -6,10 +6,10 @@
 #include "Denix/Core/Math.h"
 
 
-bool Denix::Model::LoadModel(const std::string& _path)
+bool Denix::Model::LoadModel()
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(_path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices);
+	const aiScene* scene = importer.ReadFile(GetAssetPath(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{

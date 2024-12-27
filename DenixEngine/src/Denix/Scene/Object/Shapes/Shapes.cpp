@@ -1,44 +1,32 @@
 #include "Shapes.h"
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Physics/Collider.h"
+
 namespace Denix
 {
-    Plane::Plane(const ObjectInit& _objInit) : Actor(_objInit)
+    Plane::Plane() : Actor({ "Plane" })
     {
         m_ClassName = "Plane";
-        m_MeshComponent->SetModel(AssetSubsystem::GetModel("SM_Plane"));
+        static std::string planeModelPath = FileSubsystem::GetEngineContentRoot() + "models\\SM_Plane.obj";
+        m_MeshComponent->SetModel(AssetSubsystem::GetModel(planeModelPath));
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
         CastRef<CubeCollider>(m_PhysicsComponent->GetCollider())->GetDimensions().y = 0.01f;
         m_TransformComponent->GetScale().y = 0.01f;
     }
 
-    void Plane::Update(float _deltaTime)
-    {
-        Actor::Update(_deltaTime);
-        
-    }
-
-    Cube::Cube(const ObjectInit& _objInit) : Actor(_objInit)
+    Cube::Cube() : Actor({ "Cube" })
     {
         m_ClassName = "Cube";
-		m_MeshComponent->SetModel(AssetSubsystem::GetModel("SM_Cube"));
+        static std::string cubeModelPath = FileSubsystem::GetEngineContentRoot() + "models\\SM_Cube.obj";
+		m_MeshComponent->SetModel(AssetSubsystem::GetModel(cubeModelPath));
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
     }
 
-    void Cube::Update(float _deltaTime)
-    {
-        Actor::Update(_deltaTime);
-    }
-
-	Sphere::Sphere(const ObjectInit& _objInit) : Actor(_objInit)
+	Sphere::Sphere() : Actor({ "Sphere" })
 	{
         m_ClassName = "Sphere";
-		m_MeshComponent->SetModel(AssetSubsystem::GetModel("SM_Sphere"));
+        static std::string sphereModelPath = FileSubsystem::GetEngineContentRoot() + "models\\SM_Sphere.obj";
+		m_MeshComponent->SetModel(AssetSubsystem::GetModel(sphereModelPath));
 		m_PhysicsComponent->SetCollider(MakeRef<SphereCollider>());
 	}
-
-    void Sphere::Update(float _deltaTime)
-    {
-        Actor::Update(_deltaTime);
-    }
 }
