@@ -8,24 +8,33 @@
 
 namespace Denix
 {
-    class Mesh: public Object
+    class Mesh
     {
     public:
-        Mesh(const ObjectInit& _objInit = { "Mesh" }) : Object(_objInit), 
-			m_VAO{ MakeRef<VertexArray>() },
-			m_VBO{ MakeRef<VertexBuffer>() },
-			m_IBO{ MakeRef<IndexBuffer>() } {}
+        Mesh():
+	        m_VAO{MakeRef<VertexArray>()},
+	        m_VBO{MakeRef<VertexBuffer>()},
+	        m_IBO{MakeRef<IndexBuffer>()},
+    		m_Indices(nullptr)
+        {
+        }
 
 		Mesh(const float* _vertices, const unsigned int* _indices, const unsigned int _verticesCount,
-		     const unsigned int _numOfIndices, const ObjectInit& _objInit = {"Mesh"}) : Object(_objInit),
+             const unsigned int _numOfIndices):
 			m_VAO{ MakeRef<VertexArray>() },
 			m_VBO{ MakeRef<VertexBuffer>() },
-			m_IBO{ MakeRef<IndexBuffer>() } 
+			m_IBO{ MakeRef<IndexBuffer>() },
+	    	m_Indices(nullptr)
 		{
 			CreateMesh(_vertices, _indices, _verticesCount, _numOfIndices);
 		}
 
-        ~Mesh() override {}
+        ~Mesh()
+        {
+	        m_VAO.reset();
+	        m_VBO.reset();
+        	m_IBO.reset();
+        }
 
 		void CreateMesh(const float* _vertices, const unsigned int* _indices, const unsigned int _verticesCount, const unsigned int _numOfIndices)
 		{
