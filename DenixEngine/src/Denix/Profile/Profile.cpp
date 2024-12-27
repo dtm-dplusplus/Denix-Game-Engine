@@ -7,7 +7,7 @@ namespace Denix
 {
     Profile::Profile(const ObjectInit& _objInit): Object(_objInit)
     {
-        m_Timer = MakeRef<Timer>(_objInit);
+        m_Timer = MakeRef<Timer>();
         m_AverageDuration = 0.0f;
         m_MinimumDuration = 0.0f;
         m_MaximumDuration = 0.0f;

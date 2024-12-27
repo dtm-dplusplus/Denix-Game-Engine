@@ -28,7 +28,7 @@ namespace Denix
             m_InlineProfiles.reserve(50);
             m_JobProfilesMap.reserve(50);
             m_JobProfiles.reserve(50);
-            m_SessionTimer = MakeRef<Timer>(_objInit.Name + "Timer");
+            m_SessionTimer = MakeRef<Timer>();
         }
         ~ProfileSession() override = default;
 

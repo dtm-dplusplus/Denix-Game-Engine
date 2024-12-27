@@ -55,7 +55,8 @@ namespace Denix
 			frameTimeMs < minFrameTime && m_MaxLimitFPS > 0)
 		{
 			const float sleepTime = minFrameTime - frameTimeMs;
-			Timer waitTimer = Timer(ObjectInit("WaitTimer"), true);
+			Timer waitTimer;
+			waitTimer.Start();
 			while (waitTimer.GetElapsedMs() < sleepTime){}
 		}
 
