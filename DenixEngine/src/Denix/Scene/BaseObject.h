@@ -36,8 +36,5 @@ namespace Denix
         
         virtual void Serialize(YAML::Emitter& _out);
         virtual void Deserialize(const YAML::Node& _in);
-
-    protected:
-        
     };
 }

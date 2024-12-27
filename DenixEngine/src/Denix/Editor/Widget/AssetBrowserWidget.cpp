@@ -5,7 +5,6 @@
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Actor.h"
-#include "Denix/Scene/Object/Light/LightObject.h"
 #include "Denix/Editor/Widget/ShaderEditor.h"
 
 Denix::AssetBrowserWidget::AssetBrowserWidget(): EditorWidget({"AssetBrowser"})

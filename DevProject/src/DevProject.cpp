@@ -3,7 +3,6 @@
 
 #include "Scene/CPGScene.h"
 #include "Scene/DevScene.h"
-#include "Scene/PhysicsScene.h"
 #include "Scene/ThreadScene.h"
 
  //using namespace Denix;
@@ -20,7 +19,6 @@ public:
 		m_ProjectName = "DevProject";
 		ReflectionSubsystem::Register<DevScene>();
 		ReflectionSubsystem::Register<CPGScene>();
-		ReflectionSubsystem::Register<PhysicsScene>();
 		ReflectionSubsystem::Register<ThreadScene>();
 		ReflectionSubsystem::Register<AudioScene>();
 		ReflectionSubsystem::Register<CPGCube>();

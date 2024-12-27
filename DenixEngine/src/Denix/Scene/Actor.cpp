@@ -123,8 +123,9 @@ namespace Denix
     void Actor::Deserialize(const YAML::Node& _in)
     {
         // Object instantiation is done in the SceneSubsystem so we don't need to do it here
-        
-         // Render Component
+        BaseObject::Deserialize(_in);
+
+        // Render Component
         if(const YAML::Node& renderCompNode = _in["m_RenderComponent"]; renderCompNode)
         {
             m_RenderComponent->SetIsVisible(renderCompNode["m_IsVisible"].as<bool>());

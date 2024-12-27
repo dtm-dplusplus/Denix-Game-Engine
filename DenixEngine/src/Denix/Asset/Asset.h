@@ -21,8 +21,6 @@ public:
     Asset() = default;
     virtual ~Asset() = default;
     
-    Asset(const std::string& _assetPath);
-
    explicit Asset(const AssetInit& _assetInit)
         : m_AssetPath(_assetInit.AssetPath),
           m_AssetName(m_AssetPath.stem().string()),

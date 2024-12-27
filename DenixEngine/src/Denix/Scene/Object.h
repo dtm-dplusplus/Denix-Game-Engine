@@ -81,6 +81,7 @@ namespace Denix
 
     	friend class Engine;
     	friend class Scene;
+    	friend class BaseObject;
     	friend class SceneSubsystem;
     	friend class ReflectionSubsystem;
 	};

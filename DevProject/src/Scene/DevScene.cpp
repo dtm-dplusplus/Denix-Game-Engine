@@ -24,7 +24,7 @@ void DevScene::DebugUI(float _deltaTime)
 	Scene::DebugUI(_deltaTime);
 
 	ImGui::Begin(GetName().c_str());
-	ImGui::Text("Scene Objetcs Size: %d", m_Actors.size());
+	ImGui::Text("Scene Objetcs Size: %d", GetActorCount());
 	ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, 100);
 	if(ImGui::Button("Spawn Grid"))
 	{

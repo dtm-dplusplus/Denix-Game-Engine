@@ -9,6 +9,8 @@
 #include "Denix/Thread/JobSubsystem.h"
 #include "Widget/PerformanceSettingsWidget.h"
 
+#include "yaml-cpp/yaml.h"
+
 namespace Denix
 {
 	EditorSubsystem* EditorSubsystem::s_EditorSubsystem{ nullptr };

@@ -5,7 +5,6 @@
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Actor.h"
-#include "Denix/Scene/Object/Light/LightObject.h"
 #include "Denix/Editor/Widget/ShaderEditor.h"
 
 
@@ -46,7 +45,6 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime)
         // Component Widgets
         TransformWidget(actorRef);
         CameraWidget(actorRef);
-        LightWidget(actorRef);
         PhysicsWidget(actorRef);
         CollisionWidget(actorRef);
         RenderWidget(actorRef);
@@ -83,44 +81,6 @@ void Denix::ActorDetailsWidget::TransformWidget(const Ref<Actor>& _object) const
         if (ImGui::Combo("Moveability", &transform->GetMoveabilityI(), "Static\0Dynamic\0\0"))
         {
             transform->SetMoveability(static_cast<Moveability>(transform->GetMoveabilityI()));
-        }
-    }
-}
-
-void Denix::ActorDetailsWidget::LightWidget(const Ref<Actor>& _selectedObject) const
-{
-    if (const Ref<Light> light = CastRef<Light>(_selectedObject))
-    {
-        ImGui::CollapsingHeader("Light Settings", ImGuiTreeNodeFlags_DefaultOpen);
-        ImGui::ColorEdit3("Light Color", &light->GetLightColor()[0]);
-        ImGui::DragFloat("Ambient Intensity", &light->GetAmbientIntensity(), m_DragSpeed);
-        ImGui::DragFloat("Diffuse Intensity", &light->GetDiffuseIntensity(), m_DragSpeed);
-        ImGui::DragFloat("Specular Intensity", &light->GetSpecularIntensity(), m_DragSpeed);
-
-        if (const Ref<DirectionalLight> dirLight = CastRef<DirectionalLight>(_selectedObject))
-        {
-            ImGui::SeparatorText("Directional Light Settings");
-            ImGui::DragFloat3("Light Direction", &dirLight->GetLightDirection()[0], m_DragSpeed);
-        }
-
-        else if (const Ref<SpotLight> spotLight = CastRef<SpotLight>(_selectedObject))
-        {
-            ImGui::SeparatorText("Spot Light Settings");
-            ImGui::DragFloat("Edge", &spotLight->GetEdge(), m_DragSpeed);
-            ImGui::DragFloat3("Direction", &spotLight->GetDirection()[0], m_DragSpeed);
-
-            ImGui::SeparatorText("Attenuation");
-            ImGui::DragFloat("Constant", &spotLight->GetConstant(), m_DragSpeed);
-            ImGui::DragFloat("Linear", &spotLight->GetLinear(), m_DragSpeed);
-            ImGui::DragFloat("Exponent", &spotLight->GetExponent(), m_DragSpeed);
-        }
-        else if (const Ref<PointLight> pointLight = CastRef<PointLight>(_selectedObject))
-        {
-            ImGui::SeparatorText("Point Light Settings");
-            ImGui::SeparatorText("Attenuation");
-            ImGui::DragFloat("Constant", &pointLight->GetConstant(), m_DragSpeed);
-            ImGui::DragFloat("Linear", &pointLight->GetLinear(), m_DragSpeed);
-            ImGui::DragFloat("Exponent", &pointLight->GetExponent(), m_DragSpeed);
         }
     }
 }
@@ -306,7 +266,6 @@ void Denix::ActorDetailsWidget::RenderWidget(const Ref<Actor>& _selectedObject)
         const Ref<RenderComponent> render = _selectedObject->GetRenderComponent();
 
         ImGui::Checkbox("Visible", &render->IsVisible());
-        ImGui::Checkbox("Affects Lighting", &render->AffectsLighting());
         MaterialWidget(_selectedObject);
     }
 }

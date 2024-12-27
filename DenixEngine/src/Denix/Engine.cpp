@@ -15,6 +15,9 @@
 #include "Denix/Core/TimerSubsystem.h"
 #include "Denix/Audio/AudioSubsystem.h"
 #include "Profile/ProfileSubsystem.h"
+#include "Scene/Object/Shapes/Shapes.h"
+
+#include "yaml-cpp/yaml.h"
 
 namespace Denix
 {
@@ -55,12 +58,7 @@ namespace Denix
 		ReflectionSubsystem::Register<Collider>();
 		ReflectionSubsystem::Register<CubeCollider>();
 		ReflectionSubsystem::Register<SphereCollider>();
-
-		ReflectionSubsystem::Register<Light>();
-		ReflectionSubsystem::Register<DirectionalLight>();
-		ReflectionSubsystem::Register<PointLight>();
-		ReflectionSubsystem::Register<SpotLight>();
-
+	
 		ReflectionSubsystem::Register<Camera>();
 	}
 
