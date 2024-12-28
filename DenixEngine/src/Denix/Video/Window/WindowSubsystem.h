@@ -11,7 +11,7 @@ namespace Denix
 {
 	class Viewport;
 
-	class WindowSubsystem: public Subsystem
+	class WindowSubsystem: public Subsystem<WindowSubsystem>
 	{
 	public:
 		WindowSubsystem()

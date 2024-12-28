@@ -115,27 +115,25 @@ namespace Denix
 		
 		// Deinitialie SubSystems in the reverse order of initialization
 		for (auto& subsystem : std::views::reverse(m_Subsystems))
-		{
 			subsystem->Deinitialize();
-			subsystem = nullptr;
-		}
+		
 		m_Subsystems.clear();
 
 		// Clear Subsystem pointers
-		m_EditorSubsystem = nullptr;
-		m_SceneSubsystem = nullptr;
-		m_InputSubsystem = nullptr;
-		m_PhysicsSubsystem = nullptr;
-		m_UISubsystem = nullptr;
-		m_RendererSubsystem = nullptr;
-		m_AssetSubsystem = nullptr;
-		m_AudioSubsystem = nullptr;
-		m_WindowSubsystem = nullptr;
-		m_ProfileSubsystem = nullptr;
-		m_FileSubsystem = nullptr;
-		m_ReflectionSubsystem = nullptr;
-		m_TimerSubsystem = nullptr;
-		m_JobSubsystem = nullptr;
+		m_EditorSubsystem.reset();
+		m_SceneSubsystem.reset();
+		m_InputSubsystem.reset();
+		m_PhysicsSubsystem.reset();
+		m_UISubsystem.reset();
+		m_RendererSubsystem.reset();
+		m_AssetSubsystem.reset();
+		m_AudioSubsystem.reset();
+		m_WindowSubsystem.reset();
+		m_ProfileSubsystem.reset();
+		m_FileSubsystem.reset();
+		m_ReflectionSubsystem.reset();
+		m_TimerSubsystem.reset();
+		m_JobSubsystem.reset();
 				
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
 	}

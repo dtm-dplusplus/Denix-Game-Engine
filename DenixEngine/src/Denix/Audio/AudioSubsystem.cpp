@@ -3,9 +3,15 @@
 
 #include "AudioSource.h"
 
+Denix::AudioSubsystem::AudioSubsystem(): m_Device(nullptr), m_Context(nullptr)
+{
+    DE_LOG_CREATE(LogAudio)
+}
+
 void Denix::AudioSubsystem::Initialize()
 {
     Subsystem::Initialize();
+    
     DE_LOG(LogAudio, Warn, "Initializing Audio Subsystem")
 
     // Initialize OpenAL

@@ -12,14 +12,21 @@ namespace Denix
 {
 	class SDL_GLWindow;
 
-	class UISubsystem: public Subsystem
+	class UISubsystem: public Subsystem<UISubsystem>
 	{
 	public:
 		UISubsystem();
-		~UISubsystem() override;
+		~UISubsystem() override = default;
 
-		static UISubsystem* Get() { return s_UISubSystem; }
+		UISubsystem(const UISubsystem& _other) = delete;
+		UISubsystem(UISubsystem&& _other) noexcept = delete;
+		UISubsystem& operator=(const UISubsystem& _other) = delete;
+		UISubsystem& operator=(UISubsystem&& _other) noexcept = delete;
 
+		static ImGuiID GetDockLeftID()  { return s_Instance->DockLeftID; }
+		static ImGuiID GetDockRightID()  { return s_Instance->DockRightID; }
+		static ImGuiID GetDockDownID()  { return s_Instance->DockDownID; }
+	private:
 		void Initialize() override;
 
 		void Deinitialize() override;
@@ -33,7 +40,8 @@ namespace Denix
 		ImGuiID DockLeftID;
 		ImGuiID DockRightID;
 		ImGuiID DockDownID;
-	private:
-		static UISubsystem* s_UISubSystem;
+
+		friend class Engine;
+		friend class EditorSubsystem;
 	};
 }

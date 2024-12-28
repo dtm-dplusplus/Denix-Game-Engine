@@ -9,21 +9,10 @@
 
 namespace Denix
 {
-	UISubsystem* UISubsystem::s_UISubSystem{ nullptr };
-
-
 	UISubsystem::UISubsystem()
 	{
-		s_UISubSystem = this;
-
 		DE_LOG_CREATE(LogUI)
 	}
-
-	UISubsystem::~UISubsystem()
-	{
-		s_UISubSystem = nullptr;
-	}
-
 
 	void UISubsystem::Initialize()
 	{

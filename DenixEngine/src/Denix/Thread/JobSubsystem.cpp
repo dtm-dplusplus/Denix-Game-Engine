@@ -3,53 +3,47 @@
 
 #include "Denix/Core/TimerSubsystem.h"
 
-Denix::JobSubsystem* Denix::JobSubsystem::s_JobSubsystem = nullptr;
-
 Denix::JobSubsystem::JobSubsystem()
+    : m_BatchSizeMin(0),
+      m_CurrentBatchCount(0),
+      m_SystemThreads(0),
+      m_ActiveWorkerThreads(0),
+      m_AvailableWorkerThreads(0),
+      m_AutoBatchingEnabled(true),
+      m_ManualBatchSize(100),
+      m_BatchUpdateThreshold(50)
 {
-    s_JobSubsystem = this;
-    m_SystemThreads = 0;
-    m_ActiveWorkerThreads = 0;
-    m_AvailableWorkerThreads = 0;
-    m_AutoBatchingEnabled = true;
-    m_ManualBatchSize = 100;
-    m_BatchUpdateThreshold = 50;
     DE_LOG_CREATE(LogThread)
     DE_LOG_CREATE(LogJob)
-}
-
-Denix::JobSubsystem::~JobSubsystem()
-{
-    s_JobSubsystem = nullptr;
 }
 
 void Denix::JobSubsystem::UpdateActiveThreads()
 {
     // Clamp the active threads to the system thread count
-    s_JobSubsystem->m_ActiveWorkerThreads = std::clamp(s_JobSubsystem->m_ActiveWorkerThreads, 1,
-                                                       s_JobSubsystem->m_AvailableWorkerThreads);
-    DE_LOG(LogJob, Trace, "Set Active Worker Threads: {} of {}", s_JobSubsystem->m_ActiveWorkerThreads,
-           s_JobSubsystem->m_AvailableWorkerThreads)
+    s_Instance->m_ActiveWorkerThreads = std::clamp(s_Instance->m_ActiveWorkerThreads, 1,
+                                                       s_Instance->m_AvailableWorkerThreads);
+    DE_LOG(LogJob, Trace, "Set Active Worker Threads: {} of {}", s_Instance->m_ActiveWorkerThreads,
+           s_Instance->m_AvailableWorkerThreads)
 
     // Update the worker threads
-    for (int i = 0; i < s_JobSubsystem->m_AvailableWorkerThreads; i++)
+    for (int i = 0; i < s_Instance->m_AvailableWorkerThreads; i++)
     {
-        if (i < s_JobSubsystem->m_ActiveWorkerThreads) s_JobSubsystem->m_WorkerThreads[i]->m_Active = true;
-        else s_JobSubsystem->m_WorkerThreads[i]->m_Active = false;
+        if (i < s_Instance->m_ActiveWorkerThreads) s_Instance->m_WorkerThreads[i]->m_Active = true;
+        else s_Instance->m_WorkerThreads[i]->m_Active = false;
     }
 }
 
 Denix::Ref<Denix::JobDeclaration> Denix::JobSubsystem::RequestJob()
 {
     Ref<JobDeclaration> job;
-    s_JobSubsystem->m_Jobs.try_pop(job);
+    s_Instance->m_Jobs.try_pop(job);
     return job ? job : nullptr;
 }
 
 void Denix::JobSubsystem::StartThreadProfiling()
 {
     // Setup Threads
-    for (auto& thread : s_JobSubsystem->m_WorkerThreads)
+    for (auto& thread : s_Instance->m_WorkerThreads)
     {
         thread->m_JobExecCount = 0;
         thread->m_ThreadExecTime = 0.0f;
@@ -66,7 +60,7 @@ void Denix::JobSubsystem::StopThreadProfiling()
 
     if (const Ref<ProfileSession> activeProfileSession = ProfileSubsystem::GetActiveProfileSession())
     {
-        for (const auto& thread : s_JobSubsystem->m_WorkerThreads)
+        for (const auto& thread : s_Instance->m_WorkerThreads)
         {
             activeProfileSession->m_ThreadData.push_back({
                 .m_ThreadID= thread->m_ThreadIDInt, .m_JobExecCount= thread->m_JobExecCount, .m_ThreadExecTime= thread->

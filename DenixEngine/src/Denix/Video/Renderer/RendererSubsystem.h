@@ -13,26 +13,21 @@ namespace Denix
 	class Camera;
 
 	/** Manages Rendering of objects. Will move to component based submission instead of passing game object soon */
-	class RendererSubsystem : public Subsystem
+	class RendererSubsystem : public Subsystem<RendererSubsystem>
 	{
 	public:
-		RendererSubsystem()
-		{
-			s_RendererSubSystem = this;
-			DE_LOG_CREATE(LogRenderer)
-		}
+		RendererSubsystem();
 
-		~RendererSubsystem() override
-		{
-			s_RendererSubSystem = nullptr;
-		}
+		~RendererSubsystem() override = default;
 
-		static int& GetViewportMode() { return s_RendererSubSystem->m_ViewportMode; }
+		RendererSubsystem(const RendererSubsystem& _other) = delete;
+		RendererSubsystem(RendererSubsystem&& _other) noexcept = delete;
+		RendererSubsystem& operator=(const RendererSubsystem& _other) = delete;
+		RendererSubsystem& operator=(RendererSubsystem&& _other) noexcept = delete;
 
+		static int& GetViewportMode() { return s_Instance->m_ViewportMode; }
 
-	public:
-		static RendererSubsystem* Get() { return s_RendererSubSystem; }
-
+	private:
 		void Initialize() override;
 
 		void Deinitialize() override
@@ -40,15 +35,11 @@ namespace Denix
 			DE_LOG(LogRenderer, Trace, "RendererSubsystem Deinitialized")
 		}
 
-
-	private:
 		void RenderScene();
 		void RenderDefaultViewport() const;
 
 		static void SetActiveScene(const Ref<Scene>& _scene);
 
-		static RendererSubsystem* s_RendererSubSystem;
-		
 		WRef<Shader> m_DefaultShader;
 		WRef<Scene> m_ActiveScene;
 

@@ -15,7 +15,7 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime)
 {
     EditorWidget::Update(_deltaTime);
 
-    ImGui::SetNextWindowDockID(UISubsystem::Get()->DockDownID, ImGuiCond_Appearing);
+    ImGui::SetNextWindowDockID(UISubsystem::GetDockDownID(), ImGuiCond_Appearing);
     bool open = !IsRubbish();
     ImGui::Begin("Asset Browser", &open);
   

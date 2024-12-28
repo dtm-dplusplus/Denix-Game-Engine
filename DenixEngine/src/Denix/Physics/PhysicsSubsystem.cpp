@@ -8,18 +8,16 @@
 
 namespace Denix
 {
-    PhysicsSubsystem* PhysicsSubsystem::s_PhysicsSubSystem{nullptr};
-
     void PhysicsSubsystem::RegisterComponent(const Ref<PhysicsComponent>& _component)
     {
         // DE_LOG(LogPhysics, Trace, "PhysicsComponent Registered: #{} {}", _component->GetID(), _component->GetName())
-        m_PhysicsComponents.push_back(_component);
+        s_Instance->m_PhysicsComponents.push_back(_component);
     }
 
     void PhysicsSubsystem::UnregisterComponent(const Ref<PhysicsComponent>& _component)
     {
         // (LogPhysics, Trace, "PhysicsComponent Unregistered: #{} {}", _component->GetID(), _component->GetName())
-        std::erase(m_PhysicsComponents, _component);
+        std::erase(s_Instance->m_PhysicsComponents, _component);
     }
 
     void PhysicsSubsystem::PreUpdate(float _deltaTime)
@@ -38,7 +36,7 @@ namespace Denix
 
     void PhysicsSubsystem::Update(float _deltaTime)
     {
-        auto activeScene = s_PhysicsSubSystem->m_ActiveScene.lock();
+        auto activeScene = s_Instance->m_ActiveScene.lock();
         
         if (!m_Enabled || !activeScene->IsPlaying()) return;
 
@@ -308,7 +306,7 @@ namespace Denix
 
         glm::vec3 impulse = j * normal;
 
-        auto activeScene = s_PhysicsSubSystem->m_ActiveScene.lock();
+        auto activeScene = s_Instance->m_ActiveScene.lock();
         // Add Contact Force
         _compA->m_Force = -glm::vec3(0.0f, _compA->GetMass() * -activeScene->GetGravity(), 0.0f);
         _compB->m_Force = -glm::vec3(0.0f, _compB->GetMass() * -activeScene->GetGravity(), 0.0f);

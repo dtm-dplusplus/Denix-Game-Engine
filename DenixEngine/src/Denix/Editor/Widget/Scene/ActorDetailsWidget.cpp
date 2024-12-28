@@ -24,7 +24,7 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime)
     //ImGui::SetNextWindowSize(ImVec2((ImGui::GetWindowWidth() / 5), ImGui::GetWindowHeight()), ImGuiCond_Appearing);
     //ImGui::SetNextWindowPos(ImVec2((WinX / 6), MenuBarHeight), ImGuiCond_Appearing);
 
-    ImGui::SetNextWindowDockID(UISubsystem::Get()->DockRightID, ImGuiCond_Appearing);
+    ImGui::SetNextWindowDockID(UISubsystem::GetDockRightID(), ImGuiCond_Appearing);
     ImGui::Begin("Actor Details");
     //ImGui::SetWindowDock(ImGui::GetCurrentWindow(), UISubsystem::Get()->DockRightID, ImGuiCond_Appearing);
 

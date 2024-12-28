@@ -197,18 +197,12 @@ namespace Denix
 
     void PhysicsComponent::RegisterComponent()
     {
-        if (PhysicsSubsystem* physicsSystem = PhysicsSubsystem::Get())
-        {
-            physicsSystem->RegisterComponent(shared_from_this());
-        }
+            PhysicsSubsystem::RegisterComponent(shared_from_this());
     }
 
     void PhysicsComponent::UnregisterComponent()
     {
-        if (PhysicsSubsystem* physicsSystem = PhysicsSubsystem::Get())
-        {
-            physicsSystem->UnregisterComponent(shared_from_this());
-        }
+        PhysicsSubsystem::UnregisterComponent(shared_from_this());
     }
 
 }

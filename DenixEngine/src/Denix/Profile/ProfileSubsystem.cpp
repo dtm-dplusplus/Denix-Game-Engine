@@ -6,17 +6,9 @@
 
 namespace Denix
 {
-    ProfileSubsystem* ProfileSubsystem::s_ProfileSubsystem = nullptr;
-    
     ProfileSubsystem::ProfileSubsystem()
     {
-        s_ProfileSubsystem = this;
         DE_LOG_CREATE(LogProfile)
-    }
-
-    ProfileSubsystem::~ProfileSubsystem()
-    {
-        s_ProfileSubsystem = nullptr;
     }
 
     void ProfileSubsystem::Initialize()
@@ -26,7 +18,7 @@ namespace Denix
         DE_LOG(LogProfile, Warn, "Profile Subsystem Initializing")
 
         // Get the engine timer profile
-        if(const Ref<Profile>& timerProfile = TimerSubsystem::Get()->m_EngineProfile)
+        if(const Ref<Profile>& timerProfile = TimerSubsystem::GetInstance()->m_EngineProfile)
         {
             m_Profiles[timerProfile->GetName()] = timerProfile;
             DE_LOG(LogProfile, Info, "Added Timer Profile to Profile Subsystem")
@@ -47,15 +39,15 @@ namespace Denix
 
     void ProfileSubsystem::StartProfileSession()
     {
-        if (s_ProfileSubsystem->m_ActiveProfileSession)
+        if (s_Instance->m_ActiveProfileSession)
         {
             DE_LOG(LogProfile, Warn, "Profile Session already active")
             return;
         }
         
-        s_ProfileSubsystem->m_ProfileSessions.emplace_back(MakeRef<ProfileSession>(ObjectInit("ProfileSession " + std::to_string(s_ProfileSubsystem->m_ProfileSessions.size()))));
-        s_ProfileSubsystem->m_ActiveProfileSession = s_ProfileSubsystem->m_ProfileSessions.back();
-        s_ProfileSubsystem->m_ActiveProfileSession->StartSession();
+        s_Instance->m_ProfileSessions.emplace_back(MakeRef<ProfileSession>(ObjectInit("ProfileSession " + std::to_string(s_Instance->m_ProfileSessions.size()))));
+        s_Instance->m_ActiveProfileSession = s_Instance->m_ProfileSessions.back();
+        s_Instance->m_ActiveProfileSession->StartSession();
         
         JobSubsystem::StartThreadProfiling();
         DE_LOG(LogProfile, Info, "Profile Session Started")
@@ -63,7 +55,7 @@ namespace Denix
 
     void ProfileSubsystem::EndProfileSession()
     {
-        if (!s_ProfileSubsystem->m_ActiveProfileSession)
+        if (!s_Instance->m_ActiveProfileSession)
         {
             DE_LOG(LogProfile, Warn, "No active Profile Session to end")
             return;
@@ -73,40 +65,40 @@ namespace Denix
         
         // Do end of session processing
         JobSubsystem::StopThreadProfiling();
-        s_ProfileSubsystem->m_ActiveProfileSession->EndSession();
+        s_Instance->m_ActiveProfileSession->EndSession();
         
         // clear active session
-        s_ProfileSubsystem->m_ActiveProfileSession = nullptr;
+        s_Instance->m_ActiveProfileSession = nullptr;
     }
     void ProfileSubsystem::StartProfile(const std::string& _name)
     {
         // Check if we have an active profile session to record the profile
-        if (!s_ProfileSubsystem->m_ActiveProfileSession) return;
+        if (!s_Instance->m_ActiveProfileSession) return;
         
-        s_ProfileSubsystem->m_ActiveProfileSession->StartInlineProfile(_name);
+        s_Instance->m_ActiveProfileSession->StartInlineProfile(_name);
     }
 
     void ProfileSubsystem::EndProfile(const std::string& _name)
     {
         // Check if we have an active profile session to record the profile
-        if (!s_ProfileSubsystem->m_ActiveProfileSession) return;
+        if (!s_Instance->m_ActiveProfileSession) return;
         
-       s_ProfileSubsystem->m_ActiveProfileSession->EndInlineProfile(_name);
+       s_Instance->m_ActiveProfileSession->EndInlineProfile(_name);
     }
 
     void ProfileSubsystem::StartJobProfile(const Ref<JobDeclaration>& _job)
     {
         // Check if we have an active profile session to record the profile
-        if (!s_ProfileSubsystem->m_ActiveProfileSession) return;
+        if (!s_Instance->m_ActiveProfileSession) return;
         
-        s_ProfileSubsystem->m_ActiveProfileSession->StartJobProfile(_job);
+        s_Instance->m_ActiveProfileSession->StartJobProfile(_job);
     }
 
     void ProfileSubsystem::EndJobProfile(const Ref<JobDeclaration>& _job)
     {
         // Check if we have an active profile session to record the profile
-        if (!s_ProfileSubsystem->m_ActiveProfileSession) return;
+        if (!s_Instance->m_ActiveProfileSession) return;
         
-        s_ProfileSubsystem->m_ActiveProfileSession->EndJobProfile(_job);
+        s_Instance->m_ActiveProfileSession->EndJobProfile(_job);
     }
 }

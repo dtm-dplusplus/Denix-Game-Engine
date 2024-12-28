@@ -14,26 +14,31 @@ namespace Denix
 
 	
 
-	class PhysicsSubsystem : public Subsystem
+	class PhysicsSubsystem : public Subsystem<PhysicsSubsystem>
 	{
 	public:
 		PhysicsSubsystem()
 		{
-			s_PhysicsSubSystem = this;
 			DE_LOG_CREATE(LogPhysics)
 		}
 
-		~PhysicsSubsystem() override
-		{
-			s_PhysicsSubSystem = nullptr;
-		}
+		~PhysicsSubsystem() override = default;
 
-		static bool CollisionDetectionEnabled() { return s_PhysicsSubSystem->m_CollisionDetectionEnabled; }
-		static bool& CollisionDetectionEnabledRef() { return s_PhysicsSubSystem->m_CollisionDetectionEnabled; }
+		PhysicsSubsystem(const PhysicsSubsystem& _other) = delete;
+		PhysicsSubsystem(PhysicsSubsystem&& _other) noexcept = delete;
+		PhysicsSubsystem& operator=(const PhysicsSubsystem& _other) = delete;
+		PhysicsSubsystem& operator=(PhysicsSubsystem&& _other) noexcept = delete;
+		
+		static bool CollisionDetectionEnabled() { return s_Instance->m_CollisionDetectionEnabled; }
+		static bool& CollisionDetectionEnabledRef() { return s_Instance->m_CollisionDetectionEnabled; }
 
-		static bool CollisionResponseEnabled() { return s_PhysicsSubSystem->m_CollisionResponseEnabled; }
-		static bool& CollisionResponseEnabledRef() { return s_PhysicsSubSystem->m_CollisionResponseEnabled; }
+		static bool CollisionResponseEnabled() { return s_Instance->m_CollisionResponseEnabled; }
+		static bool& CollisionResponseEnabledRef() { return s_Instance->m_CollisionResponseEnabled; }
 
+		static void RegisterComponent(const Ref<PhysicsComponent>& _component);
+
+		static void UnregisterComponent(const Ref<PhysicsComponent>& _component);
+		
 	private:
 		void CollisionDetectionPhase(float _deltaTime);
 		bool ColllisionExists(const Ref<Actor>& _objectA, const Ref<Actor>& _objectB);
@@ -48,18 +53,10 @@ namespace Denix
 		void ImpulseResponse(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB); //, const glm::vec3& _normal, const glm::vec3& _contactPoint, float _penetration
 		float ImpulseEnergy(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, const glm::vec3& _normal);
 	
-	public:
-
 		void PreUpdate(float _deltaTime) override;
 
 		void Update(float _deltaTime) override;
-
-		void RegisterComponent(const Ref<PhysicsComponent>& _component);
-
-		void UnregisterComponent(const Ref<PhysicsComponent>& _component);
-
-		static PhysicsSubsystem* Get() { return s_PhysicsSubSystem; }
-
+		
 		void Initialize() override
 		{
 			Subsystem::Initialize();
@@ -70,15 +67,14 @@ namespace Denix
 		void Deinitialize() override
 		{
 			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
+			Subsystem::Deinitialize();
 		}
 
 		std::vector<Ref<PhysicsComponent>>& GetPhysicsComponents() { return m_PhysicsComponents; }
 		
 		std::vector<CollisionEvent>& GetCollisionEvents() { return m_CollisionEvents; }
-	private:
-		static PhysicsSubsystem* s_PhysicsSubSystem;
 
-		static void SetActiveScene(const Ref<Scene>& _scene) { s_PhysicsSubSystem->m_ActiveScene = _scene; }
+		static void SetActiveScene(const Ref<Scene>& _scene) { s_Instance->m_ActiveScene = _scene; }
 
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
 		std::vector<Ref<PhysicsComponent>> m_StaticPhysicsComponents;
@@ -92,5 +88,6 @@ namespace Denix
 		bool m_CollisionResponseEnabled = true;
 
 		friend class SceneSubsystem;
+		friend class Engine;
 	};
 }

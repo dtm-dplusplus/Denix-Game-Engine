@@ -2,8 +2,6 @@
 
 namespace Denix
 {
-    ReflectionSubsystem* ReflectionSubsystem::s_ReflectionSubsystem {nullptr};
-    
     void ReflectionSubsystem::Initialize()
     {
         Subsystem::Initialize();

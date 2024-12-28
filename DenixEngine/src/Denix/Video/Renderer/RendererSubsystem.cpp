@@ -9,7 +9,10 @@
 
 namespace Denix
 {
-    RendererSubsystem* RendererSubsystem::s_RendererSubSystem{nullptr};
+    RendererSubsystem::RendererSubsystem()
+    {
+        DE_LOG_CREATE(LogRenderer)
+    }
 
     void RendererSubsystem::Initialize()
     {
@@ -23,7 +26,7 @@ namespace Denix
     {
         DE_PROFILE(Render Scene)
 
-        if (!s_RendererSubSystem->m_Enabled)
+        if (!m_Enabled)
         {
             DE_PROFILE_END(Render Scene)
             return;
@@ -36,7 +39,7 @@ namespace Denix
 
     void RendererSubsystem::RenderDefaultViewport() const
     {
-        Ref<Scene> activeScene = s_RendererSubSystem->m_ActiveScene.lock();
+        Ref<Scene> activeScene = m_ActiveScene.lock();
         if (!activeScene->m_ActiveCamera)
         {
             DE_LOG(LogRender, Error, "No Active Camera in Scene")
@@ -111,6 +114,6 @@ namespace Denix
 
     void RendererSubsystem::SetActiveScene(const Ref<Scene>& _scene)
     {
-        s_RendererSubSystem->m_ActiveScene = _scene;
+        s_Instance->m_ActiveScene = _scene;
     }
 }

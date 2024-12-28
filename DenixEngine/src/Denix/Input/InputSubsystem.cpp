@@ -6,14 +6,17 @@
 
 namespace Denix
 {
-    InputSubsystem* InputSubsystem::s_InputSubsystem{nullptr};
-
+    InputSubsystem::InputSubsystem()
+     {
+         DE_LOG_CREATE(LogInput)
+     }
     void InputSubsystem::Initialize()
     {
         Subsystem::Initialize();
         DE_LOG(LogInput, Warn, "Input Subsystem Initializing");
 
         m_Window = WindowSubsystem::Get()->GetWindow();
+        m_SDL_LastKeyboardState = new Uint8[322];
         m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
 
         DE_LOG(LogInput, Info, "Input Subsystem Initialized");
@@ -23,6 +26,8 @@ namespace Denix
     {
         m_Window = nullptr;
         m_SDL_KeyboardState = nullptr;
+        delete[] m_SDL_LastKeyboardState;
+        
         Subsystem::Deinitialize();
     }
 
@@ -137,6 +142,8 @@ namespace Denix
 
         DE_PROFILE_END(Input Poll)
     }
+
+    
 
     void InputSubsystem::InputPanel()
     {

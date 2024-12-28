@@ -7,10 +7,10 @@ int main(int argc, char** argv);
 
 namespace Denix
 {
+    class SubsystemBase;
     class AudioSubsystem;
     class JobSubsystem;
     class Asset;
-    class Subsystem;
     class ReflectionSubsystem;
     class InputSubsystem;
     class EditorSubsystem;
@@ -62,11 +62,14 @@ namespace Denix
         template<typename  T, typename ... Args>
         Ref<T> InitalizeSubsystem(Args&& ... _args)
         {
-            Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...);
-
             try
             {
+                // Check if T is derived from Actor
+                Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...);
+                static_assert(std::is_base_of_v<SubsystemBase, T>, "T must be derived from Subsystem");
                  subsystem->Initialize();
+                m_Subsystems.push_back(CastRef<SubsystemBase>(subsystem));
+                return subsystem;
             }
             catch (const std::exception& e)
             {
@@ -74,12 +77,11 @@ namespace Denix
                 DE_LOG(LogEngine, Critical, "Failed to Initialize Subsystem: {0}", e.what())
                 assert(false, e.what());
             }
-
-            m_Subsystems.push_back(subsystem);
-            return subsystem;
+            
+            return nullptr;
         }
 
-        
+
         /**
          * @brief Pointer to the engine instance
          */
@@ -88,7 +90,7 @@ namespace Denix
         size_t m_FrameID;
         
         // Useful vector for deinitializing subsystems in reverse order
-        std::vector<Ref<Subsystem>> m_Subsystems;
+        std::vector<Ref<SubsystemBase>> m_Subsystems;
 
         Ref<JobSubsystem> m_JobSubsystem;
 

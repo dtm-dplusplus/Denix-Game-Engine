@@ -6,18 +6,17 @@ namespace fs = std::filesystem;
 
 namespace Denix
 {
-	FileSubsystem* FileSubsystem::s_FileSubsystem = nullptr;
-
-
 	void FileSubsystem::Initialize()
 	{
-		DE_LOG(LogFileSubsystem, Warn, "Initializing File Subsystem")
+		Subsystem::Initialize();
+		
+		DE_LOG(LogFile, Warn, "Initializing File Subsystem")
 		// Find the project file and set the project root
 		// We need the project name to find the project file
 		if(m_ProjectName.empty()) 
 		{
 			const std::string errorMessage = "Project name is empty";
-			DE_LOG(LogFileSubsystem, Error, errorMessage)
+			DE_LOG(LogFile, Error, errorMessage)
 			throw std::runtime_error(errorMessage.c_str());
 		}
 
@@ -29,14 +28,14 @@ namespace Denix
 		// If the project is launched from the IDE, the current path is the solution root
 		// If the project is launched from the executable, the current path is the executable root
 		const fs::path currentPath = fs::current_path();
-		DE_LOG(LogFileSubsystem, Trace, "Starting search for project in: {}", currentPath.string())
+		DE_LOG(LogFile, Trace, "Starting search for project in: {}", currentPath.string())
 		
 		// Check if the project is launched from the executable
 		if(FileExists(currentPath.string() + R"(\)" + projectExecutable))
 		{
 			// We are in the executable root, use the parent path to get the project root
 			m_ProjectRoot = currentPath.parent_path().parent_path().string() + R"(\)";
-			DE_LOG(LogFileSubsystem, Trace, "Found Project root via executable")
+			DE_LOG(LogFile, Trace, "Found Project root via executable")
 		}
 		else
 		{
@@ -45,7 +44,7 @@ namespace Denix
 			if(FileExists(projectFilePath.string()))
 			{
 				m_ProjectRoot = projectFilePath.parent_path().string() + R"(\)";
-				DE_LOG(LogFileSubsystem, Trace, "Found Project root via solution")
+				DE_LOG(LogFile, Trace, "Found Project root via solution")
 			}
 		}
 
@@ -53,7 +52,7 @@ namespace Denix
 		if (m_ProjectRoot.empty())
 		{
 			const char* errorMessage = "Project file not found via executable or solution";
-			DE_LOG(LogFileSubsystem, Critical, errorMessage)
+			DE_LOG(LogFile, Critical, errorMessage)
 			throw std::exception(errorMessage);
 		}
 
@@ -61,15 +60,15 @@ namespace Denix
 		m_ContentRoot = m_ProjectRoot + R"(Content\)";
 		m_EngineContentRoot = m_ContentRoot + R"(Engine\)";
 
-		DE_LOG(LogFileSubsystem, Trace, "Project Root: {0}", m_ProjectRoot)
-		DE_LOG(LogFileSubsystem, Trace, "Content Root: {0}", m_ContentRoot)
-		DE_LOG(LogFileSubsystem, Trace, "Engine Content Root: {0}", m_EngineContentRoot)
-		DE_LOG(LogFileSubsystem, Info, "File Subsystem Initialized")
+		DE_LOG(LogFile, Trace, "Project Root: {0}", m_ProjectRoot)
+		DE_LOG(LogFile, Trace, "Content Root: {0}", m_ContentRoot)
+		DE_LOG(LogFile, Trace, "Engine Content Root: {0}", m_EngineContentRoot)
+		DE_LOG(LogFile, Info, "File Subsystem Initialized")
 	}
 
 	void FileSubsystem::Deinitialize()
 	{
-		DE_LOG(LogFileSubsystem, Trace, "File Subsystem Deinitialized")
+		DE_LOG(LogFile, Trace, "File Subsystem Deinitialized")
 	}
 
 	std::string FileSubsystem::ReadFile(const std::string& _path)
@@ -95,7 +94,7 @@ namespace Denix
 			return fileString.str();
 		}
 
-		DE_LOG(LogFileSubsystem, Error, "Failed to open file: {}", fullPath)
+		DE_LOG(LogFile, Error, "Failed to open file: {}", fullPath)
 			return "";
 	}
 
@@ -104,7 +103,7 @@ namespace Denix
 		// Create directory if it doesn't exist
 		if(!DirectoryExists(_path))
 		{
-			DE_LOG(LogFileSubsystem, Warn, "Directory does not exist: {}", _path)
+			DE_LOG(LogFile, Warn, "Directory does not exist: {}", _path)
 			CreateDirectoryA(_path);
 		}
 
@@ -116,7 +115,7 @@ namespace Denix
 			return true;
 		}
 
-		DE_LOG(LogFileSubsystem, Error, "Failed to open file: {}", _path)
+		DE_LOG(LogFile, Error, "Failed to open file: {}", _path)
 			return false;
 	}
 
@@ -139,7 +138,7 @@ namespace Denix
 	    }
 	    catch (const std::exception& e)
 	    {
-	        DE_LOG(LogFileSubsystem, Error, "Failed to create directory: {}", e.what());
+	        DE_LOG(LogFile, Error, "Failed to create directory: {}", e.what());
 	        return false;
 	    }
 	}

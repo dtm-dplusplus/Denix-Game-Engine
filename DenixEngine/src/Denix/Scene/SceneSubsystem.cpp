@@ -17,17 +17,15 @@
 
 namespace Denix
 {
-	SceneSubsystem* SceneSubsystem::s_SceneSubsystem{ nullptr };
-
 	SceneSubsystem::SceneSubsystem(const Ref<Asset>& _startupScene)
 	{
-		s_SceneSubsystem = this;
 		m_StartupScene = _startupScene;
 		m_BatchUpdateActors = true;
 	}
 	
 	void SceneSubsystem::Initialize()
 	{
+		Subsystem::Initialize();
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
 
 		// Ensure we always have a default scene
@@ -64,13 +62,14 @@ namespace Denix
 		m_LoadedScenes.clear();
 		m_StartupScene = nullptr;
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitialized")
+		Subsystem::Deinitialize();
 	}
 
 	Ref<Camera> SceneSubsystem::GetActiveCamera()
 	{
-		if (s_SceneSubsystem->m_ActiveScene)
+		if (s_Instance->m_ActiveScene)
 		{
-			return s_SceneSubsystem->m_ActiveScene->GetViewportCamera();
+			return s_Instance->m_ActiveScene->GetViewportCamera();
 		}
 
 		DE_LOG(LogScene, Error, "No active scene")
@@ -96,7 +95,7 @@ namespace Denix
 			return false;
 		}
 
-		s_SceneSubsystem->m_LoadedScenes[_scene->GetName()] = _scene;
+		s_Instance->m_LoadedScenes[_scene->GetName()] = _scene;
 
 		if(_scene->m_SceneAsset) DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->m_SceneAsset->GetAssetName())
 		else DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->GetName())
@@ -106,11 +105,11 @@ namespace Denix
 	
 	void SceneSubsystem::UnloadScene(const std::string& _name)
 	{
-		if (const Ref<Scene>scene = s_SceneSubsystem->m_LoadedScenes[_name])
+		if (const Ref<Scene>scene = s_Instance->m_LoadedScenes[_name])
 		{
 			// Unload the scene
 			scene->Unload();
-			s_SceneSubsystem->m_LoadedScenes.erase(_name);
+			s_Instance->m_LoadedScenes.erase(_name);
 
 			DE_LOG(LogScene, Info, "Unloaded Scene: {}", _name)
 			return;
@@ -146,33 +145,33 @@ namespace Denix
 		if(!_scene->IsLoaded()) LoadScene(_scene);
 
 		// Set the active scene. Take ownership of the scene pointer
-		s_SceneSubsystem->m_ActiveScene = std::move(_scene);
+		s_Instance->m_ActiveScene = std::move(_scene);
 		
 		// Set dependencies with new scene pointer
-		RendererSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
-		PhysicsSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
-		if(EditorSubsystem::Get()) EditorSubsystem::Get()->SetActiveScene(s_SceneSubsystem->m_ActiveScene);
+		RendererSubsystem::SetActiveScene(s_Instance->m_ActiveScene);
+		PhysicsSubsystem::SetActiveScene(s_Instance->m_ActiveScene);
+		if(EditorSubsystem::GetInstance()) EditorSubsystem::GetInstance()->SetActiveScene(s_Instance->m_ActiveScene);
 
 		// Begin new scene
-		s_SceneSubsystem->m_ActiveScene->m_IsOpen = true;
-		s_SceneSubsystem->m_ActiveScene->BeginScene();
+		s_Instance->m_ActiveScene->m_IsOpen = true;
+		s_Instance->m_ActiveScene->BeginScene();
 
 		DE_LOG(LogScene, Info, "Activated Scene: {}",
-			s_SceneSubsystem->m_ActiveScene->GetName())
+			s_Instance->m_ActiveScene->GetName())
 	}
 
 	void SceneSubsystem::PlayScene()
 	{
-		if (!s_SceneSubsystem->m_ActiveScene) return;
+		if (!s_Instance->m_ActiveScene) return;
 
-		s_SceneSubsystem->m_ActiveScene->BeginPlay();
-		s_SceneSubsystem->m_ActiveScene->m_IsPlaying = true;
+		s_Instance->m_ActiveScene->BeginPlay();
+		s_Instance->m_ActiveScene->m_IsPlaying = true;
 
 		// Check for Game Camera
-		if(const Ref<Camera> camera = s_SceneSubsystem->m_ActiveScene->GetGameCamera())
+		if(const Ref<Camera> camera = s_Instance->m_ActiveScene->GetGameCamera())
 		{
 			// Set the camera as the active camera
-			s_SceneSubsystem->m_ActiveScene->m_ActiveCamera = camera;
+			s_Instance->m_ActiveScene->m_ActiveCamera = camera;
 			DE_LOG(LogScene, Info, "Game Camera Found: {}", camera->GetName())
 		}
 		else
@@ -180,18 +179,18 @@ namespace Denix
 			DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
 		}
 
-		DE_LOG(LogScene, Trace, "Started Playing Scene: {}", s_SceneSubsystem->m_ActiveScene->GetName())
+		DE_LOG(LogScene, Trace, "Started Playing Scene: {}", s_Instance->m_ActiveScene->GetName())
 	}
 
 	void SceneSubsystem::StopScene()
 	{
-		if (s_SceneSubsystem->m_ActiveScene)
+		if (s_Instance->m_ActiveScene)
 		{
-			s_SceneSubsystem->m_ActiveScene->EndPlay();
-			s_SceneSubsystem->m_ActiveScene->m_IsPlaying = false;
+			s_Instance->m_ActiveScene->EndPlay();
+			s_Instance->m_ActiveScene->m_IsPlaying = false;
 			
 			// Need to establish a better way of handling scenes
-			s_SceneSubsystem->LoadScene(s_SceneSubsystem->m_ActiveScene);
+			s_Instance->LoadScene(s_Instance->m_ActiveScene);
 			DE_LOG(LogScene, Trace, "Scene Stopped")
 		}
 	}
@@ -285,7 +284,7 @@ namespace Denix
 
 	void SceneSubsystem::SerializeScene()
 	{
-		SerializeScene(s_SceneSubsystem->m_ActiveScene);
+		SerializeScene(s_Instance->m_ActiveScene);
 	}
 	
 	bool SceneSubsystem::SerializeScene(const Ref<Scene>& _scene)

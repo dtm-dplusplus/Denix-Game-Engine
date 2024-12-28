@@ -13,11 +13,8 @@
 
 namespace Denix
 {
-	EditorSubsystem* EditorSubsystem::s_EditorSubsystem{ nullptr };
-
 	EditorSubsystem::EditorSubsystem()
 	{
-		s_EditorSubsystem = this;
 		DE_LOG_CREATE(LogEditor)
 	}
 	
@@ -207,8 +204,8 @@ namespace Denix
 			// Scene Properties
 			if (ImGui::BeginMenu("Tools"))
 			{
-				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_BatchUpdateActors);
-				ImGui::Checkbox("Renderer Enabled", &RendererSubsystem::Get()->IsEnabled());
+				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::GetInstance()->m_BatchUpdateActors);
+				ImGui::Checkbox("Renderer Enabled", &RendererSubsystem::GetInstance()->IsEnabled());
 				if(ImGui::BeginMenu("Reflection"))
 				{
 					for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)

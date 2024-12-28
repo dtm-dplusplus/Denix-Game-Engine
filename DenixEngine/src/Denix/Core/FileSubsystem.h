@@ -4,49 +4,44 @@
 
 namespace Denix
 { 
-    class FileSubsystem: public Subsystem
+    class FileSubsystem: public Subsystem<FileSubsystem>
     {
 	public:
-		FileSubsystem(const std::string& _projectName) : m_ProjectName(_projectName)
+		FileSubsystem(std::string _projectName) : m_ProjectName(std::move(_projectName))
 		{
-			DE_LOG_CREATE(LogFileSubsystem)
-			s_FileSubsystem = this;
+			DE_LOG_CREATE(LogFile)
 		}
 
-		~FileSubsystem() override
-		{
-			s_FileSubsystem = nullptr;
-		}
+		~FileSubsystem() override = default;
 
+		FileSubsystem(const FileSubsystem& _other) = delete;
+		FileSubsystem(FileSubsystem&& _other) noexcept = delete;
+		FileSubsystem& operator=(const FileSubsystem& _other) = delete;
+		FileSubsystem& operator=(FileSubsystem&& _other) noexcept = delete;
+    	
 		static std::string ReadFile(const std::string& _path);
 
 		static bool WriteFile(const std::string& _path, const std::string_view _data);
 
 		static bool FileExists(const std::string& _path);
 
-    	static std::string GetProjectRoot() { return s_FileSubsystem->m_ProjectRoot; }
+    	static std::string GetProjectRoot() { return s_Instance->m_ProjectRoot; }
 
-    	static std::string GetContentRoot() { return s_FileSubsystem->m_ContentRoot; }
+    	static std::string GetContentRoot() { return s_Instance->m_ContentRoot; }
 
-		static std::string GetEngineContentRoot() { return s_FileSubsystem->m_EngineContentRoot; }
+		static std::string GetEngineContentRoot() { return s_Instance->m_EngineContentRoot; }
 
-		static std::string GetProjectName()	{ return s_FileSubsystem->m_ProjectName; }
+		static std::string GetProjectName()	{ return s_Instance->m_ProjectName; }
 
 		 static bool DirectoryExists(const std::string& _path);
 
     	static bool CreateDirectory(const std::string& _path);
-	public:
-    	
-		void Initialize() override;
-
-		void Deinitialize() override;
-
-		static FileSubsystem* Get() { return s_FileSubsystem; }
-
 
 	private:
-		static FileSubsystem* s_FileSubsystem;
-		
+    	void Initialize() override;
+
+    	void Deinitialize() override;
+    	
 		std::string m_ProjectName;
 
     	// Root of the project

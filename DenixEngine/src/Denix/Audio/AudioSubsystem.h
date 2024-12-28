@@ -7,23 +7,24 @@
 #include "al/alc.h"
 #include "al/alext.h"
 #include "AudioClip.h"
+
 namespace Denix
 {
-    class AudioSubsystem: public Subsystem
+    class AudioSubsystem: public Subsystem<AudioSubsystem>
     {
     public:
-        AudioSubsystem()
-        {
-            DE_LOG_CREATE(LogAudio)
-            s_AudioSubsystem = this;
-        }
+        AudioSubsystem();
 
-        AudioSubsystem* Get() { return s_AudioSubsystem; }
+        ~AudioSubsystem() override = default;
+
+        AudioSubsystem(const AudioSubsystem& _other) = delete;
+        AudioSubsystem(AudioSubsystem&& _other) noexcept = delete;
+        AudioSubsystem& operator=(const AudioSubsystem& _other) = delete;
+        AudioSubsystem& operator=(AudioSubsystem&& _other) noexcept = delete;
 
     private:
         void Initialize() override;
         void Deinitialize() override;
-        inline static AudioSubsystem* s_AudioSubsystem;
         ALCdevice* m_Device;
         ALCcontext* m_Context;
 

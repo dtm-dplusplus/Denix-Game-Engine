@@ -13,11 +13,14 @@ namespace fs = std::filesystem;
 
 namespace Denix
 {
-	AssetSubsystem* AssetSubsystem::s_AssetSubsystem = nullptr;
+	AssetSubsystem::AssetSubsystem()
+	{
+		DE_LOG_CREATE(LogAsset)
+	}
 
 	Ref<Asset> AssetSubsystem::GetAsset(const std::string& _path)
 	{
-		for (const auto& asset : s_AssetSubsystem->m_AssetStore)
+		for (const auto& asset : s_Instance->m_AssetStore)
 		{
 			if (asset->GetAssetPath() == _path)
 			{
@@ -30,17 +33,17 @@ namespace Denix
 
 	Ref<AudioClip> AssetSubsystem::LoadAudioClip(const Ref<Asset>& _audioClipAsset)
 	{
-		if (s_AssetSubsystem->m_AudioClipStore.contains(_audioClipAsset->GetAssetPath()))
+		if (s_Instance->m_AudioClipStore.contains(_audioClipAsset->GetAssetPath()))
 		{
 			DE_LOG(LogAsset, Error, "Load AudioClip: An audio clip name: {} is already loaded", _audioClipAsset->m_AssetName)
-			return s_AssetSubsystem->m_AudioClipStore[_audioClipAsset->GetAssetPath()];
+			return s_Instance->m_AudioClipStore[_audioClipAsset->GetAssetPath()];
 		}
 
 		if (Ref<AudioClip> audioClip = MakeRef<AudioClip>(AssetInit(_audioClipAsset->GetAssetPath())))
 		{
 			if (!audioClip->Load()) return nullptr;
 			
-			s_AssetSubsystem->m_AudioClipStore[_audioClipAsset->GetAssetPath()] = audioClip;
+			s_Instance->m_AudioClipStore[_audioClipAsset->GetAssetPath()] = audioClip;
 			DE_LOG(LogAsset, Trace, "Audio Clip Loaded: {}", _audioClipAsset->m_AssetName)
 			return audioClip;
 		}
@@ -50,9 +53,9 @@ namespace Denix
 
 	Ref<AudioClip> AssetSubsystem::GetAudioClip(const std::string& _path)
 	{
-		if (s_AssetSubsystem->m_AudioClipStore.contains(_path))
+		if (s_Instance->m_AudioClipStore.contains(_path))
 		{
-			return s_AssetSubsystem->m_AudioClipStore[_path];
+			return s_Instance->m_AudioClipStore[_path];
 		}
 
 		DE_LOG(LogAsset, Error, "Audio Clip not found: {}", _path)
@@ -67,7 +70,8 @@ namespace Denix
 
 		// Iniatlize Default Assets
 		std::vector<ShaderSource> defaultShaders;
-		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Default\Vertex.glsl)");
+		std::string defShaderPath = FileSubsystem::GetEngineContentRoot() + "shaders\\Default\\Vertex.glsl";
+		defaultShaders.emplace_back(defShaderPath);
 		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Default\Fragment.glsl)");
 		if (Ref<Shader> defShader = LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = defShader;
 		else throw std::runtime_error("Default Shader not loaded");
@@ -174,7 +178,7 @@ namespace Denix
 		// We Should validate the path first
 
 		// Check registered assets
-		for (const auto& asset : s_AssetSubsystem->m_SceneStore)
+		for (const auto& asset : s_Instance->m_SceneStore)
 		{
 			if (asset->GetAssetPath() == _path)
 			{
@@ -189,7 +193,7 @@ namespace Denix
 	Ref<Shader> AssetSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _path)
 	{
 		// Check if the shader already exists
-		if (s_AssetSubsystem->m_ShaderStore.contains(_path))
+		if (s_Instance->m_ShaderStore.contains(_path))
 		{
 			DE_LOG(LogShader, Error, "GLShader already exists: {}", _path)
 			return nullptr;
@@ -202,7 +206,7 @@ namespace Denix
 
 			if (!shader->CompileProgram()) return nullptr;
 
-			s_AssetSubsystem->m_ShaderStore[_path] = shader;
+			s_Instance->m_ShaderStore[_path] = shader;
 
 			DE_LOG(LogShader, Trace, "Shader Loaded: {}", _path)
 			
@@ -248,9 +252,9 @@ namespace Denix
 
 	Ref<Shader> AssetSubsystem::GetShader(const std::string& _name)
 	{
-		if (s_AssetSubsystem->m_ShaderStore.contains(_name))
+		if (s_Instance->m_ShaderStore.contains(_name))
 		{
-			return s_AssetSubsystem->m_ShaderStore[_name];
+			return s_Instance->m_ShaderStore[_name];
 		}
 
 		DE_LOG(LogShader, Error, "GLShader not found: {}", _name)
@@ -263,17 +267,17 @@ namespace Denix
 	Ref<Texture> AssetSubsystem::LoadTexture(const std::string& _path)
 	{
 		// Check it isn't already loaded
-		if (s_AssetSubsystem->m_TextureStore.contains(_path))
+		if (s_Instance->m_TextureStore.contains(_path))
 		{
 			DE_LOG(LogAsset, Warn, "Load Texture: A texture name: {} is already loaded", _path)
-				return s_AssetSubsystem->m_TextureStore[_path];
+				return s_Instance->m_TextureStore[_path];
 		}
 
 		Ref<Texture> texture = MakeRef<Texture>(_path);
 
 		if (!texture->LoadTexture()) return nullptr;
 
-		s_AssetSubsystem->m_TextureStore[_path] = texture;
+		s_Instance->m_TextureStore[_path] = texture;
 		DE_LOG(LogAsset, Trace, "Texture loaded: {}", _path)
 
 		return texture;
@@ -281,9 +285,9 @@ namespace Denix
 	
 	Ref<Texture> AssetSubsystem::GetTexture(const std::string& _path)
 	{
-		if (s_AssetSubsystem->m_TextureStore.contains(_path))
+		if (s_Instance->m_TextureStore.contains(_path))
 		{
-			return s_AssetSubsystem->m_TextureStore[_path];
+			return s_Instance->m_TextureStore[_path];
 		}
 
 		return nullptr;
@@ -292,15 +296,15 @@ namespace Denix
 	////////////////////////  MATERIALS ///////////////////////////////
 	Ref<Material> AssetSubsystem::LoadMaterial(const Ref<Asset>& _matAsset)
 	{
-		if (s_AssetSubsystem->m_MaterialStore.contains(_matAsset->m_AssetName))
+		if (s_Instance->m_MaterialStore.contains(_matAsset->m_AssetName))
 		{
 			DE_LOG(LogAsset, Error, "Load Material: A material name: {} is already loaded", _matAsset->m_AssetName)
-			return s_AssetSubsystem->m_MaterialStore[_matAsset->m_AssetName];
+			return s_Instance->m_MaterialStore[_matAsset->m_AssetName];
 		}
 
 		if (Ref<Material> material = MakeRef<Material>(_matAsset))
 		{
-			s_AssetSubsystem->m_MaterialStore[_matAsset->m_AssetName] = material;
+			s_Instance->m_MaterialStore[_matAsset->m_AssetName] = material;
 			DE_LOG(LogAsset, Trace, "Material Loaded: {}", _matAsset->m_AssetName)
 			return material;
 		}
@@ -311,7 +315,7 @@ namespace Denix
 
 	Ref<Material> AssetSubsystem::GetMaterial(const std::string& _path)
 	{
-		for (const auto& material : s_AssetSubsystem->m_MaterialStore)
+		for (const auto& material : s_Instance->m_MaterialStore)
 		{
 			if (material.second->GetAsset()->GetAssetPath() == _path)
 			{
@@ -325,7 +329,7 @@ namespace Denix
 	////////////////////////  MODEL ///////////////////////////////
 	bool AssetSubsystem::LoadModel(const std::string& _path)
 	{
-		if (s_AssetSubsystem->m_ModelStore.contains(_path))
+		if (s_Instance->m_ModelStore.contains(_path))
 		{
 			DE_LOG(LogAsset, Error, "Load Model: A Model name: {} is already loaded", _path)
 				return false;
@@ -350,16 +354,16 @@ namespace Denix
 		}
 
 		DE_LOG(LogAsset, Trace, "Model Loaded: {}", model->GetAssetName())
-			s_AssetSubsystem->m_ModelStore[_path] = model;
+			s_Instance->m_ModelStore[_path] = model;
 
 		return true;
 	}
 
 	Ref<Model> AssetSubsystem::GetModel(const std::string& _name)
 	{
-		if (s_AssetSubsystem->m_ModelStore.contains(_name))
+		if (s_Instance->m_ModelStore.contains(_name))
 		{
-			return s_AssetSubsystem->m_ModelStore[_name];
+			return s_Instance->m_ModelStore[_name];
 		}
 
 		return nullptr;

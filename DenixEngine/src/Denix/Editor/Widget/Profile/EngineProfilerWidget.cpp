@@ -21,7 +21,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
 
     const float elaspedTime = Timer::GetProgramElaspedTime();
     Ref<ProfileSession> activeProfileSession = ProfileSubsystem::GetActiveProfileSession();
-    std::vector<Ref<ProfileSession>>& profileSessions = ProfileSubsystem::Get()->m_ProfileSessions;
+    std::vector<Ref<ProfileSession>>& profileSessions = ProfileSubsystem::GetInstance()->m_ProfileSessions;
 
     ImGui::Begin("Profiler Widget");
 
@@ -48,7 +48,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
         ImGui::SeparatorText("Profile Data");
         ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
 
-        const Ref<Profile>& engprofile = TimerSubsystem::Get()->m_EngineProfile;
+        const Ref<Profile>& engprofile = TimerSubsystem::GetInstance()->m_EngineProfile;
 
         /*if (ImPlot::BeginPlot("Engine Frame Time", "Elapsed Time (s)", "Frame Time (ms)", ImVec2(-1, 0),
                               ImPlotFlags_None,

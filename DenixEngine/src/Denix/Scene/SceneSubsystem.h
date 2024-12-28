@@ -16,15 +16,12 @@ namespace Denix
 	/* Subsystem that manages the scenes
 	* A scene must always be loaded in order to render anything
 	*/ 
-	class SceneSubsystem final : public Subsystem
+	class SceneSubsystem final : public Subsystem<SceneSubsystem>
 	{
 	public:
 		explicit SceneSubsystem(const Ref<Asset>& _startupScene = nullptr);
 
-		~SceneSubsystem() override
-		{
-			s_SceneSubsystem = nullptr;
-		}
+		~SceneSubsystem() override = default;
 
 		SceneSubsystem(const SceneSubsystem& _other) = delete;
 		SceneSubsystem(SceneSubsystem&& _other) noexcept = delete;
@@ -34,9 +31,7 @@ namespace Denix
 
 		bool m_BatchUpdateActors;
 
-		static SceneSubsystem* Get() { return s_SceneSubsystem; }
-
-		static Ref<Scene> GetActiveScene() { return s_SceneSubsystem->m_ActiveScene; }
+		static Ref<Scene> GetActiveScene() { return s_Instance->m_ActiveScene; }
 
 		static Ref<Camera> GetActiveCamera();
 
@@ -75,8 +70,6 @@ namespace Denix
 
 		void Deinitialize() override;
 		
-		static SceneSubsystem* s_SceneSubsystem;
-
 		Ref<Asset> m_StartupScene;
 		
 		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;

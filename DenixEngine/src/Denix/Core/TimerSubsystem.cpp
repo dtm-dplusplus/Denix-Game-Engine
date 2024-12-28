@@ -5,24 +5,15 @@
 
 namespace Denix
 {
-	TimerSubsystem* TimerSubsystem::s_TimerSubsystem{ nullptr };
-
-	TimerSubsystem::TimerSubsystem()
-	{
-		s_TimerSubsystem = this;
-		DE_LOG_CREATE(LogTimer)
-
-		m_FrameTime = 0.167f;
-		m_DeltaTime = 0.167f;
-		m_FramesPerSecond = 60;
-		m_GameTimeSpeed = 1.0f;
-		m_MaxLimitFPS = 60;
-	}
-
-	TimerSubsystem::~TimerSubsystem()
-	{
-		s_TimerSubsystem = nullptr;
-	}
+TimerSubsystem::TimerSubsystem()
+	: m_FramesPerSecond(60),
+	  m_FrameTime(0.167f),
+	  m_DeltaTime(0.167f),
+	  m_GameTimeSpeed(1.0f),
+	  m_MaxLimitFPS(60)
+{
+	DE_LOG_CREATE(LogTimer)
+}
 
 	void TimerSubsystem::Initialize()
 	{
@@ -89,12 +80,12 @@ namespace Denix
 
 	int TimerSubsystem::GetFPS()
 	{
-		return s_TimerSubsystem->m_FramesPerSecond;
+		return s_Instance->m_FramesPerSecond;
 	}
 
-	float TimerSubsystem::GetFrameTime() { return s_TimerSubsystem->m_FrameTime; }
-	float TimerSubsystem::GetFrameTimeMs() {return s_TimerSubsystem->m_FrameTime * 1000.0f; }
+	float TimerSubsystem::GetFrameTime() { return s_Instance->m_FrameTime; }
+	float TimerSubsystem::GetFrameTimeMs() {return s_Instance->m_FrameTime * 1000.0f; }
 
 	float TimerSubsystem::GetFrameTimeMsAverage()
-	{ return s_TimerSubsystem->m_EngineProfile->m_AverageDuration * 1000.0f; }
+	{ return s_Instance->m_EngineProfile->m_AverageDuration * 1000.0f; }
 }

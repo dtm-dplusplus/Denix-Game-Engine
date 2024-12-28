@@ -31,7 +31,7 @@ namespace Denix
         }
         
         // Scene Objects
-        ImGui::SetNextWindowDockID(UISubsystem::Get()->DockLeftID, ImGuiCond_Appearing);
+        ImGui::SetNextWindowDockID(UISubsystem::GetDockLeftID(), ImGuiCond_Appearing);
         ImGui::Begin(GetName().c_str());
         ImGui::SeparatorText(m_SceneRef.lock()->GetName().c_str());
         
