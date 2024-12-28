@@ -73,7 +73,7 @@ namespace Denix
         ImGui::End();
 
         // Scene Settings
-        m_SceneSettingsWidget->Update(_deltaTime);
+        //m_SceneSettingsWidget->Update(_deltaTime);
     }
 
     void SceneOrganizerWidget::SceneChangedEvent(const WRef<Scene>& _scene)
