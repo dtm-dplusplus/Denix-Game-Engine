@@ -42,10 +42,15 @@ add_library(Imgui STATIC
 #add_dependencies(${PROJECT_NAME} SDL3::SDL3)
 
 # Enable Edit and Continue for MSVC
-if(MSVC)
+#[[if(MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
-endif()
+endif()]]
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:/MTd>
+        $<$<CONFIG:Release>:/MT>
+)
 
 # Set the C++ flags to enable multi-processor compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")

@@ -54,7 +54,8 @@ namespace Denix
 
 		static void PauseScene();
 
-
+		void CloseScene() const;
+		
 		static void SerializeScene();
 		static bool SerializeScene(const Ref<Scene>& _scene);
 

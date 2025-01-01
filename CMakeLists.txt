@@ -67,6 +67,7 @@ include_directories(${PROJECT_NAME}
         ${ENGINE_CONTRIB_DIR}/stb
         ${ENGINE_CONTRIB_DIR}/yaml-cpp/include
         ${ENGINE_CONTRIB_DIR}/OpenAL/include
+        ${ENGINE_CONTRIB_DIR}/physx/include
 )
 
 # Set the C++ flags to enable multi-processor compilation
@@ -101,6 +102,8 @@ target_link_directories(${PROJECT_NAME}
         PUBLIC ${ENGINE_CONTRIB_DIR}/sdl3/bin
         PUBLIC ${ENGINE_CONTRIB_DIR}/assimp/bin/${CMAKE_BUILD_TYPE}
         PUBLIC ${ENGINE_CONTRIB_DIR}/OpenAL/libs/Win64
+        PUBLIC  $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/physx/bin/debug>
+                 $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/physx/bin/release>
 )
 
 # Define linker libs
@@ -113,17 +116,30 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC $<TARGET_LINKER_FILE_NAME:Imgui>
 
         PUBLIC  $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/assimp/bin/Debug/assimp-vc143-mtd.lib>
-            $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/assimp/bin/Release/assimp-vc143-mt.lib>
+                $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/assimp/bin/Release/assimp-vc143-mt.lib>
         
         PUBLIC  $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/yaml-cpp/bin/Debug/yaml-cppd.lib>
-            $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/yaml-cpp/bin/Release/yaml-cpp.lib>
+                $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/yaml-cpp/bin/Release/yaml-cpp.lib>
+
+        PUBLIC PhysX_64
+        PUBLIC PhysXCommon_64
+        PUBLIC PhysXFoundation_64
+        PUBLIC PhysXExtensions_static_64
+        PUBLIC PhysXPvdSDK_static_64
+        PUBLIC SceneQuery_static_64
+        PUBLIC PVDRuntime_64
 )
 
 # Enable Edit and Continue for MSVC
-if(MSVC)
+#[[if(MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
-endif()
+endif()]]
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:/MTd>
+        $<$<CONFIG:Release>:/MT>
+)
 
 # Add Post build commands for dependencies
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -142,6 +158,10 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${ENGINE_CONTRIB_DIR}/glew/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>
+
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/physx/bin/debug>
+        $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/physx/bin/release> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${ENGINE_CONTRIB_DIR}/OpenAL/bin/Win64 $<TARGET_FILE_DIR:${PROJECT_NAME}>

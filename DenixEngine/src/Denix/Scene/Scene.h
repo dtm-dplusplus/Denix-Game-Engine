@@ -89,6 +89,9 @@ namespace Denix
 
 		Ref<Camera> m_ActiveCamera;
 
+		// Debug Utility - Use with caution
+		void ClearScene();
+
 	private:
 		/** List of Objects in the scene */
 		std::vector<Ref<Actor>> m_Actors;
@@ -99,7 +102,7 @@ namespace Denix
 		 */
 		std::unordered_set<std::string> m_ActorNames;
 		
-		void ClearScene();
+		
 
 		
 		friend class SceneSubsystem;

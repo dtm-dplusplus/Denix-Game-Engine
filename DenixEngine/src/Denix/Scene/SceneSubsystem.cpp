@@ -141,6 +141,9 @@ namespace Denix
 			return;
 		}
 
+		// Close the current scene if it's open
+		if (s_Instance->m_ActiveScene) s_Instance->CloseScene();
+		
 		// Load the scene if it isn't already loaded
 		if(!_scene->IsLoaded()) LoadScene(_scene);
 
@@ -186,8 +189,7 @@ namespace Denix
 	{
 		if (s_Instance->m_ActiveScene)
 		{
-			s_Instance->m_ActiveScene->EndPlay();
-			s_Instance->m_ActiveScene->m_IsPlaying = false;
+			s_Instance->CloseScene();
 			
 			// Need to establish a better way of handling scenes
 			s_Instance->LoadScene(s_Instance->m_ActiveScene);
@@ -200,7 +202,16 @@ namespace Denix
 		DE_LOG(LogScene, Trace, "Scene Paused")
 	}
 
-	
+	void SceneSubsystem::CloseScene() const
+	{
+		if (m_ActiveScene)
+		{
+			if (m_ActiveScene->m_IsPlaying) m_ActiveScene->EndPlay();
+			m_ActiveScene->EndScene();
+			m_ActiveScene->m_IsPlaying = false;
+		}
+	}
+
 
 	void SceneSubsystem::CleanRubbish()
 	{

@@ -51,7 +51,8 @@ namespace Denix
             m_Model *= rotationMatrix;
         }
 
-        m_Model = glm::scale(m_Model, m_Scale);
+        // Scale Model by half to account for axis sign
+        m_Model = glm::scale(m_Model, m_Scale / 2.0f);
     }
 
     void TransformComponent::UpdateRotationVectorFromMatrix()

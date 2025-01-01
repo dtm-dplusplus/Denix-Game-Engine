@@ -33,6 +33,7 @@ include_directories(${PROJECT_NAME}
         ${ENGINE_CONTRIB_DIR}/stb
         ${ENGINE_CONTRIB_DIR}/yaml-cpp/include
         ${ENGINE_CONTRIB_DIR}/OpenAL/include
+        ${ENGINE_CONTRIB_DIR}/physx/include
 )
 
 # Create Audio Subsystem Library
@@ -58,7 +59,13 @@ add_dependencies(${PROJECT_NAME}
 )
 
 # Enable Edit and Continue for MSVC
+#[[
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
-endif()
+endif()]]
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:/MTd>
+        $<$<CONFIG:Release>:/MT>
+)
