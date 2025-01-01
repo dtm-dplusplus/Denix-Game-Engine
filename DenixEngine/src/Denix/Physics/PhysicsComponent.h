@@ -1,11 +1,23 @@
 #pragma once
 
+#include <foundation/PxTransform.h>
+
 #include "Denix/Core.h"
 #include "Denix/Core/Math.h"
 
 #include "Denix/Scene/Component.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Physics/Collider.h"
+
+namespace physx
+{
+	class PxRigidActor;
+}
+
+namespace physx
+{
+	class PxShape;
+}
 
 namespace Denix
 {
@@ -66,7 +78,10 @@ namespace Denix
 
 		bool m_RotationEnabled = true;
 
-
+		physx::PxShape* m_PxShape = nullptr;
+		physx::PxRigidActor* m_PxActor = nullptr;
+		physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
+		
 	private:
 		/* Physics Component Settings */
 		/** Set to decide if the physics component should update simulation */

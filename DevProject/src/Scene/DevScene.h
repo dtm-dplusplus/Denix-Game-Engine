@@ -15,7 +15,6 @@ public:
     ~DevScene() override = default;
 
     PxRigidDynamic* createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity);
-    void createStack(const PxTransform& t, PxU32 size, PxReal halfExtent);
     void stepPhysics(bool interactive);
     void BeginScene() override;
     void EndScene() override;

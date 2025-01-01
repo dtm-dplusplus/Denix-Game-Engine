@@ -17,58 +17,6 @@ PxRigidDynamic* DevScene::createDynamic(const PxTransform& t, const PxGeometry& 
 	return dynamic;
 }
 
-void DevScene::createStack(const PxTransform& t, PxU32 size, PxReal halfExtent)
-{
-	/*PxShape* shape = gPhysics->createShape(PxBoxGeometry(halfExtent, halfExtent, halfExtent), *gMaterial);
-	Ref<Cube> cube = SpawnActor<Cube>();
-	for(PxU32 i=0; i<size;i++)
-	{
-		for(PxU32 j=0;j<size-i;j++)
-		{
-			PxTransform localTm(PxVec3(PxReal(j*2) - PxReal(size-i), PxReal(i*2+1), 0) * halfExtent);
-			PxRigidDynamic* body = gPhysics->createRigidDynamic(t.transform(localTm));
-			body->attachShape(*shape);
-			PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-			gScene->addActor(*body);
-		}
-	}
-	shape->release();*/
-
-	// Floor
-	/*{
-		PxShape* shape = gPhysics->createShape(PxPlaneGeometry(), *gMaterial);
-		PxRigidStatic* body = PxCreatePlane(*gPhysics, PxPlane(0,1,0,1), *gMaterial);
-		body->attachShape(*shape);
-		// PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-		gScene->addActor(*body);
-		m_Plane = SpawnActor<Plane>();
-		shape->release();
-	}*/
-
-	// Dynamic Cube
-	{
-		m_DyCube = SpawnActor<Cube>();
-		PxShape* shape = PhysicsSubsystem::gPhysics->createShape(PxBoxGeometry(.5, .5, .5), *gMaterial);
-		PxTransform localTm({0.0f, 10.0f, 0.0f});
-		PxRigidDynamic* body = PhysicsSubsystem::gPhysics->createRigidDynamic(t.transform(localTm));
-		body->attachShape(*shape);
-		PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-		gScene->addActor(*body);
-		shape->release();
-	}
-
-	// Static Cube
-	{
-		m_StatCube = SpawnActor<Cube>();
-		PxShape* shape = PhysicsSubsystem::gPhysics->createShape(PxBoxGeometry(.5, .5, .5), *gMaterial);
-		PxTransform localTm({0.0f, 0.0f, 0.0f});
-		PxRigidStatic* body = PhysicsSubsystem::gPhysics->createRigidStatic(t.transform(localTm));
-		body->attachShape(*shape);
-		gScene->addActor(*body);
-		shape->release();
-	}
-}
-
 void DevScene::stepPhysics(bool interactive)
 {
 	gScene->simulate(TimerSubsystem::GetDeltaTime());
@@ -99,8 +47,29 @@ void DevScene::BeginScene()
 
 	
 	
-	//for(PxU32 i=0;i<5;i++)
-	createStack(PxTransform(PxVec3(0,0,10.0f)), 10, 2.0f);
+	// Dynamic Cube
+	{
+		m_DyCube = SpawnActor<Cube>();
+		PxVec3 scale = {m_DyCube->GetTransformComponent()->GetScale().x, m_DyCube->GetTransformComponent()->GetScale().y, m_DyCube->GetTransformComponent()->GetScale().z};
+		m_DyCube->GetPhysicsComponent()->m_PxShape = PhysicsSubsystem::gPhysics->createShape(PxBoxGeometry(scale), *gMaterial);
+		m_DyCube->GetPhysicsComponent()->m_PxTransform = PxTransform(PxVec3(0, 10, 0));
+		PxRigidDynamic* body = PhysicsSubsystem::gPhysics->createRigidDynamic(m_DyCube->GetPhysicsComponent()->m_PxTransform);
+		body->attachShape(*m_DyCube->GetPhysicsComponent()->m_PxShape);
+		PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+		gScene->addActor(*body);
+		m_DyCube->GetPhysicsComponent()->m_PxShape->release();
+	}
+
+	// Static Cube
+	{
+		m_StatCube = SpawnActor<Cube>();
+		m_StatCube->GetTransformComponent()->GetScale() = {2.0f, 0.5f, 2.0f};
+		m_StatCube->GetPhysicsComponent()->m_PxShape = PhysicsSubsystem::gPhysics->createShape(PxBoxGeometry(2, .5, 2), *gMaterial);
+		m_StatCube->GetPhysicsComponent()->m_PxActor = PhysicsSubsystem::gPhysics->createRigidStatic(m_StatCube->GetPhysicsComponent()->m_PxTransform);
+		m_StatCube->GetPhysicsComponent()->m_PxActor->attachShape(*m_StatCube->GetPhysicsComponent()->m_PxShape);
+		gScene->addActor(*m_StatCube->GetPhysicsComponent()->m_PxActor);
+		m_StatCube->GetPhysicsComponent()->m_PxShape->release();
+	}
 
 	/*if(!interactive)
 		createDynamic(PxTransform(PxVec3(0,40,100)), PxSphereGeometry(10), PxVec3(0,-50,-100));*/
@@ -116,6 +85,9 @@ void DevScene::EndScene()
 void DevScene::Update(float _deltaTime)
 {
 	Scene::Update(_deltaTime);
+
+	if (!IsPlaying()) return;
+	
 	stepPhysics(false);
 
 	PxActor* cube;
@@ -125,33 +97,47 @@ void DevScene::Update(float _deltaTime)
 		PxTransform transform = actor->getGlobalPose();
 		glm::vec3 position = {transform.p.x, transform.p.y, transform.p.z};
 		glm::vec3 rotation = {transform.q.x, transform.q.y, transform.q.z};
-		glm::vec3 scale = {1.0f, 1.0f, 1.0f};
+
+		PxShape* shape;
+		actor->getShapes(&shape, 1);
+		glm::vec3 scale = m_DyCube->GetTransformComponent()->GetScale();
+
+		if (shape)
+		{
+			PxGeometryHolder geometry = shape->getGeometry();
+			PxBoxGeometry box = geometry.box();
+			scale = {box.halfExtents.x * 2, box.halfExtents.y * 2, box.halfExtents.z * 2};
+			m_DyCube->GetTransformComponent()->SetPosition(position);
+			m_DyCube->GetTransformComponent()->SetRotation(rotation);
+			m_DyCube->GetTransformComponent()->SetScale(scale);
+		}
 		m_DyCube->GetTransformComponent()->SetPosition(position);
 		m_DyCube->GetTransformComponent()->SetRotation(rotation);
 		m_DyCube->GetTransformComponent()->SetScale(scale);
 	}
 	
-	/*PxActor* plane;
+	PxActor* plane;
 	gScene->getActors(PxActorTypeFlag::eRIGID_STATIC, &plane, 1);
 	if (const PxRigidStatic* actor = plane->is<PxRigidStatic>())
 	{
 		PxTransform transform = actor->getGlobalPose();
 		glm::vec3 position = {transform.p.x, transform.p.y, transform.p.z};
 		glm::vec3 rotation = {transform.q.x, transform.q.y, transform.q.z};
-		glm::vec3 scale = {1.0f, 1.0f, 1.0f};
-		m_Plane->GetTransformComponent()->SetPosition(position);
-		m_Plane->GetTransformComponent()->SetRotation(rotation);
-		m_Plane->GetTransformComponent()->SetScale(scale);
-	}*/
+		
+		PxShape* shape;
+		actor->getShapes(&shape, 1);
+		glm::vec3 scale = m_StatCube->GetTransformComponent()->GetScale();
 
-	PxActor* plane;
-	PxU32 planeActor = gScene->getActors(PxActorTypeFlag::eRIGID_STATIC, &plane, 1);
-	if (const PxRigidStatic* actor = plane->is<PxRigidStatic>())
-	{
-		PxTransform transform = actor->getGlobalPose();
-		glm::vec3 position = {transform.p.x, transform.p.y, transform.p.z};
-		glm::vec3 rotation = {transform.q.x, transform.q.y, transform.q.z};
-		glm::vec3 scale = {1.0f, 1.0f, 1.0f};
+		if (shape)
+		{
+			PxGeometryHolder geometry = shape->getGeometry();
+			PxBoxGeometry box = geometry.box();
+			scale = {box.halfExtents.x * 2, box.halfExtents.y * 2, box.halfExtents.z * 2};
+			m_StatCube->GetTransformComponent()->SetPosition(position);
+			m_StatCube->GetTransformComponent()->SetRotation(rotation);
+			m_StatCube->GetTransformComponent()->SetScale(scale);
+		}
+		
 		m_StatCube->GetTransformComponent()->SetPosition(position);
 		m_StatCube->GetTransformComponent()->SetRotation(rotation);
 		m_StatCube->GetTransformComponent()->SetScale(scale);
