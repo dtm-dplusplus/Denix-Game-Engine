@@ -1,15 +1,16 @@
 ﻿
 #include "DevScene.h"
 
-#include <random>
-
 #include "imgui.h"
+#include "Denix/Core/TimerSubsystem.h"
+#include "Denix/Physics/PhysicsSubsystem.h"
 
 using namespace Denix;
 
 PxRigidDynamic* DevScene::createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity=PxVec3(0))
 {
-	PxRigidDynamic* dynamic = PxCreateDynamic(*gPhysics, t, geometry, *gMaterial, 10.0f);
+	
+	PxRigidDynamic* dynamic = PxCreateDynamic(*PhysicsSubsystem::gPhysics, t, geometry, *gMaterial, 10.0f);
 	dynamic->setAngularDamping(0.5f);
 	dynamic->setLinearVelocity(velocity);
 	gScene->addActor(*dynamic);
@@ -47,9 +48,9 @@ void DevScene::createStack(const PxTransform& t, PxU32 size, PxReal halfExtent)
 	// Dynamic Cube
 	{
 		m_DyCube = SpawnActor<Cube>();
-		PxShape* shape = gPhysics->createShape(PxBoxGeometry(.5, .5, .5), *gMaterial);
+		PxShape* shape = PhysicsSubsystem::gPhysics->createShape(PxBoxGeometry(.5, .5, .5), *gMaterial);
 		PxTransform localTm({0.0f, 10.0f, 0.0f});
-		PxRigidDynamic* body = gPhysics->createRigidDynamic(t.transform(localTm));
+		PxRigidDynamic* body = PhysicsSubsystem::gPhysics->createRigidDynamic(t.transform(localTm));
 		body->attachShape(*shape);
 		PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 		gScene->addActor(*body);
@@ -59,70 +60,19 @@ void DevScene::createStack(const PxTransform& t, PxU32 size, PxReal halfExtent)
 	// Static Cube
 	{
 		m_StatCube = SpawnActor<Cube>();
-		PxShape* shape = gPhysics->createShape(PxBoxGeometry(.5, .5, .5), *gMaterial);
+		PxShape* shape = PhysicsSubsystem::gPhysics->createShape(PxBoxGeometry(.5, .5, .5), *gMaterial);
 		PxTransform localTm({0.0f, 0.0f, 0.0f});
-		PxRigidStatic* body = gPhysics->createRigidStatic(t.transform(localTm));
+		PxRigidStatic* body = PhysicsSubsystem::gPhysics->createRigidStatic(t.transform(localTm));
 		body->attachShape(*shape);
 		gScene->addActor(*body);
 		shape->release();
 	}
 }
 
-void DevScene::initPhysics(bool interactive)
-{
-	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
-
-	gPvd = PxCreatePvd(*gFoundation);
-	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
-	gPvd->connect(*transport,PxPvdInstrumentationFlag::eALL);
-
-	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
-
-	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
-	gDispatcher = PxDefaultCpuDispatcherCreate(1);
-	sceneDesc.cpuDispatcher	= gDispatcher;
-	sceneDesc.filterShader	= PxDefaultSimulationFilterShader;
-	gScene = gPhysics->createScene(sceneDesc);
-
-	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
-	if(pvdClient)
-	{
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-	}
-	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.2f);
-
-	
-	
-	//for(PxU32 i=0;i<5;i++)
-	createStack(PxTransform(PxVec3(0,0,stackZ-=10.0f)), 10, 2.0f);
-
-	if(!interactive)
-		createDynamic(PxTransform(PxVec3(0,40,100)), PxSphereGeometry(10), PxVec3(0,-50,-100));
-}
-
 void DevScene::stepPhysics(bool interactive)
 {
-	gScene->simulate(1.0f/60.0f);
+	gScene->simulate(TimerSubsystem::GetDeltaTime());
 	gScene->fetchResults(true);
-}
-
-void DevScene::cleanupPhysics(bool interactive)
-{
-	PX_RELEASE(gScene);
-	PX_RELEASE(gDispatcher);
-	PX_RELEASE(gPhysics);
-	if(gPvd)
-	{
-		PxPvdTransport* transport = gPvd->getTransport();
-		PX_RELEASE(gPvd);
-		PX_RELEASE(transport);
-	}
-	PX_RELEASE(gFoundation);
-
-	printf("SnippetHelloWorld done.\n");
 }
 
 void DevScene::BeginScene()
@@ -131,14 +81,36 @@ void DevScene::BeginScene()
 
 	ClearScene();
 	
-	initPhysics(false);
+	PxSceneDesc sceneDesc(PhysicsSubsystem::gPhysics->getTolerancesScale());
+	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+	PhysicsSubsystem::gDispatcher = PxDefaultCpuDispatcherCreate(1);
+	sceneDesc.cpuDispatcher	= PhysicsSubsystem::gDispatcher;
+	sceneDesc.filterShader	= PxDefaultSimulationFilterShader;
+	gScene = PhysicsSubsystem::gPhysics->createScene(sceneDesc);
+
+	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
+	if(pvdClient)
+	{
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+	}
+	gMaterial = PhysicsSubsystem::gPhysics->createMaterial(0.5f, 0.5f, 0.2f);
+
+	
+	
+	//for(PxU32 i=0;i<5;i++)
+	createStack(PxTransform(PxVec3(0,0,10.0f)), 10, 2.0f);
+
+	/*if(!interactive)
+		createDynamic(PxTransform(PxVec3(0,40,100)), PxSphereGeometry(10), PxVec3(0,-50,-100));*/
 }
 
 void DevScene::EndScene()
 {
 	Scene::EndScene();
 
-	cleanupPhysics(false);
+	PX_RELEASE(gScene);
 }
 
 void DevScene::Update(float _deltaTime)

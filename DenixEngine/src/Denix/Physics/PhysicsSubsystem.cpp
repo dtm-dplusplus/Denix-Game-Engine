@@ -6,6 +6,8 @@
 #include "Denix/Thread/JobSubsystem.h"
 #include  <concurrent_vector.h>
 
+using namespace physx;
+
 namespace Denix
 {
     void PhysicsSubsystem::RegisterComponent(const Ref<PhysicsComponent>& _component)
@@ -86,6 +88,36 @@ namespace Denix
         DE_PROFILE_END(Physics Simulation)
 
         DE_PROFILE_END(Physics Update)
+    }
+
+    void PhysicsSubsystem::Initialize()
+    {
+        Subsystem::Initialize();
+        DE_LOG(LogPhysics, Warn, "PhysicsSubsystem Initializing")
+        gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
+
+        gPvd = PxCreatePvd(*gFoundation);
+        PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
+        gPvd->connect(*transport,PxPvdInstrumentationFlag::eALL);
+
+        gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
+        DE_LOG(LogPhysics, Info, "PhysicsSubsystem Initialized")
+    }
+
+    void PhysicsSubsystem::Deinitialize()
+    {
+        PX_RELEASE(gDispatcher);
+        PX_RELEASE(gPhysics);
+        if(gPvd)
+        {
+            PxPvdTransport* transport = gPvd->getTransport();
+            PX_RELEASE(gPvd);
+            PX_RELEASE(transport);
+        }
+        PX_RELEASE(gFoundation);
+        
+        DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
+        Subsystem::Deinitialize();
     }
 
     void PhysicsSubsystem::CollisionDetectionPhase(float _deltaTime)

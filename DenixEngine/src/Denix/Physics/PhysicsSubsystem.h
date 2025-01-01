@@ -8,11 +8,13 @@
 #include "Denix/Physics/PhysicsComponent.h"
 #include "Denix/Physics/CollisionDetection.h"
 
+#include "PxPhysicsAPI.h"
+
+#define PVD_HOST "127.0.0.1"
+
 namespace Denix
 {
 	class Scene;
-
-	
 
 	class PhysicsSubsystem : public Subsystem<PhysicsSubsystem>
 	{
@@ -38,6 +40,13 @@ namespace Denix
 		static void RegisterComponent(const Ref<PhysicsComponent>& _component);
 
 		static void UnregisterComponent(const Ref<PhysicsComponent>& _component);
+
+		inline static physx::PxDefaultAllocator		gAllocator;
+		inline static physx::PxDefaultErrorCallback	gErrorCallback;
+		inline static physx::PxFoundation*			gFoundation = NULL;
+		inline static physx::PxPhysics*				gPhysics	= NULL;
+		inline static physx::PxPvd*					gPvd        = NULL;
+		inline static physx::PxDefaultCpuDispatcher*	gDispatcher = NULL;
 		
 	private:
 		void CollisionDetectionPhase(float _deltaTime);
@@ -57,18 +66,9 @@ namespace Denix
 
 		void Update(float _deltaTime) override;
 		
-		void Initialize() override
-		{
-			Subsystem::Initialize();
-			DE_LOG(LogPhysics, Warn, "PhysicsSubsystem Initializing")
-			DE_LOG(LogPhysics, Info, "PhysicsSubsystem Initialized")
-		}
+		void Initialize() override;
 
-		void Deinitialize() override
-		{
-			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
-			Subsystem::Deinitialize();
-		}
+		void Deinitialize() override;
 
 		std::vector<Ref<PhysicsComponent>>& GetPhysicsComponents() { return m_PhysicsComponents; }
 		
