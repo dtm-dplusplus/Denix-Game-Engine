@@ -47,7 +47,9 @@ namespace Denix
 		inline static physx::PxPhysics*				gPhysics	= NULL;
 		inline static physx::PxPvd*					gPvd        = NULL;
 		inline static physx::PxDefaultCpuDispatcher*	gDispatcher = NULL;
-		
+
+		static physx::PxScene* CreatePxScene(const physx::PxSceneDesc* _sceneDesc);
+
 	private:
 		void CollisionDetectionPhase(float _deltaTime);
 		bool ColllisionExists(const Ref<Actor>& _objectA, const Ref<Actor>& _objectB);

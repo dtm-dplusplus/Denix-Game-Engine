@@ -13,14 +13,8 @@ PxRigidDynamic* DevScene::createDynamic(const PxTransform& t, const PxGeometry& 
 	PxRigidDynamic* dynamic = PxCreateDynamic(*PhysicsSubsystem::gPhysics, t, geometry, *gMaterial, 10.0f);
 	dynamic->setAngularDamping(0.5f);
 	dynamic->setLinearVelocity(velocity);
-	gScene->addActor(*dynamic);
+	m_PxScene->addActor(*dynamic);
 	return dynamic;
-}
-
-void DevScene::stepPhysics(bool interactive)
-{
-	gScene->simulate(TimerSubsystem::GetDeltaTime());
-	gScene->fetchResults(true);
 }
 
 void DevScene::BeginScene()
@@ -28,25 +22,15 @@ void DevScene::BeginScene()
 	Scene::BeginScene();
 
 	ClearScene();
-	
-	PxSceneDesc sceneDesc(PhysicsSubsystem::gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
-	PhysicsSubsystem::gDispatcher = PxDefaultCpuDispatcherCreate(1);
-	sceneDesc.cpuDispatcher	= PhysicsSubsystem::gDispatcher;
-	sceneDesc.filterShader	= PxDefaultSimulationFilterShader;
-	gScene = PhysicsSubsystem::gPhysics->createScene(sceneDesc);
 
-	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
-	if(pvdClient)
-	{
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-	}
+	// Disabled for now - Investigage manual thread control
+	//PhysicsSubsystem::gDispatcher = PxDefaultCpuDispatcherCreate(1);
+	//sceneDesc.cpuDispatcher	= PhysicsSubsystem::gDispatcher;
+	//sceneDesc.filterShader	= PxDefaultSimulationFilterShader;
+	//m_PxScene = PhysicsSubsystem::gPhysics->createScene(sceneDesc);
+	
 	gMaterial = PhysicsSubsystem::gPhysics->createMaterial(0.5f, 0.5f, 0.2f);
 
-	
-	
 	// Dynamic Cube
 	{
 		m_DyCube = SpawnActor<Cube>();
@@ -56,7 +40,7 @@ void DevScene::BeginScene()
 		PxRigidDynamic* body = PhysicsSubsystem::gPhysics->createRigidDynamic(m_DyCube->GetPhysicsComponent()->m_PxTransform);
 		body->attachShape(*m_DyCube->GetPhysicsComponent()->m_PxShape);
 		PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-		gScene->addActor(*body);
+		m_PxScene->addActor(*body);
 		m_DyCube->GetPhysicsComponent()->m_PxShape->release();
 	}
 
@@ -67,7 +51,7 @@ void DevScene::BeginScene()
 		m_StatCube->GetPhysicsComponent()->m_PxShape = PhysicsSubsystem::gPhysics->createShape(PxBoxGeometry(2, .5, 2), *gMaterial);
 		m_StatCube->GetPhysicsComponent()->m_PxActor = PhysicsSubsystem::gPhysics->createRigidStatic(m_StatCube->GetPhysicsComponent()->m_PxTransform);
 		m_StatCube->GetPhysicsComponent()->m_PxActor->attachShape(*m_StatCube->GetPhysicsComponent()->m_PxShape);
-		gScene->addActor(*m_StatCube->GetPhysicsComponent()->m_PxActor);
+		m_PxScene->addActor(*m_StatCube->GetPhysicsComponent()->m_PxActor);
 		m_StatCube->GetPhysicsComponent()->m_PxShape->release();
 	}
 
@@ -78,8 +62,6 @@ void DevScene::BeginScene()
 void DevScene::EndScene()
 {
 	Scene::EndScene();
-
-	PX_RELEASE(gScene);
 }
 
 void DevScene::Update(float _deltaTime)
@@ -88,10 +70,8 @@ void DevScene::Update(float _deltaTime)
 
 	if (!IsPlaying()) return;
 	
-	stepPhysics(false);
-
 	PxActor* cube;
-	gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, &cube, 1);
+	m_PxScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, &cube, 1);
 	if (const PxRigidDynamic* actor = cube->is<PxRigidDynamic>())
 	{
 		PxTransform transform = actor->getGlobalPose();
@@ -117,7 +97,7 @@ void DevScene::Update(float _deltaTime)
 	}
 	
 	PxActor* plane;
-	gScene->getActors(PxActorTypeFlag::eRIGID_STATIC, &plane, 1);
+	m_PxScene->getActors(PxActorTypeFlag::eRIGID_STATIC, &plane, 1);
 	if (const PxRigidStatic* actor = plane->is<PxRigidStatic>())
 	{
 		PxTransform transform = actor->getGlobalPose();

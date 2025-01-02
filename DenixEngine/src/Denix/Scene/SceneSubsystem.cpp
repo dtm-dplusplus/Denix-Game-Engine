@@ -366,6 +366,7 @@ namespace Denix
 		// Load the scene data from the asset file
 		YAML::Node sceneNode = YAML::LoadFile(_scene->m_SceneAsset->GetAssetPath());
 
+		
 		// Check if the scene data is valid
 		if (!sceneNode.IsDefined())
 		{
@@ -375,8 +376,6 @@ namespace Denix
         	
 		// Load the scene objects
 		DeserializeSceneObjects(_scene, sceneNode);
-		
-		DE_LOG(LogScene, Info, "Deserialized scene: {}", _scene->GetName())
 	}
 
 	bool SceneSubsystem::DeserializeSceneObjects(const Ref<Scene>& _scene,

@@ -1,19 +1,30 @@
 ﻿#include "Denix/Scene/Scene.h"
 
 #include "Denix/Asset/Asset.h"
+#include "Denix/Physics/PhysicsSubsystem.h"
 
 namespace Denix
 {
-    Scene::Scene(): BaseObject({"Scene"}),
-                    m_ViewportCamera{ MakeRef<Camera>() },
-                    m_ActiveCamera{ m_ViewportCamera }
-    {
-    }
+   
 
-    Scene::Scene(const ObjectInit& _objInit): BaseObject(_objInit),
-                                              m_ViewportCamera{ MakeRef<Camera>() },
-                                              m_ActiveCamera{ m_ViewportCamera }
+    Scene::Scene(): BaseObject({"Scene"}), m_PxScene(nullptr), m_PxSceneDesc(nullptr),
+                    m_ViewportCamera{MakeRef<Camera>()},
+                    m_ActiveCamera{m_ViewportCamera}
     {
+        m_PxSceneDesc = new physx::PxSceneDesc(PhysicsSubsystem::gPhysics->getTolerancesScale());
+        m_PxSceneDesc->gravity = physx::PxVec3(0.0f, -m_Gravity, 0.0f);
+        PhysicsSubsystem::gDispatcher = physx::PxDefaultCpuDispatcherCreate(1);
+        m_PxSceneDesc->cpuDispatcher	= PhysicsSubsystem::gDispatcher;
+       
+        m_PxSceneDesc->filterShader = physx::PxDefaultSimulationFilterShader;
+        m_PxScene = PhysicsSubsystem::CreatePxScene(m_PxSceneDesc);
+
+        if(physx::PxPvdSceneClient* pvdClient = m_PxScene->getScenePvdClient())
+        {
+            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+        }
     }
 
     bool Scene::Load()
@@ -38,6 +49,9 @@ namespace Denix
     void Scene::EndScene()
     {
         for (const auto& obj : m_Actors) obj->EndScene();
+
+        // PhysX Cleanup
+        PX_RELEASE(m_PxScene);
     }
 
     void Scene::BeginPlay()

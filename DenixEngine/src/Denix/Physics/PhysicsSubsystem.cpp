@@ -38,17 +38,21 @@ namespace Denix
 
     void PhysicsSubsystem::Update(float _deltaTime)
     {
-        auto activeScene = s_Instance->m_ActiveScene.lock();
-        
-        if (!m_Enabled || !activeScene->IsPlaying()) return;
-
         DE_PROFILE(Physics Update)
 
+        auto activeScene = s_Instance->m_ActiveScene.lock();
+        
+        if (!m_Enabled || !activeScene->IsPlaying())
+        {
+            DE_PROFILE_END(Physics Update)
+            return;
+        }
+        
          // Clean collision colData
-                m_CollisionEvents.clear();
+        //m_CollisionEvents.clear();
         
         // Set status
-        DE_PROFILE(Physics Pre Update)
+        /*DE_PROFILE(Physics Pre Update)
         for (const auto& comp : m_PhysicsComponents)
         {
             comp->m_SteppedThisFrame = comp->m_SteppedNextFrame;
@@ -73,18 +77,20 @@ namespace Denix
                 else m_DynamicPhysicsComponents.push_back(comp);
             }
         }
-        DE_PROFILE_END(Physics Pre Update)
+        DE_PROFILE_END(Physics Pre Update)*/
                 
-        DE_PROFILE(Physics Collision)
+        /*DE_PROFILE(Physics Collision)
         if (m_CollisionDetectionEnabled) CollisionDetectionPhase(_deltaTime);
-        DE_PROFILE_END(Physics Collision)
+        DE_PROFILE_END(Physics Collision)*/
 
-        DE_PROFILE(Physics Response)
+        /*DE_PROFILE(Physics Response)
         if (m_CollisionResponseEnabled) CollisionResonsePhase(_deltaTime);
-        DE_PROFILE_END(Physics Response)
+        DE_PROFILE_END(Physics Response)*/
 
         DE_PROFILE(Physics Simulation)
-        PhysicsSimulationPhase(_deltaTime);
+        //PhysicsSimulationPhase(_deltaTime);
+        activeScene->m_PxScene->simulate(_deltaTime);
+        activeScene->m_PxScene->fetchResults(true);
         DE_PROFILE_END(Physics Simulation)
 
         DE_PROFILE_END(Physics Update)
@@ -118,6 +124,11 @@ namespace Denix
         
         DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
         Subsystem::Deinitialize();
+    }
+
+    physx::PxScene* PhysicsSubsystem::CreatePxScene(const physx::PxSceneDesc* _sceneDesc)
+    {
+        return s_Instance->gPhysics->createScene(*_sceneDesc);
     }
 
     void PhysicsSubsystem::CollisionDetectionPhase(float _deltaTime)

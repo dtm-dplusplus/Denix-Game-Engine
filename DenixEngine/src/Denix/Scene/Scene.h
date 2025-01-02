@@ -3,6 +3,12 @@
 #include "Actor.h"
 #include "Camera.h"
 
+namespace physx
+{
+	class PxSceneDesc;
+	class PxScene;
+}
+
 namespace Denix
 {
 	class Asset;
@@ -11,9 +17,7 @@ namespace Denix
 	class Scene: public BaseObject, public std::enable_shared_from_this<Scene>
 	{
 	public:
-
 		Scene();
-		explicit Scene(const ObjectInit& _objInit);
 
 		~Scene() override = default;
 
@@ -64,6 +68,8 @@ namespace Denix
 
 		size_t GetActorCount() const { return m_Actors.size(); }
 
+		physx::PxScene*	m_PxScene;
+		physx::PxSceneDesc*		m_PxSceneDesc;
 	protected:
 
 		/** Name of the scene. Must be uniqiue */
