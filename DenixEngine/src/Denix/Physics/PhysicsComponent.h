@@ -8,6 +8,7 @@
 #include "Denix/Scene/Component.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Physics/Collider.h"
+#include "Denix/Scene/Actor.h"
 
 namespace physx
 {
@@ -48,10 +49,6 @@ namespace Denix
 	{
 	public:
 		PhysicsComponent();
-
-		PhysicsComponent(const Ref<TransformComponent>& _parentTransform);
-
-		PhysicsComponent(const std::string& _parentName);
 
 		~PhysicsComponent() override = default;
 
@@ -122,9 +119,6 @@ namespace Denix
 
 		/** Broad collider used for broad phase collision detection */
 		Ref<SphereCollider> m_BroadCollider;
-
-		/** Transform component which is attached to this components game object */
-		Ref<class TransformComponent> m_ParentTransform;
 
 	private:
 		/////////////////////* Linear Properties *///////////////////////
@@ -209,38 +203,11 @@ namespace Denix
 
 		void ComputeCenterOfMass();
 
-		void ComputeObjectInertiaTensor()
-		{
-			m_ObjectInteriaTensor = m_ParentTransform->m_RotationMatrix * m_BodyInteriaTensor * glm::transpose(m_ParentTransform->m_RotationMatrix);
-		}
-		void ComputeObjectInverseInertiaTensor()
-		{
-			m_ObjectInteriaTensorInverse = m_ParentTransform->m_RotationMatrix *
-				m_BodyInteriaTensorInverse * glm::transpose(m_ParentTransform->m_RotationMatrix);
-		}
+		void ComputeObjectInertiaTensor();
 
-		void ComputeBodyInertiaTensor()
-		{
-			// Set Inertia Tensor && inverse Inertia Tensor
-			if (m_Collider)
-			{
-				switch (m_Collider->GetColliderType())
-				{
-				case ColliderType::Cube:
-				{
-					Ref<CubeCollider> cubeCol = CastRef<CubeCollider>(m_Collider);
+		void ComputeObjectInverseInertiaTensor();
 
-				} break;
-
-				case ColliderType::Sphere:
-				{
-					Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
-					m_BodyInteriaTensor = glm::mat3((2.0f / 5.0f) * m_Mass * pow(sphereCol->GetRadius(), 2));
-					m_BodyInteriaTensorInverse = glm::inverse(m_BodyInteriaTensor);
-				} break;
-				}
-			}
-		}
+		void ComputeBodyInertiaTensor();
 
 		void ComputeTorqueArm(const glm::vec3& _contactPoint, const glm::vec3& _force)
 		{
@@ -488,13 +455,9 @@ namespace Denix
 		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
 		void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
 
-		Ref<TransformComponent> GetParentTransform() { return m_ParentTransform; }
+		Ref<Collider> GetCollider() const;
+		Ref<Collider>& GetCollider();
 
-		Ref<Collider> GetCollider() const { return m_Collider; }
-		Ref<Collider>& GetCollider() { return m_Collider; }
-		void SetCollider(const Ref<Collider>& _collider)
-		{
-			m_Collider = _collider;
-		}
+		void SetCollider(const Ref<Collider>& _collider);
 	};
 }

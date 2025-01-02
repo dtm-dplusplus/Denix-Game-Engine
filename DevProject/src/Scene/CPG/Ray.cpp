@@ -20,7 +20,7 @@ Ray::Ray()
     }());
 }
 
-void Ray::OnCollision(Ref<Actor>& _other, CollisionData& _collision)
+/*void Ray::OnCollision(Ref<Actor>& _other, CollisionData& _collision)
 {
     Cube::OnCollision(_other, _collision);
 
@@ -29,7 +29,7 @@ void Ray::OnCollision(Ref<Actor>& _other, CollisionData& _collision)
         m_RenderComponent->GetMaterial()->SetBaseColor(mat->GetBaseColor());
         DE_LOG(LogScene, Info, "Ray collided with object: {}", _other->GetName())
     }
-}
+}*/
 
 void Ray::EndPlay()
 {

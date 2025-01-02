@@ -34,7 +34,6 @@ namespace Denix
 		{
 			if(Ref<T> component = MakeRef<T>(std::forward<Args>(_args)...))
 			{
-				component->m_Parent = this;
 				m_Components.push_back(component);
 				m_ComponentMap[ReflectionHelper::GetDEClassName<T>()] = component;
 				return component;
@@ -61,18 +60,18 @@ namespace Denix
 		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
-		Ref<Collider> GetCollider() const { return m_PhysicsComponent->GetCollider(); }
+		Ref<Collider> GetCollider() const;
 
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
 
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 		// Physics Component
-		virtual void OnCollision(Ref<Actor>& _other, CollisionData& _collision) {} //const Ref<Actor>& _other
+		//virtual void OnCollision(Ref<Actor>& _other, CollisionData& _collision) {} //const Ref<Actor>& _other
 
-		virtual void OnTriggerEnter(Ref<Actor> _other);
-		virtual void OnTriggerStay(Ref<Actor> _other);
-		virtual void OnTriggerExit(Ref<Actor> _other);
+		virtual void OnTriggerEnter(Ref<Actor> _other){}
+		virtual void OnTriggerStay(Ref<Actor> _other){}
+		virtual void OnTriggerExit(Ref<Actor> _other){}
 
 		void Destroy();
 
@@ -97,8 +96,14 @@ namespace Denix
 
 		Ref<RenderComponent> m_RenderComponent;
 
-		friend class SceneSubsystem;
 		friend class Scene;
+		friend class SceneSubsystem;
+
+		friend class PhysicsComponent;
+		friend class MeshComponent;
+		friend class RenderComponent;
+		friend class TransformComponent;
+
 		friend class RendererSubsystem;
 	};
 }

@@ -15,7 +15,7 @@ namespace Denix
         m_TransformComponent = AddComponent<TransformComponent>();
         m_MeshComponent = AddComponent<MeshComponent>();
         m_RenderComponent = AddComponent<RenderComponent>();
-        m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
+        m_PhysicsComponent = AddComponent<PhysicsComponent>();
     }
 
     Actor::Actor(const ObjectInit& _object_init) : BaseObject(_object_init)
@@ -23,7 +23,7 @@ namespace Denix
         m_TransformComponent = AddComponent<TransformComponent>();
         m_MeshComponent = AddComponent<MeshComponent>();
         m_RenderComponent = AddComponent<RenderComponent>();
-        m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
+        m_PhysicsComponent = AddComponent<PhysicsComponent>();
     }
 
     void Actor::Serialize(YAML::Emitter& _out)
@@ -175,14 +175,8 @@ namespace Denix
         }
     }
 
-    void Actor::OnTriggerEnter(Ref<Actor> _other)
-    {}
-
-    void Actor::OnTriggerStay(Ref<Actor> _other)
-    {}
-
-    void Actor::OnTriggerExit(Ref<Actor> _other)
-    {}
+    Ref<Collider> Actor::GetCollider() const
+    { return m_PhysicsComponent->GetCollider(); }
 
     void Actor::Destroy()
     {
@@ -194,7 +188,11 @@ namespace Denix
     {
         BaseObject::BeginScene();
 
-        for (const auto& component : m_Components) component->BeginScene();
+        for (const auto& component : m_Components)
+        {
+            component->m_Parent = shared_from_this();
+            component->BeginScene();
+        }
     }
 
     void Actor::EndScene()

@@ -13,12 +13,6 @@ namespace Denix
 		MeshComponent() : Component(ObjectInit("Mesh Component")),
 			m_Model{ nullptr } {}
 
-		MeshComponent(const std::string& _parentName) : Component(_parentName, ObjectInit("Mesh Component")),
-			m_Model{ nullptr } {}
-
-		MeshComponent(const std::string& _parentName, const Ref<Model>& _model) : Component(_parentName, ObjectInit("Mesh Component")),
-			m_Model{ nullptr } {}
-
 		Ref<Model> GetModel() const { return m_Model; }
 		Ref<Model>& GetModel() { return m_Model; }
 		void SetModel(const Ref<Model>& _model) { m_Model = _model; }

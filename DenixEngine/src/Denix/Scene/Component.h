@@ -1,12 +1,12 @@
 #pragma once
 
 #include "BaseObject.h"
-#include "Object.h"
 
 namespace Denix
 {
-	/*	Base class for all object components */
-	// Super jank design, but it works for now
+	class Actor;
+	
+	/*	Base component class for all Actors  */
 	class Component : public BaseObject
 	{
 	public:
@@ -15,36 +15,37 @@ namespace Denix
 		{
 		}
 
-		Component(const std::string& _parentName, const ObjectInit& _objectInitializer = ObjectInit()) : BaseObject(_objectInitializer), m_ParentObjectName{ _parentName }
-		{
-		}
-
 		// Destructors
 		~Component() override = default;
-
-		virtual void RegisterComponent() {}
-		virtual void UnregisterComponent() {}
-
-	public: // Component Interface
-		/** Get the parent object id */
-		std::string GetParentObjectName() const { return m_ParentObjectName; }
-
-		/** Set the parent object id */
-		void SetParentObjectName(const std::string& _name) { m_ParentObjectName = _name; }
+		
 
 	public: // Object Interface
-		virtual void Initialize() {}
-		virtual void Deinitialize() {}
-
-		void BeginScene() override {}
-		void EndScene() override {}
-		void Update(float _deltaTime) override {}
+		void BeginScene() override
+		{
+			BaseObject::BeginScene();
+		}
+		void BeginPlay() override
+		{
+			BaseObject::BeginPlay();
+		}
+		void EndPlay() override
+		{
+			BaseObject::EndPlay();
+		}
+		void EndScene() override
+		{
+			BaseObject::EndScene();
+		}
+		void Update(float _deltaTime) override
+		{
+			BaseObject::Update(_deltaTime);
+		}
 
 	protected:
-		/* Object this component is attacthed to */
-		std::string m_ParentObjectName;
-
-		BaseObject* m_Parent;
+		virtual void RegisterComponent() {}
+		virtual void UnregisterComponent() {}
+		
+		Ref<Actor> m_Parent;
 
 		friend class Actor;
 		friend class BaseObject;

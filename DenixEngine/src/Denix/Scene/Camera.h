@@ -15,20 +15,25 @@ namespace Denix
 		 *  @brief Constructor for the Camera class
 		 * @param _position Option to set the position of the camera 
 		 */
-		Camera(const glm::vec3 _position = {0.0f, 5.0f, 25.0f}) : Actor({"Camera"}),
+		Camera() : Actor({"Camera"}),
 			m_Viewport(MakeRef<Viewport>())
 		{
-			m_TransformComponent->SetPosition(_position);
-			m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
-			m_RenderComponent->SetIsVisible(false);
+			
 		}
 		
 		~Camera() override = default;
 
 		void ProcessKeyboardInput(float _deltaTime);
 		void ProccessMouseMovement(float _deltaTime);
-		void Update(float _deltaTime) override;
 
+		void BeginScene() override
+		{
+			m_TransformComponent->SetPosition({0.0f, 5.0f, 25.0f});
+			m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
+			m_RenderComponent->SetIsVisible(false);
+		}
+		
+		void Update(float _deltaTime) override;
 
 		glm::mat4 GetProjectionMatrix() const
 		{

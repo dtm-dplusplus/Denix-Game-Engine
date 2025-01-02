@@ -11,31 +11,52 @@ namespace Denix
 		m_BroadCollider->GetRadius() = 2.0f;
     }
 
-    PhysicsComponent::PhysicsComponent(const Ref<TransformComponent>& _parentTransform): 
-        Component(ObjectInit("Physics Component")), m_Collider(nullptr)
-    {
-        m_ParentTransform = _parentTransform;
-        m_BroadCollider = MakeRef<SphereCollider>();
-        m_BroadCollider->GetRadius() = 2.0f;
-    }
-
-    PhysicsComponent::PhysicsComponent(const std::string& _parentName): 
-        Component(_parentName, ObjectInit("Physics Component")), m_Collider(nullptr)
-    {
-        m_BroadCollider = MakeRef<SphereCollider>();
-        m_BroadCollider->GetRadius() = 2.0f;
-    }
-
     void PhysicsComponent::ComputeCenterOfMass()
     {
         // Compute the center of mass of the object
         // For now, we will assume the center of mass is at the center of the object
-        m_CenterOfMass = m_ParentTransform->GetPosition();
+        m_CenterOfMass = m_Parent->m_TransformComponent->GetPosition();
+    }
+
+    void PhysicsComponent::ComputeObjectInertiaTensor()
+    {
+        glm::mat3 rotationMatrix = m_Parent->m_TransformComponent->m_RotationMatrix;
+        m_ObjectInteriaTensor =rotationMatrix * m_BodyInteriaTensor * glm::transpose(rotationMatrix);
+    }
+
+    void PhysicsComponent::ComputeObjectInverseInertiaTensor()
+    {
+        glm::mat3 rotationMatrix = m_Parent->m_TransformComponent->m_RotationMatrix;
+        m_ObjectInteriaTensorInverse = m_Parent->m_TransformComponent->m_RotationMatrix *
+            m_BodyInteriaTensorInverse * glm::transpose(rotationMatrix);
+    }
+
+    void PhysicsComponent::ComputeBodyInertiaTensor()
+    {
+        // Set Inertia Tensor && inverse Inertia Tensor
+        if (m_Collider)
+        {
+            switch (m_Collider->GetColliderType())
+            {
+            case ColliderType::Cube:
+                {
+                    Ref<CubeCollider> cubeCol = CastRef<CubeCollider>(m_Collider);
+
+                } break;
+
+            case ColliderType::Sphere:
+                {
+                    Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
+                    m_BodyInteriaTensor = glm::mat3((2.0f / 5.0f) * m_Mass * pow(sphereCol->GetRadius(), 2));
+                    m_BodyInteriaTensorInverse = glm::inverse(m_BodyInteriaTensor);
+                } break;
+            }
+        }
     }
 
     void PhysicsComponent::ComputeRotationMatrix(float _deltaTime)
     {
-        m_ParentTransform->m_RotationMatrix += GetSkewMatrix(m_AngularVelocity) * m_ParentTransform->m_RotationMatrix * _deltaTime;
+        m_Parent->m_TransformComponent->m_RotationMatrix += GetSkewMatrix(m_AngularVelocity) * m_Parent->m_TransformComponent->m_RotationMatrix * _deltaTime;
     }
 
     void PhysicsComponent::ComputeStepEuler(float _deltaTime)
@@ -48,7 +69,7 @@ namespace Denix
         m_Velocity += m_Acceleration * _deltaTime;
 
         // Calculate new displacement at time t + dt
-        m_ParentTransform->m_Position += m_Velocity * _deltaTime;
+        m_Parent->m_TransformComponent->m_Position += m_Velocity * _deltaTime;
 
         ////////////* Angular */////////////////////
         if (!m_RotationEnabled) return;
@@ -71,8 +92,8 @@ namespace Denix
         // Update rotation matrix
         ComputeRotationMatrix(_deltaTime);
 
-        glm::vec3 angles = GetEulerAngles(m_ParentTransform->m_RotationMatrix);
-        m_ParentTransform->GetRotation() += angles;
+        glm::vec3 angles = GetEulerAngles(m_Parent->m_TransformComponent->m_RotationMatrix);
+        m_Parent->m_TransformComponent->GetRotation() += angles;
     }
 
     void PhysicsComponent::ComputeStepRK2(float _deltaTime)
@@ -90,7 +111,7 @@ namespace Denix
         m_Velocity += (k1 + k2) / 2.f;
 
         // Calculate new displacement at time t + dt
-        m_ParentTransform->GetPosition() += m_Velocity * _deltaTime;
+        m_Parent->m_TransformComponent->GetPosition() += m_Velocity * _deltaTime;
        
         ////////////* Angular */////////////////////
         // Calulate angular momentum
@@ -111,8 +132,19 @@ namespace Denix
         // Update rotation matrix
         ComputeRotationMatrix(_deltaTime);
 
-        glm::vec3 angles = GetEulerAngles(m_ParentTransform->m_RotationMatrix);
-        m_ParentTransform->GetRotation() += angles;
+        glm::vec3 angles = GetEulerAngles(m_Parent->m_TransformComponent->m_RotationMatrix);
+        m_Parent->m_TransformComponent->GetRotation() += angles;
+    }
+
+    Ref<Collider> PhysicsComponent::GetCollider() const
+    { return m_Collider; }
+
+    Ref<Collider>& PhysicsComponent::GetCollider()
+    { return m_Collider; }
+
+    void PhysicsComponent::SetCollider(const Ref<Collider>& _collider)
+    {
+        m_Collider = _collider;
     }
 
     void PhysicsComponent::BeginScene()
@@ -126,7 +158,10 @@ namespace Denix
     {
         Component::Update(_deltaTime);
 
-        m_ParentTransform->m_PhysicsRotationOverride = m_SimulatePhysics;
+        
+        
+        /*
+         *m_ParentTransform->m_PhysicsRotationOverride = m_SimulatePhysics;
 
         if (!m_Collider) return;
         
@@ -150,6 +185,7 @@ namespace Denix
                }
             } break;
         }
+        */
     }
 
     void PhysicsComponent::StepSimulation(float _deltaTime)
@@ -172,9 +208,9 @@ namespace Denix
 
 
         // Initialize the physics component
-        m_CenterOfMass = m_ParentTransform->GetPosition();
-        m_PreviousPosition = m_ParentTransform->GetPosition();
-        m_ParentTransform->m_RotationMatrix = glm::mat4(1.0f);
+        m_CenterOfMass = m_Parent->m_TransformComponent->m_Position;
+        m_PreviousPosition = m_Parent->m_TransformComponent->m_Position;
+        m_Parent->m_TransformComponent->m_RotationMatrix =  glm::mat4(1.0f);
 
         m_Force = glm::vec3(0.0f);
         m_Torque = glm::vec3(0.0f);

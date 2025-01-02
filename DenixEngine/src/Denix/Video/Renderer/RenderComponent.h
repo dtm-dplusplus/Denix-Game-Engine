@@ -26,8 +26,6 @@ namespace Denix
 
 		RenderComponent(Ref<RenderComponent> _other);
 
-		RenderComponent(const std::string& _parentName);
-
 		~RenderComponent() override = default;
 
 		Ref<Texture> GetTexture() const { return m_Texture; }

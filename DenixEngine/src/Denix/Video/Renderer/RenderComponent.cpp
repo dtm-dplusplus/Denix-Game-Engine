@@ -23,13 +23,6 @@ namespace Denix
 		m_AffectsLighting = _other->m_AffectsLighting;
 	}
 
-	RenderComponent::RenderComponent(const std::string& _parentName): Component(_parentName, ObjectInit("Render Component"))
-	{
-		m_Shader = AssetSubsystem::GetShader("DefaultShader");
-		m_Texture = AssetSubsystem::GetTexture("DefaultTexture");
-		m_Material = AssetSubsystem::GetDefaultMaterial();
-	}
-
 	void RenderComponent::SetMaterial(const Ref<Material>& _material)
 	{
 		// Check if the material is valid

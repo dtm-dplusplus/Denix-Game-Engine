@@ -243,11 +243,11 @@ namespace Denix
         }
 
         // Call client side implementation
-        if (compActor->GetParentTransform()->GetMoveability() == Moveability::Dynamic)
+        /*if (compActor->m_Parent->GetTransformComponent()->GetMoveability() == Moveability::Dynamic)
             _collisionEvent.Owner->OnCollision(_collisionEvent.Other, _collisionEvent.ColData);
 
-        if (compOther->GetParentTransform()->GetMoveability() == Moveability::Dynamic)
-            _collisionEvent.Other->OnCollision(_collisionEvent.Owner, _collisionEvent.ColData);
+        if (compOther->m_Parent->GetTransformComponent()->GetMoveability() == Moveability::Dynamic)
+            _collisionEvent.Other->OnCollision(_collisionEvent.Owner, _collisionEvent.ColData);*/
     }
 
     void PhysicsSubsystem::CubeCollision(const Ref<PhysicsComponent>& _cubeCompA,
@@ -274,7 +274,7 @@ namespace Denix
         const Ref<SphereCollider>& sphereCollider = CastRef<SphereCollider>(_sphereComp->GetCollider());
         const Ref<CubeCollider>& cubeCollider = CastRef<CubeCollider>(_cubeComp->GetCollider());
         const glm::vec3& max = cubeCollider->GetMax();
-        glm::vec3& position = _sphereComp->m_ParentTransform->GetPosition();
+        glm::vec3& position = _sphereComp->m_Parent->GetTransformComponent()->GetPosition();
         position = {position.x, max.y + sphereCollider->GetRadius() * 2.0f, position.z};
 
         ImpulseResponse(_sphereComp, _cubeComp);
@@ -285,8 +285,8 @@ namespace Denix
     void PhysicsSubsystem::SphereCollision(const Ref<PhysicsComponent>& _sphereCompA,
                                            const Ref<PhysicsComponent>& _sphereCompB, CollisionEvent& _collisionEvent)
     {
-        glm::vec3& position = _sphereCompA->m_ParentTransform->GetPosition();
-        glm::vec3& positionB = _sphereCompB->m_ParentTransform->GetPosition();
+        glm::vec3& position = _sphereCompA->m_Parent->GetTransformComponent()->GetPosition();
+        glm::vec3& positionB = _sphereCompB->m_Parent->GetTransformComponent()->GetPosition();
         glm::vec3 positionDistance = position - positionB;
         glm::vec3 normal = glm::normalize(positionDistance);
         float r1 = CastRef<SphereCollider>(_sphereCompA->GetCollider())->GetRadius();
@@ -333,7 +333,7 @@ namespace Denix
 
     void PhysicsSubsystem::ImpulseResponse(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB)
     {
-        glm::vec3 positionDistance = _compA->m_ParentTransform->GetPosition() - _compB->m_ParentTransform->
+        glm::vec3 positionDistance = _compA->m_Parent->GetTransformComponent()->GetPosition() - _compB->m_Parent->GetTransformComponent()->
             GetPosition();
         glm::vec3 normal = glm::normalize(positionDistance);
         glm::vec3& velocityA = _compA->m_Velocity;
