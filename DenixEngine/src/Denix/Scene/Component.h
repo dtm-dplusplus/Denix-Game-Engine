@@ -24,6 +24,12 @@ namespace Denix
 		{
 			BaseObject::BeginScene();
 		}
+
+		void EndScene() override
+		{
+			BaseObject::EndScene();
+		}
+		
 		void BeginPlay() override
 		{
 			BaseObject::BeginPlay();
@@ -31,10 +37,6 @@ namespace Denix
 		void EndPlay() override
 		{
 			BaseObject::EndPlay();
-		}
-		void EndScene() override
-		{
-			BaseObject::EndScene();
 		}
 		void Update(float _deltaTime) override
 		{

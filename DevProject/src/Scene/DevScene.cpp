@@ -29,34 +29,19 @@ void DevScene::BeginScene()
 	//sceneDesc.filterShader	= PxDefaultSimulationFilterShader;
 	//m_PxScene = PhysicsSubsystem::gPhysics->createScene(sceneDesc);
 	
-	gMaterial = PhysicsSubsystem::gPhysics->createMaterial(0.5f, 0.5f, 0.2f);
-
 	// Dynamic Cube
 	{
-		m_DyCube = SpawnActor<Cube>();
-		PxVec3 scale = {m_DyCube->GetTransformComponent()->GetScale().x, m_DyCube->GetTransformComponent()->GetScale().y, m_DyCube->GetTransformComponent()->GetScale().z};
-		m_DyCube->GetPhysicsComponent()->m_PxShape = PhysicsSubsystem::gPhysics->createShape(PxBoxGeometry(scale), *gMaterial);
-		m_DyCube->GetPhysicsComponent()->m_PxTransform = PxTransform(PxVec3(0, 10, 0));
-		PxRigidDynamic* body = PhysicsSubsystem::gPhysics->createRigidDynamic(m_DyCube->GetPhysicsComponent()->m_PxTransform);
-		body->attachShape(*m_DyCube->GetPhysicsComponent()->m_PxShape);
-		PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-		m_PxScene->addActor(*body);
-		m_DyCube->GetPhysicsComponent()->m_PxShape->release();
+		m_DyActor = SpawnActor<Sphere>();
+		m_DyActor->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
+		m_DyActor->GetTransformComponent()->SetPosition({0.0f, 10.0f, 0.0f});
 	}
 
 	// Static Cube
 	{
-		m_StatCube = SpawnActor<Cube>();
-		m_StatCube->GetTransformComponent()->GetScale() = {2.0f, 0.5f, 2.0f};
-		m_StatCube->GetPhysicsComponent()->m_PxShape = PhysicsSubsystem::gPhysics->createShape(PxBoxGeometry(2, .5, 2), *gMaterial);
-		m_StatCube->GetPhysicsComponent()->m_PxActor = PhysicsSubsystem::gPhysics->createRigidStatic(m_StatCube->GetPhysicsComponent()->m_PxTransform);
-		m_StatCube->GetPhysicsComponent()->m_PxActor->attachShape(*m_StatCube->GetPhysicsComponent()->m_PxShape);
-		m_PxScene->addActor(*m_StatCube->GetPhysicsComponent()->m_PxActor);
-		m_StatCube->GetPhysicsComponent()->m_PxShape->release();
+		m_StatActor = SpawnActor<Plane>();
+		m_StatActor->GetTransformComponent()->SetMoveability(Moveability::Static);
+		m_StatActor->GetTransformComponent()->GetScale() = {4.0f, 0.1f, 4.0f};
 	}
-
-	/*if(!interactive)
-		createDynamic(PxTransform(PxVec3(0,40,100)), PxSphereGeometry(10), PxVec3(0,-50,-100));*/
 }
 
 void DevScene::EndScene()
@@ -69,58 +54,80 @@ void DevScene::Update(float _deltaTime)
 	Scene::Update(_deltaTime);
 
 	if (!IsPlaying()) return;
-	
-	PxActor* cube;
-	m_PxScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, &cube, 1);
-	if (const PxRigidDynamic* actor = cube->is<PxRigidDynamic>())
+
+	if (m_DyActor)
 	{
-		PxTransform transform = actor->getGlobalPose();
-		glm::vec3 position = {transform.p.x, transform.p.y, transform.p.z};
-		glm::vec3 rotation = {transform.q.x, transform.q.y, transform.q.z};
-
-		PxShape* shape;
-		actor->getShapes(&shape, 1);
-		glm::vec3 scale = m_DyCube->GetTransformComponent()->GetScale();
-
-		if (shape)
+		PxActor* dyActor;
+		m_PxScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, &dyActor, 1);
+		if (const PxRigidDynamic* actor = dyActor->is<PxRigidDynamic>())
 		{
-			PxGeometryHolder geometry = shape->getGeometry();
-			PxBoxGeometry box = geometry.box();
-			scale = {box.halfExtents.x * 2, box.halfExtents.y * 2, box.halfExtents.z * 2};
-			m_DyCube->GetTransformComponent()->SetPosition(position);
-			m_DyCube->GetTransformComponent()->SetRotation(rotation);
-			m_DyCube->GetTransformComponent()->SetScale(scale);
+			PxTransform transform = actor->getGlobalPose();
+			glm::vec3 position = {transform.p.x, transform.p.y, transform.p.z};
+			glm::vec3 rotation = {transform.q.x, transform.q.y, transform.q.z};
+
+			PxShape* shape;
+			actor->getShapes(&shape, 1);
+			glm::vec3 scale = m_DyActor->GetTransformComponent()->GetScale();
+
+			if (shape)
+			{
+				switch (m_DyActor->GetPhysicsComponent()->m_ColliderType)
+				{
+				case ColliderType::Plane:
+					{
+					
+					} 
+				
+				case ColliderType::Cube:
+					{
+						PxGeometryHolder geometry = shape->getGeometry();
+						PxBoxGeometry box = geometry.box();
+						scale = {box.halfExtents.x, box.halfExtents.y, box.halfExtents.z} * 2.0f;
+					} break;
+				case ColliderType::Sphere:
+					{
+						PxGeometryHolder geometry = shape->getGeometry();
+						PxSphereGeometry sphere = geometry.sphere();
+						scale = glm::vec3(sphere.radius) * 2.0f;
+					
+					} break;
+				}
+			}
+			m_DyActor->GetTransformComponent()->SetPosition(position);
+			m_DyActor->GetTransformComponent()->SetRotation(rotation);
+			m_DyActor->GetTransformComponent()->SetScale(scale);
 		}
-		m_DyCube->GetTransformComponent()->SetPosition(position);
-		m_DyCube->GetTransformComponent()->SetRotation(rotation);
-		m_DyCube->GetTransformComponent()->SetScale(scale);
 	}
 	
-	PxActor* plane;
-	m_PxScene->getActors(PxActorTypeFlag::eRIGID_STATIC, &plane, 1);
-	if (const PxRigidStatic* actor = plane->is<PxRigidStatic>())
-	{
-		PxTransform transform = actor->getGlobalPose();
-		glm::vec3 position = {transform.p.x, transform.p.y, transform.p.z};
-		glm::vec3 rotation = {transform.q.x, transform.q.y, transform.q.z};
-		
-		PxShape* shape;
-		actor->getShapes(&shape, 1);
-		glm::vec3 scale = m_StatCube->GetTransformComponent()->GetScale();
 
-		if (shape)
+	if (m_StatActor)
+	{
+		PxActor* statActor;
+	m_PxScene->getActors(PxActorTypeFlag::eRIGID_STATIC, &statActor, 1);
+	if (statActor)
+	{
+		if (const PxRigidStatic* actor = statActor->is<PxRigidStatic>())
 		{
-			PxGeometryHolder geometry = shape->getGeometry();
-			PxBoxGeometry box = geometry.box();
-			scale = {box.halfExtents.x * 2, box.halfExtents.y * 2, box.halfExtents.z * 2};
-			m_StatCube->GetTransformComponent()->SetPosition(position);
-			m_StatCube->GetTransformComponent()->SetRotation(rotation);
-			m_StatCube->GetTransformComponent()->SetScale(scale);
-		}
+			PxTransform transform = actor->getGlobalPose();
+			glm::vec3 position = {transform.p.x, transform.p.y, transform.p.z};
+			glm::vec3 rotation = {/*transform.q.x*/ 20.f, transform.q.y, transform.q.z};
 		
-		m_StatCube->GetTransformComponent()->SetPosition(position);
-		m_StatCube->GetTransformComponent()->SetRotation(rotation);
-		m_StatCube->GetTransformComponent()->SetScale(scale);
+			PxShape* shape;
+			actor->getShapes(&shape, 1);
+			glm::vec3 scale = m_StatActor->GetTransformComponent()->GetScale();
+
+			if (shape)
+			{
+				PxGeometryHolder geometry = shape->getGeometry();
+				PxBoxGeometry box = geometry.box();
+				scale = {box.halfExtents.x, box.halfExtents.y , box.halfExtents.z } * 2.0f;
+			}
+		
+			m_StatActor->GetTransformComponent()->SetPosition(position);
+			m_StatActor->GetTransformComponent()->SetRotation(rotation);
+			m_StatActor->GetTransformComponent()->SetScale(scale);
+		}
+	}
 	}
 }
 

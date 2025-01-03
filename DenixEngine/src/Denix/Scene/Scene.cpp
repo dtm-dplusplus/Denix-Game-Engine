@@ -18,15 +18,35 @@ namespace Denix
        
         m_PxSceneDesc->filterShader = physx::PxDefaultSimulationFilterShader;
         m_PxScene = PhysicsSubsystem::CreatePxScene(m_PxSceneDesc);
-
         if(physx::PxPvdSceneClient* pvdClient = m_PxScene->getScenePvdClient())
         {
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
         }
+        
+        m_PxScene = PhysicsSubsystem::CreatePxScene(m_PxSceneDesc);
     }
 
+    Scene::~Scene()
+    {
+        if (m_PxSceneDesc)
+        {
+            delete m_PxSceneDesc;
+            m_PxSceneDesc = nullptr;
+        }
+
+        /*if (PhysicsSubsystem::gDispatcher)
+        {
+            PhysicsSubsystem::gDispatcher->release();
+            PhysicsSubsystem::gDispatcher = nullptr;
+        }*/
+
+        // PhysX Cleanup
+        PX_RELEASE(m_PxScene);
+        
+    }
+    
     bool Scene::Load()
     {
         m_IsLoaded = true;
@@ -50,8 +70,7 @@ namespace Denix
     {
         for (const auto& obj : m_Actors) obj->EndScene();
 
-        // PhysX Cleanup
-        PX_RELEASE(m_PxScene);
+       
     }
 
     void Scene::BeginPlay()

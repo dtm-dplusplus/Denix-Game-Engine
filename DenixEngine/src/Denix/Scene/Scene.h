@@ -19,7 +19,7 @@ namespace Denix
 	public:
 		Scene();
 
-		~Scene() override = default;
+		~Scene() override;
 
 		virtual bool Load();
 

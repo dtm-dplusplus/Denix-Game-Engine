@@ -22,6 +22,21 @@ namespace Denix
         std::erase(s_Instance->m_PhysicsComponents, _component);
     }
 
+    void PhysicsSubsystem::RegisterPxActor(physx::PxRigidActor* _actor)
+    {
+        if (!_actor)
+        {
+            DE_LOG(LogPhysics, Error, "Invalid PxActor")
+            return;
+        }
+
+        auto scene = s_Instance->m_ActiveScene.lock() ;
+         if (scene->m_PxScene)
+         {
+             scene->m_PxScene->addActor(*_actor);
+         }
+    }
+
     void PhysicsSubsystem::PreUpdate(float _deltaTime)
     {
 
@@ -107,6 +122,8 @@ namespace Denix
         gPvd->connect(*transport,PxPvdInstrumentationFlag::eALL);
 
         gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
+
+        gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.1f);
         DE_LOG(LogPhysics, Info, "PhysicsSubsystem Initialized")
     }
 

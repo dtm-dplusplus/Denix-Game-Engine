@@ -24,6 +24,6 @@ public:
     PxScene*	gScene		= NULL;
     PxMaterial*	gMaterial	= NULL;
 
-    Ref<Actor> m_DyCube;
-    Ref<Actor> m_StatCube;
+    Ref<Actor> m_DyActor;
+    Ref<Actor> m_StatActor;
 };

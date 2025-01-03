@@ -150,15 +150,90 @@ namespace Denix
     void PhysicsComponent::BeginScene()
     {
         Component::BeginScene();
+
         
         RegisterComponent();
+    }
+
+
+    void PhysicsComponent::SetShape(ColliderType _type)
+    {
+        PX_RELEASE(m_PxShape);
+
+        switch (m_Collider->GetColliderType())
+        {
+        case ColliderType::Cube:
+            {
+                m_PxShape = PhysicsSubsystem::gPhysics->createShape(physx::PxBoxGeometry(2, .5, 2), *PhysicsSubsystem::gMaterial);
+            } break;
+
+        case ColliderType::Sphere:
+            {
+                m_PxShape = PhysicsSubsystem::gPhysics->createShape(physx::PxSphereGeometry(.5), *PhysicsSubsystem::gMaterial);
+            } break;
+        }
+    }
+
+    void PhysicsComponent::SetupPhysX()
+    {
+        PX_RELEASE(m_PxShape)
+
+        const auto scale = m_Parent->m_TransformComponent->m_Scale / 2.0f;
+        const auto pos = m_Parent->m_TransformComponent->m_Position;
+
+        switch (m_ColliderType)
+        {
+        case ColliderType::Plane:
+        {
+            m_PxShape = PhysicsSubsystem::gPhysics->createShape(physx::PxBoxGeometry(scale.x, 0.01f, scale.z), *PhysicsSubsystem::gMaterial);
+        } break;
+            
+        case ColliderType::Cube:
+            {
+                m_PxShape = PhysicsSubsystem::gPhysics->createShape(physx::PxBoxGeometry(scale.x, scale.y, scale.z), *PhysicsSubsystem::gMaterial);
+            } break;
+
+        case ColliderType::Sphere:
+            {
+                m_PxShape = PhysicsSubsystem::gPhysics->createShape(physx::PxSphereGeometry(scale.y), *PhysicsSubsystem::gMaterial);
+            } break;
+        }
+        
+        switch (m_Parent->m_TransformComponent->m_Moveability)
+        {
+        case 0:
+            {
+                m_PxActor = PhysicsSubsystem::gPhysics->createRigidStatic(physx::PxTransform(pos.x, pos.y, pos.z));
+            } break;
+
+        case 1:
+            {
+                //m_PxActor = PhysicsSubsystem::gPhysics->createRigidDynamic(physx::PxTransform(pos.x, pos.y, pos.z));
+                m_PxActor = PxCreateDynamic(*PhysicsSubsystem::gPhysics, physx::PxTransform(pos.x, pos.y, pos.z), *m_PxShape, 10.0f);
+                if (physx::PxRigidDynamic* actor = m_PxActor->is<physx::PxRigidDynamic>())
+                {
+                   //actor->setMass(m_Mass);
+                   //actor->setLinearDamping(m_LinearDrag);
+                   actor->setAngularDamping(0.5f);
+                   //actor->setLinearVelocity({m_Velocity.x, m_Velocity.y, m_Velocity.z});
+                   //actor->setAngularVelocity({m_AngularVelocity.x, m_AngularVelocity.y, m_AngularVelocity.z});
+                   //actor->setMassSpaceInertiaTensor({m_MomentOfInertia, m_MomentOfInertia, m_MomentOfInertia});
+                //physx::PxRigidBodyExt::updateMassAndInertia(dynamic_cast<physx::PxRigidBody&>(*m_PxActor), m_Mass);
+                    actor->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, false);
+                }
+            } break;
+        }
+        
+        
+
+        m_PxActor->attachShape(*m_PxShape);
+        PhysicsSubsystem::RegisterPxActor(m_PxActor);
+        m_PxShape->release();
     }
 
     void PhysicsComponent::Update(float _deltaTime)
     {
         Component::Update(_deltaTime);
-
-        
         
         /*
          *m_ParentTransform->m_PhysicsRotationOverride = m_SimulatePhysics;
@@ -201,11 +276,14 @@ namespace Denix
         m_SteppedThisFrame = true;
     }
 
+    
+
     void PhysicsComponent::BeginPlay()
     {
         // Register the physics component with the physics subsystem
         Component::BeginPlay();
 
+        SetupPhysX();
 
         // Initialize the physics component
         m_CenterOfMass = m_Parent->m_TransformComponent->m_Position;
@@ -228,6 +306,8 @@ namespace Denix
     {
         UnregisterComponent();
 
+        PX_RELEASE(m_PxShape)
+        PX_RELEASE(m_PxActor)
         Component::EndScene();
     }
 

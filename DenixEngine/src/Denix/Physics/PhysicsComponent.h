@@ -53,6 +53,7 @@ namespace Denix
 		~PhysicsComponent() override = default;
 
 		void BeginScene() override;
+		
 		void Update(float _deltaTime) override;
 
 		void StepSimulation(float _deltaTime);
@@ -75,9 +76,12 @@ namespace Denix
 
 		bool m_RotationEnabled = true;
 
+		void SetShape(ColliderType _type);
+		void SetupPhysX();
 		physx::PxShape* m_PxShape = nullptr;
 		physx::PxRigidActor* m_PxActor = nullptr;
-		physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
+		//physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
+		ColliderType m_ColliderType = ColliderType::Cube;
 		
 	private:
 		/* Physics Component Settings */

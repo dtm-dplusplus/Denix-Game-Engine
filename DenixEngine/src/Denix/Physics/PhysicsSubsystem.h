@@ -41,12 +41,15 @@ namespace Denix
 
 		static void UnregisterComponent(const Ref<PhysicsComponent>& _component);
 
+		static void RegisterPxActor(physx::PxRigidActor* _actor);
+		
 		inline static physx::PxDefaultAllocator		gAllocator;
 		inline static physx::PxDefaultErrorCallback	gErrorCallback;
 		inline static physx::PxFoundation*			gFoundation = NULL;
 		inline static physx::PxPhysics*				gPhysics	= NULL;
 		inline static physx::PxPvd*					gPvd        = NULL;
 		inline static physx::PxDefaultCpuDispatcher*	gDispatcher = NULL;
+		inline static physx::PxMaterial* gMaterial = nullptr;
 
 		static physx::PxScene* CreatePxScene(const physx::PxSceneDesc* _sceneDesc);
 
@@ -89,6 +92,7 @@ namespace Denix
 		bool m_CollisionDetectionEnabled = true;
 		bool m_CollisionResponseEnabled = true;
 
+		friend class PhysicsComponent;
 		friend class SceneSubsystem;
 		friend class Engine;
 	};
