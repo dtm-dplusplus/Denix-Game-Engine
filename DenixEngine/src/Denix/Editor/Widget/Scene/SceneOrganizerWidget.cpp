@@ -1,6 +1,7 @@
 ﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
 #include "SceneOrganizerWidget.h"
 
+#include "ActorDetailsWidget.h"
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Actor.h"
@@ -12,7 +13,7 @@ namespace Denix
     SceneOrganizerWidget::SceneOrganizerWidget(const WRef<Scene>& _scene) : SceneEditorWidget({"SceneOrganizer"}, _scene)
     {
         m_SceneRef = _scene;
-        m_SelectionIndex = _scene.lock()->GetSceneObjects().size() - 1;
+        m_SelectionIndex = _scene.lock()->GetSceneActors().size() - 1;
         m_AddActorWidget = MakeRef<AddActorWidget>(_scene);
         m_SceneSettingsWidget = MakeRef<SceneSettingsWidget>(_scene);
     }
@@ -23,7 +24,7 @@ namespace Denix
 
         if(!m_SceneRef.lock()) return;
 
-        std::vector<Ref<Actor>>& sceneObjects = m_SceneRef.lock()->GetSceneObjects();
+        std::vector<Ref<Actor>>& sceneObjects = m_SceneRef.lock()->GetSceneActors();
 
         if (sceneObjects.empty())
         {
@@ -34,7 +35,11 @@ namespace Denix
         ImGui::SetNextWindowDockID(UISubsystem::GetDockLeftID(), ImGuiCond_Appearing);
         ImGui::Begin(GetName().c_str());
         ImGui::SeparatorText(m_SceneRef.lock()->GetName().c_str());
-        
+
+        // Viewport Camera
+        ImGui::SeparatorText("Viewport Camera");
+        ActorDetailsWidget::CameraWidget(m_SceneRef.lock()->GetViewportCamera());
+
         // Update AddActorWidget. Set the selected object to the last object created
         m_AddActorWidget->Update(_deltaTime);
         if (m_AddActorWidget->m_CreatedActor)
@@ -91,7 +96,7 @@ namespace Denix
     void SceneOrganizerWidget::SetSelection(const int _index)
     {
         // Validate index
-        if (_index < 0 || _index >= m_SceneRef.lock()->GetSceneObjects().size())
+        if (_index < 0 || _index >= m_SceneRef.lock()->GetSceneActors().size())
         {
             m_SelectionIndex = -1;
             return;
@@ -104,7 +109,7 @@ namespace Denix
     {
         if (!ValidateSelection()) return nullptr;
         
-        if (Ref<Actor> selectedObject = m_SceneRef.lock()->GetSceneObjects().at(m_SelectionIndex))
+        if (Ref<Actor> selectedObject = m_SceneRef.lock()->GetSceneActors().at(m_SelectionIndex))
         {
             return selectedObject;
         }
@@ -114,6 +119,6 @@ namespace Denix
 
     bool SceneOrganizerWidget::ValidateSelection() const
     {
-        return m_SelectionIndex >= 0 && m_SceneRef.lock()->GetSceneObjects().size();
+        return m_SelectionIndex >= 0 && m_SceneRef.lock()->GetSceneActors().size();
     }
 }

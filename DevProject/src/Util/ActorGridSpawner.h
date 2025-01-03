@@ -14,7 +14,7 @@ public:
         if (!_scene) return;
 
         // Adjust vector
-        std::vector<Ref<Actor>>& _sceneObjects = _scene->GetSceneObjects();
+        std::vector<Ref<Actor>>& _sceneObjects = _scene->GetSceneActors();
        for (const auto& actor : _sceneObjects)  actor->Destroy();
         
         Timer spawnTime;

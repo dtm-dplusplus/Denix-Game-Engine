@@ -55,8 +55,8 @@ namespace Denix
 
 		Ref<Camera> GetGameCamera() const;
 
-		std::vector<Ref<Actor>> GetSceneObjects() const;
-		std::vector<Ref<Actor>>& GetSceneObjects();
+		std::vector<Ref<Actor>> GetSceneActors() const;
+		std::vector<Ref<Actor>>& GetSceneActors();
 
 		Ref<Actor> GetActorByName(const std::string& _name) const;
 
@@ -83,10 +83,6 @@ namespace Denix
 		bool m_IsLoaded = false;
 
 		bool m_IsOpen = false;
-
-		bool m_RequestStop = false;
-
-		bool m_RequestStart = false;
 
 		/** Gravity of the scene */
 		float m_Gravity = 9.81f;

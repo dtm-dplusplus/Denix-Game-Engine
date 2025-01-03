@@ -462,7 +462,7 @@ void Denix::ActorDetailsWidget::MeshWidget(const Ref<Actor>& _selectedObject)
     }
 }
 
-void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera) const
+void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
 {
     if (!_camera) return;
 

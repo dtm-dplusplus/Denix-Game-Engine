@@ -12,6 +12,13 @@ namespace YAML
 namespace Denix
 {
 	class Assset;
+
+	enum class SceneState
+	{
+		Playing,
+		Stopped, // Not playing // Editor mode
+		Paused
+	};
 	
 	/* Subsystem that manages the scenes
 	* A scene must always be loaded in order to render anything
@@ -42,6 +49,8 @@ namespace Denix
 		// Open Scene Methods. The string & asset overloads are wrappers for the pass by scene method.
 		static void OpenScene(const Ref<Asset>& _sceneAsset);
 		static void OpenScene(const Ref<Scene>& _scene);
+
+		static SceneState GetSceneState() { return m_SceneState; }
 		
 	private:
 		/**
@@ -70,13 +79,15 @@ namespace Denix
 		void Initialize() override;
 
 		void Deinitialize() override;
-		
+
 		Ref<Asset> m_StartupScene;
-		
-		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
 
 		Ref<Scene> m_ActiveScene;
 
+		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
+
+		inline static SceneState m_SceneState;
+		
 		friend class Engine;
 		friend class EditorSubsystem;
 	};

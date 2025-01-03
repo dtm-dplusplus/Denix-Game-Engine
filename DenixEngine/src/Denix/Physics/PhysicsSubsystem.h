@@ -12,6 +12,8 @@
 
 #define PVD_HOST "127.0.0.1"
 
+class OmniPvdFileWriteStream;
+
 namespace Denix
 {
 	class Scene;
@@ -43,54 +45,33 @@ namespace Denix
 
 		static void RegisterPxActor(physx::PxRigidActor* _actor);
 		
-		inline static physx::PxDefaultAllocator		gAllocator;
-		inline static physx::PxDefaultErrorCallback	gErrorCallback;
-		inline static physx::PxFoundation*			gFoundation = NULL;
-		inline static physx::PxPhysics*				gPhysics	= NULL;
-		inline static physx::PxPvd*					gPvd        = NULL;
-		inline static physx::PxDefaultCpuDispatcher*	gDispatcher = NULL;
-		inline static physx::PxMaterial* gMaterial = nullptr;
-
+		inline static physx::PxDefaultAllocator		m_PxAllocator;
+		inline static physx::PxDefaultErrorCallback	m_PxErrorCallback;
+		inline static physx::PxFoundation*			m_PxFoundation = NULL;
+		inline static physx::PxPhysics*				m_PxPhysics	= NULL;
+		inline static physx::PxPvd*					m_PxPvd        = NULL;
+		inline static physx::PxDefaultCpuDispatcher*	m_PxDispatcher = NULL;
+		inline static physx::PxMaterial* m_PxMaterial = nullptr;
+		
 		static physx::PxScene* CreatePxScene(const physx::PxSceneDesc* _sceneDesc);
 
+
 	private:
-		void CollisionDetectionPhase(float _deltaTime);
-		bool ColllisionExists(const Ref<Actor>& _objectA, const Ref<Actor>& _objectB);
-		void CollisionResonsePhase(float _deltaTime);
-		void CollisionResponse(CollisionEvent& _collisionEvent);
-		void CubeCollision(const Ref<PhysicsComponent>& _cubeCompA, const Ref<PhysicsComponent>& _cubeCompB, CollisionEvent& _collisionEvent);
-		void SphereCollision(const Ref<PhysicsComponent>& _sphereCompA, const Ref<PhysicsComponent>& _sphereCompB, CollisionEvent& _collisionEvent);
-		void SphereCubeCollision(const Ref<PhysicsComponent>& _sphereComp, const Ref<PhysicsComponent>& _cubeComp, CollisionEvent& _collisionEvent);
-
-		void PhysicsSimulationPhase(float _deltaTime);
-
-		void ImpulseResponse(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB); //, const glm::vec3& _normal, const glm::vec3& _contactPoint, float _penetration
-		float ImpulseEnergy(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, const glm::vec3& _normal);
-	
-		void PreUpdate(float _deltaTime) override;
-
 		void Update(float _deltaTime) override;
 		
 		void Initialize() override;
 
 		void Deinitialize() override;
 
-		std::vector<Ref<PhysicsComponent>>& GetPhysicsComponents() { return m_PhysicsComponents; }
-		
-		std::vector<CollisionEvent>& GetCollisionEvents() { return m_CollisionEvents; }
-
 		static void SetActiveScene(const Ref<Scene>& _scene) { s_Instance->m_ActiveScene = _scene; }
 
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
-		std::vector<Ref<PhysicsComponent>> m_StaticPhysicsComponents;
-		std::vector<Ref<PhysicsComponent>> m_DynamicPhysicsComponents;		
 		
-		std::vector<CollisionEvent> m_CollisionEvents;
-
 		WRef<Scene> m_ActiveScene;
-
+		
 		bool m_CollisionDetectionEnabled = true;
 		bool m_CollisionResponseEnabled = true;
+
 
 		friend class PhysicsComponent;
 		friend class SceneSubsystem;

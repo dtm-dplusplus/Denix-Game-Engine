@@ -29,7 +29,7 @@ namespace Denix
         void ShaderSelectionWidget(Ref<Material>& _material);
         void MeshWidget(const Ref<Actor>& _selectedObject);
         void TransformWidget(const Ref<Actor>& _object) const;
-        void CameraWidget(const Ref<Actor>& _camera) const;
+        static void CameraWidget(const Ref<Actor>& _camera);
 
         WRef<Actor> m_ActorRef;
         Ref<ShaderEditor> m_ShaderEditor;

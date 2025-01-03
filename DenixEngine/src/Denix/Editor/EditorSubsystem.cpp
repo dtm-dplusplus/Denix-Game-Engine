@@ -180,25 +180,46 @@ namespace Denix
 				ImGui::EndMenu();
 			}
 
-			if (!m_ActiveScene.lock()->IsPlaying())
+			switch (SceneSubsystem::GetSceneState())
 			{
-				if (ImGui::Button("Play"))
-				{
-					SceneSubsystem::PlayScene();
-				}
-			}
-			else
-			{
-				if (ImGui::Button("Pause"))
-				{
-					SceneSubsystem::PauseScene();
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Stop"))
-				{
-					if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->ResetSelection();
-					SceneSubsystem::StopScene();
-				}
+				case SceneState::Playing:
+					{
+						if (ImGui::Button("Pause"))
+						{
+							SceneSubsystem::PauseScene();
+						}
+						ImGui::SameLine();
+						if (ImGui::Button("Stop"))
+						{
+							if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->ResetSelection();
+							SceneSubsystem::StopScene();
+						}
+					}
+					break;
+
+				case SceneState::Stopped:
+					{
+						if (ImGui::Button("Play"))
+						{
+							SceneSubsystem::PlayScene();
+						}
+					}
+					break;
+
+				case SceneState::Paused:
+					{
+						if (ImGui::Button("Resume"))
+						{
+							SceneSubsystem::PauseScene();
+						}
+						ImGui::SameLine();
+						if (ImGui::Button("Stop"))
+						{
+							if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->ResetSelection();
+							SceneSubsystem::StopScene();
+						}
+					}
+					break;
 			}
 
 			// Scene Properties

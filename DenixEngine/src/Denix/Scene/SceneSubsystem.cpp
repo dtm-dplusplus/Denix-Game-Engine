@@ -55,8 +55,7 @@ namespace Denix
 	{
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitializing")
 
-		if (m_ActiveScene->IsPlaying()) m_ActiveScene->EndPlay();
-		m_ActiveScene->EndScene();
+		CloseScene();
 		m_ActiveScene->Unload();
 		m_ActiveScene->ClearScene();
 		m_LoadedScenes.clear();
@@ -159,6 +158,9 @@ namespace Denix
 		s_Instance->m_ActiveScene->m_IsOpen = true;
 		s_Instance->m_ActiveScene->BeginScene();
 
+
+		// Update scene state - For shipped games, playing is the default state
+		m_SceneState = SceneState::Stopped;
 		DE_LOG(LogScene, Info, "Activated Scene: {}",
 			s_Instance->m_ActiveScene->GetName())
 	}
@@ -169,7 +171,8 @@ namespace Denix
 
 		s_Instance->m_ActiveScene->BeginPlay();
 		s_Instance->m_ActiveScene->m_IsPlaying = true;
-
+		m_SceneState = SceneState::Playing;
+		
 		// Check for Game Camera
 		if(const Ref<Camera> camera = s_Instance->m_ActiveScene->GetGameCamera())
 		{
@@ -190,16 +193,29 @@ namespace Denix
 		if (s_Instance->m_ActiveScene)
 		{
 			s_Instance->CloseScene();
-			
+			m_SceneState = SceneState::Stopped;
+
 			// Need to establish a better way of handling scenes
-			s_Instance->LoadScene(s_Instance->m_ActiveScene);
+			s_Instance->OpenScene(s_Instance->m_ActiveScene->m_SceneAsset);
 			DE_LOG(LogScene, Trace, "Scene Stopped")
 		}
 	}
 
 	void SceneSubsystem::PauseScene()
 	{
-		DE_LOG(LogScene, Trace, "Scene Paused")
+		// Pause Logic
+		if (m_SceneState == SceneState::Playing)
+		{
+			m_SceneState = SceneState::Paused;
+			DE_LOG(LogScene, Trace, "Scene Paused")
+		}
+
+		// Resume logic
+		else if (m_SceneState == SceneState::Paused)
+		{
+			m_SceneState = SceneState::Playing;
+			DE_LOG(LogScene, Trace, "Scene Resumed")
+		}
 	}
 
 	void SceneSubsystem::CloseScene() const
@@ -239,23 +255,7 @@ namespace Denix
 		DE_PROFILE(Scene Update)
 
 		// Validate Scene
-		if (!m_ActiveScene)
-		{
-			DE_LOG(LogScene, Error, "No active scene")
-			return;
-		}
-		
-		if (m_ActiveScene->m_RequestStop)
-		{
-			StopScene();
-			return;
-		}
-
-		if (m_ActiveScene->m_RequestStart)
-		{
-			PlayScene();
-			return;
-		}
+		assert(m_ActiveScene && "No active scene found");
 
 		DE_PROFILE(Scene Camera)
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
@@ -366,7 +366,6 @@ namespace Denix
 		// Load the scene data from the asset file
 		YAML::Node sceneNode = YAML::LoadFile(_scene->m_SceneAsset->GetAssetPath());
 
-		
 		// Check if the scene data is valid
 		if (!sceneNode.IsDefined())
 		{

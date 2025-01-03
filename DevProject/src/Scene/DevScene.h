@@ -16,7 +16,6 @@ public:
 
     PxRigidDynamic* createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity);
     void BeginScene() override;
-    void EndScene() override;
     void Update(float _deltaTime) override;
     void DebugUI(float _deltaTime) override;
 

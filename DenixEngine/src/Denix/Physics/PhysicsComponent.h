@@ -1,5 +1,6 @@
 #pragma once
 
+#include <PxRigidBody.h>
 #include <foundation/PxTransform.h>
 
 #include "Denix/Core.h"
@@ -12,6 +13,7 @@
 
 namespace physx
 {
+	class PxRigidDynamic;
 	class PxRigidActor;
 }
 
@@ -56,8 +58,6 @@ namespace Denix
 		
 		void Update(float _deltaTime) override;
 
-		void StepSimulation(float _deltaTime);
-
 
 		void AddForce(const glm::vec3& _force)
 		{
@@ -78,6 +78,11 @@ namespace Denix
 
 		void SetShape(ColliderType _type);
 		void SetupPhysX();
+		void UpdatePhysX();
+		void UpdatePxDynamicActor(physx::PxRigidDynamic* _actor);
+
+		float m_PxSlopCoefficient = 0.1f;
+		physx::PxRigidBodyFlags m_PxRigidBodyFlags;
 		physx::PxShape* m_PxShape = nullptr;
 		physx::PxRigidActor* m_PxActor = nullptr;
 		//physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
@@ -187,88 +192,6 @@ namespace Denix
 
 			void UnregisterComponent() override;
 
-	private:
-		/**/
-		void ComputeTriggerState()
-		{
-			/*if (collisionDetected)
-			{
-				trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Stay : TriggerState::Enter;
-			}
-			else
-			{
-				trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Exit : TriggerState::Null;
-			}
-
-
-
-			if (trigger.TrigData.NewState != TriggerState::Null) m_TriggerEvents.push_back(trigger);*/
-		}
-
-		void ComputeCenterOfMass();
-
-		void ComputeObjectInertiaTensor();
-
-		void ComputeObjectInverseInertiaTensor();
-
-		void ComputeBodyInertiaTensor();
-
-		void ComputeTorqueArm(const glm::vec3& _contactPoint, const glm::vec3& _force)
-		{
-			glm::vec3 torqueArm = _contactPoint - m_CenterOfMass;
-			m_Torque += glm::cross(torqueArm, _force);
-		}
-		void ComputeAngularVelocity()
-		{
-			m_AngularVelocity = m_ObjectInteriaTensorInverse * m_AngularMomentum;
-		}
-
-		void ComputeRotationMatrix(float _deltaTime);
-
-		void ComputeTorque(const glm::vec3& _torqueArm, const glm::vec3& _force)
-		{
-			m_Torque += glm::cross(_torqueArm, _force);
-		}
-
-		glm::mat3 GetSkewMatrix(const glm::vec3& _vector)
-		{
-			return glm::mat3(
-				0.0f, -_vector.z, _vector.y,
-				_vector.z, 0.0f, -_vector.x,
-				-_vector.y, _vector.x, 0.0f);
-		}
-
-		glm::vec3 GetEulerAngles(const glm::mat3& _rotationMatrix) const
-		{
-			float value = pow(_rotationMatrix[0][0], 2) + pow(_rotationMatrix[1][0], 2);
-			float sy = sqrt(value);
-
-			float x, y, z;
-
-			if (sy < 1e-6)
-			{
-				x = atan2(_rotationMatrix[2][1], _rotationMatrix[2][2]);
-				y = atan2(-_rotationMatrix[2][0], sy);
-				z = atan2(_rotationMatrix[1][0], _rotationMatrix[0][0]);
-			}
-			else
-			{
-				x = atan2(-_rotationMatrix[1][2], _rotationMatrix[1][1]);
-				y = atan2(-_rotationMatrix[2][0], sy);
-				z = 0.0f;
-			}
-
-			return glm::vec3(x, y, z);
-		}
-
-		glm::vec3 FrictionForce(const glm::vec3& _relVel, const glm::vec3& _contactNormal,
-			const glm::vec3& _forceNormal, float _mu)
-		{
-
-		}
-		void ComputeStepEuler(float _deltaTime);
-
-		void ComputeStepRK2(float _deltaTime);
 	private:
 		/* Stateful members below. These dictacte engine behaviour, e.g. IsCollidig determines collider render color */
 		bool m_SteppedThisFrame = false;
