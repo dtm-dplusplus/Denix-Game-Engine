@@ -2,6 +2,7 @@
 #include "DevScene.h"
 
 #include "imgui.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Core/TimerSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 
@@ -31,12 +32,37 @@ void DevScene::BeginScene()
 		m_DyActor->GetPhysicsComponent()->GetAngularVelocity().z =- 5.0f;
 	}*/
 
-	for (int i = 0; i < 1000; i++)
+	static size_t textureStoreSize = AssetSubsystem::GetTextureStore().size();
+	static std::unordered_map<std::string, Ref<Texture>> textureStore = AssetSubsystem::GetTextureStore();
+
+	
+	
+	for (int a = 0; a < 100; a++)
 	{
-		Ref<Actor> actor = SpawnActor<Sphere>();
+		Ref<Actor> actor;
+		if (a % 2 == 0)
+			actor = SpawnActor<Cube>();
+		else
+			actor = SpawnActor<Sphere>();
+		
 		actor->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
-		actor->GetTransformComponent()->SetPosition({0.0f, 11.0f + i * 2.0f, 0.0f});
+		actor->GetTransformComponent()->SetPosition({0.0f, 11.0f + a * 2.0f, 0.0f});
 		actor->GetPhysicsComponent()->GetAngularVelocity() = {Math::RandF(-5,5),Math::RandF(-5,5),Math::RandF(-5,5)};
+
+		size_t index = Math::Rand(0, textureStoreSize - 1);
+		size_t i = 0;
+
+		for (auto texture: textureStore | std::views::keys)
+		{
+			if (i++ == index)
+			{
+				Ref<Material> mat = MakeRef<Material>();
+				mat->GetBaseTexture() = textureStore[texture];
+				actor->GetRenderComponent()->SetMaterial(mat);
+				
+				break;
+			}
+		}
 	}
 	// Static Cube
 	{

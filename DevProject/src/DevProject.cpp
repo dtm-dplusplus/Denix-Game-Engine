@@ -56,7 +56,7 @@ public:
 		ReflectionSubsystem::Register<CPGScene>();
 		ReflectionSubsystem::Register<ThreadScene>();
 		ReflectionSubsystem::Register<AudioScene>();
-		ReflectionSubsystem::Register<CPGCube>();
+		ReflectionSubsystem::Register<CPGActor>();
 
 		
 	}

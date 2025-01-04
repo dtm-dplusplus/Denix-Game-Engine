@@ -3,10 +3,10 @@
 
 using namespace Denix;
 
-class CPGCube: public Cube
+class CPGActor: public Cube
 {
 public:
-    CPGCube();
+    CPGActor();
 
     void BeginPlay() override;
     void Update(float _deltaTime) override;

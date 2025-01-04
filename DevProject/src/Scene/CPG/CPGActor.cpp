@@ -1,12 +1,12 @@
-#include "CPGCube.h"
+#include "CPGActor.h"
 
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Thread/JobSubsystem.h"
 #include "Util/ActorGridSpawner.h"
 
-CPGCube::CPGCube()
+CPGActor::CPGActor()
 {
-    // m_ClassName = "CPGCube";
+    // m_ClassName = "CPGActor";
     m_PhysicsComponent->SimulatePhysics() = true;
     m_PhysicsComponent->m_RotationEnabled = false;
 
@@ -14,19 +14,19 @@ CPGCube::CPGCube()
     m_RenderComponent->GetMaterial() = MakeRef<Material>(m_RenderComponent->GetMaterial());
 }
 
-void CPGCube::BeginPlay()
+void CPGActor::BeginPlay()
 {
     Cube::BeginPlay();
 
     m_PhysicsComponent->GetMass() = Math::RandF(10.0f, 1000.0f);
 }
 
-void CPGCube::Update(float _deltaTime)
+void CPGActor::Update(float _deltaTime)
 {
     Cube::Update(_deltaTime);
 
     // Reset the cube if it falls below the ground
-    glm::vec3& pos = m_TransformComponent->GetPosition();
+    /*glm::vec3& pos = m_TransformComponent->GetPosition();
     if (pos.y < 0.0f)
     {
         pos.y = ActorGridSpawner::SpawnHeight;
@@ -34,10 +34,10 @@ void CPGCube::Update(float _deltaTime)
         m_PhysicsComponent->GetAngularVelocity() = glm::vec3(0.0f);
 
         RandomModel();
-    }
+    }*/
 }
 
-void CPGCube::RandomModel()
+void CPGActor::RandomModel()
 {
     static size_t modelStoreSize = AssetSubsystem::GetModelStore().size();
     static std::unordered_map<std::string, Ref<Model>> modelStore = AssetSubsystem::GetModelStore();

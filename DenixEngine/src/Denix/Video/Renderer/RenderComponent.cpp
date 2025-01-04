@@ -33,6 +33,7 @@ namespace Denix
 		}
 		
 		m_Material = _material;
+		m_Material->CheckBaseType();
 	}
 
 	void RenderComponent::BeginScene()
