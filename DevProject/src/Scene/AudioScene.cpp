@@ -19,6 +19,8 @@ void AudioScene::BeginScene()
         Source = MakeRef<AudioSource>("Audio Source_" + clip->GetAssetName());
         Source->SetAudioClip(clip);
     }
+
+    FileSubsystem::CopyFileDE(FileSubsystem::GetContentRoot() + "Audio\\file.txt", FileSubsystem::GetContentRoot());
 }
 
 void AudioScene::EndScene()

@@ -24,10 +24,13 @@ namespace Denix
     class TimerSubsystem;
     class ProfileSubsystem;
 
+
+    
+    
     class Engine
     {
     public:
-        Engine();
+        Engine(std::string _projectName);
         virtual  ~Engine();
 
         // Delete copy and move constructors and assignment operators
@@ -51,6 +54,7 @@ namespace Denix
         Ref<Asset> m_StartupScene;
         std::string m_EngineConfigPath;
 
+        virtual void PreInitialize();
         virtual void Initialize();
         virtual void Deinitialize();
         
@@ -87,8 +91,6 @@ namespace Denix
          */
         static Engine* s_Engine;
 
-        size_t m_FrameID;
-        
         // Useful vector for deinitializing subsystems in reverse order
         std::vector<Ref<SubsystemBase>> m_Subsystems;
 
@@ -123,5 +125,5 @@ namespace Denix
     };
 
     // Defined in client
-   URef<Engine> CreateEngine();
+    Ref<Engine> MakeEngine();
 }

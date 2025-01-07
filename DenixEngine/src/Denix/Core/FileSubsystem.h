@@ -7,7 +7,7 @@ namespace Denix
     class FileSubsystem: public Subsystem<FileSubsystem>
     {
 	public:
-		FileSubsystem(std::string _projectName) : m_ProjectName(std::move(_projectName))
+		FileSubsystem()
 		{
 			DE_LOG_CREATE(LogFile)
 		}
@@ -18,10 +18,11 @@ namespace Denix
 		FileSubsystem(FileSubsystem&& _other) noexcept = delete;
 		FileSubsystem& operator=(const FileSubsystem& _other) = delete;
 		FileSubsystem& operator=(FileSubsystem&& _other) noexcept = delete;
-    	
+
+    	static bool CopyFileDE(const std::string& _oldPath, const std::string& _newPath);
 		static std::string ReadFile(const std::string& _path);
 
-		static bool WriteFile(const std::string& _path, const std::string_view _data);
+		static bool WriteFile(const std::string& _path, std::string_view _data);
 
 		static bool FileExists(const std::string& _path);
 
@@ -30,8 +31,6 @@ namespace Denix
     	static std::string GetContentRoot() { return s_Instance->m_ContentRoot; }
 
 		static std::string GetEngineContentRoot() { return s_Instance->m_EngineContentRoot; }
-
-		static std::string GetProjectName()	{ return s_Instance->m_ProjectName; }
 
 		 static bool DirectoryExists(const std::string& _path);
 
@@ -42,11 +41,13 @@ namespace Denix
 
     	void Deinitialize() override;
     	
-		std::string m_ProjectName;
-
     	// Root of the project
 		std::string m_ProjectRoot;
 
+    	std::string m_ProjectFile;
+
+    	std::string m_BinaryRoot;
+    	
     	// Root of the content
 		std::string m_ContentRoot;
 

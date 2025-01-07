@@ -1,6 +1,7 @@
 #include "FileSubsystem.h"
 #include <filesystem>
 #include <fstream>
+#include <SDL3/SDL_filesystem.h>
 
 namespace fs = std::filesystem;
 
@@ -11,56 +12,44 @@ namespace Denix
 		Subsystem::Initialize();
 		
 		DE_LOG(LogFile, Warn, "Initializing File Subsystem")
-		// Find the project file and set the project root
-		// We need the project name to find the project file
-		if(m_ProjectName.empty()) 
-		{
-			const std::string errorMessage = "Project name is empty";
-			DE_LOG(LogFile, Error, errorMessage)
-			throw std::runtime_error(errorMessage.c_str());
-		}
 
-		// Set name of the project executable
-		const std::string projectExecutable = m_ProjectName + ".exe";
-		const std::string projectFile = m_ProjectName + ".proj";
-		
-		// Get Current path
-		// If the project is launched from the IDE, the current path is the solution root
-		// If the project is launched from the executable, the current path is the executable root
-		const fs::path currentPath = fs::current_path();
-		DE_LOG(LogFile, Trace, "Starting search for project in: {}", currentPath.string())
-		
-		// Check if the project is launched from the executable
-		if(FileExists(currentPath.string() + R"(\)" + projectExecutable))
+		// Get executable path
+		const char* p = SDL_GetBasePath();
+		if (!p)
 		{
-			// We are in the executable root, use the parent path to get the project root
-			m_ProjectRoot = currentPath.parent_path().parent_path().string() + R"(\)";
-			DE_LOG(LogFile, Trace, "Found Project root via executable")
+			std::string err = SDL_GetError();
+			DE_LOG(LogFile, Critical, err)
+			throw std::exception(err.c_str());
 		}
-		else
+		
+		// Setup Project Paths - We fetch from the binary parent directory
+		const fs::path exePath = p;
+		SDL_free(const_cast<char*>(p));
+		m_BinaryRoot = exePath.parent_path().string() + R"(\)";
+		m_ProjectRoot = exePath.parent_path().parent_path().string() + R"(\)";
+
+		// Find Project file
+		for (const auto& entry : fs::directory_iterator(m_ProjectRoot))
 		{
-			// We are in the solution root, search for the project root
-			const fs::path projectFilePath = currentPath.string()  + R"(\)" + m_ProjectName + R"(\)"+ projectFile;
-			if(FileExists(projectFilePath.string()))
+			if (entry.path().extension() == ".proj")
 			{
-				m_ProjectRoot = projectFilePath.parent_path().string() + R"(\)";
-				DE_LOG(LogFile, Trace, "Found Project root via solution")
+				m_ProjectFile = entry.path().parent_path().string() + R"(\)";
+				break;
 			}
 		}
 
-		// Check if project root was found
-		if (m_ProjectRoot.empty())
+		if (m_ProjectFile.empty())
 		{
-			const char* errorMessage = "Project file not found via executable or solution";
-			DE_LOG(LogFile, Critical, errorMessage)
-			throw std::exception(errorMessage);
+			DE_LOG(LogFile, Critical, "Project file not found")
+			throw std::exception("Project file not found");
 		}
 
-		// Set content roots
+		// Set Content Paths
 		m_ContentRoot = m_ProjectRoot + R"(Content\)";
 		m_EngineContentRoot = m_ContentRoot + R"(Engine\)";
 
 		DE_LOG(LogFile, Trace, "Project Root: {0}", m_ProjectRoot)
+		DE_LOG(LogFile, Trace, "Binary Root: {0}", m_BinaryRoot)
 		DE_LOG(LogFile, Trace, "Content Root: {0}", m_ContentRoot)
 		DE_LOG(LogFile, Trace, "Engine Content Root: {0}", m_EngineContentRoot)
 		DE_LOG(LogFile, Info, "File Subsystem Initialized")
@@ -69,6 +58,20 @@ namespace Denix
 	void FileSubsystem::Deinitialize()
 	{
 		DE_LOG(LogFile, Trace, "File Subsystem Deinitialized")
+	}
+
+	bool FileSubsystem::CopyFileDE(const std::string& _oldPath, const std::string& _newPath)
+	{
+		try
+		{
+			fs::copy(_oldPath, _newPath, fs::copy_options::overwrite_existing);
+			return true;
+		}
+		catch (const std::exception& e)
+		{
+			DE_LOG(LogFile, Error, "Failed to copy file: {0}", e.what())
+			return false;
+		}
 	}
 
 	std::string FileSubsystem::ReadFile(const std::string& _path)

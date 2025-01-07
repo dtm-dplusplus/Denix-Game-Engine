@@ -23,14 +23,24 @@ namespace Denix
 {
 	Engine* Engine::s_Engine{nullptr};
 
-	Engine::Engine()
+	Engine::Engine(std::string _projectName): m_ProjectName(std::move(_projectName))
 	{
 		s_Engine = this;
 
-		m_FrameID = 0;
-		
 		m_StartupScene = nullptr;
 
+		
+	}
+
+	Engine::~Engine()
+	{
+		s_Engine = nullptr;
+
+		Logger::Deinitialize();
+	}
+
+	void Engine::PreInitialize()
+	{
 		// Initialize Logger
 		Logger::Initialize();
 		DE_LOG_CREATE(LogEngine)
@@ -62,22 +72,17 @@ namespace Denix
 		ReflectionSubsystem::Register<Camera>();
 	}
 
-	Engine::~Engine()
-	{
-		s_Engine = nullptr;
-
-		Logger::Deinitialize();
-	}
-
 	void Engine::Initialize()
 	{
+		PreInitialize();
+		
 		DE_LOG(LogEngine, Warn, "Engine Initializing")
 
 		m_TimerSubsystem = InitalizeSubsystem<TimerSubsystem>();
 
 		m_ProfileSubsystem = InitalizeSubsystem<ProfileSubsystem>();
 		
-		m_FileSubsystem = InitalizeSubsystem<FileSubsystem>(m_ProjectName);
+		m_FileSubsystem = InitalizeSubsystem<FileSubsystem>();
 
 		m_WindowSubsystem = InitalizeSubsystem<WindowSubsystem>();
 
@@ -208,7 +213,6 @@ namespace Denix
 			WaitForCounter(garbageCounter.get());
 			
 			m_TimerSubsystem->EndFrame();
-			m_FrameID++;
 		}
 	}
 
