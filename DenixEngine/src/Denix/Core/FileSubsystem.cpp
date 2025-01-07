@@ -107,7 +107,7 @@ namespace Denix
 		if(!DirectoryExists(_path))
 		{
 			DE_LOG(LogFile, Warn, "Directory does not exist: {}", _path)
-			CreateDirectoryA(_path);
+			CreateDirectoryDE(_path);
 		}
 
 		// Open file and write data
@@ -132,7 +132,7 @@ namespace Denix
 		 return  fs::exists(fs::path(_path).parent_path());
 	}
 
-	bool FileSubsystem::CreateDirectory(const std::string& _path)
+	bool FileSubsystem::CreateDirectoryDE(const std::string& _path)
 	{
 	    try
 	    {
@@ -144,5 +144,41 @@ namespace Denix
 	        DE_LOG(LogFile, Error, "Failed to create directory: {}", e.what());
 	        return false;
 	    }
+	}
+
+	std::string FileSubsystem::FormatPath(const std::string& _path)
+	{
+		try {
+			fs::path inputPath(_path);
+
+			// Check if the provided path is already absolute
+			if (IsAbsolute(_path)) return inputPath.make_preferred().string();
+
+			// If the path is relative, combine it with the project root
+			fs::path combinedPath = s_Instance->m_ProjectRoot / inputPath;
+
+			// Convert to absolute path and normalize separators
+			return fs::absolute(combinedPath).make_preferred().string();
+		} catch (const fs::filesystem_error& e) {
+			DE_LOG(LogFile, Error, "Failed to format path: {0}", e.what());
+			return "";
+		}
+	}
+
+	std::string FileSubsystem::FormatRelativePath(const std::string& _path)
+	{
+		// Check if the input path is already relative
+		if (!IsAbsolute(_path)) return _path;
+
+		// Calculate the relative path
+		std::filesystem::path relativePath = fs::relative(_path, s_Instance->m_ProjectRoot);
+
+		return relativePath.make_preferred().string();
+	}
+
+	bool FileSubsystem::IsAbsolute(const std::string& _path)
+	{
+		// Check if the input path starts with the project root path
+		return _path.find(s_Instance->m_ProjectRoot) == 0;
 	}
 }

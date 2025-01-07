@@ -13,6 +13,11 @@ void AudioScene::BeginScene()
 {
     Scene::BeginScene();
 
+    std::string relPath =  "Content\\Audio\\music.wav";
+    relPath = FileSubsystem::FormatPath(relPath);
+    //DE_LOG(LogScene, Info, "rel {}", FileSubsystem::FormatRelativePath(FileSubsystem::GetContentRoot()));
+    DE_LOG(LogScene, Info, "abs {}", FileSubsystem::FormatPath(relPath));
+    DE_LOG(LogScene, Info, "rel {}", FileSubsystem::FormatRelativePath(relPath))
     if (Ref<AudioClip> clip = AssetSubsystem::GetAudioClip(FileSubsystem::GetContentRoot() + "Audio\\music.wav"))
     {
         Clip = clip;
@@ -20,6 +25,7 @@ void AudioScene::BeginScene()
         Source->SetAudioClip(clip);
     }
 
+    
     FileSubsystem::CopyFileDE(FileSubsystem::GetContentRoot() + "Audio\\file.txt", FileSubsystem::GetContentRoot());
 }
 
