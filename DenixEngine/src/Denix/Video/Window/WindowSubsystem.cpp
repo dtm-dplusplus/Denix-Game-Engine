@@ -3,11 +3,9 @@
 
 namespace Denix
 {
-    WindowSubsystem* WindowSubsystem::s_WindowSubsystem{ nullptr };
-
     void WindowSubsystem::ToggleFullscreen()
     {
-        s_WindowSubsystem->m_Window->ToggleFullscreen();
+        s_Instance->m_Window->ToggleFullscreen();
     }
 
     void WindowSubsystem::Initialize()
@@ -15,6 +13,24 @@ namespace Denix
         Subsystem::Initialize();
         DE_LOG(LogWindow, Warn, "Initializing Window Subsystem")
 
+        SDL_GLWindow::m_GLMajorVersion = 3;
+        SDL_GLWindow::m_GLMinorVersion = 0;
+        SDL_GLWindow::m_GLDepthSize = 24;
+        SDL_GLWindow::m_GLStencilSize = 8;
+        SDL_GLWindow::m_GLDoubleBuffer = 1;
+        
+        // Set SDL OpenGL Version
+       SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, SDL_GLWindow::m_GLMajorVersion);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, SDL_GLWindow::m_GLMinorVersion);
+
+        // Set GL Attributes
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, SDL_GLWindow::m_GLDepthSize);
+        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, SDL_GLWindow::m_GLStencilSize);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, SDL_GLWindow::m_GLDoubleBuffer);
+        
+        
         //Create window
         if (const Ref<SDL_GLWindow> window = MakeRef<SDL_GLWindow>())
         {
@@ -30,8 +46,6 @@ namespace Denix
         }
         DE_LOG(LogWindow, Trace, "glewInit(): success")
         
-        //m_DefaultViewport = MakeRef<Viewport>(m_Window->GetWidth(), m_Window->GetHeight());
-
         DE_LOG(LogWindow, Info, "Window Subsystem Initialized")
     }
 }

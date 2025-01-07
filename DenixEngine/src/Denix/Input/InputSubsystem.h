@@ -26,10 +26,12 @@ namespace Denix
 		bool Side2 = false;
 	};
 
+	class SDL_GLWindow;
+	
 	class InputSubsystem: public Subsystem<InputSubsystem>
 	{
 	public:
-		InputSubsystem();
+		InputSubsystem() = default;
 		~InputSubsystem() override = default;
 
 		InputSubsystem(const InputSubsystem& _other) = delete;
@@ -42,8 +44,6 @@ namespace Denix
 		static bool IsMouseButtonDown(const int _button) { return s_Instance->m_MouseData.SDL_State & SDL_BUTTON(_button); }
 		static MouseData& GetMouseData() { return s_Instance->m_MouseData; }
 
-		void InputPanel();
-		//SDL_Event& GetEvent() { return m_Event; }
 
 	private:
 		void Initialize() override;
@@ -51,15 +51,13 @@ namespace Denix
 		void Update(float _deltaTime) override;
 
 		//SDL_Event m_Event;
-		Ref<class Window> m_Window;
+		WRef<SDL_GLWindow> m_WindowRef;
 
 		Uint8* m_SDL_LastKeyboardState;
 		const bool* m_SDL_KeyboardState;
 		
 		// Mouse Properties
 		MouseData m_MouseData;
-
-		void Poll();
 
 		friend class Engine;
 	};

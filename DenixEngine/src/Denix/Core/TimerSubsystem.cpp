@@ -12,7 +12,6 @@ TimerSubsystem::TimerSubsystem()
 	  m_GameTimeSpeed(1.0f),
 	  m_MaxLimitFPS(60)
 {
-	DE_LOG_CREATE(LogTimer)
 }
 
 	void TimerSubsystem::Initialize()

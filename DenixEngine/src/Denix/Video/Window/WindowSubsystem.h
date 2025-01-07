@@ -14,49 +14,33 @@ namespace Denix
 	class WindowSubsystem: public Subsystem<WindowSubsystem>
 	{
 	public:
-		WindowSubsystem()
-		{
-			s_WindowSubsystem = this;
+		WindowSubsystem() = default;
 
-			DE_LOG_CREATE(LogGL)
-			DE_LOG_CREATE(LogWindow)
-			DE_LOG_CREATE(LogShader)
-		}
-
-		~WindowSubsystem() override
-		{
-			s_WindowSubsystem = nullptr;
-		}
+		~WindowSubsystem() override = default;
 
 		static void ToggleFullscreen();
 
-		static WindowSubsystem* Get() { return s_WindowSubsystem; }
-
+		static Ref<SDL_GLWindow> GetWindow() { return s_Instance->m_Window; }
+		static Ref<Viewport> GetDefaultViewport() { return s_Instance->m_DefaultViewport; }
+		
+		static glm::vec2 GetWindowSize() { return s_Instance->m_Window->GetWindowSize(); }
+		static int GetWindowWidth() { return s_Instance->m_Window->GetWidth(); }
+		static int GetWindowHeight() { return s_Instance->m_Window->GetHeight(); }
+		
+	private:
 		void Initialize() override;
 
 		void Deinitialize() override
 		{
-			m_Window->Deinitialize();
+			m_Window.reset();
 
-			SDL_Quit();
 
 			DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
+
+			Subsystem::Deinitialize();
 		}   
 
-		static Ref<SDL_GLWindow> GetWindow() { return s_WindowSubsystem->m_Window; }
-		static Ref<Viewport> GetDefaultViewport() { return s_WindowSubsystem->m_DefaultViewport; }
-		/**
-		 * 
-		 * @return 
-		 */
-		static glm::vec2 GetWindowSize() { return s_WindowSubsystem->m_Window->GetWindowSize(); }
-		static int GetWindowWidth() { return s_WindowSubsystem->m_Window->GetWidth(); }
-		static int GetWindowHeight() { return s_WindowSubsystem->m_Window->GetHeight(); }
-	private:
-		static WindowSubsystem* s_WindowSubsystem;
-
 		Ref<SDL_GLWindow> m_Window;
-
 
 		Ref<Viewport> m_DefaultViewport;
 

@@ -35,7 +35,7 @@ namespace Denix
 			if(Ref<T> component = MakeRef<T>(std::forward<Args>(_args)...))
 			{
 				m_Components.push_back(component);
-				m_ComponentMap[ReflectionHelper::GetDEClassName<T>()] = component;
+				m_ComponentMap[ReflectionHelper::GetClassNameDE<T>()] = component;
 				return component;
 			}
 
@@ -45,10 +45,10 @@ namespace Denix
 		template<typename T>
 		Ref<T> GetComponent() const
 		{
-			if (!m_ComponentMap.contains(ReflectionHelper::GetDEClassName<T>()))
+			if (!m_ComponentMap.contains(ReflectionHelper::GetClassNameDE<T>()))
 				return nullptr;
 
-			if (Ref<T> component = CastRef<T>(m_ComponentMap.at(ReflectionHelper::GetDEClassName<T>())))
+			if (Ref<T> component = CastRef<T>(m_ComponentMap.at(ReflectionHelper::GetClassNameDE<T>())))
 				return component;
 
 			return nullptr;

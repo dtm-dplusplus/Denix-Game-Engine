@@ -13,10 +13,7 @@ namespace Denix
     class ReflectionSubsystem: public Subsystem<ReflectionSubsystem>
     {
     public:
-        ReflectionSubsystem()
-        {
-            DE_LOG_CREATE(LogReflection)
-        }
+        ReflectionSubsystem() = default;
         
         ~ReflectionSubsystem() override = default;
 
@@ -25,10 +22,12 @@ namespace Denix
         template<typename T>
         static void Register()
         {
+            const std::string className = ReflectionHelper::GetClassNameDE<T>();
+
+            static_assert(std::is_base_of_v<Object, T>, "Class must be derived from Actor");
+
             const CreateFunc _createFunc = [] { return MakeRef<T>(); };
-            const std::string className = ReflectionHelper::GetDEClassName<T>();
             s_Instance->m_CreateFuncs[className] = _createFunc;
-            DE_LOG(LogScene, Info, "Registered class: {}", className)
         }
 
         template <typename T = Object>

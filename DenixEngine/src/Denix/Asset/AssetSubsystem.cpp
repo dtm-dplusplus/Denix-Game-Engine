@@ -15,7 +15,6 @@ namespace Denix
 {
 	AssetSubsystem::AssetSubsystem()
 	{
-		DE_LOG_CREATE(LogAsset)
 	}
 
 	Ref<Asset> AssetSubsystem::GetAsset(const std::string& _path)

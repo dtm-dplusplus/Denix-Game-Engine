@@ -23,7 +23,6 @@ namespace Denix
 	public:
 		PhysicsSubsystem()
 		{
-			DE_LOG_CREATE(LogPhysics)
 		}
 
 		~PhysicsSubsystem() override = default;

@@ -13,8 +13,7 @@ Denix::JobSubsystem::JobSubsystem()
       m_ManualBatchSize(100),
       m_BatchUpdateThreshold(50)
 {
-    DE_LOG_CREATE(LogThread)
-    DE_LOG_CREATE(LogJob)
+ 
 }
 
 void Denix::JobSubsystem::UpdateActiveThreads()

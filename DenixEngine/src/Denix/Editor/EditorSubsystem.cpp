@@ -15,7 +15,6 @@ namespace Denix
 {
 	EditorSubsystem::EditorSubsystem()
 	{
-		DE_LOG_CREATE(LogEditor)
 	}
 	
 	void EditorSubsystem::Initialize()

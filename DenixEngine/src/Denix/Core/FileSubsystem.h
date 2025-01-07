@@ -9,7 +9,7 @@ namespace Denix
 	public:
 		FileSubsystem()
 		{
-			DE_LOG_CREATE(LogFile)
+			
 		}
 
 		~FileSubsystem() override = default;

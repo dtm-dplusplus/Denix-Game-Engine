@@ -15,12 +15,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 add_subdirectory(${ENGINE_DIR}/contrib/imgui)
 set_property(TARGET Imgui PROPERTY FOLDER Depend/Imgui)
 
-# Get all source files
-file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
-        ${ENGINE_SOURCE_DIR}/*.cpp
-        ${ENGINE_SOURCE_DIR}/*.h
-)
-
 # Set C++ Include Directories
 include_directories(${PROJECT_NAME}
         ${ENGINE_SOURCE_DIR}
@@ -36,15 +30,12 @@ include_directories(${PROJECT_NAME}
         ${ENGINE_CONTRIB_DIR}/physx/include
 )
 
-# Create Audio Subsystem Library
-file(GLOB_RECURSE AUDIO_SOURCE CONFIGURE_DEPENDS
-        ${ENGINE_SOURCE_DIR}/Denix/Audio/*.cpp
-        ${ENGINE_SOURCE_DIR}/Denix/Audio/*.h
-)
-add_library(AudioSubsystem STATIC ${AUDIO_SOURCE})
-set_property(TARGET AudioSubsystem PROPERTY FOLDER DenixEngine/Audio)
-
 # Create the Engine library & Solution Folder
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
+        ${ENGINE_SOURCE_DIR}/*.cpp
+        ${ENGINE_SOURCE_DIR}/*.h
+)
+
 add_library(DenixEngine STATIC ${SOURCE_FILES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
 
@@ -55,7 +46,6 @@ target_precompile_headers(DenixEngine PUBLIC ${ENGINE_SOURCE_DIR}/depch.h)
 # Set dependencies for DenixEngine
 add_dependencies(${PROJECT_NAME}
         Imgui
-        AudioSubsystem
 )
 
 # Enable Edit and Continue for MSVC

@@ -8,7 +8,7 @@ namespace Denix
     public:
 
         template <typename T>
-        static std::string GetDEClassName()
+        static std::string GetClassNameDE()
         {
             // Remove the first 5 characters of the string "Class "
             std::string className = static_cast<std::string>(typeid(T).name()).substr(6);

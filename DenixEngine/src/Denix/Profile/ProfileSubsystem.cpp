@@ -8,7 +8,6 @@ namespace Denix
 {
     ProfileSubsystem::ProfileSubsystem()
     {
-        DE_LOG_CREATE(LogProfile)
     }
 
     void ProfileSubsystem::Initialize()

@@ -1,5 +1,6 @@
 #include "Engine.h"
 
+#include "Audio/AudioComponent.h"
 #include "Denix/System/SubSystem.h"
 #include "Denix/Thread/JobSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
@@ -43,23 +44,39 @@ namespace Denix
 	{
 		// Initialize Logger
 		Logger::Initialize();
+		
 		DE_LOG_CREATE(LogEngine)
-		
+		DE_LOG_CREATE(LogFile)
+		DE_LOG_CREATE(LogTimer)
 		DE_LOG_CREATE(LogScene)
+		DE_LOG_CREATE(LogAsset)
+		DE_LOG_CREATE(LogAudio)
+		DE_LOG_CREATE(LogInput)
+		DE_LOG_CREATE(LogPhysics)
+		DE_LOG_CREATE(LogProfile)
+		DE_LOG_CREATE(LogReflection)
+		DE_LOG_CREATE(LogThread)
+		DE_LOG_CREATE(LogJob)
+		DE_LOG_CREATE(LogUI)
+		DE_LOG_CREATE(LogRender)
+		DE_LOG_CREATE(LogGL)
+		DE_LOG_CREATE(LogWindow)
+		DE_LOG_CREATE(LogShader)
+		DE_LOG_CREATE(LogEditor)
 
-		// We initialize the thread subsystem here because it is used to create the other subsystems
-		m_JobSubsystem = InitalizeSubsystem<JobSubsystem>();
 		
-		// We initialize the reflection subsystem here because it is used by the client engine constructor
-		// Register all classes that need to be reflected here. This will be moved to some kind of pre build event & parser in the future
+		// Register all classes that need to be reflected here. 
 		m_ReflectionSubsystem = InitalizeSubsystem<ReflectionSubsystem>();
 
-		// Register classes
+		// Register classes - This will be moved to some kind of pre build event & parser in the future
 		ReflectionSubsystem::Register<BaseObject>();
+		//ReflectionSubsystem::Register<Scene>();
 		ReflectionSubsystem::Register<Actor>();
+		ReflectionSubsystem::Register<Camera>();
 		ReflectionSubsystem::Register<Cube>();
 		ReflectionSubsystem::Register<Sphere>();
 		ReflectionSubsystem::Register<Plane>();
+		
 		ReflectionSubsystem::Register<TransformComponent>();
 		ReflectionSubsystem::Register<RenderComponent>();
 		ReflectionSubsystem::Register<MeshComponent>();
@@ -68,8 +85,20 @@ namespace Denix
 		ReflectionSubsystem::Register<Collider>();
 		ReflectionSubsystem::Register<CubeCollider>();
 		ReflectionSubsystem::Register<SphereCollider>();
-	
-		ReflectionSubsystem::Register<Camera>();
+
+		ReflectionSubsystem::Register<AudioComponent>();
+		ReflectionSubsystem::Register<AudioSource>();
+
+		DE_LOG(LogReflection, Info, "Registered Engine Classes")
+		
+		//Initialize SDL
+		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO))
+		{
+			std::string err = SDL_GetError();
+			DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", err)
+			throw std::runtime_error(err.c_str());
+		}
+		DE_LOG(Log, Trace, "SDL Init success")
 	}
 
 	void Engine::Initialize()
@@ -77,6 +106,8 @@ namespace Denix
 		PreInitialize();
 		
 		DE_LOG(LogEngine, Warn, "Engine Initializing")
+
+		m_JobSubsystem = InitalizeSubsystem<JobSubsystem>();
 
 		m_TimerSubsystem = InitalizeSubsystem<TimerSubsystem>();
 
@@ -139,7 +170,10 @@ namespace Denix
 		m_ReflectionSubsystem.reset();
 		m_TimerSubsystem.reset();
 		m_JobSubsystem.reset();
-				
+
+		// Clear Core Dependencies
+		SDL_Quit();
+
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
 	}
 
@@ -152,7 +186,7 @@ namespace Denix
 
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
 			Ref<Counter> inputCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, inputCounter, &InputSubsystem::Poll, m_InputSubsystem.get());
+			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, inputCounter, &InputSubsystem::Update, m_InputSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 			//WaitForCounter(inputCounter.get());
 			
 			// Clear the offscreen frame buffer

@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <GLM/vec3.hpp>
 
+#include "Denix/Scene/BaseObject.h"
 #include "Denix/Scene/Object.h"
 
 namespace Denix
@@ -15,10 +16,10 @@ namespace Denix
         Paused = 2
     };
     
-    class AudioSource: public Object, public std::enable_shared_from_this<AudioSource>
+    class AudioSource: public BaseObject, public std::enable_shared_from_this<AudioSource>
     {
     public:
-        AudioSource(const ObjectInit& _objInit);
+        AudioSource();
         ~AudioSource() override;
         void Play() const;
         void Stop() const;

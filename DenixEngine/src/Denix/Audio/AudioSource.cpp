@@ -6,7 +6,7 @@
 
 #include "Denix/Core/Logger.h"
 
-Denix::AudioSource::AudioSource(const ObjectInit& _objInit): Object(_objInit)
+Denix::AudioSource::AudioSource(): BaseObject({"AudioSource"})
 {
     // Check we have available sources
     if (s_MonoSources == s_MaxMonoSources) 

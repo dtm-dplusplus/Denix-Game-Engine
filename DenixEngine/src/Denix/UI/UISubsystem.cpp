@@ -11,7 +11,6 @@ namespace Denix
 {
 	UISubsystem::UISubsystem()
 	{
-		DE_LOG_CREATE(LogUI)
 	}
 
 	void UISubsystem::Initialize()
@@ -36,14 +35,15 @@ namespace Denix
 		ImGui::StyleColorsDark();
 
 		// Setup SDL3 Platform/Renderer backends
-		const WindowSubsystem* windowSystem = WindowSubsystem::Get();
-		if(!ImGui_ImplSDL3_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(),
+		Ref<SDL_GLWindow> window = WindowSubsystem::GetWindow();
+		
+		if(!ImGui_ImplSDL3_InitForOpenGL(window->GetSDLWindow(),
 				SDL_GL_GetCurrentContext()))
 		{
 			throw std::runtime_error("ImGui_ImplSDL3_InitForOpenGL failed");
 		}
 
-		if(!ImGui_ImplOpenGL3_Init(windowSystem->GetWindow()->GetGLSLVersion().c_str()))
+		if(!ImGui_ImplOpenGL3_Init(window->GetGLSLVersion().c_str()))
 		{
 			throw std::runtime_error("ImGui_ImplOpenGL3_Init failed");
 		}
@@ -120,7 +120,7 @@ namespace Denix
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
-	void UISubsystem::ViewportUpdate(const Ref<SDL_GLWindow> _window)
+	void UISubsystem::ViewportUpdate(const Ref<SDL_GLWindow>& _window)
 	{
 		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{

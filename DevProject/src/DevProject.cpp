@@ -32,5 +32,5 @@ public:
 
  Ref<Engine> Denix::MakeEngine()
 {
-	return MakeRef<DevProject>(ReflectionHelper::GetDEClassName<DevProject>());
+	return MakeRef<DevProject>(ReflectionHelper::GetClassNameDE<DevProject>());
 }

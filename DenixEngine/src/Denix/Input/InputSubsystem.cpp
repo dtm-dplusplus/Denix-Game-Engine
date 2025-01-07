@@ -2,20 +2,17 @@
 
 #include "backends/imgui_impl_sdl3.h"
 #include "Denix/Profile/ProfileSubsystem.h"
+#include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
 
 namespace Denix
 {
-    InputSubsystem::InputSubsystem()
-     {
-         DE_LOG_CREATE(LogInput)
-     }
     void InputSubsystem::Initialize()
     {
         Subsystem::Initialize();
         DE_LOG(LogInput, Warn, "Input Subsystem Initializing");
 
-        m_Window = WindowSubsystem::Get()->GetWindow();
+        m_WindowRef = WindowSubsystem::GetWindow();
         m_SDL_LastKeyboardState = new Uint8[322];
         m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
 
@@ -24,7 +21,6 @@ namespace Denix
 
     void InputSubsystem::Deinitialize()
     {
-        m_Window = nullptr;
         m_SDL_KeyboardState = nullptr;
         delete[] m_SDL_LastKeyboardState;
         
@@ -33,14 +29,9 @@ namespace Denix
 
     void InputSubsystem::Update(float _deltaTime)
     {
+        DE_PROFILE(Input Update)
         Subsystem::Update(_deltaTime);
 
-        Poll();
-    }
-
-    void InputSubsystem::Poll()
-    {
-        DE_PROFILE(Input Poll)
         SDL_Event event;
 
         m_MouseData.WheelY = 0;
@@ -49,14 +40,14 @@ namespace Denix
         m_MouseData.SDL_State = SDL_GetMouseState(&m_MouseData.X, &m_MouseData.Y);
         m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
 
+        const auto window = m_WindowRef.lock();
+        
         while (SDL_PollEvent(&event))
         {
             ImGui_ImplSDL3_ProcessEvent(&event);
 
             switch (event.type)
             {
-            // All window events will be passed to window subsystem for handling
-
             case SDL_EVENT_WINDOW_SHOWN: break; /**< Window has been shown */
             case SDL_EVENT_WINDOW_HIDDEN: break; /**< Window has been hidden */
             case SDL_EVENT_WINDOW_EXPOSED:
@@ -68,15 +59,26 @@ namespace Denix
             case SDL_EVENT_WINDOW_MOVED: break; /**< Window has been moved to data1: data2 */
             case SDL_EVENT_WINDOW_RESIZED:
                 {
-                    /**< Window has been resized to data1xdata2 */
-                    WindowSubsystem::GetWindow()->WindowEvent(&event);
+                     /**< Window has been resized to data1xdata2 */
+                    window->m_WinX = event.window.data1;
+                    window->m_WinY = event.window.data2;
+                    glViewport(0, 0,  window->m_WinX, window->m_WinY);
+                    SceneSubsystem::GetActiveCamera()->GetViewport()->m_FrameBuffer->Resize(window->m_WinX, window->m_WinY);
 
-                }
-                break;
-            case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: break;
-            /**< The pixel size of the window has changed to data1xdata2 */
-            case SDL_EVENT_WINDOW_MINIMIZED: break; /**< Window has been minimized */
-            case SDL_EVENT_WINDOW_MAXIMIZED: break; /**< Window has been maximized */
+                    DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", window->m_WinX, window->m_WinY)
+
+                }  break; /**< Window has been resized to data1xdata2 */
+               
+            case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: break; /**< The pixel size of the window has changed to data1xdata2 */
+            case SDL_EVENT_WINDOW_MINIMIZED:
+                {
+                    DE_LOG(LogWindow, Trace, "Window Minimized Event")
+
+                }   break; /**< Window has been minimized */
+            case SDL_EVENT_WINDOW_MAXIMIZED:
+                {
+                    DE_LOG(LogWindow, Trace, "Window Maximized Event")
+                }break; /**< Window has been maximized */
             case SDL_EVENT_WINDOW_RESTORED: break; /**< Window has been restored to normal size and position */
             case SDL_EVENT_WINDOW_MOUSE_ENTER: break; /**< Window has gained mouse focus */
             case SDL_EVENT_WINDOW_MOUSE_LEAVE: break; /**< Window has lost mouse focus */
@@ -84,7 +86,8 @@ namespace Denix
             case SDL_EVENT_WINDOW_FOCUS_LOST: break; /**< Window has lost keyboard focus */
             case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
                 {
-                    WindowSubsystem::GetWindow()->WindowEvent(&event);
+                    window->RequestClose();
+                    DE_LOG(LogWindow, Trace, "Window Close Event")
                 }break; /**< The window manager requests that the window be closed */
             case SDL_EVENT_WINDOW_HIT_TEST: break; /**< Window had a hit test that wasn't SDL_HITTEST_NORMAL */
             case SDL_EVENT_WINDOW_ICCPROF_CHANGED: break; /**< The ICC profile of the window's display has changed */
@@ -100,7 +103,7 @@ namespace Denix
                     associated with the window. Otherwise, the handle has already been destroyed and all resources
                     associated with it are invalid */
 
-                    //WindowSubsystem::GetWindow()->WindowEvent(&event);
+                    //m_Window->WindowEvent(&event);
                 }
                 break;
 
@@ -140,12 +143,6 @@ namespace Denix
             }
         }
 
-        DE_PROFILE_END(Input Poll)
-    }
-
-    
-
-    void InputSubsystem::InputPanel()
-    {
+        DE_PROFILE_END(Input Update)
     }
 }

@@ -7,6 +7,8 @@
 #include "al/alc.h"
 #include "al/alext.h"
 #include "AudioClip.h"
+#include "AudioSource.h"
+#include "AudioComponent.h"
 
 namespace Denix
 {

@@ -5,7 +5,6 @@
 
 Denix::AudioSubsystem::AudioSubsystem(): m_Device(nullptr), m_Context(nullptr)
 {
-    DE_LOG_CREATE(LogAudio)
 }
 
 void Denix::AudioSubsystem::Initialize()
