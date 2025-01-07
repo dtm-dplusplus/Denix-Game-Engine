@@ -35,15 +35,15 @@ namespace Denix
 		ImGui::StyleColorsDark();
 
 		// Setup SDL3 Platform/Renderer backends
-		Ref<SDL_GLWindow> window = WindowSubsystem::GetWindow();
+		m_WindowRef = WindowSubsystem::GetWindow();
 		
-		if(!ImGui_ImplSDL3_InitForOpenGL(window->GetSDLWindow(),
+		if(!ImGui_ImplSDL3_InitForOpenGL(m_WindowRef.lock()->GetSDLWindow(),
 				SDL_GL_GetCurrentContext()))
 		{
 			throw std::runtime_error("ImGui_ImplSDL3_InitForOpenGL failed");
 		}
 
-		if(!ImGui_ImplOpenGL3_Init(window->GetGLSLVersion().c_str()))
+		if(!ImGui_ImplOpenGL3_Init(m_WindowRef.lock()->GetGLSLVersion().c_str()))
 		{
 			throw std::runtime_error("ImGui_ImplOpenGL3_Init failed");
 		}
@@ -120,14 +120,15 @@ namespace Denix
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
-	void UISubsystem::ViewportUpdate(const Ref<SDL_GLWindow>& _window)
+	void UISubsystem::ViewportUpdate() const
 	{
+		const auto& window = m_WindowRef.lock();
 		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 
-			SDL_GL_MakeCurrent(_window->GetSDLWindow(), _window->GetSDL_GLContext());
+			SDL_GL_MakeCurrent(window->GetSDLWindow(), window->GetSDL_GLContext());
 		}
 	}
 }

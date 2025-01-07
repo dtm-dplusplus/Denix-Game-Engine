@@ -236,7 +236,7 @@ namespace Denix
 				m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
 				m_UISubsystem->RenderUI(); // Swap buffers and render UI
 				m_WindowSubsystem->m_Window->SwapBuffers();
-				m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
+				m_UISubsystem->ViewportUpdate();
 				DE_PROFILE_END(Draw Viewport)
 			});
 			//WaitForCounter(drawCounter.get());

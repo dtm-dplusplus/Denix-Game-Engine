@@ -16,13 +16,8 @@ namespace Denix
 
 		virtual ~Window() = default;
 
-		virtual bool Initialize() = 0;
-		virtual void Deinitialize() = 0;
-
 		virtual void ClearBuffer() = 0;
 		virtual void SwapBuffers() = 0;
-
-		virtual void WindowEvent(const SDL_Event* _event) {}
 
 		bool IsOpen() const { return m_IsOpen; }
 		bool IsFullscreen() const { return m_IsFullscreen; }
@@ -57,11 +52,9 @@ namespace Denix
 	class SDL_GLWindow final : public Window
 	{
 	public:
-		SDL_GLWindow() : m_SDL_GLWindow(nullptr), m_SDL_GLContext(nullptr), m_SDL_WindowFlags{ SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY }
-		{
-		}
+		SDL_GLWindow();
 
-		~SDL_GLWindow() override = default;
+		~SDL_GLWindow() override;
 
 		void ToggleFullscreen()
 		{
@@ -95,9 +88,6 @@ namespace Denix
 		// void SetSDL_GLWindowFlags(const int flags) { m_SDL_WindowFlags = m_SDL_WindowFlags | static_cast<SDL_WindowFlags>(flags); }
 		SDL_WindowFlags GetSDL_GLWindowFlags() const { return m_SDL_WindowFlags; }
 
-		bool Initialize() override;
-		void Deinitialize() override;
-
 		void ClearBuffer() override;
 		void SwapBuffers() override;
 
@@ -111,29 +101,19 @@ namespace Denix
 		void SetVsyncMode(const SDL_GLVsyncMode mode) 
 		{
 			m_VsyncMode = mode; 
-			if (SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
+			if (!SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)))
 			{
-				DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
+				DE_LOG(LogWindow, Error, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
 			}
 		}
+		
+	private:
 		void ToggleVsync()
 		{
-			if (m_VsyncMode == SDL_GLVsyncMode::Off)
-			{
-				m_VsyncMode = SDL_GLVsyncMode::On;
-			}
-			else
-			{
-				m_VsyncMode = SDL_GLVsyncMode::Off;
-			}
-
-			if (SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
-			{
-				DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
-			}
+			m_VsyncMode = static_cast<SDL_GLVsyncMode>(!static_cast<bool>(m_VsyncMode));
+			SetVsyncMode(m_VsyncMode);
 		}
-	private:
-
+		
 		SDL_Window* m_SDL_GLWindow;
 
 		SDL_WindowFlags m_SDL_WindowFlags;

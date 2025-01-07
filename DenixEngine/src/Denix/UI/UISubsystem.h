@@ -33,14 +33,15 @@ namespace Denix
 
 		void Update(float _deltaTime) override;
 
-		void NewFrame();
-		void RenderUI();
-		void ViewportUpdate(const Ref<SDL_GLWindow>& _window);
+		static void NewFrame();
+		static void RenderUI();
+		void ViewportUpdate() const;
 
 		ImGuiID DockLeftID;
 		ImGuiID DockRightID;
 		ImGuiID DockDownID;
 
+		WRef<SDL_GLWindow> m_WindowRef;
 		friend class Engine;
 		friend class EditorSubsystem;
 	};

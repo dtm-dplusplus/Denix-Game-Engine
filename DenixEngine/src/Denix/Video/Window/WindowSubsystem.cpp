@@ -19,25 +19,18 @@ namespace Denix
         SDL_GLWindow::m_GLStencilSize = 8;
         SDL_GLWindow::m_GLDoubleBuffer = 1;
         
-        // Set SDL OpenGL Version
-       SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, SDL_GLWindow::m_GLMajorVersion);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, SDL_GLWindow::m_GLMinorVersion);
-
-        // Set GL Attributes
-        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, SDL_GLWindow::m_GLDepthSize);
-        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, SDL_GLWindow::m_GLStencilSize);
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, SDL_GLWindow::m_GLDoubleBuffer);
         
         
-        //Create window
-        if (const Ref<SDL_GLWindow> window = MakeRef<SDL_GLWindow>())
+        
+        //Create main window
+        m_Window = MakeRef<SDL_GLWindow>();
+        if (!m_Window->m_IsOpen)
         {
-            if (!window->Initialize()) return;
-            m_Window = window;
+            const std::string error = "Failed to create main window";
+            DE_LOG(LogWindow, Critical, error)
+            throw std::runtime_error(error.c_str());
         }
-
+        
         // Init Glew
         if (glewInit() != GLEW_OK)
         {
@@ -47,5 +40,15 @@ namespace Denix
         DE_LOG(LogWindow, Trace, "glewInit(): success")
         
         DE_LOG(LogWindow, Info, "Window Subsystem Initialized")
+    }
+
+    void WindowSubsystem::Deinitialize()
+    {
+        m_Window.reset();
+
+
+        DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
+
+        Subsystem::Deinitialize();
     }
 }

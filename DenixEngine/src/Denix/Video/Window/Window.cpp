@@ -12,45 +12,52 @@
 
 namespace Denix
 {
-    bool SDL_GLWindow::Initialize()
+    SDL_GLWindow::SDL_GLWindow(): m_SDL_GLWindow(nullptr), m_SDL_WindowFlags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY }, m_SDL_GLContext(nullptr)
     {
-        // Create SDL window
-        if (SDL_Window* window = SDL_CreateWindow(m_Title.c_str(), m_WinX, m_WinY,
-                                                  m_SDL_WindowFlags))
-        {
-            m_SDL_GLWindow = window;
-            DE_LOG(LogWindow, Trace, "SDL_CreateWindow success")
-        }
-        else
-        {
-            //DE_LOG(LogWindow, Critical, "SDL_CreateWindow failed! SDL_Error: {}", SDL_GetError())
-            return false;
-        }
+        // Set SDL OpenGL Version
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, NULL);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, m_GLMajorVersion);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, m_GLMinorVersion);
 
+        // Set GL Attributes
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, m_GLDepthSize);
+        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, m_GLStencilSize);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, m_GLDoubleBuffer);
+
+        // Create SDL window
+        m_SDL_GLWindow = SDL_CreateWindow(m_Title.c_str(), m_WinX, m_WinY,m_SDL_WindowFlags);
+
+        //assert(m_SDL_GLWindow, "SDL_CreateWindow failed! SDL_Error: {}", SDL_GetError());
+        
+        
         // Create SDL GL Context
-        if (const SDL_GLContext context = SDL_GL_CreateContext(m_SDL_GLWindow))
+        m_SDL_GLContext = SDL_GL_CreateContext(m_SDL_GLWindow);
+        if (!m_SDL_GLContext)
         {
-            m_SDL_GLContext = context;
-            DE_LOG(LogWindow, Trace, "SDL_GL_CreateContext success")
-        }
-        else
-        {
-            // DE_LOG(LogWindow, Critical, "SDL_GL_CreateContext failed! SDL_Error: {}", SDL_GetError())
-            return false;
+            DE_LOG(LogWindow, Critical, "SDL_GL_CreateContext failed! SDL_Error: {}", SDL_GetError())
         }
 
         // Make current context
-        if (SDL_GL_MakeCurrent(m_SDL_GLWindow, m_SDL_GLContext) < 0)
+        if (!SDL_GL_MakeCurrent(m_SDL_GLWindow, m_SDL_GLContext))
         {
             // DE_LOG(LogWindow, Critical, "SDL_GL_MakeCurrent failed! SDL_Error: {}", SDL_GetError())
-            return false;
         }
 
-        // Enable Vsync
-        if (SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
+        // Check if our attributes are set
+        int major, minor;
+        SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
+        SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
+        if (!(major == m_GLMajorVersion && minor == m_GLMinorVersion))
         {
-             DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
-            return false;
+            DE_LOG(LogWindow, Warn, "SDL Requested OpenGL version did not match: {}.{} Got: {}.{}", m_GLMajorVersion, m_GLMinorVersion, major, minor)
+        }
+
+        
+        // Enable Vsync
+        if (!SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)))
+        {
+            DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
         }
 
         // Enable Depth Test
@@ -58,11 +65,9 @@ namespace Denix
         m_IsOpen = true;
 
         DE_LOG(LogWindow, Trace, "Created Window: {} Res: {}x{}", m_Title, m_WinX, m_WinY)
-
-        return true;
     }
 
-    void SDL_GLWindow::Deinitialize()
+    SDL_GLWindow::~SDL_GLWindow()
     {
         // Destroys window and context
         SDL_GL_DestroyContext(SDL_GL_GetCurrentContext());
