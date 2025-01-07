@@ -1,5 +1,6 @@
 #include "Shapes.h"
 #include "Denix/Asset/AssetSubsystem.h"
+#include "Denix/Core/FileSubsystem.h"
 #include "Denix/Physics/Collider.h"
 
 namespace Denix
@@ -24,6 +25,7 @@ namespace Denix
 		//m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
 
     	m_PhysicsComponent->m_ColliderType = ColliderType::Cube;
+    	m_TransformComponent->SetMoveability(Moveability::Dynamic);
     }
 
 	Sphere::Sphere() : Actor({ "Sphere" })

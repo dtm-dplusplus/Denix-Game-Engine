@@ -29,8 +29,7 @@ namespace Denix
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
 
 		// Ensure we always have a default scene
-		m_ActiveScene = MakeRef<Scene>();
-		OpenScene(m_ActiveScene);
+		OpenScene(MakeRef<Scene>());
 		
 		// Load Startup scene if it exists
 		if(m_StartupScene)
@@ -56,10 +55,9 @@ namespace Denix
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitializing")
 
 		CloseScene();
-		m_ActiveScene->Unload();
 		m_ActiveScene->ClearScene();
-		m_LoadedScenes.clear();
-		m_StartupScene = nullptr;
+		m_ActiveScene.reset();
+		m_StartupScene.reset();
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitialized")
 		Subsystem::Deinitialize();
 	}
@@ -87,34 +85,10 @@ namespace Denix
 		// Load the scene data
 		DeserializeScene(_scene);
 		
-		// Load the scene - This should probably be skipped now we have the deserialization
-		if (!_scene->Load())
-		{
-			DE_LOG(LogScene, Critical, "Failed to load scene")
-			return false;
-		}
-
-		s_Instance->m_LoadedScenes[_scene->GetName()] = _scene;
-
 		if(_scene->m_SceneAsset) DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->m_SceneAsset->GetAssetName())
 		else DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->GetName())
 		
 		return true;
-	}
-	
-	void SceneSubsystem::UnloadScene(const std::string& _name)
-	{
-		if (const Ref<Scene>scene = s_Instance->m_LoadedScenes[_name])
-		{
-			// Unload the scene
-			scene->Unload();
-			s_Instance->m_LoadedScenes.erase(_name);
-
-			DE_LOG(LogScene, Info, "Unloaded Scene: {}", _name)
-			return;
-		}
-
-		DE_LOG(LogScene, Error, "Load Scene: Invalid scene name, or the scene isn't loaded")
 	}
 	
 	void SceneSubsystem::OpenScene(const Ref<Asset>& _sceneAsset)
@@ -143,8 +117,8 @@ namespace Denix
 		// Close the current scene if it's open
 		if (s_Instance->m_ActiveScene) s_Instance->CloseScene();
 		
-		// Load the scene if it isn't already loaded
-		if(!_scene->IsLoaded()) LoadScene(_scene);
+		// Load the scene
+		LoadScene(_scene);
 
 		// Set the active scene. Take ownership of the scene pointer
 		s_Instance->m_ActiveScene = std::move(_scene);
@@ -174,15 +148,11 @@ namespace Denix
 		m_SceneState = SceneState::Playing;
 		
 		// Check for Game Camera
-		if(const Ref<Camera> camera = s_Instance->m_ActiveScene->GetGameCamera())
+		if(const Ref<Camera> camera = s_Instance->m_ActiveScene->FindGameCamera())
 		{
 			// Set the camera as the active camera
 			s_Instance->m_ActiveScene->m_ActiveCamera = camera;
-			DE_LOG(LogScene, Info, "Game Camera Found: {}", camera->GetName())
-		}
-		else
-		{
-			DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
+			
 		}
 
 		DE_LOG(LogScene, Trace, "Started Playing Scene: {}", s_Instance->m_ActiveScene->GetName())
@@ -224,7 +194,6 @@ namespace Denix
 		{
 			if (m_ActiveScene->m_IsPlaying) m_ActiveScene->EndPlay();
 			m_ActiveScene->EndScene();
-			m_ActiveScene->m_IsPlaying = false;
 		}
 	}
 

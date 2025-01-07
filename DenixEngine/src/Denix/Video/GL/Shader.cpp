@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+#include "Denix/Core/FileSubsystem.h"
+
 GLuint Denix::Shader::CreateProgram()
 {
     if (const GLuint program = glCreateProgram())

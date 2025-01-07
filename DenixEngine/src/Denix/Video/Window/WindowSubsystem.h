@@ -2,10 +2,8 @@
 
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
-#include "Denix/Video/Window/Window.h"
-#include <SDL3/SDL.h>
 
-#include <GL/glew.h>
+#include "Denix/Video/Window/Window.h"
 
 namespace Denix
 {

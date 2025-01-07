@@ -12,7 +12,6 @@ namespace Denix
         EditorWidget::Update(_deltaTime);
 
         static Ref<JobSubsystem> jobSubsystem = JobSubsystem::Get();
-        std::vector<Ref<Thread>> threads = jobSubsystem->GetWorkerThreads();
 
         ImGui::Text("System Threads Available: %d", jobSubsystem->GetActiveThreads());
         ImGui::Text("Worker Threads Available: %d", jobSubsystem->GetActiveThreads());

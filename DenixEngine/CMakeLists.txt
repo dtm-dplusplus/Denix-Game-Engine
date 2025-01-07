@@ -48,12 +48,13 @@ add_dependencies(${PROJECT_NAME}
         Imgui
 )
 
-# Enable Edit and Continue for MSVC
-#[[
+#add_definitions($<$<CONFIG:Debug>:DE_DEBUG> $<$<CONFIG:Release>:DE_RELEASE>)
+
+# Enable Incremental linking
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
-endif()]]
+endif()
 
 target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CONFIG:Debug>:/MTd>

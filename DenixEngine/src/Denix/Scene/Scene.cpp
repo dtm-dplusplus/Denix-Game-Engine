@@ -16,23 +16,33 @@ namespace Denix
 
     Scene::~Scene()
     {
-        
-    }
-    
-    bool Scene::Load()
-    {
-        m_IsLoaded = true;
-
-        return true;
-    }
-
-    void Scene::Unload()
-    {
-        m_IsLoaded = false;
+        m_GameCamera.reset();
+        m_ViewportCamera.reset();
+        m_ActiveCamera.reset();
+        ClearScene();
     }
 
     void Scene::BeginScene()
     {
+       BaseObject::BeginScene();
+
+        
+        for (const auto& obj : m_Actors) obj->BeginScene();
+    }
+
+    void Scene::EndScene()
+    {
+        // Call EndScene on all actors
+        for (const auto& actor : m_Actors) actor->EndScene();
+        BaseObject::EndScene();
+    }
+
+    void Scene::BeginPlay()
+    {
+        BaseObject::BeginPlay();
+
+        
+
         m_PxSceneDesc = new physx::PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
         m_PxSceneDesc->gravity = physx::PxVec3(0.0f, -m_Gravity, 0.0f);
         m_PxSceneDesc->cpuDispatcher	= PhysicsSubsystem::m_PxDispatcher;
@@ -47,50 +57,16 @@ namespace Denix
         }
         
         m_PxScene = PhysicsSubsystem::CreatePxScene(m_PxSceneDesc);
-        
-        m_ActiveCamera = m_ViewportCamera;
-        m_ActiveCamera->BeginScene();
-        
-        for (const auto& obj : m_Actors) obj->BeginScene();
-    }
 
-    void Scene::EndScene()
-{
-        // Call EndScene on all actors
-        for (const auto& actor : m_Actors) actor->EndScene();
-        
-    // Release all actors from the scene
-    /*if (m_PxScene)
-    {
-        using namespace physx;
-        PxU32 numActors = m_PxScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
-        std::vector<PxActor*> actors(numActors);
-        m_PxScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, actors.data(), numActors);
-
-        for (PxActor* actor : actors)
+        if (m_GameCamera)
         {
-            actor->userData = nullptr;
-            m_PxScene->removeActor(*actor);
-            actor->release();
+            m_ActiveCamera = m_GameCamera;
+            DE_LOG(LogScene, Info, "Game Camera Found: {}", m_ActiveCamera->GetName())
         }
-    }*/
-
-    // Release the scene descriptor
-    if (m_PxSceneDesc)
-    {
-        delete m_PxSceneDesc;
-        m_PxSceneDesc = nullptr;
-    }
-
-    // Release the PhysX scene
-    //PX_RELEASE(m_PxScene);
-
-    BaseObject::EndScene();
-}
-
-    void Scene::BeginPlay()
-    {
-        BaseObject::BeginPlay();
+        else
+        {
+            DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
+        }
         
         for (const auto& obj : m_Actors) obj->BeginPlay();
     }
@@ -99,9 +75,38 @@ namespace Denix
     {
         for (const auto& obj : m_Actors) obj->EndPlay();
 
-        // Give camera back to viewport camera
-        m_ActiveCamera = m_ViewportCamera;
+        // Iterate over all actors in the scene
+        physx::PxActorTypeFlags actorFlags = physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC;
+        physx::PxU32 numActors = m_PxScene->getNbActors(actorFlags);
 
+        if (numActors > 0) {
+            std::vector<physx::PxActor*> actors(numActors);
+            m_PxScene->getActors(actorFlags, actors.data(), numActors);
+            /*
+            // Release each actor
+            for (physx::PxActor* actor : actors) {
+                if (actor) {
+                    actor->userData = nullptr;
+                    m_PxScene->removeActor(*actor);
+                    
+                    actor->release();
+                }
+            }*/
+
+            //m_PxScene->removeActors(actors.data(), numActors);
+        }
+        
+        m_Actors.clear();
+        m_ActorNames.clear();
+        
+        // Release the PhysX scene
+        //m_PxScene->release();
+        
+        if (m_PxSceneDesc)
+        {
+            delete m_PxSceneDesc;
+            m_PxSceneDesc = nullptr;
+        }
         BaseObject::EndPlay();
     }
 
@@ -110,11 +115,6 @@ namespace Denix
         BaseObject::Update(_deltaTime);
     }
 
-    void Scene::DebugUI(float _deltaTime)
-    {}
-
-    bool Scene::IsLoaded() const
-    { return m_IsLoaded; }
 
     bool Scene::IsOpen() const
     { return m_IsOpen; }
@@ -157,6 +157,12 @@ namespace Denix
 
     void Scene::SpawnActor(const Ref<Actor>& _obj)
     {
+        if (!_obj)
+        {
+            DE_LOG(LogScene, Error, "SpawnActor: Invalid Actor")
+            return;
+        }
+        
         _obj->BeginScene();
 
         if (m_IsPlaying)
@@ -165,7 +171,7 @@ namespace Denix
         m_Actors.push_back(std::move(_obj));
     }
 
-    Ref<Camera> Scene::GetGameCamera() const
+    Ref<Camera> Scene::FindGameCamera() const
     {
         for (const auto& obj : m_Actors)
         {

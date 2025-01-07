@@ -9,16 +9,18 @@
 
 namespace Denix
 {
-    RendererSubsystem::RendererSubsystem()
-    {
-    }
-
     void RendererSubsystem::Initialize()
     {
         Subsystem::Initialize();
         DE_LOG(LogRender, Warn, "Initializing RendererSubsystem")
         m_DefaultShader = AssetSubsystem::GetShader("DefaultShader");
         DE_LOG(LogRender, Info, "RendererSubsystem Initialized")
+    }
+
+    void RendererSubsystem::Deinitialize()
+    {
+        DE_LOG(LogRender, Trace, "RendererSubsystem Deinitializing")
+        DE_LOG(LogRender, Trace, "RendererSubsystem Deinitialized")
     }
 
     void RendererSubsystem::RenderScene()

@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "Denix/Audio/AudioSource.h"
 #include "Denix/Asset/AssetSubsystem.h"
+#include "Denix/Core/FileSubsystem.h"
 
 using namespace Denix;
 

@@ -1,6 +1,7 @@
 #include "EditorSubsystem.h"
 
 #include "Denix.h"
+#include "Denix/Core/FileSubsystem.h"
 #include "Denix/Editor/Widget/Scene/ActorDetailsWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneOrganizerWidget.h"
 #include "Denix/Editor/Widget/AssetBrowserWidget.h"
@@ -32,6 +33,7 @@ namespace Denix
 
 	void EditorSubsystem::Deinitialize()
 	{
+		DE_LOG(LogEditor, Trace, "Editor Subsystem Deinitializing")
 		m_ActiveScene.reset();
 		m_SceneOrganizerWidget.reset();
 		m_ActorDetailsWidget.reset();

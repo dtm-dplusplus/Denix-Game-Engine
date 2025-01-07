@@ -44,8 +44,6 @@ namespace Denix
 
 		static bool LoadScene(const Ref<Scene>& _scene);
 
-		static void UnloadScene(const std::string& _name);
-
 		// Open Scene Methods. The string & asset overloads are wrappers for the pass by scene method.
 		static void OpenScene(const Ref<Asset>& _sceneAsset);
 		static void OpenScene(const Ref<Scene>& _scene);
@@ -83,8 +81,6 @@ namespace Denix
 		Ref<Asset> m_StartupScene;
 
 		Ref<Scene> m_ActiveScene;
-
-		std::unordered_map<std::string, Ref<Scene>> m_LoadedScenes;
 
 		inline static SceneState m_SceneState;
 		

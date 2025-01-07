@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GL/glew.h>
+#include <gl/glew.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
 

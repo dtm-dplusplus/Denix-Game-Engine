@@ -302,6 +302,8 @@ namespace Denix
          */
         void Deinitialize() override;
 
+        void WaitForAllJobs();
+
         /**
       * \brief Thread-safe queue of jobs, sorted by priority. JobComparator struct is used to compare job priorities.
       * AddJob() pushes jobs to the queue. RequestJob() pops the top job from the queue. 

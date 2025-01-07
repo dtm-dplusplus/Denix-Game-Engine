@@ -21,10 +21,6 @@ namespace Denix
 
 		~Scene() override;
 
-		virtual bool Load();
-
-		virtual void Unload();
-
 		void BeginScene() override;
 
 		void EndScene() override;
@@ -35,9 +31,8 @@ namespace Denix
 
 		void Update(float _deltaTime) override;
 
-		virtual void DebugUI(float _deltaTime);
+		virtual void DebugUI(float _deltaTime) {}
 
-		bool IsLoaded() const;
 		bool IsOpen() const;
 		bool IsPlaying() const;
 
@@ -53,7 +48,7 @@ namespace Denix
 
 		Ref<Camera> GetActiveCamera();
 
-		Ref<Camera> GetGameCamera() const;
+		Ref<Camera> FindGameCamera() const;
 
 		std::vector<Ref<Actor>> GetSceneActors() const;
 		std::vector<Ref<Actor>>& GetSceneActors();
@@ -80,8 +75,6 @@ namespace Denix
 		 */
 		bool m_IsPlaying = false;
 
-		bool m_IsLoaded = false;
-
 		bool m_IsOpen = false;
 
 		/** Gravity of the scene */
@@ -89,6 +82,8 @@ namespace Denix
 
 		Ref<Camera> m_ViewportCamera;
 
+		Ref<Camera> m_GameCamera;
+		
 		Ref<Camera> m_ActiveCamera;
 
 		// Debug Utility - Use with caution
@@ -103,8 +98,6 @@ namespace Denix
 		 * Used to quickly find actors by name
 		 */
 		std::unordered_set<std::string> m_ActorNames;
-		
-		
 
 		
 		friend class SceneSubsystem;
@@ -117,29 +110,41 @@ namespace Denix
 	Ref<T> Scene::SpawnActor(Args&&... _args, const glm::vec3& _position, const glm::vec3& _rotation)
 {
 	// Check if T is derived from Actor
-	static_assert(std::is_base_of_v<Actor, T>, "T must be derived from Actor");
+	static_assert(IsBase<Actor, T>(), "T must be derived from Actor");
 
-	if (Ref<Actor> obj = MakeRef<T>(std::forward<Args>(_args)...))
+	if (Ref<Actor> actor = MakeRef<T>(std::forward<Args>(_args)...))
 	{
+		// Perform type checks to cache engine actor types
+		if (typeid(T) == typeid(Camera))
+		{
+			if (m_GameCamera && !CastRef<Camera>(actor)->m_IsGameCamera)
+			{
+				DE_LOG(LogScene, Error, "Scene already has a game camera")
+				return nullptr;
+			}
+
+			m_GameCamera = CastRef<Camera>(actor);
+		}
+		
 		// Validate Name. We cannont have two objects with the same name
-		if (m_ActorNames.contains(obj->GetName()))
+		if (m_ActorNames.contains(actor->GetName()))
 		{
 			int copy = 1;
-			while (m_ActorNames.contains(obj->GetName() + std::to_string(copy))) copy++;
-			obj->m_Name += std::to_string(copy);
+			while (m_ActorNames.contains(actor->GetName() + std::to_string(copy))) copy++;
+			actor->m_Name += std::to_string(copy);
 		}
-		m_ActorNames.insert(obj->m_Name);
+		m_ActorNames.insert(actor->m_Name);
 
 		// Set Transform Component
-		obj->m_TransformComponent->m_Position = _position;
-		obj->m_TransformComponent->m_Rotation = _rotation;
+		actor->m_TransformComponent->m_Position = _position;
+		actor->m_TransformComponent->m_Rotation = _rotation;
 
 		// Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
-		obj->BeginScene();
-		if (m_IsPlaying) obj->BeginPlay();						
+		actor->BeginScene();
+		if (m_IsPlaying) actor->BeginPlay();						
 
 		// Add the object to the scene
-		m_Actors.push_back(std::move(obj));
+		m_Actors.push_back(std::move(actor));
 				
 		// Retrun the actor reference as it's derived type
 		return CastRef<T>(m_Actors.back());

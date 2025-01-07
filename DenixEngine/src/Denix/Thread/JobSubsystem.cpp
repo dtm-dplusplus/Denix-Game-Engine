@@ -19,7 +19,7 @@ Denix::JobSubsystem::JobSubsystem()
 void Denix::JobSubsystem::UpdateActiveThreads()
 {
     // Clamp the active threads to the system thread count
-    s_Instance->m_ActiveWorkerThreads = std::clamp(s_Instance->m_ActiveWorkerThreads, 1,
+    s_Instance->m_ActiveWorkerThreads = std::clamp(s_Instance->m_ActiveWorkerThreads, 0,
                                                        s_Instance->m_AvailableWorkerThreads);
     DE_LOG(LogJob, Trace, "Set Active Worker Threads: {} of {}", s_Instance->m_ActiveWorkerThreads,
            s_Instance->m_AvailableWorkerThreads)
@@ -106,15 +106,23 @@ void Denix::JobSubsystem::Initialize()
 
 void Denix::JobSubsystem::Deinitialize()
 {
-    Subsystem::Deinitialize();
+    DE_LOG(LogJob, Trace, "JobSubsystem Deinitializing")
+    WaitForAllJobs();
+    m_ActiveWorkerThreads = 0;
+    UpdateActiveThreads();
 
     m_Jobs.clear();
     m_WorkerThreads.clear();
-    /*for (auto thread : m_WorkerThreads)
+    
+    Subsystem::Deinitialize();
+
+    DE_LOG(LogJob, Trace, "JobSubsystem Deinitialized")
+}
+
+void Denix::JobSubsystem::WaitForAllJobs()
+{
+    while (!m_Jobs.empty())
     {
-        thread->m_ShouldWork = false;
-        thread->JoinCheck();
-    }*/
-    DE_LOG(LogJob, Trace, "Thread Subsystem Deinitializing")
-    DE_LOG(LogJob, Trace, "Thread Subsystem Deinitialized")
+        // Wait for all jobs to finish
+    }
 }

@@ -53,10 +53,13 @@ namespace Denix
 
 	void UISubsystem::Deinitialize()
 	{
+		DE_LOG(LogUI, Trace, "UI Subsystem Deinitializing")
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplSDL3_Shutdown();
 		ImPlot::DestroyContext();
 		ImGui::DestroyContext();
+		Subsystem::Deinitialize();
+		DE_LOG(LogUI, Trace, "UI Subsystem Deinitialized")
 	}
 	void UISubsystem::Update(float _deltaTime)
 	{

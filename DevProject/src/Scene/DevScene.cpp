@@ -8,42 +8,23 @@
 
 using namespace Denix;
 
-PxRigidDynamic* DevScene::createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity=PxVec3(0))
-{
-	
-	PxRigidDynamic* dynamic = PxCreateDynamic(*PhysicsSubsystem::m_PxPhysics, t, geometry, *gMaterial, 10.0f);
-	dynamic->setAngularDamping(0.5f);
-	dynamic->setLinearVelocity(velocity);
-	m_PxScene->addActor(*dynamic);
-	return dynamic;
-}
-
 void DevScene::BeginScene()
 {
 	Scene::BeginScene();
 
 	ClearScene();
 
-	// Dynamic Cube
-	/*{
-		m_DyActor = SpawnActor<Cube>();
-		m_DyActor->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
-		m_DyActor->GetTransformComponent()->SetPosition({0.0f, 5.0f, 0.0f});
-		m_DyActor->GetPhysicsComponent()->GetAngularVelocity().z =- 5.0f;
-	}*/
-
-	static size_t textureStoreSize = AssetSubsystem::GetTextureStore().size();
+	/*static size_t textureStoreSize = AssetSubsystem::GetTextureStore().size();
 	static std::unordered_map<std::string, Ref<Texture>> textureStore = AssetSubsystem::GetTextureStore();
-
 	
-	
-	for (int a = 0; a < 100; a++)
+	for (int a = 0; a < 2; a++)
 	{
 		Ref<Actor> actor;
-		if (a % 2 == 0)
+		actor = SpawnActor<Cube>();
+		/*if (a % 2 == 0)
 			actor = SpawnActor<Cube>();
 		else
-			actor = SpawnActor<Sphere>();
+			actor = SpawnActor<Sphere>();#1#
 		
 		actor->GetTransformComponent()->SetMoveability(Moveability::Dynamic);
 		actor->GetTransformComponent()->SetPosition({0.0f, 11.0f + a * 2.0f, 0.0f});
@@ -69,7 +50,7 @@ void DevScene::BeginScene()
 		m_StatActor = SpawnActor<Cube>();
 		m_StatActor->GetTransformComponent()->SetMoveability(Moveability::Static);
 		m_StatActor->GetTransformComponent()->GetScale() = {10.0f, 1.0f, 10.0f};
-	}
+	}*/
 
 	// Static Plane
 	/*{
@@ -90,5 +71,9 @@ void DevScene::DebugUI(float _deltaTime)
 	Scene::DebugUI(_deltaTime);
 
 	ImGui::Begin(GetName().c_str());
+	if(ImGui::Button("Spawn Cube"))
+	{
+		m_DyActor = SpawnActor<Cube>();
+	}
 	ImGui::End();
 }

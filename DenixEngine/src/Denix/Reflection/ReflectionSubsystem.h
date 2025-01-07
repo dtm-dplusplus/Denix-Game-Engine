@@ -24,7 +24,7 @@ namespace Denix
         {
             const std::string className = ReflectionHelper::GetClassNameDE<T>();
 
-            static_assert(std::is_base_of_v<Object, T>, "Class must be derived from Actor");
+            static_assert(IsBase<Object, T>(), "Class must be derived from Actor");
 
             const CreateFunc _createFunc = [] { return MakeRef<T>(); };
             s_Instance->m_CreateFuncs[className] = _createFunc;

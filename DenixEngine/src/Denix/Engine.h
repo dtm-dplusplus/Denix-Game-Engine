@@ -27,11 +27,11 @@ namespace Denix
 
     
     
-    class Engine
+    class Engine: public std::enable_shared_from_this<Engine>
     {
     public:
         Engine(std::string _projectName);
-        virtual  ~Engine();
+        virtual  ~Engine() = default;
 
         // Delete copy and move constructors and assignment operators
         Engine(const Engine& _other) = delete;
@@ -45,7 +45,7 @@ namespace Denix
         Ref<Asset> GetStartupScene() const;
         static void SetStartupScene(const Ref<Asset>& _ref);
 
-        static Engine* Get() { return s_Engine; }
+        static Ref<Engine> GetInstance() { return s_Engine; }
 
         std::string GetProjectName() const { return m_ProjectName; }
 
@@ -70,9 +70,8 @@ namespace Denix
             {
                 // Check if T is derived from Actor
                 Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...);
-                static_assert(std::is_base_of_v<SubsystemBase, T>, "T must be derived from Subsystem");
+                static_assert(IsBase<SubsystemBase, T>(), "T must be derived from Subsystem");
                  subsystem->Initialize();
-                m_Subsystems.push_back(CastRef<SubsystemBase>(subsystem));
                 return subsystem;
             }
             catch (const std::exception& e)
@@ -89,10 +88,7 @@ namespace Denix
         /**
          * @brief Pointer to the engine instance
          */
-        static Engine* s_Engine;
-
-        // Useful vector for deinitializing subsystems in reverse order
-        std::vector<Ref<SubsystemBase>> m_Subsystems;
+        inline static Ref<Engine> s_Engine;
 
         Ref<JobSubsystem> m_JobSubsystem;
 

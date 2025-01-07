@@ -25,6 +25,10 @@ TimerSubsystem::TimerSubsystem()
 
 	void TimerSubsystem::Deinitialize()
 	{
+		DE_LOG(LogTimer, Trace, "TimerSubsystem Deinitializing")
+		m_EngineProfile.reset();
+		m_Timers.clear();
+		Subsystem::Deinitialize();
 		DE_LOG(LogTimer, Trace, "TimerSubsystem Deinitialized")
 	}
 

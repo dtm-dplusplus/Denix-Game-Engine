@@ -21,10 +21,12 @@ namespace Denix
 
     void InputSubsystem::Deinitialize()
     {
+        DE_LOG(LogInput, Trace, "Input Subsystem Deinitializing");
         m_SDL_KeyboardState = nullptr;
         delete[] m_SDL_LastKeyboardState;
         
         Subsystem::Deinitialize();
+        DE_LOG(LogInput, Trace, "Input Subsystem Deinitialized");
     }
 
     void InputSubsystem::Update(float _deltaTime)

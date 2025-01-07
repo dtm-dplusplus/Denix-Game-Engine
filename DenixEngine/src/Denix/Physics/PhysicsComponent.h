@@ -52,7 +52,8 @@ namespace Denix
 	public:
 		PhysicsComponent();
 
-		~PhysicsComponent() override = default;
+		~PhysicsComponent() override;
+		
 
 		void BeginScene() override;
 		
@@ -185,12 +186,8 @@ namespace Denix
 
 		private:
 			void BeginPlay() override;
-
+			void EndPlay() override;
 			void EndScene() override;
-
-			void RegisterComponent() override;
-
-			void UnregisterComponent() override;
 
 	private:
 		/* Stateful members below. These dictacte engine behaviour, e.g. IsCollidig determines collider render color */

@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include <map>
+#include <string>
+
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
 #include "Profile.h"

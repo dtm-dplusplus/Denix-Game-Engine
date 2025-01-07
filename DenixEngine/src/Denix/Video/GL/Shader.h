@@ -1,12 +1,9 @@
 #pragma once
-#include <iostream>
-#include <map>
+
 #include <GL/glew.h>
 
 #include "Denix/Core.h"
 #include "Denix/Asset/Asset.h"
-#include "Denix/Scene/Object.h"
-#include "Denix/Core/FileSubsystem.h"
 
 namespace Denix
 {

@@ -1,5 +1,4 @@
 #include "WindowSubsystem.h"
-#include "Denix/Video/GL/Viewport.h"
 
 namespace Denix
 {
@@ -20,8 +19,6 @@ namespace Denix
         SDL_GLWindow::m_GLDoubleBuffer = 1;
         
         
-        
-        
         //Create main window
         m_Window = MakeRef<SDL_GLWindow>();
         if (!m_Window->m_IsOpen)
@@ -30,12 +27,12 @@ namespace Denix
             DE_LOG(LogWindow, Critical, error)
             throw std::runtime_error(error.c_str());
         }
-        
+
         // Init Glew
         if (glewInit() != GLEW_OK)
         {
-        	DE_LOG(LogWindow, Critical, "glewInit(): failed")
-        		return;
+            DE_LOG(LogWindow, Critical, "glewInit(): failed")
+                return;
         }
         DE_LOG(LogWindow, Trace, "glewInit(): success")
         
@@ -44,11 +41,9 @@ namespace Denix
 
     void WindowSubsystem::Deinitialize()
     {
+        DE_LOG(LogWindow, Trace, "Window Subsystem Deinitializing")
         m_Window.reset();
-
-
-        DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
-
         Subsystem::Deinitialize();
+        DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
     }
 }

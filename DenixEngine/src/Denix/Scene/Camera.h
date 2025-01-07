@@ -75,6 +75,7 @@ namespace Denix
 		
 		// Camera Properties
 	public:
+		bool m_IsGameCamera = false;
 		bool m_IsPerspective = true;
 		float m_Fov = 45.f;
 		float m_NearPlane = 0.1f;

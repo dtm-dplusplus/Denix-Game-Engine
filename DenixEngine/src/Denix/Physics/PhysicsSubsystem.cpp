@@ -30,9 +30,11 @@ namespace Denix
 
     void PhysicsSubsystem::Deinitialize()
     {
+        DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitializing")
+        
         PX_RELEASE(m_PxMaterial);
         PX_RELEASE(m_PxDispatcher);
-        PX_RELEASE(m_PxPhysics);
+        PX_RELEASE(m_PxPhysics); 
         if(m_PxPvd)
         {
             PxPvdTransport* transport = m_PxPvd->getTransport();
@@ -72,6 +74,21 @@ namespace Denix
          }
     }
 
+    void PhysicsSubsystem::UnregisterPxActor(physx::PxRigidActor* _actor)
+    {
+        if (!_actor)
+        {
+            DE_LOG(LogPhysics, Error, "Invalid PxActor")
+            return;
+        }
+
+        auto scene = s_Instance->m_ActiveScene.lock();
+        if (scene->m_PxScene)
+        {
+            scene->m_PxScene->removeActor(*_actor);
+        }
+    }
+
     void PhysicsSubsystem::Update(float _deltaTime)
     {
         DE_PROFILE(Physics Update)
@@ -89,29 +106,6 @@ namespace Denix
         //PhysicsSimulationPhase(_deltaTime);
         activeScene->m_PxScene->simulate(_deltaTime);
         activeScene->m_PxScene->fetchResults(true);
-
-        // Update Actor Transform
-        /*
-        std::vector<PxActor*> actors(activeScene->GetActorCount());
-        activeScene->m_PxScene->getActors(PxActorTypeFlag::eRIGID_STATIC | PxActorTypeFlag::eRIGID_DYNAMIC, actors.data(), actors.size());
-
-        for (auto pxActor: actors)
-        {
-            if (!pxActor) continue;
-		
-            PxRigidActor* pxRBActor = pxActor->is<PxRigidActor>();
-            if (!pxRBActor) continue;
-
-            Actor* sceneActor = static_cast<Actor*>(pxActor->userData);
-            if (!sceneActor) continue;
-
-            PxVec3 pos = pxRBActor->getGlobalPose().p;
-            PxQuat rot = -pxRBActor->getGlobalPose().q;
-            sceneActor->m_TransformComponent->m_Position = {pos.x, pos.y, pos.z};
-            sceneActor->m_TransformComponent->m_Rotation = Math::Degrees(rot.x, rot.y, rot.z);
-        }
-        */
-        
         DE_PROFILE_END(Physics Simulation)
 
         DE_PROFILE_END(Physics Update)

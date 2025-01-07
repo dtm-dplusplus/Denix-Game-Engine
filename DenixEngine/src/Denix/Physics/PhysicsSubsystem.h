@@ -38,11 +38,8 @@ namespace Denix
 		static bool CollisionResponseEnabled() { return s_Instance->m_CollisionResponseEnabled; }
 		static bool& CollisionResponseEnabledRef() { return s_Instance->m_CollisionResponseEnabled; }
 
-		static void RegisterComponent(const Ref<PhysicsComponent>& _component);
-
-		static void UnregisterComponent(const Ref<PhysicsComponent>& _component);
-
 		static void RegisterPxActor(physx::PxRigidActor* _actor);
+		static void UnregisterPxActor(physx::PxRigidActor* _actor);
 		
 		inline static physx::PxDefaultAllocator		m_PxAllocator;
 		inline static physx::PxDefaultErrorCallback	m_PxErrorCallback;

@@ -57,6 +57,7 @@ namespace Denix
 
 	void FileSubsystem::Deinitialize()
 	{
+		DE_LOG(LogFile, Trace, "File Subsystem Deinitializing")
 		DE_LOG(LogFile, Trace, "File Subsystem Deinitialized")
 	}
 

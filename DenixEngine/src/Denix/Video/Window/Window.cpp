@@ -5,11 +5,6 @@
 
 #include "Denix/Scene/SceneSubsystem.h"
 
-//#include "Denix/Scene/SceneSubsystem.h"
-//#include "GL/glew.h"
-//#include "imgui.h"
-//#include "Denix/Video/GL/Shader.h"
-
 namespace Denix
 {
     SDL_GLWindow::SDL_GLWindow(): m_SDL_GLWindow(nullptr), m_SDL_WindowFlags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY }, m_SDL_GLContext(nullptr)
@@ -62,6 +57,8 @@ namespace Denix
 
         // Enable Depth Test
         glEnable(GL_DEPTH_TEST);
+
+        // Set boolean to notify systems of successful window creation
         m_IsOpen = true;
 
         DE_LOG(LogWindow, Trace, "Created Window: {} Res: {}x{}", m_Title, m_WinX, m_WinY)
@@ -77,7 +74,6 @@ namespace Denix
 
     void SDL_GLWindow::ClearBuffer()
     {
-        // Clear buffer, move to renderer
         glClearColor(m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }

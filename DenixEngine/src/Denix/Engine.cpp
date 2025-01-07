@@ -1,5 +1,11 @@
 #include "Engine.h"
 
+#include <GL/glew.h>
+#include <SDL3/SDL.h>
+
+
+#include "yaml-cpp/yaml.h"
+
 #include "Audio/AudioComponent.h"
 #include "Denix/System/SubSystem.h"
 #include "Denix/Thread/JobSubsystem.h"
@@ -18,34 +24,23 @@
 #include "Profile/ProfileSubsystem.h"
 #include "Scene/Object/Shapes/Shapes.h"
 
-#include "yaml-cpp/yaml.h"
 
 namespace Denix
 {
-	Engine* Engine::s_Engine{nullptr};
-
 	Engine::Engine(std::string _projectName): m_ProjectName(std::move(_projectName))
 	{
-		s_Engine = this;
-
-		m_StartupScene = nullptr;
-
-		
-	}
-
-	Engine::~Engine()
-	{
-		s_Engine = nullptr;
-
-		Logger::Deinitialize();
 	}
 
 	void Engine::PreInitialize()
 	{
+		// Set the engine instance
+		s_Engine = shared_from_this();
+		
 		// Initialize Logger
 		Logger::Initialize();
 		
 		DE_LOG_CREATE(LogEngine)
+		DE_LOG_CREATE(LogCore)
 		DE_LOG_CREATE(LogFile)
 		DE_LOG_CREATE(LogTimer)
 		DE_LOG_CREATE(LogScene)
@@ -70,7 +65,7 @@ namespace Denix
 
 		// Register classes - This will be moved to some kind of pre build event & parser in the future
 		ReflectionSubsystem::Register<BaseObject>();
-		//ReflectionSubsystem::Register<Scene>();
+		ReflectionSubsystem::Register<Scene>();
 		ReflectionSubsystem::Register<Actor>();
 		ReflectionSubsystem::Register<Camera>();
 		ReflectionSubsystem::Register<Cube>();
@@ -92,13 +87,16 @@ namespace Denix
 		DE_LOG(LogReflection, Info, "Registered Engine Classes")
 		
 		//Initialize SDL
-		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO))
+		constexpr auto sdlInitFlags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_GAMEPAD;
+		if (!SDL_Init(sdlInitFlags))
 		{
 			std::string err = SDL_GetError();
 			DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", err)
 			throw std::runtime_error(err.c_str());
 		}
 		DE_LOG(Log, Trace, "SDL Init success")
+
+		
 	}
 
 	void Engine::Initialize()
@@ -148,33 +146,29 @@ namespace Denix
 		DE_LOG(LogEngine, Trace, "Engine Deinitializing")
 
 		SaveConfig();
-		
-		// Deinitialie SubSystems in the reverse order of initialization
-		for (auto& subsystem : std::views::reverse(m_Subsystems))
-			subsystem->Deinitialize();
-		
-		m_Subsystems.clear();
-
-		// Clear Subsystem pointers
-		m_EditorSubsystem.reset();
-		m_SceneSubsystem.reset();
-		m_InputSubsystem.reset();
-		m_PhysicsSubsystem.reset();
-		m_UISubsystem.reset();
-		m_RendererSubsystem.reset();
-		m_AssetSubsystem.reset();
-		m_AudioSubsystem.reset();
-		m_WindowSubsystem.reset();
-		m_ProfileSubsystem.reset();
-		m_FileSubsystem.reset();
-		m_ReflectionSubsystem.reset();
-		m_TimerSubsystem.reset();
-		m_JobSubsystem.reset();
 
 		// Clear Core Dependencies
-		SDL_Quit();
-
+		//SDL_Quit();
+		
+		// Clear Subsystem pointers
+		m_EditorSubsystem->Deinitialize();
+		m_SceneSubsystem->Deinitialize();
+		m_PhysicsSubsystem->Deinitialize();
+		m_InputSubsystem->Deinitialize();
+		m_UISubsystem->Deinitialize();
+		m_RendererSubsystem->Deinitialize();
+		m_AssetSubsystem->Deinitialize();
+		m_AudioSubsystem->Deinitialize();
+		m_WindowSubsystem->Deinitialize();
+		m_ProfileSubsystem->Deinitialize();
+		m_FileSubsystem->Deinitialize();
+		m_ReflectionSubsystem->Deinitialize();
+		m_TimerSubsystem->Deinitialize();
+		m_JobSubsystem->Deinitialize();
+		s_Engine.reset();
+		
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
+		Logger::Deinitialize();
 	}
 
 	void Engine::EngineLoop()

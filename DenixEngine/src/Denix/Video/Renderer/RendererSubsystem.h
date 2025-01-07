@@ -16,7 +16,7 @@ namespace Denix
 	class RendererSubsystem : public Subsystem<RendererSubsystem>
 	{
 	public:
-		RendererSubsystem();
+		RendererSubsystem() = default;
 
 		~RendererSubsystem() override = default;
 
@@ -30,10 +30,7 @@ namespace Denix
 	private:
 		void Initialize() override;
 
-		void Deinitialize() override
-		{
-			DE_LOG(LogRenderer, Trace, "RendererSubsystem Deinitialized")
-		}
+		void Deinitialize() override;
 
 		void RenderScene();
 		void RenderDefaultViewport() const;

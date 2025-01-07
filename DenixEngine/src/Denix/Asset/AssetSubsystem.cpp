@@ -151,24 +151,27 @@ namespace Denix
 	void AssetSubsystem::Deinitialize()
 	{
 		Subsystem::Deinitialize();
-
+		DE_LOG(LogAsset, Trace, "AssetSubsystem Deinitializing")
+		
 		// Free all Asset
 		m_ModelStore.clear();
 		
 		m_SceneStore.clear();
-		m_AssetStore.clear();
 		m_TextureStore.clear();
 		
 		m_ShaderStore.clear();
-		m_DefaultShader = nullptr;
-		m_FramebufferShader = nullptr;
+
+		m_DefaultShader.reset();
+		m_FramebufferShader.reset();
 
 		m_MaterialStore.clear();
-		m_DefaultMaterial = nullptr;
+		m_DefaultMaterial.reset();
 
 		m_AudioClipStore.clear();
 		
-		DE_LOG(LogAsset, Trace, "Resource Subsystem Deinitialized")
+		m_AssetStore.clear();
+
+		DE_LOG(LogAsset, Trace, "AssetSubsystem Deinitialized")
 	}
 	
 

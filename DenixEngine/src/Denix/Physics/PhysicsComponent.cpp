@@ -12,6 +12,11 @@ namespace Denix
 		m_BroadCollider->GetRadius() = 2.0f;
     }
 
+    PhysicsComponent::~PhysicsComponent()
+    {
+       
+    }
+
     Ref<Collider> PhysicsComponent::GetCollider() const
     { return m_Collider; }
 
@@ -33,7 +38,7 @@ namespace Denix
 
     void PhysicsComponent::SetShape(ColliderType _type)
     {
-        PX_RELEASE(m_PxShape)
+       // PX_RELEASE(m_PxShape)
 
         switch (m_Collider->GetColliderType())
         {
@@ -51,14 +56,11 @@ namespace Denix
 
     void PhysicsComponent::SetupPhysX()
     {
-        PX_RELEASE(m_PxShape)
-
         const auto scale = m_Parent->m_TransformComponent->m_Scale;
         const auto scaleH = m_Parent->m_TransformComponent->m_Scale / 2.0f;
         const auto pos = m_Parent->m_TransformComponent->m_Position;
         const auto rot = Math::Radians(m_Parent->m_TransformComponent->m_Rotation);
         physx::PxTransform tform = physx::PxTransform(pos.x, pos.y, pos.z);
-        //tform.q = physx::PxQuat(rot.x, rot.y, rot.z, 0.0f);
         
         switch (m_ColliderType)
         {
@@ -96,13 +98,11 @@ namespace Denix
         
         m_PxActor->userData = m_Parent.get();
         m_PxActor->attachShape(*m_PxShape);
-        PhysicsSubsystem::RegisterPxActor(m_PxActor);
-        m_PxShape->release();
     }
 
     void PhysicsComponent::UpdatePhysX()
     {
-        PX_RELEASE(m_PxShape)
+        //PX_RELEASE(m_PxShape)
 
         const auto scale = m_Parent->m_TransformComponent->m_Scale;
         const auto scaleH = m_Parent->m_TransformComponent->m_Scale / 2.0f;
@@ -146,7 +146,7 @@ namespace Denix
         m_PxActor->userData = m_Parent.get();
         m_PxActor->attachShape(*m_PxShape);
         PhysicsSubsystem::RegisterPxActor(m_PxActor);
-        m_PxShape->release();
+        //m_PxShape->release();
     }
 
     void PhysicsComponent::UpdatePxDynamicActor(physx::PxRigidDynamic* _actor)
@@ -173,39 +173,32 @@ namespace Denix
         Component::BeginPlay();
 
        SetupPhysX();
+        PhysicsSubsystem::RegisterPxActor(m_PxActor);
+    }
+
+    void PhysicsComponent::EndPlay()
+    {
+        Component::EndPlay();
+
+        PhysicsSubsystem::UnregisterPxActor(m_PxActor);
     }
 
     void PhysicsComponent::EndScene()
     {
-
-        //PX_RELEASE(m_PxShape)
-        // PX_RELEASE(m_PxActor)
-
-        UnregisterComponent();
         Component::EndScene();
     }
 
     void PhysicsComponent::Update(float _deltaTime)
-        {
-            Component::Update(_deltaTime);
-    
-            if (SceneSubsystem::GetSceneState() == SceneState::Playing)
-            {
-                physx::PxVec3 pos = m_PxActor->getGlobalPose().p;
-                physx::PxQuat rot = m_PxActor->getGlobalPose().q;
-                m_Parent->m_TransformComponent->m_Position = {pos.x, pos.y, pos.z};
-                m_Parent->m_TransformComponent->m_Rotation = Math::Degrees(glm::eulerAngles(glm::quat(rot.w, rot.x, rot.y, rot.z)));
-            }
-        }
-        
-    void PhysicsComponent::RegisterComponent()
     {
-        PhysicsSubsystem::RegisterComponent(shared_from_this());
-    }
+        Component::Update(_deltaTime);
 
-    void PhysicsComponent::UnregisterComponent()
-    {
-        PhysicsSubsystem::UnregisterComponent(shared_from_this());
+        if (SceneSubsystem::GetSceneState() == SceneState::Playing)
+        {
+            physx::PxVec3 pos = m_PxActor->getGlobalPose().p;
+            physx::PxQuat rot = m_PxActor->getGlobalPose().q;
+            m_Parent->m_TransformComponent->m_Position = {pos.x, pos.y, pos.z};
+            m_Parent->m_TransformComponent->m_Rotation = Math::Degrees(glm::eulerAngles(glm::quat(rot.w, rot.x, rot.y, rot.z)));
+        }
     }
 
 }

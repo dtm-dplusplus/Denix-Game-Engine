@@ -130,11 +130,11 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC PVDRuntime_64
 )
 
-# Enable Edit and Continue for MSVC
-#[[if(MSVC)
+# Enable Incremental linking
+if(MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
-endif()]]
+endif()
 
 target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CONFIG:Debug>:/MTd>

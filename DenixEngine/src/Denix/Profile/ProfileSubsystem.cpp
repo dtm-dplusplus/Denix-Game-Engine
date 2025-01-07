@@ -32,8 +32,10 @@ namespace Denix
 
     void ProfileSubsystem::Deinitialize()
     {
-        DE_LOG(LogProfile, Trace, "Profile Subsystem Deinitialized")
+        DE_LOG(LogProfile, Trace, "Profile Subsystem Deinitializing")
+        m_Profiles.clear();
         Subsystem::Deinitialize();
+        DE_LOG(LogProfile, Trace, "Profile Subsystem Deinitialized")
     }
 
     void ProfileSubsystem::StartProfileSession()
