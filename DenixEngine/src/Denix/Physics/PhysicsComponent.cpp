@@ -8,8 +8,6 @@ namespace Denix
 {
     PhysicsComponent::PhysicsComponent(): Component(ObjectInit("Physics Component")), m_Collider(nullptr)
     {
-		m_BroadCollider = MakeRef<SphereCollider>();
-		m_BroadCollider->GetRadius() = 2.0f;
     }
 
     PhysicsComponent::~PhysicsComponent()
@@ -89,8 +87,7 @@ namespace Denix
 
         case 1:
             {
-                //m_PxActor = PhysicsSubsystem::gPhysics->createRigidDynamic(physx::PxTransform(pos.x, pos.y, pos.z));
-                m_PxActor = PxCreateDynamic(*PhysicsSubsystem::m_PxPhysics,tform, *m_PxShape, 10.0f);
+                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(pos.x, pos.y, pos.z));
                 UpdatePxDynamicActor(m_PxActor->is<physx::PxRigidDynamic>());
             } break;
         }
@@ -102,8 +99,6 @@ namespace Denix
 
     void PhysicsComponent::UpdatePhysX()
     {
-        //PX_RELEASE(m_PxShape)
-
         const auto scale = m_Parent->m_TransformComponent->m_Scale;
         const auto scaleH = m_Parent->m_TransformComponent->m_Scale / 2.0f;
         const auto pos = m_Parent->m_TransformComponent->m_Position;
@@ -135,9 +130,7 @@ namespace Denix
 
         case 1:
             {
-                //m_PxActor = PhysicsSubsystem::gPhysics->createRigidDynamic(physx::PxTransform(pos.x, pos.y, pos.z));
-                m_PxActor = PxCreateDynamic(*PhysicsSubsystem::m_PxPhysics, physx::PxTransform(pos.x, pos.y, pos.z), *m_PxShape, 10.0f);
-                
+                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(pos.x, pos.y, pos.z));
             } break;
         }
         
@@ -146,14 +139,12 @@ namespace Denix
         m_PxActor->userData = m_Parent.get();
         m_PxActor->attachShape(*m_PxShape);
         PhysicsSubsystem::RegisterPxActor(m_PxActor);
-        //m_PxShape->release();
     }
 
     void PhysicsComponent::UpdatePxDynamicActor(physx::PxRigidDynamic* _actor)
     {
         if (!_actor) return;
-       
-        _actor->setName(m_Parent->GetName().c_str());
+
         _actor->setMass(m_Mass);
         _actor->setLinearDamping(m_LinearDrag);
         _actor->setAngularDamping(m_AngularDrag);

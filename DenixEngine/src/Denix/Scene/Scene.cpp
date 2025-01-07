@@ -34,6 +34,11 @@ namespace Denix
     {
         // Call EndScene on all actors
         for (const auto& actor : m_Actors) actor->EndScene();
+
+        m_GameCamera.reset();
+        m_ViewportCamera.reset();
+        m_ActiveCamera.reset();
+        ClearScene();
         BaseObject::EndScene();
     }
 
@@ -41,14 +46,15 @@ namespace Denix
     {
         BaseObject::BeginPlay();
 
-        
-
         m_PxSceneDesc = new physx::PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
         m_PxSceneDesc->gravity = physx::PxVec3(0.0f, -m_Gravity, 0.0f);
         m_PxSceneDesc->cpuDispatcher	= PhysicsSubsystem::m_PxDispatcher;
         m_PxSceneDesc->filterShader = physx::PxDefaultSimulationFilterShader;
-        m_PxScene = PhysicsSubsystem::CreatePxScene(m_PxSceneDesc);
+        m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(*m_PxSceneDesc);
 
+        physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
+        PhysicsSubsystem::m_PxPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+        
         if(physx::PxPvdSceneClient* pvdClient = m_PxScene->getScenePvdClient())
         {
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
@@ -56,8 +62,6 @@ namespace Denix
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
         }
         
-        m_PxScene = PhysicsSubsystem::CreatePxScene(m_PxSceneDesc);
-
         if (m_GameCamera)
         {
             m_ActiveCamera = m_GameCamera;
@@ -79,34 +83,34 @@ namespace Denix
         physx::PxActorTypeFlags actorFlags = physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC;
         physx::PxU32 numActors = m_PxScene->getNbActors(actorFlags);
 
-        if (numActors > 0) {
+        if (numActors > 0)
+            {
             std::vector<physx::PxActor*> actors(numActors);
             m_PxScene->getActors(actorFlags, actors.data(), numActors);
-            /*
             // Release each actor
             for (physx::PxActor* actor : actors) {
                 if (actor) {
                     actor->userData = nullptr;
                     m_PxScene->removeActor(*actor);
-                    
                     actor->release();
                 }
-            }*/
-
-            //m_PxScene->removeActors(actors.data(), numActors);
+            }
         }
         
         m_Actors.clear();
         m_ActorNames.clear();
         
         // Release the PhysX scene
-        //m_PxScene->release();
-        
+        PX_RELEASE(m_PxScene);
+
         if (m_PxSceneDesc)
         {
             delete m_PxSceneDesc;
             m_PxSceneDesc = nullptr;
         }
+
+        PhysicsSubsystem::m_PxPvd->disconnect();
+        
         BaseObject::EndPlay();
     }
 

@@ -15,11 +15,11 @@ namespace Denix
 	};
 
 	/** Colliders act as basic volumes which can be scaled about their origin */
-	class Collider : public BaseObject
+	class Collider : public Object
 	{
 	public:
 
-		Collider() : BaseObject({ "Collider" }) 
+		Collider() : Object({ "Collider" }) 
 		{
 			m_TransformComponent = MakeRef<TransformComponent>();
 		    m_MeshComponent = MakeRef<MeshComponent>();
@@ -112,18 +112,6 @@ namespace Denix
 
 		glm::vec3 GetOffset() const { return m_Offset; }
 		glm::vec3& GetOffset() { return m_Offset; }
-
-		void Update(float _deltaTime) override
-		{
-			/*m_TransformComponent->GetPosition() += m_Offset;
-			m_Min.x = m_TransformComponent->GetPosition().x - m_Dimensions.x;
-			m_Min = m_TransformComponent->GetPosition() - m_Dimensions;
-			m_Max = m_TransformComponent->GetPosition() + m_Dimensions;
-			m_TransformComponent->SetScale(m_Dimensions);
-
-			m_TransformComponent->Update(_deltaTime);
-			m_MeshComponent->Update(_deltaTime);*/
-		}
 
 	private:
 		glm::vec3 m_Dimensions = {1.0f, 1.0f, 1.0f};

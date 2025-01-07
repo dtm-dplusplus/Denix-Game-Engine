@@ -29,7 +29,7 @@ namespace Denix
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
 
 		// Ensure we always have a default scene
-		OpenScene(MakeRef<Scene>());
+		
 		
 		// Load Startup scene if it exists
 		if(m_StartupScene)
@@ -43,7 +43,12 @@ namespace Denix
 			else
 			{
 				DE_LOG(LogScene, Error, "Failed to create startup scene {}. No Reflection Class Found", m_StartupScene->GetAssetName())
+				OpenScene(MakeRef<Scene>());
 			}
+		}
+		else
+		{
+			OpenScene(MakeRef<Scene>());
 		}
 		
 
@@ -55,8 +60,6 @@ namespace Denix
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitializing")
 
 		CloseScene();
-		m_ActiveScene->ClearScene();
-		m_ActiveScene.reset();
 		m_StartupScene.reset();
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitialized")
 		Subsystem::Deinitialize();
@@ -115,7 +118,7 @@ namespace Denix
 		}
 
 		// Close the current scene if it's open
-		if (s_Instance->m_ActiveScene) s_Instance->CloseScene();
+		if (s_Instance->m_ActiveScene && s_Instance->m_ActiveScene->m_IsOpen) s_Instance->CloseScene();
 		
 		// Load the scene
 		LoadScene(_scene);
@@ -188,12 +191,14 @@ namespace Denix
 		}
 	}
 
-	void SceneSubsystem::CloseScene() const
+	void SceneSubsystem::CloseScene()
 	{
 		if (m_ActiveScene)
 		{
 			if (m_ActiveScene->m_IsPlaying) m_ActiveScene->EndPlay();
 			m_ActiveScene->EndScene();
+			m_ActiveScene->m_IsOpen = false;
+			//m_ActiveScene.reset();
 		}
 	}
 

@@ -1,6 +1,5 @@
 ﻿#include "PhysicsSubsystem.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Physics/PhysicsComponent.h"
 #include "Denix/Physics/Collider.h"
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
@@ -47,18 +46,6 @@ namespace Denix
         Subsystem::Deinitialize();
     }
     
-    void PhysicsSubsystem::RegisterComponent(const Ref<PhysicsComponent>& _component)
-    {
-        // DE_LOG(LogPhysics, Trace, "PhysicsComponent Registered: #{} {}", _component->GetID(), _component->GetName())
-        s_Instance->m_PhysicsComponents.push_back(_component);
-    }
-
-    void PhysicsSubsystem::UnregisterComponent(const Ref<PhysicsComponent>& _component)
-    {
-        // (LogPhysics, Trace, "PhysicsComponent Unregistered: #{} {}", _component->GetID(), _component->GetName())
-        std::erase(s_Instance->m_PhysicsComponents, _component);
-    }
-
     void PhysicsSubsystem::RegisterPxActor(physx::PxRigidActor* _actor)
     {
         if (!_actor)
@@ -67,14 +54,14 @@ namespace Denix
             return;
         }
 
-        auto scene = s_Instance->m_ActiveScene.lock() ;
+        auto scene = s_Instance->m_ActiveScene.lock();
          if (scene->m_PxScene)
          {
              scene->m_PxScene->addActor(*_actor);
          }
     }
 
-    void PhysicsSubsystem::UnregisterPxActor(physx::PxRigidActor* _actor)
+    void PhysicsSubsystem::UnregisterPxActor(const physx::PxRigidActor* _actor)
     {
         if (!_actor)
         {
@@ -85,7 +72,7 @@ namespace Denix
         auto scene = s_Instance->m_ActiveScene.lock();
         if (scene->m_PxScene)
         {
-            scene->m_PxScene->removeActor(*_actor);
+          //  scene->m_PxScene->removeActor(*_actor);
         }
     }
 
@@ -103,9 +90,11 @@ namespace Denix
         }
         
         DE_PROFILE(Physics Simulation)
-        //PhysicsSimulationPhase(_deltaTime);
-        activeScene->m_PxScene->simulate(_deltaTime);
-        activeScene->m_PxScene->fetchResults(true);
+        if (activeScene->m_PxScene)
+        {
+            activeScene->m_PxScene->simulate(_deltaTime);
+            activeScene->m_PxScene->fetchResults(true);
+        }
         DE_PROFILE_END(Physics Simulation)
 
         DE_PROFILE_END(Physics Update)

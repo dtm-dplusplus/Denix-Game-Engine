@@ -10,7 +10,6 @@ namespace Denix
     	m_ClassName = "Plane";
         static std::string planeModelPath = FileSubsystem::GetEngineContentRoot() + "models\\SM_Plane.obj";
         m_MeshComponent->SetModel(AssetSubsystem::GetModel(planeModelPath));
-		//m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
         //CastRef<CubeCollider>(m_PhysicsComponent->GetCollider())->GetDimensions().y = 0.01f;
         m_TransformComponent->GetScale().y = 0.01f;
 
@@ -22,7 +21,6 @@ namespace Denix
     	m_ClassName = "Cube";
         static std::string cubeModelPath = FileSubsystem::GetEngineContentRoot() + "models\\SM_Cube.obj";
 		m_MeshComponent->SetModel(AssetSubsystem::GetModel(cubeModelPath));
-		//m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
 
     	m_PhysicsComponent->m_ColliderType = ColliderType::Cube;
     	m_TransformComponent->SetMoveability(Moveability::Dynamic);
@@ -33,8 +31,6 @@ namespace Denix
     	m_ClassName = "Sphere";
         static std::string sphereModelPath = FileSubsystem::GetEngineContentRoot() + "models\\SM_Sphere.obj";
 		m_MeshComponent->SetModel(AssetSubsystem::GetModel(sphereModelPath));
-		//m_PhysicsComponent->SetCollider(MakeRef<SphereCollider>());
-
     	m_PhysicsComponent->m_ColliderType = ColliderType::Sphere;
 	}
 }

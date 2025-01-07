@@ -1,18 +1,11 @@
 ﻿#pragma once
 
-#include <concurrent_priority_queue.h>
-#include <concurrent_vector.h>
-
 #include "Denix/System/Subsystem.h"
-#include "Denix/Core/Logger.h"
 #include "Denix/Physics/PhysicsComponent.h"
-#include "Denix/Physics/CollisionDetection.h"
 
 #include "PxPhysicsAPI.h"
 
 #define PVD_HOST "127.0.0.1"
-
-class OmniPvdFileWriteStream;
 
 namespace Denix
 {
@@ -39,7 +32,7 @@ namespace Denix
 		static bool& CollisionResponseEnabledRef() { return s_Instance->m_CollisionResponseEnabled; }
 
 		static void RegisterPxActor(physx::PxRigidActor* _actor);
-		static void UnregisterPxActor(physx::PxRigidActor* _actor);
+		static void UnregisterPxActor(const physx::PxRigidActor* _actor);
 		
 		inline static physx::PxDefaultAllocator		m_PxAllocator;
 		inline static physx::PxDefaultErrorCallback	m_PxErrorCallback;
@@ -61,8 +54,6 @@ namespace Denix
 
 		static void SetActiveScene(const Ref<Scene>& _scene) { s_Instance->m_ActiveScene = _scene; }
 
-		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
-		
 		WRef<Scene> m_ActiveScene;
 		
 		bool m_CollisionDetectionEnabled = true;

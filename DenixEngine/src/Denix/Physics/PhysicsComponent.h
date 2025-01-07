@@ -127,9 +127,6 @@ namespace Denix
 		/** Collision used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
 
-		/** Broad collider used for broad phase collision detection */
-		Ref<SphereCollider> m_BroadCollider;
-
 	private:
 		/////////////////////* Linear Properties *///////////////////////
 		/** Mass of the object */
