@@ -44,7 +44,7 @@ namespace Denix
 		~PhysicsComponent() override = default;
 
 		void BeginScene() override;
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
 		void StepSimulation(float _deltaTime);
 

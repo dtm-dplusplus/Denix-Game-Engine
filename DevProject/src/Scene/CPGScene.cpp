@@ -4,9 +4,9 @@
 
 using namespace Denix;
 
-void CPGScene::Update(float _deltaTime)
+void CPGScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Scene::Update(_deltaTime);
+    Scene::Update(_deltaTime, _waitCounter);
 }
 
 void CPGScene::DebugUI(float _deltaTime)

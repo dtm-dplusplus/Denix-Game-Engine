@@ -14,7 +14,7 @@ class ThreadScene: public Scene
 public:
     ThreadScene() ;
     void BeginScene() override;
-    void Update(float _deltaTime) override;
+    void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     void DebugUI(float _deltaTime) override;
     
 

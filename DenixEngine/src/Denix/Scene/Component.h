@@ -38,7 +38,7 @@ namespace Denix
 
 		void BeginScene() override {}
 		void EndScene() override {}
-		void Update(float _deltaTime) override {}
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override {}
 
 	protected:
 		/* Object this component is attacthed to */

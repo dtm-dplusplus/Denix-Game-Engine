@@ -14,9 +14,9 @@ void DevScene::BeginScene()
 	//m_GridSpawner.SpawnGrid(shared_from_this());
 }
 
-void DevScene::Update(float _deltaTime)
+void DevScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-	Scene::Update(_deltaTime);
+	Scene::Update(_deltaTime, _waitCounter);
 }
 
 void DevScene::DebugUI(float _deltaTime)

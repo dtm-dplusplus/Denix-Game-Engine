@@ -20,9 +20,9 @@ void ThreadScene::BeginScene()
     Scene::BeginScene();
 }
 
-void ThreadScene::Update(float _deltaTime)
+void ThreadScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Scene::Update(_deltaTime);
+    Scene::Update(_deltaTime, _waitCounter);
 }
 
 void ThreadScene::DebugUI(float _deltaTime)

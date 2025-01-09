@@ -4,7 +4,7 @@
 
 namespace Denix
 {
-	void Camera::Update(float _deltaTime)
+	void Camera::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 	{
 		// m_Projection matrix
 		if (m_IsPerspective)

@@ -35,7 +35,7 @@ namespace Denix
         }*/
     }
 
-    void TransformComponent::Update(float _deltaTime)
+    void TransformComponent::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
         m_Model = glm::translate(glm::mat4(1.0f), m_Position);
 		

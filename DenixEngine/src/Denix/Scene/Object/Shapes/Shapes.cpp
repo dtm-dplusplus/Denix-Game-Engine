@@ -12,9 +12,9 @@ namespace Denix
         m_TransformComponent->GetScale().y = 0.01f;
     }
 
-    void Plane::Update(float _deltaTime)
+    void Plane::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        Actor::Update(_deltaTime);
+        Actor::Update(_deltaTime, _waitCounter);
         
     }
 
@@ -25,9 +25,9 @@ namespace Denix
 		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
     }
 
-    void Cube::Update(float _deltaTime)
+    void Cube::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        Actor::Update(_deltaTime);
+        Actor::Update(_deltaTime, _waitCounter);
     }
 
 	Sphere::Sphere(const ObjectInit& _objInit) : Actor(_objInit)
@@ -37,8 +37,8 @@ namespace Denix
 		m_PhysicsComponent->SetCollider(MakeRef<SphereCollider>());
 	}
 
-    void Sphere::Update(float _deltaTime)
+    void Sphere::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        Actor::Update(_deltaTime);
+        Actor::Update(_deltaTime, _waitCounter);
     }
 }

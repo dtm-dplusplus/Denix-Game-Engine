@@ -21,9 +21,9 @@ void CPGCube::BeginPlay()
     m_PhysicsComponent->GetMass() = Math::RandF(10.0f, 1000.0f);
 }
 
-void CPGCube::Update(float _deltaTime)
+void CPGCube::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Cube::Update(_deltaTime);
+    Cube::Update(_deltaTime, _waitCounter);
 
     // Reset the cube if it falls below the ground
     glm::vec3& pos = m_TransformComponent->GetPosition();

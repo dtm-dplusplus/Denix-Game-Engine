@@ -232,13 +232,13 @@ namespace Denix
         BaseObject::EndPlay();
     }
 
-    void Actor::Update(float _deltaTime)
+    void Actor::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        BaseObject::Update(_deltaTime);
+        BaseObject::Update(_deltaTime, _waitCounter);
 
         for(const auto& component : m_Components)
         {
-            component->Update(_deltaTime);
+            component->Update(_deltaTime, _waitCounter);
         }
     }
 }

@@ -17,9 +17,9 @@ namespace Denix
 	public:
 		Light(const ObjectInit& _objInit = {"Light"});
 
-		void Update(float _deltaTime) override
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override
 		{
-			Actor::Update(_deltaTime);
+			Actor::Update(_deltaTime, _waitCounter);
 		}
 
 		LightType GetLightType() const { return (LightType)m_LightType; }
@@ -114,9 +114,9 @@ namespace Denix
 		}
 
 
-		void Update(float _deltaTime) override
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override
 		{
-			Light::Update(_deltaTime);
+			Light::Update(_deltaTime, _waitCounter);
 
 			// Update the processed edge
 			m_ProcessedEdge = cosf(glm::radians(m_Edge));

@@ -28,7 +28,7 @@ namespace Denix
 
 		void ProcessKeyboardInput(float _deltaTime);
 		void ProccessMouseMovement(float _deltaTime);
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
 
 		glm::mat4 GetProjectionMatrix() const

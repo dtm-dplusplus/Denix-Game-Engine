@@ -6,7 +6,7 @@ using namespace Denix;
 class CPGScene : public Scene
 {
 public:
-    void Update(float _deltaTime) override;
+    void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     void DebugUI(float _deltaTime) override;
     
     Ref<class Ray> m_Ray;

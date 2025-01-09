@@ -251,7 +251,7 @@ namespace Denix
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
 			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
-			cam->Update(_deltaTime);
+			cam->Update(_deltaTime, _waitCounter);
 		}
 		DE_PROFILE_END(Scene Camera)
 		
@@ -261,21 +261,21 @@ namespace Denix
 		if(m_BatchUpdateActors)
 		{
 			// Submit jobs for each actor
-			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, actorCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
+			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, actorCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime, _waitCounter);
 			WaitForCounter(actorCounter.get());
 		}
 		else
 		{
 			for (auto actor: m_ActiveScene->m_Actors)
 			{
-				actor->Update(_deltaTime);
+				actor->Update(_deltaTime, _waitCounter);
 			}
 		}
 		DE_PROFILE_END(Scene Actors)
 
 		DE_PROFILE(Scene Client)
 		// Client Scene Update
-		m_ActiveScene->Update(_deltaTime);
+		m_ActiveScene->Update(_deltaTime, _waitCounter);
 		DE_PROFILE_END(Scene Client)
 		
 		DE_PROFILE_END(Scene Update)

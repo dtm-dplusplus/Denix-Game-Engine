@@ -122,9 +122,9 @@ namespace Denix
         RegisterComponent();
     }
 
-    void PhysicsComponent::Update(float _deltaTime)
+    void PhysicsComponent::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        Component::Update(_deltaTime);
+        Component::Update(_deltaTime, _waitCounter);
 
         m_ParentTransform->m_PhysicsRotationOverride = m_SimulatePhysics;
 
