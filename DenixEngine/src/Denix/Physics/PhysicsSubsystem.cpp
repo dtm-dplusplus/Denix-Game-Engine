@@ -28,12 +28,6 @@ namespace Denix
         Subsystem::PreUpdate(_deltaTime);
 
         if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
-
-        DE_PROFILE(Physics PreUpdate)
-
-       
-
-        DE_PROFILE_END(Physics PreUpdate)
     }
 
     void PhysicsSubsystem::Update(float _deltaTime)
@@ -46,7 +40,6 @@ namespace Denix
                 m_CollisionEvents.clear();
         
         // Set status
-        DE_PROFILE(Physics Pre Update)
         for (const auto& comp : m_PhysicsComponents)
         {
             comp->m_SteppedThisFrame = comp->m_SteppedNextFrame;
@@ -71,19 +64,12 @@ namespace Denix
                 else m_DynamicPhysicsComponents.push_back(comp);
             }
         }
-        DE_PROFILE_END(Physics Pre Update)
                 
-        DE_PROFILE(Physics Collision)
         if (m_CollisionDetectionEnabled) CollisionDetectionPhase(_deltaTime);
-        DE_PROFILE_END(Physics Collision)
 
-        DE_PROFILE(Physics Response)
         if (m_CollisionResponseEnabled) CollisionResonsePhase(_deltaTime);
-        DE_PROFILE_END(Physics Response)
 
-        DE_PROFILE(Physics Simulation)
         PhysicsSimulationPhase(_deltaTime);
-        DE_PROFILE_END(Physics Simulation)
 
         DE_PROFILE_END(Physics Update)
     }

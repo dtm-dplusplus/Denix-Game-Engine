@@ -164,7 +164,6 @@ namespace Denix
             const size_t objectCount = _objects.size();
             if (objectCount == 0)
             {
-                DE_LOG(LogJob, Error, "Vector is empty. No jobs added: {}", _namePrefix)
                 return;
             }
 

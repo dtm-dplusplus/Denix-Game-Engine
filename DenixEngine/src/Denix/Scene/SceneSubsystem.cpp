@@ -231,6 +231,7 @@ namespace Denix
 		if (!m_ActiveScene)
 		{
 			DE_LOG(LogScene, Error, "No active scene")
+			DE_PROFILE_END(Scene Update)
 			return;
 		}
 		
@@ -246,17 +247,14 @@ namespace Denix
 			return;
 		}
 
-		DE_PROFILE(Scene Camera)
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
 			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
 			cam->Update(_deltaTime, _waitCounter);
 		}
-		DE_PROFILE_END(Scene Camera)
 		
 		// Scene update implementation
-		DE_PROFILE(Scene Actors)
 		Ref<Counter> actorCounter = MakeRef<Counter>();
 		if(m_BatchUpdateActors)
 		{
@@ -271,12 +269,9 @@ namespace Denix
 				actor->Update(_deltaTime, _waitCounter);
 			}
 		}
-		DE_PROFILE_END(Scene Actors)
 
-		DE_PROFILE(Scene Client)
 		// Client Scene Update
 		m_ActiveScene->Update(_deltaTime, _waitCounter);
-		DE_PROFILE_END(Scene Client)
 		
 		DE_PROFILE_END(Scene Update)
 	}
