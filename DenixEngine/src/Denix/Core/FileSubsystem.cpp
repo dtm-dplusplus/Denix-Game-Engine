@@ -1,75 +1,80 @@
 #include "FileSubsystem.h"
 #include <filesystem>
 #include <fstream>
+#include <SDL3/SDL_filesystem.h>
 
 namespace fs = std::filesystem;
 
 namespace Denix
 {
-	FileSubsystem* FileSubsystem::s_FileSubsystem = nullptr;
-
-
 	void FileSubsystem::Initialize()
 	{
-		DE_LOG(LogFileSubsystem, Warn, "Initializing File Subsystem")
-		// Find the project file and set the project root
-		// We need the project name to find the project file
-		if(m_ProjectName.empty()) 
+		Subsystem::Initialize();
+
+		DE_LOG_CREATE(LogFile)
+		DE_LOG(LogFile, Warn, "Initializing File Subsystem")
+		s_FileSubsystem = this;
+		// Get executable path
+		const char* p = SDL_GetBasePath();
+		if (!p)
 		{
-			const std::string errorMessage = "Project name is empty";
-			DE_LOG(LogFileSubsystem, Error, errorMessage)
-			throw std::runtime_error(errorMessage.c_str());
+			std::string err = SDL_GetError();
+			DE_LOG(LogFile, Critical, err)
+			throw std::exception(err.c_str());
 		}
 
-		// Set name of the project executable
-		const std::string projectExecutable = m_ProjectName + ".exe";
-		const std::string projectFile = m_ProjectName + ".proj";
-		
-		// Get Current path
-		// If the project is launched from the IDE, the current path is the solution root
-		// If the project is launched from the executable, the current path is the executable root
-		const fs::path currentPath = fs::current_path();
-		DE_LOG(LogFileSubsystem, Trace, "Starting search for project in: {}", currentPath.string())
-		
-		// Check if the project is launched from the executable
-		if(FileExists(currentPath.string() + R"(\)" + projectExecutable))
+		// Setup Project Paths - We fetch from the binary parent directory
+		const fs::path exePath = p;
+		SDL_free(const_cast<char*>(p));
+		m_BinaryRoot = exePath.parent_path().string() + R"(\)";
+		m_ProjectRoot = exePath.parent_path().parent_path().string() + R"(\)";
+
+		// Find Project file
+		for (const auto& entry : fs::directory_iterator(m_ProjectRoot))
 		{
-			// We are in the executable root, use the parent path to get the project root
-			m_ProjectRoot = currentPath.parent_path().parent_path().string() + R"(\)";
-			DE_LOG(LogFileSubsystem, Trace, "Found Project root via executable")
-		}
-		else
-		{
-			// We are in the solution root, search for the project root
-			const fs::path projectFilePath = currentPath.string()  + R"(\)" + m_ProjectName + R"(\)"+ projectFile;
-			if(FileExists(projectFilePath.string()))
+			if (entry.path().extension() == ".proj")
 			{
-				m_ProjectRoot = projectFilePath.parent_path().string() + R"(\)";
-				DE_LOG(LogFileSubsystem, Trace, "Found Project root via solution")
+				m_ProjectFile = entry.path().parent_path().string() + R"(\)";
+				break;
 			}
 		}
 
-		// Check if project root was found
-		if (m_ProjectRoot.empty())
+		if (m_ProjectFile.empty())
 		{
-			const char* errorMessage = "Project file not found via executable or solution";
-			DE_LOG(LogFileSubsystem, Critical, errorMessage)
-			throw std::exception(errorMessage);
+			DE_LOG(LogFile, Critical, "Project file not found")
+			throw std::exception("Project file not found");
 		}
 
-		// Set content roots
+		// Set Content Paths
 		m_ContentRoot = m_ProjectRoot + R"(Content\)";
 		m_EngineContentRoot = m_ContentRoot + R"(Engine\)";
 
-		DE_LOG(LogFileSubsystem, Trace, "Project Root: {0}", m_ProjectRoot)
-		DE_LOG(LogFileSubsystem, Trace, "Content Root: {0}", m_ContentRoot)
-		DE_LOG(LogFileSubsystem, Trace, "Engine Content Root: {0}", m_EngineContentRoot)
-		DE_LOG(LogFileSubsystem, Info, "File Subsystem Initialized")
+		DE_LOG(LogFile, Trace, "Project Root: {0}", m_ProjectRoot)
+		DE_LOG(LogFile, Trace, "Binary Root: {0}", m_BinaryRoot)
+		DE_LOG(LogFile, Trace, "Content Root: {0}", m_ContentRoot)
+		DE_LOG(LogFile, Trace, "Engine Content Root: {0}", m_EngineContentRoot)
+		DE_LOG(LogFile, Info, "File Subsystem Initialized")
 	}
 
 	void FileSubsystem::Deinitialize()
 	{
-		DE_LOG(LogFileSubsystem, Trace, "File Subsystem Deinitialized")
+		DE_LOG(LogFile, Trace, "File Subsystem Deinitializing")
+		s_FileSubsystem = nullptr;
+		DE_LOG(LogFile, Trace, "File Subsystem Deinitialized")
+	}
+
+	bool FileSubsystem::CopyFileDE(const std::string& _oldPath, const std::string& _newPath)
+	{
+		try
+		{
+			fs::copy(_oldPath, _newPath, fs::copy_options::overwrite_existing);
+			return true;
+		}
+		catch (const std::exception& e)
+		{
+			DE_LOG(LogFile, Error, "Failed to copy file: {0}", e.what())
+			return false;
+		}
 	}
 
 	std::string FileSubsystem::ReadFile(const std::string& _path)
@@ -81,7 +86,7 @@ namespace Denix
 		{
 			fullPath = _path;
 		}*/
-		
+
 		if (std::ifstream fileStream(fullPath); fileStream.is_open())
 		{
 			std::stringstream fileString;
@@ -95,7 +100,7 @@ namespace Denix
 			return fileString.str();
 		}
 
-		DE_LOG(LogFileSubsystem, Error, "Failed to open file: {}", fullPath)
+		DE_LOG(LogFile, Error, "Failed to open file: {}", fullPath)
 			return "";
 	}
 
@@ -104,8 +109,8 @@ namespace Denix
 		// Create directory if it doesn't exist
 		if(!DirectoryExists(_path))
 		{
-			DE_LOG(LogFileSubsystem, Warn, "Directory does not exist: {}", _path)
-			CreateDirectoryA(_path);
+			DE_LOG(LogFile, Warn, "Directory does not exist: {}", _path)
+			CreateDirectoryDE(_path);
 		}
 
 		// Open file and write data
@@ -116,7 +121,7 @@ namespace Denix
 			return true;
 		}
 
-		DE_LOG(LogFileSubsystem, Error, "Failed to open file: {}", _path)
+		DE_LOG(LogFile, Error, "Failed to open file: {}", _path)
 			return false;
 	}
 
@@ -130,7 +135,7 @@ namespace Denix
 		 return  fs::exists(fs::path(_path).parent_path());
 	}
 
-	bool FileSubsystem::CreateDirectory(const std::string& _path)
+	bool FileSubsystem::CreateDirectoryDE(const std::string& _path)
 	{
 	    try
 	    {
@@ -139,8 +144,44 @@ namespace Denix
 	    }
 	    catch (const std::exception& e)
 	    {
-	        DE_LOG(LogFileSubsystem, Error, "Failed to create directory: {}", e.what());
+	        DE_LOG(LogFile, Error, "Failed to create directory: {}", e.what());
 	        return false;
 	    }
+	}
+
+	std::string FileSubsystem::FormatPath(const std::string& _path)
+	{
+		try {
+			fs::path inputPath(_path);
+
+			// Check if the provided path is already absolute
+			if (IsAbsolute(_path)) return inputPath.make_preferred().string();
+
+			// If the path is relative, combine it with the project root
+			fs::path combinedPath = s_FileSubsystem->m_ProjectRoot / inputPath;
+
+			// Convert to absolute path and normalize separators
+			return fs::absolute(combinedPath).make_preferred().string();
+		} catch (const fs::filesystem_error& e) {
+			DE_LOG(LogFile, Error, "Failed to format path: {0}", e.what());
+			return "";
+		}
+	}
+
+	std::string FileSubsystem::FormatRelativePath(const std::string& _path)
+	{
+		// Check if the input path is already relative
+		if (!IsAbsolute(_path)) return _path;
+
+		// Calculate the relative path
+		std::filesystem::path relativePath = fs::relative(_path, s_FileSubsystem->m_ProjectRoot);
+
+		return relativePath.make_preferred().string();
+	}
+
+	bool FileSubsystem::IsAbsolute(const std::string& _path)
+	{
+		// Check if the input path starts with the project root path
+		return _path.find(s_FileSubsystem->m_ProjectRoot) == 0;
 	}
 }

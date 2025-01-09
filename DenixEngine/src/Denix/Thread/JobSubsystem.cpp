@@ -75,14 +75,14 @@ void Denix::JobSubsystem::StopThreadProfiling()
         }
     }
     else
-        DE_LOG(LogThread, Info, "Thread Profiling: Disabled")
+        DE_LOG(LogJob, Info, "Thread Profiling: Disabled")
 }
 
 void Denix::JobSubsystem::Initialize()
 {
     Subsystem::Initialize();
 
-    DE_LOG(LogJob, Warn, "Thread Subsystem Initializing")
+    DE_LOG(LogJob, Warn, "Job Subsystem Initializing")
 
     // Get Thread Information
     if (const int threadCount = std::thread::hardware_concurrency(); threadCount > 0)
@@ -108,7 +108,7 @@ void Denix::JobSubsystem::Initialize()
 
     DE_LOG(LogJob, Trace, "System threads: {}", m_SystemThreads)
     DE_LOG(LogJob, Trace, "Worker threads: {}", m_ActiveWorkerThreads)
-    DE_LOG(LogJob, Info, "Thread Subsystem Initialized")
+    DE_LOG(LogJob, Info, "Job Subsystem Initialized")
 }
 
 void Denix::JobSubsystem::Deinitialize()
@@ -122,6 +122,6 @@ void Denix::JobSubsystem::Deinitialize()
         thread->m_ShouldWork = false;
         thread->JoinCheck();
     }*/
-    DE_LOG(LogJob, Trace, "Thread Subsystem Deinitializing")
-    DE_LOG(LogJob, Trace, "Thread Subsystem Deinitialized")
+    DE_LOG(LogJob, Trace, "Job Subsystem Deinitializing")
+    DE_LOG(LogJob, Trace, "Job Subsystem Deinitialized")
 }

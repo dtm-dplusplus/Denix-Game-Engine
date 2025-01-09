@@ -33,6 +33,8 @@ namespace Denix
 		
 		DE_LOG_CREATE(LogScene)
 
+		DE_LOG(LogEngine, Warn, "Engine Initializing")
+
 		// We initialize the thread subsystem here because it is used to create the other subsystems
 		m_JobSubsystem = InitalizeSubsystem<JobSubsystem>();
 		
@@ -72,13 +74,12 @@ namespace Denix
 
 	void Engine::Initialize()
 	{
-		DE_LOG(LogEngine, Warn, "Engine Initializing")
 
 		m_TimerSubsystem = InitalizeSubsystem<TimerSubsystem>();
 
 		m_ProfileSubsystem = InitalizeSubsystem<ProfileSubsystem>();
 		
-		m_FileSubsystem = InitalizeSubsystem<FileSubsystem>(m_ProjectName);
+		m_FileSubsystem = InitalizeSubsystem<FileSubsystem>();
 
 		m_WindowSubsystem = InitalizeSubsystem<WindowSubsystem>();
 

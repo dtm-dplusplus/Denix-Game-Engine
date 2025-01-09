@@ -374,7 +374,7 @@ namespace Denix
 
 		if(sceneObjectsNode.IsNull())
 		{
-			DE_LOG(LogScene, Error, "Failed to load scene objects")
+			DE_LOG(LogScene, Warn, "No Scene Actos found")
 			return false;
 		}
 		
