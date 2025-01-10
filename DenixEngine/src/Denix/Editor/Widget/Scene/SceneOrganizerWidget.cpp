@@ -1,6 +1,7 @@
 ﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
 #include "SceneOrganizerWidget.h"
 
+#include "ActorDetailsWidget.h"
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Actor.h"
@@ -34,7 +35,8 @@ namespace Denix
         ImGui::SetNextWindowDockID(UISubsystem::Get()->DockLeftID, ImGuiCond_Appearing);
         ImGui::Begin(GetName().c_str());
         ImGui::SeparatorText(m_SceneRef.lock()->GetName().c_str());
-        
+
+        ActorDetailsWidget::CameraWidget(m_SceneRef.lock()->GetActiveCamera());
         // Update AddActorWidget. Set the selected object to the last object created
         m_AddActorWidget->Update(_deltaTime);
         if (m_AddActorWidget->m_CreatedActor)

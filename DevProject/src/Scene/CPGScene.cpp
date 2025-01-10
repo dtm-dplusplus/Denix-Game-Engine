@@ -18,6 +18,9 @@ CPGScene::CPGScene()
 void CPGScene::BeginScene()
 {
     Scene::BeginScene();
+
+    m_ActiveCamera->GetTransformComponent()->SetPosition(-0.0f, 100.0f, 280.0f);
+    m_ActiveCamera->GetTransformComponent()->SetRotation({-30.0f, -70.0f, 0.0f});
 }
 
 void CPGScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
