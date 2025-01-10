@@ -2,7 +2,6 @@
 
 #include "Object.h"
 #include "Denix/Reflection/ReflectionHelper.h"
-#include "Denix/Thread/ThreadPrimitive.h"
 
 namespace YAML
 {
@@ -28,7 +27,7 @@ namespace Denix
         virtual void BeginPlay() {}
         virtual void EndPlay() {}
         
-        virtual void Update(float _deltaTime, const Ref<Counter>& _waitCounter)  {}
+        virtual void Update(float _deltaTime)  {}
 
         // Called when the scene is set as active
         virtual void BeginScene() {}

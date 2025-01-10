@@ -1,5 +1,7 @@
 #include "CPGActor.h"
 
+#include <PxRigidDynamic.h>
+
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Thread/JobSubsystem.h"
 #include "Util/ActorGridSpawner.h"
@@ -26,15 +28,20 @@ void CPGActor::Update(float _deltaTime)
     Cube::Update(_deltaTime);
 
     // Reset the cube if it falls below the ground
-    /*glm::vec3& pos = m_TransformComponent->GetPosition();
+    glm::vec3& pos = m_TransformComponent->GetPosition();
     if (pos.y < 0.0f)
     {
         pos.y = ActorGridSpawner::SpawnHeight;
         m_PhysicsComponent->GetVelocity() = glm::vec3(0.0f);
         m_PhysicsComponent->GetAngularVelocity() = glm::vec3(0.0f);
-
+        if (physx::PxRigidDynamic* actor = m_PhysicsComponent->m_PxActor->is<physx::PxRigidDynamic>())
+        {
+            actor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
+            actor->setLinearVelocity(physx::PxVec3(0.0f, 0.0f, 0.0f));
+            actor->setAngularVelocity(physx::PxVec3(0.0f, 0.0f, 0.0f));
+        }
         RandomModel();
-    }*/
+    }
 }
 
 void CPGActor::RandomModel()

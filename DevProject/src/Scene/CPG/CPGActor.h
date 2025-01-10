@@ -9,7 +9,7 @@ public:
     CPGActor();
 
     void BeginPlay() override;
-    void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+    void Update(float _deltaTime) override;
     void RandomModel();
     inline static bool ChangeModel = true;
     inline static bool AsyncModelChange = true;

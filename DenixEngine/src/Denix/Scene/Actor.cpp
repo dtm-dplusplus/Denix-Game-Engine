@@ -216,13 +216,20 @@ namespace Denix
         BaseObject::EndPlay();
     }
 
-    void Actor::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
+    void Actor::Update(float _deltaTime)
     {
-        BaseObject::Update(_deltaTime, _waitCounter);
+        BaseObject::Update(_deltaTime);
 
         for(const auto& component : m_Components)
         {
-            component->Update(_deltaTime, _waitCounter);
+            component->Update(_deltaTime);
+        }
+
+        // Update physics actor if scene update modifies the transform
+        if (m_PhysicsComponent->m_PxActor)
+        {
+            const glm::vec3& pos = m_TransformComponent->m_Position;
+            m_PhysicsComponent->m_PxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
         }
     }
 }
