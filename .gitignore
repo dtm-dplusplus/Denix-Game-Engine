@@ -15,3 +15,5 @@
 #/DenixEngine/src/Denix/RTTI/CMakeFiles
 #/cmake-build-debug
 /cmake-build-debug-visual-studio-event-trace
+/cmake-build-release
+/cmake-build-debug
