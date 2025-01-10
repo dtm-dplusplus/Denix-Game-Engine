@@ -43,20 +43,9 @@ include_directories(${PROJECT_NAME}
         ${CMAKE_SOURCE_DIR}/DenixEngine/contrib/yaml-cpp/include
 )
 
-# Set the C++ flags to enable multi-processor compilation
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-find_package(OpenMP)
-if(OPENMP_FOUND)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-endif()
 
 # Create Project Executable
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
@@ -84,19 +73,15 @@ target_link_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/glew/lib
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/SDL3/bin/${CMAKE_BUILD_TYPE}
         PUBLIC ${CMAKE_BINARY_DIR}/DenixEngine/contrib/assimp/bin/${CMAKE_BUILD_TYPE}
-     #   PUBLIC $<TARGET_LINKER_FILE_DIR:assimp>
-        # PUBLIC $<TARGET_LINKER_FILE_DIR:yaml-cpp>
 )
 
 # Define linker libs
 target_link_libraries(${PROJECT_NAME}
         PUBLIC DenixEngine.lib
         PUBLIC opengl32.lib
-        # PUBLIC SDL3::SDL3
         PUBLIC SDL3.lib
         PUBLIC glew32.lib
         PUBLIC $<TARGET_LINKER_FILE_NAME:Imgui>
-        #PUBLIC  $<TARGET_LINKER_FILE_NAME:assimp>
          PUBLIC  $<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp/bin/Debug/assimp-vc143-mtd.lib>
         PUBLIC  $<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/DenixEngine/contrib/assimp/bin/Release/assimp-vc143-mt.lib>
         
@@ -130,9 +115,3 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/Config ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/Config
 )
-
-# Enable Edit and Continue for MSVC
-if(MSVC)
-    target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
-    target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
-endif()
