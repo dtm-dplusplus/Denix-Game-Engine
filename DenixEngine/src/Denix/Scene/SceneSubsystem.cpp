@@ -243,6 +243,7 @@ namespace Denix
 		if(m_BatchUpdateActors)
 		{
 			// Submit jobs for each actor
+			DE_PROFILE(AddJobBatch)
 			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
 		}
 		else

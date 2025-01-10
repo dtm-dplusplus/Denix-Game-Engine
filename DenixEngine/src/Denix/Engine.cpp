@@ -180,7 +180,7 @@ namespace Denix
 
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
 			Ref<Counter> inputCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, inputCounter, &InputSubsystem::Update, m_InputSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, inputCounter, &InputSubsystem::Update, m_InputSubsystem, m_TimerSubsystem->m_DeltaTime);
 			
 			// Clear the offscreen frame buffer
 			Ref<Counter> clearCounter = MakeRef<Counter>();
@@ -196,13 +196,13 @@ namespace Denix
 			
 			// Update the physics system. Collision detection and resolution will be here
 			Ref<Counter> physicsCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, physicsCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			WaitForCounter(physicsCounter.get());
+			m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, physicsCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime);
+			WaitForCounter(physicsCounter);
 			
 			// Update the scene. The majority of the client game logic will be here. Do this in parallel with the rendering
 			Ref<Counter> sceneCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime, sceneCounter);
-			WaitForCounter(sceneCounter.get());
+			m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem, m_TimerSubsystem->m_DeltaTime, sceneCounter);
+			WaitForCounter(sceneCounter);
 			DE_PROFILE_END(Scene Update)
 
 			// Update Physics Components 
@@ -222,16 +222,16 @@ namespace Denix
 			
 			// Update the UI & Editor for any changes
 			Ref<Counter> uiCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			WaitForCounter(uiCounter.get());
+			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem, m_TimerSubsystem->m_DeltaTime);
+			WaitForCounter(uiCounter);
 
 			// Run on main due to opengl context when initializing the scene
 			Ref<Counter> editorCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem, m_TimerSubsystem->m_DeltaTime);
 
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			Ref<Counter> renderCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter, &RendererSubsystem::RenderScene, m_RendererSubsystem.get());
+			m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter, &RendererSubsystem::RenderScene, m_RendererSubsystem);
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			Ref<Counter> drawCounter = MakeRef<Counter>();
@@ -248,8 +248,8 @@ namespace Denix
 			
 			// Run the garbage collector
 			Ref<Counter> garbageCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, garbageCounter, &SceneSubsystem::CleanRubbish, m_SceneSubsystem.get());
-			WaitForCounter(garbageCounter.get());
+			m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, garbageCounter, &SceneSubsystem::CleanRubbish, m_SceneSubsystem);
+			WaitForCounter(garbageCounter);
 			
 			m_TimerSubsystem->EndFrame();
 		}

@@ -3,15 +3,12 @@
 
 namespace Denix
 {
-    class CPGActor: public Cube
+    class GACPActor: public Cube
     {
     public:
-        CPGActor();
+        GACPActor();
 
-        void BeginPlay() override;
         void Update(float _deltaTime) override;
         void RandomModel() const;
-        inline static bool ChangeModel = true;
-        inline static bool AsyncModelChange = true;
     };
 }

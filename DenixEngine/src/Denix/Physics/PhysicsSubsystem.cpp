@@ -65,7 +65,7 @@ namespace Denix
          }
     }
 
-    void PhysicsSubsystem::UnregisterPxActor(const physx::PxRigidActor* _actor)
+    void PhysicsSubsystem::UnregisterPxActor(physx::PxRigidActor* _actor)
     {
         if (!_actor)
         {
@@ -76,7 +76,7 @@ namespace Denix
         auto scene = s_Instance->m_ActiveScene.lock();
         if (scene->m_PxScene)
         {
-          //  scene->m_PxScene->removeActor(*_actor);
+          scene->m_PxScene->removeActor(*_actor->is<physx::PxActor>());
         }
     }
 

@@ -2,7 +2,6 @@
 #include <PxScene.h>
 
 #include "Denix/Scene/Scene.h"
-#include "Util/ActorGridSpawner.h"
 
 
 using namespace Denix;

@@ -1,31 +1,23 @@
-#include "CPGActor.h"
-
-#include <PxRigidDynamic.h>
+#include "GACPActor.h"
 
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Thread/JobSubsystem.h"
-#include "Util/ActorGridSpawner.h"
+#include "GACPSpawner.h"
+#include <PxRigidDynamic.h>
 
-
-Denix::CPGActor::CPGActor()
+Denix::GACPActor::GACPActor()
 {
     // m_ClassName = "CPGActor";
     m_PhysicsComponent->SimulatePhysics() = true;
     m_PhysicsComponent->m_RotationEnabled = false;
-
+    m_PhysicsComponent->GetMass() = Math::RandF(10.0f, 10000.0f);
+    
     // Create a copy of the material
     m_RenderComponent->GetMaterial() = MakeRef<Material>(m_RenderComponent->GetMaterial());
     RandomModel();
 }
 
-void Denix::CPGActor::BeginPlay()
-{
-    Cube::BeginPlay();
-
-    m_PhysicsComponent->GetMass() = Math::RandF(10.0f, 1000.0f);
-}
-
-void Denix::CPGActor::Update(float _deltaTime)
+void Denix::GACPActor::Update(float _deltaTime)
 {
     Cube::Update(_deltaTime);
 
@@ -33,7 +25,7 @@ void Denix::CPGActor::Update(float _deltaTime)
     glm::vec3& pos = m_TransformComponent->GetPosition();
     if (pos.y < 0.0f)
     {
-        pos.y = ActorGridSpawner::SpawnHeight;
+        pos.y = GACPSpawner::SpawnHeight;
         m_PhysicsComponent->GetVelocity() = glm::vec3(0.0f);
         m_PhysicsComponent->GetAngularVelocity() = glm::vec3(0.0f);
         if (physx::PxRigidDynamic* actor = m_PhysicsComponent->m_PxActor->is<physx::PxRigidDynamic>())
@@ -45,16 +37,16 @@ void Denix::CPGActor::Update(float _deltaTime)
     }
 }
 
-void Denix::CPGActor::RandomModel() const
+void Denix::GACPActor::RandomModel() const
 {
     static size_t modelStoreSize = AssetSubsystem::GetModelStore().size();
-    static std::unordered_map<std::string, Ref<Model>> modelStore = AssetSubsystem::GetModelStore();
+    static std::unordered_map<std::string, Ref<Model>>& modelStore = AssetSubsystem::GetModelStore();
     static size_t textureStoreSize = AssetSubsystem::GetTextureStore().size();
-    static std::unordered_map<std::string, Ref<Texture>> textureStore = AssetSubsystem::GetTextureStore();
+    static std::unordered_map<std::string, Ref<Texture>>& textureStore = AssetSubsystem::GetTextureStore();
 
     size_t index = Math::Rand(0, modelStoreSize - 1);
     size_t i = 0;
-    for (const auto model: modelStore | std::views::keys)
+    for (const auto& model: modelStore | std::views::keys)
     {
         if (i++ == index)
         {

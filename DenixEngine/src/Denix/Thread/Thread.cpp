@@ -4,16 +4,38 @@
 #include "JobSubsystem.h"
 #include "Denix/Profile/ProfileSubsystem.h"
 
-int Denix::Thread::s_WaitForCounterSleepTime = 1;
-int Denix::Thread::s_WaitForJobSleepTime = 110;
-bool Denix::Thread::s_ShouldProfile = false;
+Denix::Thread::Thread(const int _index): m_ThreadIDInt(0),
+                                         m_ThreadIndex(_index),
+                                         m_JobExecCount(0),
+                                         m_ThreadExecTime(0.0f),
+                                         m_ThreadSleepTime(0.0f)
+{
+    m_Thread = std::thread(&Thread::Work, this);
+    std::stringstream ss;
+    ss << m_Thread.get_id();
+    m_ThreadIDInt = std::stoi(ss.str());
+    DE_LOG(LogThread, Trace, "Thread Index: {} ID: {}", m_ThreadIndex, m_ThreadIDInt)
+}
+
+Denix::Thread::~Thread()
+{
+    if (m_Thread.joinable())
+    {
+        m_Thread.join();
+        DE_LOG(LogThread, Trace, "Thread {} joined", m_ThreadIDInt)
+    }
+    else
+    {
+        DE_LOG(LogThread, Error, "Thread {} not joinable", m_ThreadIDInt)
+    }
+}
 
 void Denix::Thread::Work()
 {
-    while (m_ShouldWork)
+    while (m_Active)
     {
         // Request a job from the job queue
-        if (m_Active) m_Job = JobSubsystem::RequestJob();
+        if (m_ShouldWork) m_Job = JobSubsystem::RequestJob();
 
         // If a job was found in the queue, execute it
         if (m_Job)

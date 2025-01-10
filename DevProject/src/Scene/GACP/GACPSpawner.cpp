@@ -1,9 +1,9 @@
-﻿#include "ActorGridSpawner.h"
+﻿#include "GACPSpawner.h"
 #include "Denix/Core/Timer.h"
 #include "Denix/Scene/Scene.h"
-#include "Scene/CPG/CPGActor.h"
+#include "Scene/GACP/GACPActor.h"
 
-void Denix::ActorGridSpawner::SpawnGrid(const Ref<Scene>& _scene) const
+void Denix::GACPSpawner::SpawnGrid(const Ref<Scene>& _scene) const
 {
     if (!_scene) return;
 
@@ -17,7 +17,7 @@ void Denix::ActorGridSpawner::SpawnGrid(const Ref<Scene>& _scene) const
     // Spawn Actor Grid
     for (int i = 0; i < GridSize; i++)
         for (int j = 0; j < GridSize; j++)
-            _scene->SpawnActor<CPGActor>(glm::vec3((float)i * 2.5f, SpawnHeight, (float)j * 2.5f));
+            _scene->SpawnActor<GACPActor>(glm::vec3((float)i * 2.5f, SpawnHeight, (float)j * 2.5f));
 
     spawnTime.Stop();
     DE_LOG(Log, Warn, "Spawned {} Actors to Grid in: {} ms", GridSize * GridSize, spawnTime.GetDurationMs())

@@ -30,9 +30,42 @@ namespace Denix
     {
         Component::BeginScene();
 
-        RegisterComponent();
+        SetupPhysX();
+        PhysicsSubsystem::RegisterPxActor(m_PxActor);
     }
 
+    void PhysicsComponent::BeginPlay()
+    {
+        // Register the physics component with the physics subsystem
+        Component::BeginPlay();
+    }
+
+    void PhysicsComponent::EndPlay()
+    {
+        Component::EndPlay();
+
+    }
+
+    void PhysicsComponent::EndScene()
+    {
+        PhysicsSubsystem::UnregisterPxActor(m_PxActor);
+
+        Component::EndScene();
+    }
+
+    void PhysicsComponent::Update(float _deltaTime)
+    {
+        Component::Update(_deltaTime);
+
+        if (SceneSubsystem::GetSceneState() == SceneState::Playing)
+        {
+            physx::PxVec3 pos = m_PxActor->getGlobalPose().p;
+            physx::PxQuat rot = m_PxActor->getGlobalPose().q;
+            m_Parent->m_TransformComponent->m_Position = {pos.x, pos.y, pos.z};
+            m_Parent->m_TransformComponent->m_Rotation = Math::Degrees(glm::eulerAngles(glm::quat(rot.w, rot.x, rot.y, rot.z)));
+        }
+    }
+    
     void PhysicsComponent::SetupPhysX()
     {
         const auto scale = m_Parent->m_TransformComponent->m_Scale;
@@ -96,38 +129,6 @@ namespace Denix
         _actor->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, false);
     }
 
-    void PhysicsComponent::BeginPlay()
-    {
-        // Register the physics component with the physics subsystem
-        Component::BeginPlay();
-
-       SetupPhysX();
-        PhysicsSubsystem::RegisterPxActor(m_PxActor);
-    }
-
-    void PhysicsComponent::EndPlay()
-    {
-        Component::EndPlay();
-
-        PhysicsSubsystem::UnregisterPxActor(m_PxActor);
-    }
-
-    void PhysicsComponent::EndScene()
-    {
-        Component::EndScene();
-    }
-
-    void PhysicsComponent::Update(float _deltaTime)
-    {
-        Component::Update(_deltaTime);
-
-        if (SceneSubsystem::GetSceneState() == SceneState::Playing)
-        {
-            physx::PxVec3 pos = m_PxActor->getGlobalPose().p;
-            physx::PxQuat rot = m_PxActor->getGlobalPose().q;
-            m_Parent->m_TransformComponent->m_Position = {pos.x, pos.y, pos.z};
-            m_Parent->m_TransformComponent->m_Rotation = Math::Degrees(glm::eulerAngles(glm::quat(rot.w, rot.x, rot.y, rot.z)));
-        }
-    }
+  
 
 }

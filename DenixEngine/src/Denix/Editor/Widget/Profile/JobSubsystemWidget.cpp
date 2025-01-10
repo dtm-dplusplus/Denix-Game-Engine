@@ -11,7 +11,7 @@ namespace Denix
     {
         EditorWidget::Update(_deltaTime);
 
-        static Ref<JobSubsystem> jobSubsystem = JobSubsystem::Get();
+        static Ref<JobSubsystem> jobSubsystem = JobSubsystem::GetInstance();
 
         ImGui::Text("System Threads Available: %d", jobSubsystem->GetActiveThreads());
         ImGui::Text("Worker Threads Available: %d", jobSubsystem->GetActiveThreads());
@@ -21,12 +21,11 @@ namespace Denix
         if (ImGui::InputInt("Active Threads", &jobSubsystem->GetActiveThreadsRef())) JobSubsystem::UpdateActiveThreads();
 
        ImGui::SeparatorText("Thread Profiling");
-        ImGui::DragInt("Wait For Counter Sleep Time", &Thread::s_WaitForCounterSleepTime);
-        ImGui::DragInt("Wait For Job Sleep Time", &Thread::s_WaitForJobSleepTime);
+        ImGui::Text("Adjust these values to experiment with thread scheduling");
+        ImGui::DragInt("Wait For Counter Sleep Time", &Thread::GetWaitForCounterSleepTime());
+        ImGui::DragInt("Wait For Job Sleep Time", &Thread::GetWaitForJobSleepTime());
 
         ImGui::SeparatorText("Batching");
-        ImGui::Checkbox("Auto Batching", &JobSubsystem::IsAutoBatchingEnabled());
-        ImGui::Text("Batch Count: %d", JobSubsystem::GetBatchSize());
         ImGui::DragInt("Batch Threshold", &jobSubsystem->GetBatchUpdateThreshold());
     }
 }

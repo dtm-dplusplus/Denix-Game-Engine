@@ -32,7 +32,7 @@ namespace Denix
 		static bool& CollisionResponseEnabledRef() { return s_Instance->m_CollisionResponseEnabled; }
 
 		static void RegisterPxActor(physx::PxRigidActor* _actor);
-		static void UnregisterPxActor(const physx::PxRigidActor* _actor);
+		static void UnregisterPxActor(physx::PxRigidActor* _actor);
 		
 		inline static physx::PxDefaultAllocator		m_PxAllocator;
 		inline static physx::PxDefaultErrorCallback	m_PxErrorCallback;

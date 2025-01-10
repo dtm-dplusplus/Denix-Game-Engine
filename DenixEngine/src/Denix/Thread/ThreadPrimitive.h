@@ -4,22 +4,17 @@
 
 namespace Denix
 {
-    enum class Priority
+    /**
+     * @brief Job priority enum
+     * Higher priority jobs will be executed before lower priority jobs
+     */
+    enum class Priority: uint8_t
     {
-        LATENT, NORMAL, HIGH, CRITICAL
+        LATENT, // Job can be executed at any time
+        NORMAL, // Job should be executed in a timely manner
+        HIGH, // Job should be executed as soon as possible
+        CRITICAL // Job must be executed immediately
     };
-
-    inline std::string PriorityToString(const Priority _priority)
-    {
-        switch (_priority)
-        {
-        case Priority::LATENT: return "LATENT";
-        case Priority::NORMAL: return "NORMAL";
-        case Priority::HIGH: return "HIGH";
-        case Priority::CRITICAL: return "CRITICAL";
-        }
-        return "UNKNOWN";
-    }
 
     /**
      * @brief Counter struct to manage job dependencies
@@ -30,23 +25,31 @@ namespace Denix
     {
         Counter() = default;
 
-        Counter(int _value) : m_Value(_value)
-        {
-        }
+        /**
+         * @brief Increment the counter
+         * Symbolises that a job is waiting on this counter
+         */
+        void Increment() {++m_Value;}
 
-        void Increment()
-        {
-            ++m_Value;
-        }
+        /**
+         * @brief Decrement the counter
+         * Symbolises that a job is no longer waiting on this counter
+         */
+        void Decrement() {--m_Value;}
 
-        void Decrement()
-        {
-            --m_Value;
-        }
-
+        /**
+         * @brief Thread Safe atomic counter value
+         * This is the value that is incremented and decremented
+         * Zero means no jobs are waiting on this counter
+         */
         std::atomic_int m_Value{0};
     };
 
+    /**
+     * @brief This struct is used to declare a job to the job subsystem
+     * It contains all the information needed to execute a job
+     * Profile information is also stored here
+     */
     struct JobDeclaration
     {
         JobDeclaration(std::string _name, const Priority _priority, Ref<Counter> _waitCounter,
@@ -64,23 +67,28 @@ namespace Denix
         std::string m_Name;
 
         /**
-         * @brief Jobs entry point function
+         * @brief Jobs entry point function. Contains the code to be executed and any arguments
          */
         std::function<void()> m_EntryPoint;
 
         /**
-         * @brief Job priority
+         * @brief Job priority. Higher priority jobs will be executed before lower priority jobs
          */
         Priority m_Priority;
 
         /**
-         * @brief Counter to keep track of how many jobs we are waiting on before a job group is finished.
-         * Should probably be moved to some kind of job buidler which sets up dependencies
+         * @brief Counter to manage job dependencies
          */
         Ref<Counter> m_WaitCounter;
 
+        /**
+         * @brief Time event used to profile the job
+         */
         TimeEvent m_JobTime;
 
+        /**
+         * @brief Index of the thread that executed the job for debugging
+         */
         int m_ThreadIndex;
     };
     

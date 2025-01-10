@@ -1,143 +1,77 @@
 ﻿#pragma once
-#include "Denix/Core.h"
-#include <thread>
-#include <functional>
 
-
-#include "Denix/Core/Timer.h"
 #include "Denix/Thread/ThreadPrimitive.h"
+#include <thread>
 
 namespace Denix
 {
     struct JobDeclaration;
 
-
     class Thread
     {
     public:
-        Thread(const int _index)
-        {
-            m_ShouldWork = true;
-            m_ThreadIDInt = 0;
-            m_JobExecCount = 0;
-            m_ThreadExecTime = 0.0f;
-            m_ThreadSleepTime = 0.0f;
-            m_ThreadIndex = _index;
-        }
+        explicit Thread(const int _index);
 
-        ~Thread()
-        {
-           m_ShouldWork = false;
-           JoinCheck();
-        }
-
-        template <typename Func, typename... Args>
-        void InitThread(Func&& _func, Args&&... _args)
-        {
-            // = std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...); //Lambda here?
-            m_Thread = std::thread(std::forward<Func>(_func), std::forward<Args>(_args)...);
-            m_ThreadID = m_Thread.get_id();
-            SetThreadIDInt();
-        }
-
-        void InitWorkerThread()
-        {
-            m_Thread = std::thread(&Thread::Work, this);
-            m_ThreadID = m_Thread.get_id();
-            SetThreadIDInt();
-            DE_LOG(LogThread, Info, "Thread Index: {} ID: {}", m_ThreadIndex, m_ThreadIDInt)
-        }
+        ~Thread();
 
         // Delete copy constructor and copy assignment operator
-        Thread(const Thread&) = delete;
-        Thread& operator=(const Thread&) = delete;
+        Thread(const Thread& other) = delete;
+        Thread(Thread&& other) noexcept = delete;
+        Thread& operator=(const Thread& other) = delete;
+        Thread& operator=(Thread&& other) noexcept = delete;
 
-        // Allow move constructor and move assignment operator
-        Thread(Thread&&) = default;
-        Thread& operator=(Thread&&) = default;
-
+        static int& GetWaitForCounterSleepTime() { return s_WaitForCounterSleepTime; }
+        static int& GetWaitForJobSleepTime() { return s_WaitForJobSleepTime; }
+        
+    private:
+        
+        /**
+         * @brief The main function of the thread
+         * This function is called when the thread is created and will run until the thread is destroyed
+         */
         void Work();
 
-
         /**
-         * @brief Join the thread. 
+         * @brief The actual software thread this class wraps
          */
-        void Join()
-        {
-            m_Thread.join();
-        }
-
-        /**
-         * @brief Join the thread. Check if the thread is joinable before joining
-         * Automatically called in the destructor
-         */
-        void JoinCheck()
-        {
-            if (m_Thread.joinable())
-            {
-                m_Thread.join();
-                DE_LOG(LogThread, Trace, "Thread {} joined", m_ThreadIDInt)
-            }
-            else
-            {
-                DE_LOG(LogThread, Error, "Thread {} not joinable", m_ThreadIDInt)
-            }
-        }
-
-        bool IsJoinable() const
-        {
-            return m_Thread.joinable();
-        }
-
-        /**
-         * @brief Detach the thread from the main thread.
-         *  Allowis the thread to continue execution independently.
-         *  Once detached, the thread becomes non-joinable, meaning you cannot wait for it to finish using join.
-         *  The detached thread will run until it completes, and its resources will be released automatically.
-         */
-        void Detach()
-        {
-            if (m_Thread.joinable())
-            {
-                m_Thread.detach();
-                DE_LOG(LogThread, Info, "Thread {} detached", m_ThreadIDInt)
-            }
-            else
-            {
-                DE_LOG(LogThread, Error, "Thread {} failed to detach. Not joinable", m_ThreadIDInt)
-            }
-        }
-
-        void SetThreadIDInt()
-        {
-            std::stringstream ss;
-            ss << m_Thread.get_id();
-            m_ThreadIDInt = std::stoi(ss.str());
-        }
-
-        // private: @TODO: Make private Add Get Set
         std::thread m_Thread;
-        std::thread::id m_ThreadID;
+
+        
+        /**
+         * @brief The ID of the thread. Used for debugging
+         * Matches the ID available in the debugger
+         */
         size_t m_ThreadIDInt;
-        int m_ThreadIndex;        
+        
+        /**
+         * @brief Index of the thread in the thread pool
+         */
+        int m_ThreadIndex;
+        
+        /**
+         * @brief The job the thread is currently executing
+         */
         Ref<JobDeclaration> m_Job;
 
-        
-        
+        /**
+         * @brief Determines if the thread should work
+         *  This is managed by the JobSubsystem
+         */
+        bool m_ShouldWork;
+
         /**
          * @brief Determines the lifetime of the thread. If false, the thread will exit
          */
-        bool m_ShouldWork = true;
-
-        bool m_Active = true;
+        bool m_Active;
         
-        static int s_WaitForCounterSleepTime;
+        inline static int s_WaitForCounterSleepTime = 1;
 
         
-        static int s_WaitForJobSleepTime;
-
-
-        
+        /**
+         * @brief Value used between jobs to allow job queue to populate and prioritize
+         * Also used to reduce CPU usage
+         */
+        inline static int s_WaitForJobSleepTime = 110;
 
         
         /**
@@ -154,26 +88,29 @@ namespace Denix
          * @brief Total time the thread spent sleeping. Only accounts for time in the Work() function
          */
         float m_ThreadSleepTime;
-
-    private:
-        // Thread Profiling - These are not thread safe and should be managed by the JobSubsystem
+        
         /**
-         * @brief Should the thread profile itself. Global setting
+         * @brief Should the thread profile itself. Global setting managed by the JobSubsystem
          */
-        static bool s_ShouldProfile;
+        inline static bool s_ShouldProfile = false;
         
         friend class JobSubsystem;
+        friend void WaitForCounter(const Ref<Counter>& _counter);
     };
 
-    inline void WaitForCounter(const Counter* _counter)
+    
+    /**
+     * Utility to synchronize Job execution & Dependencies
+     * @param _counter Wait Counter to synchronize with
+     */
+    inline void WaitForCounter(const Ref<Counter>& _counter)
     {
         if (!_counter) return;
 
-        // Wait for the counter to reach zero, then continue. Sleep to reduce CPU usage
+        // Wait for the counter to reach zero, then continue.
+        // Add sleep condition here to reduce CPU usage & give other threads time to work
+        // In the future we can switch to a more efficient wait condition
         while (_counter->m_Value > 0)
-        {
-            // Add sleep condition here to reduce CPU usage
             std::this_thread::sleep_for(std::chrono::nanoseconds(Thread::s_WaitForCounterSleepTime));
-        }
     }
 }

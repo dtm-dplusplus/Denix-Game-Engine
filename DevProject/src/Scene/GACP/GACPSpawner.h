@@ -6,7 +6,7 @@ namespace Denix
 {
     class Scene;
     
-    struct ActorGridSpawner
+    struct GACPSpawner
     {
     public:
         void SpawnGrid(const Ref<Scene>& _scene) const;

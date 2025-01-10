@@ -17,7 +17,7 @@ namespace Denix
 	class EditorSubsystem : public Subsystem<EditorSubsystem>
 	{
 	public:
-		EditorSubsystem();
+		EditorSubsystem() = default;
 
 		~EditorSubsystem() override = default;
 

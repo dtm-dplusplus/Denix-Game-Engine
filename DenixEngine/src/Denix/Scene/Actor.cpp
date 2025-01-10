@@ -6,7 +6,6 @@
 #include "Denix/Core/YAMLHelper.h"
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Asset/Asset.h"
-#include "Denix/Thread/JobSubsystem.h"
 
 namespace Denix
 {
@@ -224,12 +223,5 @@ namespace Denix
         {
             component->Update(_deltaTime);
         }
-
-        // Update physics actor if scene update modifies the transform
-        /*if (m_PhysicsComponent->m_PxActor)
-        {
-            const glm::vec3& pos = m_TransformComponent->m_Position;
-            m_PhysicsComponent->m_PxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
-        }*/
     }
 }

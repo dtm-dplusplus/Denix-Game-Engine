@@ -8,16 +8,12 @@
 #include "Denix/Editor/Widget/Profile/EngineProfilerWidget.h"
 #include "Denix/Editor/Widget/InputDebuggerWidget.h"
 #include "Denix/Thread/JobSubsystem.h"
-#include "Widget/PerformanceSettingsWidget.h"
+#include "Widget/Profile/PerformanceSettingsWidget.h"
 
 #include "yaml-cpp/yaml.h"
 
 namespace Denix
 {
-	EditorSubsystem::EditorSubsystem()
-	{
-	}
-	
 	void EditorSubsystem::Initialize()
 	{
 		Subsystem::Initialize();

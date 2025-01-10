@@ -3,72 +3,12 @@
 
 #include "Denix/Core/TimerSubsystem.h"
 
-Denix::JobSubsystem::JobSubsystem()
-    : m_BatchSizeMin(0),
-      m_CurrentBatchCount(0),
-      m_SystemThreads(0),
-      m_ActiveWorkerThreads(0),
-      m_AvailableWorkerThreads(0),
-      m_AutoBatchingEnabled(true),
-      m_ManualBatchSize(100),
-      m_BatchUpdateThreshold(50)
+Denix::JobSubsystem::JobSubsystem():
+    m_BatchUpdateThreshold(225),
+    m_SystemThreads(0),
+    m_AvailableWorkerThreads(0),
+    m_ActiveWorkerThreads(0)
 {
- 
-}
-
-void Denix::JobSubsystem::UpdateActiveThreads()
-{
-    // Clamp the active threads to the system thread count
-    s_Instance->m_ActiveWorkerThreads = std::clamp(s_Instance->m_ActiveWorkerThreads, 0,
-                                                       s_Instance->m_AvailableWorkerThreads);
-    DE_LOG(LogJob, Trace, "Set Active Worker Threads: {} of {}", s_Instance->m_ActiveWorkerThreads,
-           s_Instance->m_AvailableWorkerThreads)
-
-    // Update the worker threads
-    for (int i = 0; i < s_Instance->m_AvailableWorkerThreads; i++)
-    {
-        if (i < s_Instance->m_ActiveWorkerThreads) s_Instance->m_WorkerThreads[i]->m_Active = true;
-        else s_Instance->m_WorkerThreads[i]->m_Active = false;
-    }
-}
-
-Denix::Ref<Denix::JobDeclaration> Denix::JobSubsystem::RequestJob()
-{
-    Ref<JobDeclaration> job;
-    s_Instance->m_Jobs.try_pop(job);
-    return job ? job : nullptr;
-}
-
-void Denix::JobSubsystem::StartThreadProfiling()
-{
-    // Setup Threads
-    for (auto& thread : s_Instance->m_WorkerThreads)
-    {
-        thread->m_JobExecCount = 0;
-        thread->m_ThreadExecTime = 0.0f;
-        thread->m_ThreadSleepTime = 0.0f;
-    }
-
-    // Set the profiling flag for the threads
-    Thread::s_ShouldProfile = true;
-}
-
-void Denix::JobSubsystem::StopThreadProfiling()
-{
-    Thread::s_ShouldProfile = false;
-
-    if (const Ref<ProfileSession> activeProfileSession = ProfileSubsystem::GetActiveProfileSession())
-    {
-        for (const auto& thread : s_Instance->m_WorkerThreads)
-        {
-            activeProfileSession->m_ThreadData.push_back({
-                .m_ThreadID= thread->m_ThreadIDInt, .m_JobExecCount= thread->m_JobExecCount, .m_ThreadExecTime= thread->
-                m_ThreadExecTime, .m_ThreadSleepTime= thread->m_ThreadSleepTime
-            });
-        }
-    }
-    else
-        DE_LOG(LogThread, Info, "Thread Profiling: Disabled")
 }
 
 void Denix::JobSubsystem::Initialize()
@@ -77,26 +17,18 @@ void Denix::JobSubsystem::Initialize()
 
     DE_LOG(LogJob, Warn, "Thread Subsystem Initializing")
 
-    // Get Thread Information
-    if (const int threadCount = std::thread::hardware_concurrency(); threadCount > 0)
-    {
-        m_SystemThreads = threadCount;
-        m_AvailableWorkerThreads = m_SystemThreads - 1;
-        m_ActiveWorkerThreads = m_AvailableWorkerThreads;
-    }
-    else
-    {
-        static auto error = "Failed to get system thread count";
-        DE_LOG(LogJob, Critical, error)
-        throw std::runtime_error(error);
-    }
+    // Get System Thread Information
+    const int threadCount = std::thread::hardware_concurrency();
+    DE_ASSERT(threadCount > 0, "Failed to get system thread count")
 
+    m_SystemThreads = threadCount;
+    m_AvailableWorkerThreads = m_SystemThreads - 1;
+    m_ActiveWorkerThreads = m_AvailableWorkerThreads;
 
     // Initialize the worker threads - Subtract 1 for main thread
     for (int i = 0; i < m_ActiveWorkerThreads; i++)
     {
-        m_WorkerThreads.emplace_back(MakeRef<Thread>(i + 1));
-        m_WorkerThreads.back()->InitWorkerThread();
+        m_WorkerThreads.emplace_back(MakeRef<Thread>(i));
     }
 
     DE_LOG(LogJob, Trace, "System threads: {}", m_SystemThreads)
@@ -107,22 +39,76 @@ void Denix::JobSubsystem::Initialize()
 void Denix::JobSubsystem::Deinitialize()
 {
     DE_LOG(LogJob, Trace, "JobSubsystem Deinitializing")
-    WaitForAllJobs();
-    m_ActiveWorkerThreads = 0;
-    UpdateActiveThreads();
 
+    for (const auto& thread: m_WorkerThreads) thread->m_Active = false;
+    
     m_Jobs.clear();
     m_WorkerThreads.clear();
+
+    DE_LOG(LogJob, Trace, "Cleared Job Queue & Threads")
     
     Subsystem::Deinitialize();
 
     DE_LOG(LogJob, Trace, "JobSubsystem Deinitialized")
 }
 
-void Denix::JobSubsystem::WaitForAllJobs()
+void Denix::JobSubsystem::UpdateActiveThreads()
 {
-    while (!m_Jobs.empty())
+    // Clamp the active threads to the system thread count
+    s_Instance->m_ActiveWorkerThreads = std::clamp(s_Instance->m_ActiveWorkerThreads, 1,
+                                                   s_Instance->m_AvailableWorkerThreads);
+    
+    // Update the worker threads
+    for (int i = 0; i < s_Instance->m_AvailableWorkerThreads; i++)
     {
-        // Wait for all jobs to finish
+        if (i < s_Instance->m_ActiveWorkerThreads) s_Instance->m_WorkerThreads[i]->m_ShouldWork = true;
+        else s_Instance->m_WorkerThreads[i]->m_ShouldWork = false;
+    }
+    
+    DE_LOG(LogJob, Trace, "Set Active Worker Threads: {} of {}", s_Instance->m_ActiveWorkerThreads,
+         s_Instance->m_AvailableWorkerThreads)
+}
+
+Denix::Ref<Denix::JobDeclaration> Denix::JobSubsystem::RequestJob()
+{
+    // Pop the next job from the queue
+    if (Ref<JobDeclaration> job; s_Instance->m_Jobs.try_pop(job)) return job;
+    return nullptr;
+}
+
+void Denix::JobSubsystem::StartThreadProfiling()
+{
+    // Setup Threads for profiling
+    for (const auto& thread : s_Instance->m_WorkerThreads)
+    {
+        thread->m_JobExecCount = 0;
+        thread->m_ThreadExecTime = 0.0f;
+        thread->m_ThreadSleepTime = 0.0f;
+    }
+
+    // Enable internal profiling flag for the threads
+    Thread::s_ShouldProfile = true;
+}
+
+void Denix::JobSubsystem::StopThreadProfiling()
+{
+    // Disable internal profiling flag for the threads
+    Thread::s_ShouldProfile = false;
+
+    // Get the active profile session
+    const Ref<ProfileSession> activeProfileSession;
+    if (!activeProfileSession) return;
+
+    // Submit the thread data to the active profile session
+    for (const auto& thread : s_Instance->m_WorkerThreads)
+    {
+        activeProfileSession->m_ThreadData.push_back({
+            .m_ThreadID = thread->m_ThreadIDInt, .m_JobExecCount = thread->m_JobExecCount,
+            .m_ThreadExecTime = thread->
+            m_ThreadExecTime,
+            .m_ThreadSleepTime = thread->m_ThreadSleepTime
+        });
     }
 }
+
+

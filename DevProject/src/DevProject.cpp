@@ -1,9 +1,9 @@
  #include "Denix.h"
 
 #include "Scene/AudioScene.h"
-#include "Scene/GACPScene.h"
+#include "Scene/GACP/GACPScene.h"
 #include "Scene/DevScene.h"
-#include "Scene/CPG/CPGActor.h"
+#include "Scene/GACP/GACPActor.h"
 
 class DevProject final: public Engine
 {
@@ -20,7 +20,7 @@ public:
 		ReflectionSubsystem::Register<GACPScene>();
 		ReflectionSubsystem::Register<GACPScene>();
 		ReflectionSubsystem::Register<AudioScene>();
-		ReflectionSubsystem::Register<CPGActor>();
+		ReflectionSubsystem::Register<GACPActor>();
 	}
 	
 	void Initialize() override

@@ -4,7 +4,7 @@
 #include "Denix/Engine.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Thread/JobSubsystem.h"
-#include "CPG/JobSubsystemWidget.h"
+#include "Denix/Editor/Widget/Profile/JobSubsystemWidget.h"
 
 using namespace Denix;
 
@@ -29,7 +29,7 @@ void GACPScene::DebugUI(float _deltaTime)
     ImGui::Begin(GetName().c_str());
 
     ImGui::SeparatorText("Spawner");
-    ImGui::DragFloat("Spawn Height", &ActorGridSpawner::SpawnHeight, 1.0f, 0.0f, 1000.0f);
+    ImGui::DragFloat("Spawn Height", &GACPSpawner::SpawnHeight, 1.0f, 0.0f, 1000.0f);
     if (ImGui::Button("Spawn Grid"))  m_GridSpawner.SpawnGrid(shared_from_this());
     ImGui::SameLine();
     ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, 100);

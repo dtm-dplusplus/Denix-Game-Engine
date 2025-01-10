@@ -26,6 +26,21 @@ namespace Denix
     {
        BaseObject::BeginScene();
 
+        m_PxSceneDesc = new physx::PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
+        m_PxSceneDesc->gravity = physx::PxVec3(0.0f, -m_Gravity, 0.0f);
+        m_PxSceneDesc->cpuDispatcher	= PhysicsSubsystem::m_PxDispatcher;
+        m_PxSceneDesc->filterShader = physx::PxDefaultSimulationFilterShader;
+        m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(*m_PxSceneDesc);
+
+        physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
+        PhysicsSubsystem::m_PxPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+        
+        if(physx::PxPvdSceneClient* pvdClient = m_PxScene->getScenePvdClient())
+        {
+            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+        }
         
         for (const auto& obj : m_Actors) obj->BeginScene();
     }
@@ -45,22 +60,6 @@ namespace Denix
     void Scene::BeginPlay()
     {
         BaseObject::BeginPlay();
-
-        m_PxSceneDesc = new physx::PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
-        m_PxSceneDesc->gravity = physx::PxVec3(0.0f, -m_Gravity, 0.0f);
-        m_PxSceneDesc->cpuDispatcher	= PhysicsSubsystem::m_PxDispatcher;
-        m_PxSceneDesc->filterShader = physx::PxDefaultSimulationFilterShader;
-        m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(*m_PxSceneDesc);
-
-        physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
-        PhysicsSubsystem::m_PxPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
-        
-        if(physx::PxPvdSceneClient* pvdClient = m_PxScene->getScenePvdClient())
-        {
-            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-        }
         
         if (m_GameCamera)
         {
@@ -72,7 +71,6 @@ namespace Denix
             DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
         }
         
-        for (const auto& obj : m_Actors) obj->BeginPlay();
     }
 
     void Scene::EndPlay()
@@ -83,7 +81,7 @@ namespace Denix
         physx::PxActorTypeFlags actorFlags = physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC;
         physx::PxU32 numActors = m_PxScene->getNbActors(actorFlags);
 
-        if (numActors > 0)
+        /*if (numActors > 0)
             {
             std::vector<physx::PxActor*> actors(numActors);
             m_PxScene->getActors(actorFlags, actors.data(), numActors);
@@ -95,7 +93,7 @@ namespace Denix
                     actor->release();
                 }
             }
-        }
+        }*/
         
         m_Actors.clear();
         m_ActorNames.clear();

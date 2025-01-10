@@ -33,7 +33,7 @@ namespace Denix
         * The JobSubsystem is responsible for managing and executing jobs across multiple threads.
         * It provides functionality to add jobs, start and stop thread profiling, and manage worker threads.
         */
-    class JobSubsystem : public Subsystem<JobSubsystem>
+    class JobSubsystem final: public Subsystem<JobSubsystem>
     {
     public:
         /**
@@ -60,11 +60,11 @@ namespace Denix
 
         /**
         * \brief Adds a job to the job queue.
-        * \tparam Func The type of the function to execute.
+        * \tparam Func The function to execute.
         * \tparam Args The types of the arguments to pass to the function.
         * \param _name The name of the job.
         * \param _priority The priority of the job.
-        * \param _waitCounter The counter to wait on before executing the job.
+        * \param _waitCounter The counter used to manage related job dependencies.
         * \param _func The function to execute.
         * \param _args The arguments to pass to the function.
         */
@@ -83,14 +83,12 @@ namespace Denix
             _waitCounter->Increment();
 
             // Create the job
-            Ref<JobDeclaration> job = MakeRef<JobDeclaration>(
+            s_Instance->m_Jobs.push(MakeRef<JobDeclaration>(
                 _name,
                 _priority,
                 _waitCounter,
-                std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
-            );
-
-            s_Instance->m_Jobs.push(job);
+                std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)));
+                
         }
 
         /**
@@ -130,7 +128,7 @@ namespace Denix
             // Hardcoded to the main thread
             job->m_ThreadIndex = 0;
 
-            // Execute the job
+            // Execute the job with thread logic
             if (Thread::s_ShouldProfile)
                 DE_PROFILE_JOB(job)
             job->m_EntryPoint();
@@ -159,58 +157,43 @@ namespace Denix
          */
         template <typename T, typename Func, typename... Args>
         static void AddJobBatch(const std::string& _namePrefix, const Priority _priority,
-                              const Ref<Counter>& _waitCounter, std::vector<T>& _objects, Func&& _func, Args&&... _args)
+                                const Ref<Counter>& _waitCounter, std::vector<T>& _objects, Func&& _func,
+                                Args&&... _args)
         {
+            // Check the vector size
             const size_t objectCount = _objects.size();
-            if (objectCount == 0)
+            if (objectCount == 0) return;
+
+            if (objectCount > s_Instance->m_BatchUpdateThreshold)
             {
-             //   DE_LOG(LogJob, Error, "Vector is empty. No jobs added: {}", _namePrefix)
-                return;
-            }
+                // Setup batch size. All batches are equal with the exception of the last batch.
+                const size_t batchSize = (objectCount + s_Instance->m_ActiveWorkerThreads - 1) / s_Instance->m_ActiveWorkerThreads;
 
-            // Prepare batch sizes
-
-            // count = 20
-            // bMod = 20/15 = 5 Remainder
-            // bMax = 20/1 = 1
-            // bSize = 20/15 = 1
-
-            // count = 34
-            // bMod = 34/15 = 4 Remainder
-            // bSize = 34/15 = 2
-            // bMax = 34/17 = 
-
-            // count = 144
-            // bMod = 144/15 = 9 Remainder
-            // bSize = 144/15 = 9
-            const size_t batchSize = objectCount / s_Instance->m_ActiveWorkerThreads;
-
-            s_Instance->m_CurrentBatchCount = batchSize;
-
-            if (objectCount > s_Instance->m_BatchUpdateThreshold && objectCount > s_Instance->
-                m_AvailableWorkerThreads)
-            {
-                for (size_t batchIndex = 0; batchIndex < s_Instance->m_ActiveWorkerThreads; batchIndex++)
+                // Create a job for each batch
+                for (size_t batchIndex = 0; batchIndex < s_Instance->m_ActiveWorkerThreads; ++batchIndex)
                 {
                     size_t begin = batchIndex * batchSize;
-                    size_t end = begin + batchSize;
+                    size_t end = std::min(begin + batchSize, objectCount);
 
-                    if (batchIndex + 1 == s_Instance->m_AvailableWorkerThreads) end = objectCount;
+                    if (begin >= objectCount) break;
 
                     AddJob(_namePrefix + std::to_string(batchIndex), _priority, _waitCounter,
-                           [begin, end, &_objects, _func, _args...]
-                           {
-                               for (size_t j = begin; j < end; ++j) std::invoke(_func, _objects[j], _args...);
+                           [begin, end, &_objects, _func, _args...] {
+                               for (size_t j = begin; j < end; ++j) {
+                                   std::invoke(_func, _objects[j], _args...);
+                               }
                            });
                 }
             }
             else
             {
+                // Create a single job for the entire vector to avoid overhead
                 AddJob(_namePrefix + " Below Threshold", _priority, _waitCounter, [&_objects, _func, _args...]
                 {
                     for (auto& obj : _objects) std::invoke(_func, obj, _args...);
                 });
             }
+            DE_PROFILE_END(AddJobBatch)
         }
 
         /**
@@ -221,7 +204,6 @@ namespace Denix
        */
         static void UpdateActiveThreads();
 
-        static bool& IsAutoBatchingEnabled() { return s_Instance->m_AutoBatchingEnabled; }
 
         static int& GetBatchUpdateThreshold() { return s_Instance->m_BatchUpdateThreshold; }
 
@@ -245,8 +227,6 @@ namespace Denix
          */
         static int& GetActiveThreadsRef() { return s_Instance->m_ActiveWorkerThreads; }
 
-        static size_t GetBatchSize() { return s_Instance->m_CurrentBatchCount; }
-
         /**
          * \brief Gets the size of the job queue.
          *
@@ -254,18 +234,6 @@ namespace Denix
          * \return The size of the job queue.
          */
         static size_t GetJobQueueSize() { return s_Instance->m_Jobs.size(); }
-
-        /**
-         * \brief Gets the worker threads.
-         * \return A vector of references to the worker threads.
-         */
-        static std::vector<Ref<Thread>>& GetWorkerThreads() { return s_Instance->m_WorkerThreads; }
-
-        /**
-         * \brief Gets a shared reference to the JobSubsystem.
-         * \return A shared reference to the JobSubsystem.
-         */
-        static Ref<JobSubsystem> Get() { return s_Instance->shared_from_this(); }
 
     private:
         /**
@@ -277,7 +245,7 @@ namespace Denix
          * \return A reference to the next job declaration.
          */
         static Ref<JobDeclaration> RequestJob();
-        
+
         /**
         * \brief Starts profiling for all threads.
         */
@@ -299,10 +267,9 @@ namespace Denix
          * \brief Deinitializes the JobSubsystem.
          *
          * Join all worker threads and clear the job queue.
+         * It's safe to assume all jobs have been completed at this point.
          */
         void Deinitialize() override;
-
-        void WaitForAllJobs();
 
         /**
       * \brief Thread-safe queue of jobs, sorted by priority. JobComparator struct is used to compare job priorities.
@@ -313,11 +280,11 @@ namespace Denix
 
         std::vector<Ref<Thread>> m_WorkerThreads;
 
-        size_t m_ManualBatchSize;
+        /**
+         * \brief The threshold for batch updates.
+         * If number of objects is above this threshold, the job will be split into batches.
+         */
         int m_BatchUpdateThreshold;
-        size_t m_BatchSizeMin;
-        size_t m_CurrentBatchCount;
-        bool m_AutoBatchingEnabled;
 
         /**
          * Number of threads available on the system
