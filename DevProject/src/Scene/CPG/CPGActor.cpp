@@ -15,6 +15,7 @@ Denix::CPGActor::CPGActor()
 
     // Create a copy of the material
     m_RenderComponent->GetMaterial() = MakeRef<Material>(m_RenderComponent->GetMaterial());
+    RandomModel();
 }
 
 void Denix::CPGActor::BeginPlay()
@@ -41,7 +42,6 @@ void Denix::CPGActor::Update(float _deltaTime)
             actor->setLinearVelocity(physx::PxVec3(0.0f, 0.0f, 0.0f));
             actor->setAngularVelocity(physx::PxVec3(0.0f, 0.0f, 0.0f));
         }
-        RandomModel();
     }
 }
 
@@ -54,7 +54,7 @@ void Denix::CPGActor::RandomModel() const
 
     size_t index = Math::Rand(0, modelStoreSize - 1);
     size_t i = 0;
-    for (auto model: modelStore | std::views::keys)
+    for (const auto model: modelStore | std::views::keys)
     {
         if (i++ == index)
         {
@@ -65,7 +65,7 @@ void Denix::CPGActor::RandomModel() const
 
     index = Math::Rand(0, textureStoreSize - 1);
     i = 0;
-    for (auto texture: textureStore | std::views::keys)
+    for (const auto& texture: textureStore | std::views::keys)
     {
         if (i++ == index)
         {

@@ -226,10 +226,11 @@ namespace Denix
 
 	void SceneSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 	{
-		DE_PROFILE(Scene Update)
-
 		// Validate Scene
 		DE_ASSERT(m_ActiveScene,"No active scene found")
+
+		// End Profile is called after wait counter as the scene is updated in parallel
+		DE_PROFILE(Scene Update)
 
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
@@ -253,10 +254,8 @@ namespace Denix
 		}
 
 		// Client Scene Update
-		DE_PROFILE(Scene Client)
 		m_ActiveScene->Update(_deltaTime);
 		m_ActiveScene->DebugUI(_deltaTime);
-		DE_PROFILE_END(Scene Client)
 	}
 
 	void SceneSubsystem::SerializeScene()
