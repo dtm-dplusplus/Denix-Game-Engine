@@ -1,11 +1,9 @@
 #pragma once
-#include <iostream>
-#include <map>
+
 #include <GL/glew.h>
 
 #include "Denix/Core.h"
-#include "Denix/Scene/Object.h"
-#include "Denix/Core/FileSubsystem.h"
+#include "Denix/Asset/Asset.h"
 
 namespace Denix
 {
@@ -26,7 +24,6 @@ namespace Denix
 		std::string FileName;
 		std::string Source;
 		GLenum Type = 0;
-		bool IsCompiled = false;
 	};
 
 	/*struct ShaderTypePair
@@ -50,240 +47,59 @@ namespace Denix
 	};
 
 
-	class Shader: public Object
+	class Shader: public Asset
 	{
 	public:
-		Shader(const Shader& other)
-			: Object(other),
-			  m_GL_ID(other.m_GL_ID),
-			  m_ShaderSources(other.m_ShaderSources),
-			  m_ShaderUniforms(other.m_ShaderUniforms)
+		Shader():
+			m_GL_ID(0)
 		{
+			CreateProgram();
 		}
 
-		Shader(Shader&& other) noexcept
-			:m_GL_ID(other.m_GL_ID),
-			  m_ShaderSources(std::move(other.m_ShaderSources)),
-			  m_ShaderUniforms(std::move(other.m_ShaderUniforms)),
-				Object(std::move(other))
-
-
-			  
-		{
-		}
-
-		Shader& operator=(const Shader& other)
-		{
-			if (this == &other)
-				return *this;
-			Object::operator =(other);
-			m_GL_ID = other.m_GL_ID;
-			m_ShaderSources = other.m_ShaderSources;
-			m_ShaderUniforms = other.m_ShaderUniforms;
-			return *this;
-		}
-
-		Shader& operator=(Shader&& other) noexcept
-		{
-			if (this == &other)
-				return *this;
-			Object::operator =(std::move(other));
-			m_GL_ID = other.m_GL_ID;
-			m_ShaderSources = std::move(other.m_ShaderSources);
-			m_ShaderUniforms = std::move(other.m_ShaderUniforms);
-			return *this;
-		}
-
-		Shader(const ObjectInit& _objInit): Object(_objInit)
+		Shader(const AssetInit& _assetInit):
+			Asset(_assetInit),
+			m_GL_ID(0)
 		{
 			CreateProgram();
 		}
 
 		~Shader() override
 		{
-			//DeleteProgram();
+			DeleteProgram();
 		}
 
 		void Bind() const { glUseProgram(m_GL_ID); }
 		static void Unbind() { glUseProgram(0); }
 
-		GLuint CreateProgram()
-		{
-			if (const GLuint program = glCreateProgram())
-			{
-				m_GL_ID = program;
-				// DE_LOG(LogShader, Trace, "Created shader program ID: {}", program)
-				return program;
-			}
-
-			DE_LOG(LogShader, Error, "Failed to create shader program")
-			return 0;
-		}
-
-		void DeleteProgram() const
-		{
-			if (m_GL_ID)
-			{
-				// DE_LOG(LogShader, Trace, "Deleted shader program ID: {}", m_GL_ID)
-				glDeleteProgram(m_GL_ID);
-			}
-		}
-
-		bool LinkProgram() const
-		{
-			glLinkProgram(m_GL_ID);
-
-			GLint result;
-			glGetProgramiv(m_GL_ID, GL_LINK_STATUS, &result);
-			if (!result)
-			{
-				GLchar infoLog[1024];
-				glGetProgramInfoLog(m_GL_ID, 1024, NULL, infoLog);
-				DE_LOG(LogShader, Error, "GLShader Program Link Fail: {}", infoLog)
-					return false;
-			}
-
-			// DE_LOG(LogShader, Trace, "GLShader Program Link Success")
-
-			return true;
-		}
-
-		// Compile Shader
-		// set sourceFromPath to false if you want to receive the source from the ShaderSource object
-		bool CompileShader(ShaderSource& _sourceObj) const
-		{
-			// Get Shader Type
-			if (const GLenum type = GetShaderType(_sourceObj.Source); type != GL_FALSE)
-			{
-				_sourceObj.Type = type;
-			}
-			else
-			{
-				DE_LOG(LogShader, Error, "Failed to get shader type")
-				return false;
-			}
-
-			// Compile Shader
-			if (const GLuint shader = glCreateShader(_sourceObj.Type))
-			{
-				const char* src = _sourceObj.Source.c_str();
-				glShaderSource(shader, 1, &src, NULL);
-
-				glCompileShader(shader);
-
-				GLint result;
-				glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-				if (!result)
-				{
-					GLchar infoLog[1024];
-					glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-					DE_LOG(LogShader, Error, "GLShader Error: {}", infoLog)
-					return false;
-				}
-
-				glAttachShader(m_GL_ID, shader);
-				glDeleteShader(shader);
-				return true;
-			}
-
-			DE_LOG(LogShader, Error, "Failed to create shader\n")
-			return false;
-		}
-
-		GLenum GetShaderType(const std::string& _source) const
-		{
-			if (const auto keywordIt = _source.find_first_of(g_SHADER_KEYWORD))
-			{
-				std::string type;
-
-				for (auto typeIt = keywordIt + g_SHADER_KEYWORD_OFFSET;
-					_source[typeIt] != ' ' && _source[typeIt] != '\n'; typeIt++)
-				{
-					type += _source[typeIt];
-				}
-
-				// Return the type if we find it
-				for (const auto& [StringType, EnumType] : g_SHADER_TYPES)
-					if (type == StringType) return EnumType;
-
-			}
-
-			DE_LOG(LogShader, Error, "Shader Keyword DE_SHADER not found or invalid type")
-
-			return GL_FALSE;
-		}
-
-		bool CompileProgram(bool sourceFromPath = true)
-		{
-			for (ShaderSource& source : m_ShaderSources)
-			{
-				// Check Shader Source
-				if (sourceFromPath)
-				{
-					// Read Shader File
-					if (const std::string& sourceData = FileSubsystem::ReadFile(source.Path); !sourceData.empty())
-					{
-						source.Source = sourceData;
-					}
-					else
-					{
-						DE_LOG(LogShader, Error, "Failed to read shader file: {}", source.Path)
-						return false;
-					}
-				}
-				
-				if (CompileShader(source))
-				{
-					source.IsCompiled = true;
-				}
-				else
-				{
-					source.IsCompiled = false;
-					return false;
-				}
-			}
-
-			if (!LinkProgram())
-			{
-				DeleteProgram();
-				return false;
-			}
-
-			return true;
-		}
-
-		GLint GetUniform(const std::string& _uniform)
-		{
-			// Cache Uniform Result
-			if (!m_ShaderUniforms.contains(_uniform))
-			{
-				if (const GLint uniform = glGetUniformLocation(m_GL_ID, _uniform.c_str()); uniform != -1)
-				{
-					m_ShaderUniforms[_uniform] = uniform;
-					return uniform;
-				}
-				
-				DE_LOG(LogShader, Error, "Failed to get uniform: {}", _uniform)
-				return -1;
-			}
-
-			return  m_ShaderUniforms[_uniform];
-		}
+		
 
 		GLuint GetGL_ID() const { return m_GL_ID; }
 
 		std::vector<ShaderSource>& GetShaderSources() { return m_ShaderSources; }
-		void SetShaderSources(const std::vector<ShaderSource>& _sources)
-		{
-			m_ShaderSources = _sources;
-		}
 
 	private:
+		GLuint CreateProgram();
+
+		void DeleteProgram() const;
+
+		bool LinkProgram() const;
+
+		// Compile Shader
+		// set sourceFromPath to false if you want to receive the source from the ShaderSource object
+		bool CompileShader(ShaderSource& _sourceObj) const;
+
+		GLenum GetShaderType(const std::string& _source) const;
+
+		bool CompileProgram();
+
+		GLint GetUniform(const std::string& _uniform);
+
 		GLuint m_GL_ID;
 
 		std::vector<ShaderSource> m_ShaderSources;
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
-
-		friend class ResourceSubsystem;
+		
+		friend class AssetSubsystem;
+		friend class RendererSubsystem;
 	};
 }

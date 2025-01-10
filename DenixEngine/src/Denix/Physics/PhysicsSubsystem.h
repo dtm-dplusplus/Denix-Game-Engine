@@ -1,96 +1,67 @@
 ﻿#pragma once
 
-#include <concurrent_priority_queue.h>
-#include <concurrent_vector.h>
-
 #include "Denix/System/Subsystem.h"
-#include "Denix/Core/Logger.h"
 #include "Denix/Physics/PhysicsComponent.h"
-#include "Denix/Physics/CollisionDetection.h"
+
+#include "PxPhysicsAPI.h"
+
+#define PVD_HOST "127.0.0.1"
 
 namespace Denix
 {
 	class Scene;
 
-	
-
-	class PhysicsSubsystem : public Subsystem
+	class PhysicsSubsystem : public Subsystem<PhysicsSubsystem>
 	{
 	public:
 		PhysicsSubsystem()
 		{
-			s_PhysicsSubSystem = this;
-			DE_LOG_CREATE(LogPhysics)
 		}
 
-		~PhysicsSubsystem() override
-		{
-			s_PhysicsSubSystem = nullptr;
-		}
+		~PhysicsSubsystem() override = default;
 
-		static bool CollisionDetectionEnabled() { return s_PhysicsSubSystem->m_CollisionDetectionEnabled; }
-		static bool& CollisionDetectionEnabledRef() { return s_PhysicsSubSystem->m_CollisionDetectionEnabled; }
+		PhysicsSubsystem(const PhysicsSubsystem& _other) = delete;
+		PhysicsSubsystem(PhysicsSubsystem&& _other) noexcept = delete;
+		PhysicsSubsystem& operator=(const PhysicsSubsystem& _other) = delete;
+		PhysicsSubsystem& operator=(PhysicsSubsystem&& _other) noexcept = delete;
+		
+		static bool CollisionDetectionEnabled() { return s_Instance->m_CollisionDetectionEnabled; }
+		static bool& CollisionDetectionEnabledRef() { return s_Instance->m_CollisionDetectionEnabled; }
 
-		static bool CollisionResponseEnabled() { return s_PhysicsSubSystem->m_CollisionResponseEnabled; }
-		static bool& CollisionResponseEnabledRef() { return s_PhysicsSubSystem->m_CollisionResponseEnabled; }
+		static bool CollisionResponseEnabled() { return s_Instance->m_CollisionResponseEnabled; }
+		static bool& CollisionResponseEnabledRef() { return s_Instance->m_CollisionResponseEnabled; }
+
+		static void RegisterPxActor(physx::PxRigidActor* _actor);
+		static void UnregisterPxActor(const physx::PxRigidActor* _actor);
+		
+		inline static physx::PxDefaultAllocator		m_PxAllocator;
+		inline static physx::PxDefaultErrorCallback	m_PxErrorCallback;
+		inline static physx::PxFoundation*			m_PxFoundation = NULL;
+		inline static physx::PxPhysics*				m_PxPhysics	= NULL;
+		inline static physx::PxPvd*					m_PxPvd        = NULL;
+		inline static physx::PxDefaultCpuDispatcher*	m_PxDispatcher = NULL;
+		inline static physx::PxMaterial* m_PxMaterial = nullptr;
+		
+		static physx::PxScene* CreatePxScene(const physx::PxSceneDesc* _sceneDesc);
+
 
 	private:
-		void CollisionDetectionPhase(float _deltaTime);
-		bool ColllisionExists(const Ref<Actor>& _objectA, const Ref<Actor>& _objectB);
-		void CollisionResonsePhase(float _deltaTime);
-		void CollisionResponse(CollisionEvent& _collisionEvent);
-		void CubeCollision(const Ref<PhysicsComponent>& _cubeCompA, const Ref<PhysicsComponent>& _cubeCompB, CollisionEvent& _collisionEvent);
-		void SphereCollision(const Ref<PhysicsComponent>& _sphereCompA, const Ref<PhysicsComponent>& _sphereCompB, CollisionEvent& _collisionEvent);
-		void SphereCubeCollision(const Ref<PhysicsComponent>& _sphereComp, const Ref<PhysicsComponent>& _cubeComp, CollisionEvent& _collisionEvent);
-
-		void PhysicsSimulationPhase(float _deltaTime);
-
-		void ImpulseResponse(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB); //, const glm::vec3& _normal, const glm::vec3& _contactPoint, float _penetration
-		float ImpulseEnergy(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB, const glm::vec3& _normal);
-	
-	public:
-
-		void PreUpdate(float _deltaTime) override;
-
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-
-		void RegisterComponent(const Ref<PhysicsComponent>& _component);
-
-		void UnregisterComponent(const Ref<PhysicsComponent>& _component);
-
-		static PhysicsSubsystem* Get() { return s_PhysicsSubSystem; }
-
-		void Initialize() override
-		{
-			Subsystem::Initialize();
-			DE_LOG(LogPhysics, Warn, "PhysicsSubsystem Initializing")
-			DE_LOG(LogPhysics, Info, "PhysicsSubsystem Initialized")
-		}
-
-		void Deinitialize() override
-		{
-			DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitialized")
-		}
-
-		std::vector<Ref<PhysicsComponent>>& GetPhysicsComponents() { return m_PhysicsComponents; }
+		void Update(float _deltaTime) override;
 		
-		std::vector<CollisionEvent>& GetCollisionEvents() { return m_CollisionEvents; }
-	private:
-		static PhysicsSubsystem* s_PhysicsSubSystem;
+		void Initialize() override;
 
-		static void SetActiveScene(const Ref<Scene>& _scene) { s_PhysicsSubSystem->m_ActiveScene = _scene; }
+		void Deinitialize() override;
 
-		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
-		std::vector<Ref<PhysicsComponent>> m_StaticPhysicsComponents;
-		std::vector<Ref<PhysicsComponent>> m_DynamicPhysicsComponents;		
+		static void SetActiveScene(const Ref<Scene>& _scene) { s_Instance->m_ActiveScene = _scene; }
+
+		WRef<Scene> m_ActiveScene;
 		
-		std::vector<CollisionEvent> m_CollisionEvents;
-
-		Ref<Scene> m_ActiveScene;
-
 		bool m_CollisionDetectionEnabled = true;
 		bool m_CollisionResponseEnabled = true;
 
+
+		friend class PhysicsComponent;
 		friend class SceneSubsystem;
+		friend class Engine;
 	};
 }

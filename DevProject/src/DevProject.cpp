@@ -1,32 +1,36 @@
  #include "Denix.h"
+#include "Scene/AudioScene.h"
 
 #include "Scene/CPGScene.h"
+#include "Scene/DevScene.h"
+#include "Scene/ThreadScene.h"
 
  //using namespace Denix;
-
-
 class DevProject final: public Engine
 {
 public:
 
-	DevProject()
+	DevProject(const std::string& _projectName): Engine(_projectName){}
+
+	void PreInitialize() override
 	{
+		Engine::PreInitialize();
+
 		DE_LOG_CREATE(LogDevProject)
-
-		m_ProjectName = "DevProject";
+		ReflectionSubsystem::Register<DevScene>();
 		ReflectionSubsystem::Register<CPGScene>();
-		ReflectionSubsystem::Register<CPGCube>();
+		ReflectionSubsystem::Register<ThreadScene>();
+		ReflectionSubsystem::Register<AudioScene>();
+		ReflectionSubsystem::Register<CPGActor>();
 	}
-
+	
 	void Initialize() override
 	{
 		Engine::Initialize();
-
-		// Add any client code once the engine has been initialized
 	}
 };
 
-URef<Engine> Denix::CreateEngine()
+ Ref<Engine> Denix::MakeEngine()
 {
-	return MakeURef<DevProject>();
+	return MakeRef<DevProject>(ReflectionHelper::GetClassNameDE<DevProject>());
 }

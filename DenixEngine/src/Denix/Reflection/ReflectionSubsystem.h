@@ -10,38 +10,32 @@
 namespace Denix
 {
     
-    class ReflectionSubsystem: public Subsystem
+    class ReflectionSubsystem: public Subsystem<ReflectionSubsystem>
     {
     public:
-        ReflectionSubsystem()
-        {
-            s_ReflectionSubsystem = this;
-            DE_LOG_CREATE(LogReflection)
-        }
+        ReflectionSubsystem() = default;
         
         ~ReflectionSubsystem() override = default;
 
-        static ReflectionSubsystem* Get()
-        {
-            return s_ReflectionSubsystem;
-        }
-        using CreateFunc = std::function<Ref<BaseObject>()>;
+        using CreateFunc = std::function<Ref<Object>()>;
        
         template<typename T>
         static void Register()
         {
+            const std::string className = ReflectionHelper::GetClassNameDE<T>();
+
+            static_assert(IsBase<Object, T>(), "Class must be derived from Actor");
+
             const CreateFunc _createFunc = [] { return MakeRef<T>(); };
-            const std::string className = ReflectionHelper::GetDEClassName<T>();
-            s_ReflectionSubsystem->m_CreateFuncs[className] = _createFunc;
-            DE_LOG(LogScene, Info, "Registered class: {}", className)
+            s_Instance->m_CreateFuncs[className] = _createFunc;
         }
 
-        template <typename T = BaseObject>
+        template <typename T = Object>
         static Ref<T> Create(const std::string& _className)
         {
-            if (const auto it = s_ReflectionSubsystem->m_CreateFuncs.find(_className); it != s_ReflectionSubsystem->m_CreateFuncs.end())
+            if (const auto it = s_Instance->m_CreateFuncs.find(_className); it != s_Instance->m_CreateFuncs.end())
             {
-               if(Ref<BaseObject> obj = it->second())
+               if(Ref<Object> obj = it->second())
                {
                    obj->m_ClassName = _className;
                    return CastRef<T>(obj);
@@ -50,9 +44,9 @@ namespace Denix
             return nullptr;
         }
 
-       static Ref<BaseObject> GetType(const std::string& _className)
+       static Ref<Object> GetType(const std::string& _className)
         {
-            if (const auto it = s_ReflectionSubsystem->m_CreateFuncs.find(_className); it != s_ReflectionSubsystem->m_CreateFuncs.end()) {
+            if (const auto it = s_Instance->m_CreateFuncs.find(_className); it != s_Instance->m_CreateFuncs.end()) {
                 return it->second();
             }
             return nullptr;
@@ -60,17 +54,17 @@ namespace Denix
 
         static bool ClassExists(const std::string& _className)
         {
-            return s_ReflectionSubsystem->m_CreateFuncs.contains(_className);
+            return s_Instance->m_CreateFuncs.contains(_className);
         }
         
-        static std::map<std::string, CreateFunc>& GetCreateFuncs() { return s_ReflectionSubsystem->m_CreateFuncs; }
-        
-        void Initialize() override;
-        void Deinitialize() override;
+        static std::map<std::string, CreateFunc>& GetCreateFuncs() { return s_Instance->m_CreateFuncs; }
 
     private:
-        static ReflectionSubsystem* s_ReflectionSubsystem;
+        void Initialize() override;
+        void Deinitialize() override;
         
         std::map<std::string, CreateFunc> m_CreateFuncs;
+
+        friend class Engine;
     };
 };

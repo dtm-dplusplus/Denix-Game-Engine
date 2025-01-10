@@ -1,44 +1,36 @@
 #include "Shapes.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
+#include "Denix/Core/FileSubsystem.h"
 #include "Denix/Physics/Collider.h"
+
 namespace Denix
 {
-    Plane::Plane(const ObjectInit& _objInit) : Actor(_objInit)
+    Plane::Plane() : Actor({ "Plane" })
     {
-        m_ClassName = "Plane";
-        m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Plane"));
-		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
-        CastRef<CubeCollider>(m_PhysicsComponent->GetCollider())->GetDimensions().y = 0.01f;
+    	m_ClassName = "Plane";
+        static std::string planeModelPath = FileSubsystem::GetEngineContentRoot() + "models\\SM_Plane.obj";
+        m_MeshComponent->SetModel(AssetSubsystem::GetModel(planeModelPath));
+        //CastRef<CubeCollider>(m_PhysicsComponent->GetCollider())->GetDimensions().y = 0.01f;
         m_TransformComponent->GetScale().y = 0.01f;
+
+    	m_PhysicsComponent->m_ColliderType = ColliderType::Plane;
     }
 
-    void Plane::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
+    Cube::Cube() : Actor({ "Cube" })
     {
-        Actor::Update(_deltaTime, _waitCounter);
-        
+    	m_ClassName = "Cube";
+        static std::string cubeModelPath = FileSubsystem::GetEngineContentRoot() + "models\\SM_Cube.obj";
+		m_MeshComponent->SetModel(AssetSubsystem::GetModel(cubeModelPath));
+
+    	m_PhysicsComponent->m_ColliderType = ColliderType::Cube;
+    	m_TransformComponent->SetMoveability(Moveability::Dynamic);
     }
 
-    Cube::Cube(const ObjectInit& _objInit) : Actor(_objInit)
-    {
-        m_ClassName = "Cube";
-		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Cube"));
-		m_PhysicsComponent->SetCollider(MakeRef<CubeCollider>());
-    }
-
-    void Cube::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
-    {
-        Actor::Update(_deltaTime, _waitCounter);
-    }
-
-	Sphere::Sphere(const ObjectInit& _objInit) : Actor(_objInit)
+	Sphere::Sphere() : Actor({ "Sphere" })
 	{
-        m_ClassName = "Sphere";
-		m_MeshComponent->SetModel(ResourceSubsystem::GetModel("SM_Sphere"));
-		m_PhysicsComponent->SetCollider(MakeRef<SphereCollider>());
+    	m_ClassName = "Sphere";
+        static std::string sphereModelPath = FileSubsystem::GetEngineContentRoot() + "models\\SM_Sphere.obj";
+		m_MeshComponent->SetModel(AssetSubsystem::GetModel(sphereModelPath));
+    	m_PhysicsComponent->m_ColliderType = ColliderType::Sphere;
 	}
-
-    void Sphere::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
-    {
-        Actor::Update(_deltaTime, _waitCounter);
-    }
 }

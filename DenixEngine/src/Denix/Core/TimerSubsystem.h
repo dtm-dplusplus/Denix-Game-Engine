@@ -8,19 +8,17 @@ namespace Denix
 {
 	class Profile;
 
-	class TimerSubsystem final : public Subsystem
+	class TimerSubsystem final : public Subsystem<TimerSubsystem>
 	{
 	public:
 		TimerSubsystem();
-		~TimerSubsystem() override;
+		~TimerSubsystem() override = default;
 
 		TimerSubsystem(const TimerSubsystem& _other) = delete;
 		TimerSubsystem(TimerSubsystem&& _other) noexcept = delete;
 		TimerSubsystem& operator=(const TimerSubsystem& _other) = delete;
 		TimerSubsystem& operator=(TimerSubsystem&& _other) noexcept = delete;
 		
-		static TimerSubsystem* Get() { return s_TimerSubsystem; }
-
 		void Initialize() override;
 
 		void Deinitialize() override;
@@ -30,19 +28,17 @@ namespace Denix
 
 		static float GetProgramElaspedTime();
 		static int GetFPS();
-		static int& GetMaxFPS() { return s_TimerSubsystem->m_MaxLimitFPS; }
+		static int& GetMaxFPS() { return s_Instance->m_MaxLimitFPS; }
 		static float GetFrameTime();
 		static float GetFrameTimeMs();
 		static float GetFrameTimeMsAverage();
 		
-		static float GetDeltaTime() {return s_TimerSubsystem->m_DeltaTime; }
-		static float& GetGameTimeSpeed() { return s_TimerSubsystem->m_GameTimeSpeed; }
+		static float GetDeltaTime() {return s_Instance->m_DeltaTime; }
+		static float& GetGameTimeSpeed() { return s_Instance->m_GameTimeSpeed; }
 
 		Ref<Profile> m_EngineProfile;
 
 	private:
-		static TimerSubsystem* s_TimerSubsystem;
-
 		int m_FramesPerSecond;
 
 		/**

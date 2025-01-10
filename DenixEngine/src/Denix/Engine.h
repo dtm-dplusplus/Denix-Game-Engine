@@ -7,9 +7,10 @@ int main(int argc, char** argv);
 
 namespace Denix
 {
+    class SubsystemBase;
+    class AudioSubsystem;
     class JobSubsystem;
     class Asset;
-    class Subsystem;
     class ReflectionSubsystem;
     class InputSubsystem;
     class EditorSubsystem;
@@ -17,17 +18,20 @@ namespace Denix
     class UISubsystem;
     class PhysicsSubsystem;
     class SceneSubsystem;
-    class ResourceSubsystem;
+    class AssetSubsystem;
     class FileSubsystem;
     class WindowSubsystem;
     class TimerSubsystem;
     class ProfileSubsystem;
 
-    class Engine
+
+    
+    
+    class Engine: public std::enable_shared_from_this<Engine>
     {
     public:
-        Engine();
-        virtual  ~Engine();
+        Engine(std::string _projectName);
+        virtual  ~Engine() = default;
 
         // Delete copy and move constructors and assignment operators
         Engine(const Engine& _other) = delete;
@@ -41,7 +45,7 @@ namespace Denix
         Ref<Asset> GetStartupScene() const;
         static void SetStartupScene(const Ref<Asset>& _ref);
 
-        static Engine* Get() { return s_Engine; }
+        static Ref<Engine> GetInstance() { return s_Engine; }
 
         std::string GetProjectName() const { return m_ProjectName; }
 
@@ -50,6 +54,7 @@ namespace Denix
         Ref<Asset> m_StartupScene;
         std::string m_EngineConfigPath;
 
+        virtual void PreInitialize();
         virtual void Initialize();
         virtual void Deinitialize();
         
@@ -61,11 +66,13 @@ namespace Denix
         template<typename  T, typename ... Args>
         Ref<T> InitalizeSubsystem(Args&& ... _args)
         {
-            Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...);
-
             try
             {
+                // Check if T is derived from Actor
+                Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...);
+                static_assert(IsBase<SubsystemBase, T>(), "T must be derived from Subsystem");
                  subsystem->Initialize();
+                return subsystem;
             }
             catch (const std::exception& e)
             {
@@ -73,21 +80,15 @@ namespace Denix
                 DE_LOG(LogEngine, Critical, "Failed to Initialize Subsystem: {0}", e.what())
                 assert(false, e.what());
             }
-
-            m_Subsystems.push_back(subsystem.get());
-            return subsystem;
+            
+            return nullptr;
         }
 
-        
+
         /**
          * @brief Pointer to the engine instance
          */
-        static Engine* s_Engine;
-
-        size_t m_FrameID;
-        
-        // Useful vector for deinitializing subsystems in reverse order
-        std::vector<Subsystem*> m_Subsystems;
+        inline static Ref<Engine> s_Engine;
 
         Ref<JobSubsystem> m_JobSubsystem;
 
@@ -100,8 +101,10 @@ namespace Denix
 
         Ref<WindowSubsystem> m_WindowSubsystem;
 
-        Ref<ResourceSubsystem> m_ResourceSubsystem;
+        Ref<AssetSubsystem> m_AssetSubsystem;
 
+        Ref<AudioSubsystem> m_AudioSubsystem;
+        
         Ref<SceneSubsystem> m_SceneSubsystem;
 
         Ref<PhysicsSubsystem> m_PhysicsSubsystem;
@@ -118,5 +121,5 @@ namespace Denix
     };
 
     // Defined in client
-   URef<Engine> CreateEngine();
+    Ref<Engine> MakeEngine();
 }

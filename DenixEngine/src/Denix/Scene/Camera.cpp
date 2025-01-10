@@ -4,7 +4,14 @@
 
 namespace Denix
 {
-	void Camera::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
+	Camera::Camera(): Actor({"Camera"}),  m_Viewport(MakeRef<Viewport>())
+	{
+		m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
+		m_TransformComponent->SetPosition({0.0f, 10.0f, 25.0f});
+		m_RenderComponent->SetIsVisible(false);
+	}
+
+	void Camera::Update(float _deltaTime)
 	{
 		// m_Projection matrix
 		if (m_IsPerspective)

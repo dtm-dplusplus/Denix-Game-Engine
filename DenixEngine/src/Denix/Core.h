@@ -5,6 +5,16 @@
 
 namespace Denix
 {
+	#define DE_ASSERT(x, msg) \
+	do { \
+	if (!(x)) { \
+	DE_LOG(LogCore, Critical, "Assertion Failed: {0}", msg); \
+	std::abort(); \
+	} \
+	} while (0);
+
+	#define DE_STATIC_ASSERT(x,msg) static_assert(x, msg);
+	
 	// Smart Pointers
 	template <typename T>
 	using Ref = std::shared_ptr<T>;
@@ -70,5 +80,9 @@ namespace Denix
 		return _ref.get() != nullptr;
 	}
 
-	
+	template<typename Base, typename Derived>
+	constexpr bool IsBase()
+	{
+		return std::is_base_of_v<Base, Derived>;
+	}
 }

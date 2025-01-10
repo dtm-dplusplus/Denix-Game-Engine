@@ -1,6 +1,6 @@
 #include "RendererSubsystem.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Actor.h"
@@ -9,21 +9,25 @@
 
 namespace Denix
 {
-    RendererSubsystem* RendererSubsystem::s_RendererSubSystem{nullptr};
-
     void RendererSubsystem::Initialize()
     {
         Subsystem::Initialize();
-        DE_LOG(LogRenderer, Warn, "Initializing RendererSubsystem")
-        m_DefaultShader = ResourceSubsystem::GetShader("DefaultShader");
-        DE_LOG(LogRenderer, Info, "RendererSubsystem Initialized")
+        DE_LOG(LogRender, Warn, "Initializing RendererSubsystem")
+        m_DefaultShader = AssetSubsystem::GetShader("DefaultShader");
+        DE_LOG(LogRender, Info, "RendererSubsystem Initialized")
+    }
+
+    void RendererSubsystem::Deinitialize()
+    {
+        DE_LOG(LogRender, Trace, "RendererSubsystem Deinitializing")
+        DE_LOG(LogRender, Trace, "RendererSubsystem Deinitialized")
     }
 
     void RendererSubsystem::RenderScene()
     {
         DE_PROFILE(Render Scene)
 
-        if (!s_RendererSubSystem->m_Enabled)
+        if (!m_Enabled)
         {
             DE_PROFILE_END(Render Scene)
             return;
@@ -36,7 +40,8 @@ namespace Denix
 
     void RendererSubsystem::RenderDefaultViewport() const
     {
-        if (!s_RendererSubSystem->m_ActiveScene->m_ActiveCamera)
+        Ref<Scene> activeScene = m_ActiveScene.lock();
+        if (!activeScene->m_ActiveCamera)
         {
             DE_LOG(LogRender, Error, "No Active Camera in Scene")
             return;
@@ -44,18 +49,26 @@ namespace Denix
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        m_DefaultShader->Bind();
-
+        auto defaultShader = m_DefaultShader.lock();
+        defaultShader->Bind();
+        
         // Upload the camera matrices relative to Object
-        glUniformMatrix4fv(m_DefaultShader->GetUniform("u_Projection"), 1,
+        glUniformMatrix4fv(defaultShader->GetUniform("u_Projection"), 1,
                            GL_FALSE, glm::value_ptr(
-                               s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_Projection));
+                               activeScene->m_ActiveCamera->m_Projection));
 
-        glUniformMatrix4fv(m_DefaultShader->GetUniform("u_View"), 1,
+        glUniformMatrix4fv(defaultShader->GetUniform("u_View"), 1,
                            GL_FALSE, glm::value_ptr(
-                               s_RendererSubSystem->m_ActiveScene->m_ActiveCamera->m_View));
+                               activeScene->m_ActiveCamera->m_View));
 
-        for (const Ref<Actor>& actor : s_RendererSubSystem->m_ActiveScene->m_Actors)
+        /*glUniform3f(defaultShader->GetUniform("u_CameraPosition"), 
+            activeScene->m_ActiveCamera->m_TransformComponent->m_Position.x,
+            activeScene->m_ActiveCamera->m_TransformComponent->m_Position.y,
+            activeScene->m_ActiveCamera->m_TransformComponent->m_Position.z);
+            */
+
+        
+        for (const Ref<Actor>& actor : activeScene->m_Actors)
         {
             if (!actor->m_RenderComponent->IsVisible() || !actor->m_RenderComponent->m_Material || !actor->m_MeshComponent->m_Model) continue;
 
@@ -102,6 +115,6 @@ namespace Denix
 
     void RendererSubsystem::SetActiveScene(const Ref<Scene>& _scene)
     {
-        s_RendererSubSystem->m_ActiveScene = _scene;
+        s_Instance->m_ActiveScene = _scene;
     }
 }

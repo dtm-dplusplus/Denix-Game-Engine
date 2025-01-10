@@ -14,7 +14,7 @@ void Denix::SceneSettingsWidget::Update(float _deltaTime)
 {
     SceneEditorWidget::Update(_deltaTime);
 
-    ImGui::SetNextWindowDockID(UISubsystem::Get()->DockLeftID, ImGuiCond_Appearing);
+    ImGui::SetNextWindowDockID(UISubsystem::GetInstance()->GetDockLeftID(), ImGuiCond_Appearing);
     ImGui::Begin(GetName().c_str());
 
     ImGui::SeparatorText("Scene");

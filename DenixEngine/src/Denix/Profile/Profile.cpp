@@ -1,13 +1,12 @@
 ﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
 #include "Profile.h"
 
-#include <algorithm>
 
 namespace Denix
 {
     Profile::Profile(const ObjectInit& _objInit): Object(_objInit)
     {
-        m_Timer = MakeRef<Timer>(_objInit);
+        m_Timer = MakeRef<Timer>();
         m_AverageDuration = 0.0f;
         m_MinimumDuration = 0.0f;
         m_MaximumDuration = 0.0f;

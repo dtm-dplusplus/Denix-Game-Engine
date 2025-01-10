@@ -13,44 +13,32 @@ namespace Denix
 	class Camera;
 
 	/** Manages Rendering of objects. Will move to component based submission instead of passing game object soon */
-	class RendererSubsystem : public Subsystem
+	class RendererSubsystem : public Subsystem<RendererSubsystem>
 	{
 	public:
-		RendererSubsystem()
-		{
-			s_RendererSubSystem = this;
-			DE_LOG_CREATE(LogRenderer)
-		}
+		RendererSubsystem() = default;
 
-		~RendererSubsystem() override
-		{
-			s_RendererSubSystem = nullptr;
-		}
+		~RendererSubsystem() override = default;
 
-		static int& GetViewportMode() { return s_RendererSubSystem->m_ViewportMode; }
+		RendererSubsystem(const RendererSubsystem& _other) = delete;
+		RendererSubsystem(RendererSubsystem&& _other) noexcept = delete;
+		RendererSubsystem& operator=(const RendererSubsystem& _other) = delete;
+		RendererSubsystem& operator=(RendererSubsystem&& _other) noexcept = delete;
 
-
-	public:
-		static RendererSubsystem* Get() { return s_RendererSubSystem; }
-
-		void Initialize() override;
-
-		void Deinitialize() override
-		{
-			DE_LOG(LogRenderer, Trace, "RendererSubsystem Deinitialized")
-		}
-
+		static int& GetViewportMode() { return s_Instance->m_ViewportMode; }
 
 	private:
+		void Initialize() override;
+
+		void Deinitialize() override;
+
 		void RenderScene();
 		void RenderDefaultViewport() const;
 
 		static void SetActiveScene(const Ref<Scene>& _scene);
 
-		static RendererSubsystem* s_RendererSubSystem;
-		
-		Ref<Shader> m_DefaultShader;
-		Ref<Scene> m_ActiveScene;
+		WRef<Shader> m_DefaultShader;
+		WRef<Scene> m_ActiveScene;
 
 		glm::vec3 m_WireframeColor = glm::vec3(1.0f, 1.0f, 1.0f);
 		glm::vec3 m_StaticColliderColor = glm::vec3(0.0f, 1.0f, 0.0f);

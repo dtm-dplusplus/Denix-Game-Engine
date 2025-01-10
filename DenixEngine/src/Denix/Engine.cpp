@@ -1,5 +1,12 @@
 #include "Engine.h"
 
+#include <GL/glew.h>
+#include <SDL3/SDL.h>
+
+
+#include "yaml-cpp/yaml.h"
+
+#include "Audio/AudioComponent.h"
 #include "Denix/System/SubSystem.h"
 #include "Denix/Thread/JobSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
@@ -10,44 +17,61 @@
 #include "Denix/Video/Renderer/RendererSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Core/TimerSubsystem.h"
+#include "Denix/Audio/AudioSubsystem.h"
 #include "Profile/ProfileSubsystem.h"
+#include "Scene/Object/Shapes/Shapes.h"
+
 
 namespace Denix
 {
-	Engine* Engine::s_Engine{nullptr};
-
-	Engine::Engine()
+	Engine::Engine(std::string _projectName): m_ProjectName(std::move(_projectName))
 	{
-		s_Engine = this;
+	}
 
-		m_FrameID = 0;
+	void Engine::PreInitialize()
+	{
+		// Set the engine instance
+		s_Engine = shared_from_this();
 		
-		m_StartupScene = nullptr;
-
 		// Initialize Logger
 		Logger::Initialize();
+		
 		DE_LOG_CREATE(LogEngine)
-		
+		DE_LOG_CREATE(LogCore)
+		DE_LOG_CREATE(LogFile)
+		DE_LOG_CREATE(LogTimer)
 		DE_LOG_CREATE(LogScene)
+		DE_LOG_CREATE(LogAsset)
+		DE_LOG_CREATE(LogAudio)
+		DE_LOG_CREATE(LogInput)
+		DE_LOG_CREATE(LogPhysics)
+		DE_LOG_CREATE(LogProfile)
+		DE_LOG_CREATE(LogReflection)
+		DE_LOG_CREATE(LogThread)
+		DE_LOG_CREATE(LogJob)
+		DE_LOG_CREATE(LogUI)
+		DE_LOG_CREATE(LogRender)
+		DE_LOG_CREATE(LogGL)
+		DE_LOG_CREATE(LogWindow)
+		DE_LOG_CREATE(LogShader)
+		DE_LOG_CREATE(LogEditor)
 
-		DE_LOG(LogEngine, Warn, "Engine Initializing")
-
-		// We initialize the thread subsystem here because it is used to create the other subsystems
-		m_JobSubsystem = InitalizeSubsystem<JobSubsystem>();
 		
-		// We initialize the reflection subsystem here because it is used by the client engine constructor
-		// Register all classes that need to be reflected here. This will be moved to some kind of pre build event & parser in the future
+		// Register all classes that need to be reflected here. 
 		m_ReflectionSubsystem = InitalizeSubsystem<ReflectionSubsystem>();
 
-		// Register classes
+		// Register classes - This will be moved to some kind of pre build event & parser in the future
 		ReflectionSubsystem::Register<BaseObject>();
+		ReflectionSubsystem::Register<Scene>();
 		ReflectionSubsystem::Register<Actor>();
+		ReflectionSubsystem::Register<Camera>();
 		ReflectionSubsystem::Register<Cube>();
 		ReflectionSubsystem::Register<Sphere>();
 		ReflectionSubsystem::Register<Plane>();
+		
 		ReflectionSubsystem::Register<TransformComponent>();
 		ReflectionSubsystem::Register<RenderComponent>();
 		ReflectionSubsystem::Register<MeshComponent>();
@@ -57,23 +81,31 @@ namespace Denix
 		ReflectionSubsystem::Register<CubeCollider>();
 		ReflectionSubsystem::Register<SphereCollider>();
 
-		ReflectionSubsystem::Register<Light>();
-		ReflectionSubsystem::Register<DirectionalLight>();
-		ReflectionSubsystem::Register<PointLight>();
-		ReflectionSubsystem::Register<SpotLight>();
+		ReflectionSubsystem::Register<AudioComponent>();
+		ReflectionSubsystem::Register<AudioSource>();
 
-		ReflectionSubsystem::Register<Camera>();
-	}
+		DE_LOG(LogReflection, Info, "Registered Engine Classes")
+		
+		//Initialize SDL
+		constexpr auto sdlInitFlags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_GAMEPAD;
+		if (!SDL_Init(sdlInitFlags))
+		{
+			std::string err = SDL_GetError();
+			DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", err)
+			throw std::runtime_error(err.c_str());
+		}
+		DE_LOG(Log, Trace, "SDL Init success")
 
-	Engine::~Engine()
-	{
-		s_Engine = nullptr;
-
-		Logger::Deinitialize();
+		
 	}
 
 	void Engine::Initialize()
 	{
+		PreInitialize();
+		
+		DE_LOG(LogEngine, Warn, "Engine Initializing")
+
+		m_JobSubsystem = InitalizeSubsystem<JobSubsystem>();
 
 		m_TimerSubsystem = InitalizeSubsystem<TimerSubsystem>();
 
@@ -83,7 +115,9 @@ namespace Denix
 
 		m_WindowSubsystem = InitalizeSubsystem<WindowSubsystem>();
 
-		m_ResourceSubsystem = InitalizeSubsystem<ResourceSubsystem>();
+		m_AudioSubsystem = InitalizeSubsystem<AudioSubsystem>();
+		
+		m_AssetSubsystem = InitalizeSubsystem<AssetSubsystem>();
 
 		// set the engine config path
 		m_EngineConfigPath = FileSubsystem::GetProjectRoot() + "Config\\Engine.cfg";
@@ -112,14 +146,29 @@ namespace Denix
 		DE_LOG(LogEngine, Trace, "Engine Deinitializing")
 
 		SaveConfig();
+
+		// Clear Core Dependencies
+		//SDL_Quit();
 		
-		// Deinitialie SubSystems in the reverse order of initialization
-		for (const auto& subsystem : std::views::reverse(m_Subsystems))
-		{
-			subsystem->Deinitialize();
-		}
+		// Clear Subsystem pointers
+		m_EditorSubsystem->Deinitialize();
+		m_SceneSubsystem->Deinitialize();
+		m_PhysicsSubsystem->Deinitialize();
+		m_InputSubsystem->Deinitialize();
+		m_UISubsystem->Deinitialize();
+		m_RendererSubsystem->Deinitialize();
+		m_AssetSubsystem->Deinitialize();
+		m_AudioSubsystem->Deinitialize();
+		m_WindowSubsystem->Deinitialize();
+		m_ProfileSubsystem->Deinitialize();
+		m_FileSubsystem->Deinitialize();
+		m_ReflectionSubsystem->Deinitialize();
+		m_TimerSubsystem->Deinitialize();
+		m_JobSubsystem->Deinitialize();
+		s_Engine.reset();
 		
 		DE_LOG(LogEngine, Trace, "Engine Deinitialized")
+		Logger::Deinitialize();
 	}
 
 	void Engine::EngineLoop()
@@ -131,7 +180,8 @@ namespace Denix
 
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
 			Ref<Counter> inputCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, inputCounter, &InputSubsystem::Poll, m_InputSubsystem.get());
+			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, inputCounter, &InputSubsystem::Update, m_InputSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
+			//WaitForCounter(inputCounter.get());
 			
 			// Clear the offscreen frame buffer
 			Ref<Counter> clearCounter = MakeRef<Counter>();
@@ -144,17 +194,18 @@ namespace Denix
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				DE_PROFILE_END(Clear Frame Buffer)
 			});
+			//WaitForCounter(clearCounter.get());
 			
 			// Update the physics system. Collision detection and resolution will be here
 			Ref<Counter> physicsCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, physicsCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime, physicsCounter);
+			m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, physicsCounter, &PhysicsSubsystem::Update, m_PhysicsSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
 			WaitForCounter(physicsCounter.get());
 			
 			// Update the scene. The majority of the client game logic will be here. Do this in parallel with the rendering
 			Ref<Counter> sceneCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime, sceneCounter);
 			WaitForCounter(sceneCounter.get());
-
+			
 			// Update the UI & Editor for any changes
 			Ref<Counter> uiCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem.get(), m_TimerSubsystem->m_DeltaTime);
@@ -163,11 +214,12 @@ namespace Denix
 			// Run on main due to opengl context when initializing the scene
 			Ref<Counter> editorCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-
+			//WaitForCounter(editorCounter.get());
 
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			Ref<Counter> renderCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter, &RendererSubsystem::RenderScene, m_RendererSubsystem.get());
+			//WaitForCounter(renderCounter.get());
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			Ref<Counter> drawCounter = MakeRef<Counter>();
@@ -178,18 +230,17 @@ namespace Denix
 				m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
 				m_UISubsystem->RenderUI(); // Swap buffers and render UI
 				m_WindowSubsystem->m_Window->SwapBuffers();
-				m_UISubsystem->ViewportUpdate(m_WindowSubsystem->m_Window);
+				m_UISubsystem->ViewportUpdate();
 				DE_PROFILE_END(Draw Viewport)
 			});
-
-
+			//WaitForCounter(drawCounter.get());
+			
 			// Run the garbage collector
 			Ref<Counter> garbageCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, garbageCounter, &SceneSubsystem::CleanRubbish, m_SceneSubsystem.get());
 			WaitForCounter(garbageCounter.get());
 			
 			m_TimerSubsystem->EndFrame();
-			m_FrameID++;
 		}
 	}
 
@@ -212,7 +263,7 @@ namespace Denix
 			// Validate startup scene
 			if(const YAML::Node& startSceneNode = cfg["Startup Scene"])
 			{
-				if(Ref<Asset> startSceneAsset = ResourceSubsystem::GetSceneAsset(startSceneNode.as<std::string>()))
+				if(Ref<Asset> startSceneAsset = AssetSubsystem::GetSceneAsset(startSceneNode.as<std::string>()))
 				{
 					m_StartupScene = startSceneAsset;
 					DE_LOG(LogEngine, Info, "Loaded Engine Config: Startup Scene: {0}", startSceneAsset->GetAssetName())

@@ -1,6 +1,7 @@
 #include "EditorSubsystem.h"
 
 #include "Denix.h"
+#include "Denix/Core/FileSubsystem.h"
 #include "Denix/Editor/Widget/Scene/ActorDetailsWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneOrganizerWidget.h"
 #include "Denix/Editor/Widget/AssetBrowserWidget.h"
@@ -9,14 +10,12 @@
 #include "Denix/Thread/JobSubsystem.h"
 #include "Widget/PerformanceSettingsWidget.h"
 
+#include "yaml-cpp/yaml.h"
+
 namespace Denix
 {
-	EditorSubsystem* EditorSubsystem::s_EditorSubsystem{ nullptr };
-
 	EditorSubsystem::EditorSubsystem()
 	{
-		s_EditorSubsystem = this;
-		DE_LOG_CREATE(LogEditor)
 	}
 	
 	void EditorSubsystem::Initialize()
@@ -34,7 +33,17 @@ namespace Denix
 
 	void EditorSubsystem::Deinitialize()
 	{
-		DE_LOG(LogEditor, Trace, "Editor Subsystem Initialized")
+		DE_LOG(LogEditor, Trace, "Editor Subsystem Deinitializing")
+		m_ActiveScene.reset();
+		m_SceneOrganizerWidget.reset();
+		m_ActorDetailsWidget.reset();
+		m_AssetBrowserWidget.reset();
+		m_PerformanceSettingsWidget.reset();
+		m_EngineProfilerWidget.reset();
+		m_InputDebuggerWidget.reset();
+		Subsystem::Deinitialize();
+		
+		DE_LOG(LogEditor, Trace, "Editor Subsystem Deinitialized")
 	}
 
 	void EditorSubsystem::Update(float _deltaTime)
@@ -42,7 +51,7 @@ namespace Denix
 		
 
 		if(!m_Enabled) return;
-		if (!m_ActiveScene) return;
+		if (!m_ActiveScene.lock()) return;
 
 		
 		EditorWidget::m_DragSpeed = EditorWidget::m_DragSensitivity * _deltaTime;
@@ -80,7 +89,7 @@ namespace Denix
 			{
 				if (ImGui::BeginMenu("Open Scene", "Alt+F4"))
 				{ 
-					for (const auto& levelAsset : ResourceSubsystem::GetSceneStore())
+					for (const auto& levelAsset : AssetSubsystem::GetSceneStore())
 					{
 						if (ImGui::MenuItem(levelAsset->GetAssetName().c_str()))
 						{
@@ -96,7 +105,7 @@ namespace Denix
 					SceneSubsystem::SerializeScene();
 
 					// Temp method to save any changes to materials
-					for (const auto& mat : ResourceSubsystem::GetMaterialStore())
+					for (const auto& mat : AssetSubsystem::GetMaterialStore())
 					{
 						// Save Changes to asset - This should be done in the editor
 						YAML::Emitter matAsssetEmitter;
@@ -135,7 +144,7 @@ namespace Denix
 			{
 				if(ImGui::MenuItem("Set as Startup Scene"))
 				{
-					Engine::SetStartupScene(m_ActiveScene->m_SceneAsset);
+					Engine::SetStartupScene(m_ActiveScene.lock()->m_SceneAsset);
 				}
 				ImGui::EndMenu();
 			}
@@ -172,32 +181,53 @@ namespace Denix
 				ImGui::EndMenu();
 			}
 
-			if (!m_ActiveScene->IsPlaying())
+			switch (SceneSubsystem::GetSceneState())
 			{
-				if (ImGui::Button("Play"))
-				{
-					SceneSubsystem::PlayScene();
-				}
-			}
-			else
-			{
-				if (ImGui::Button("Pause"))
-				{
-					SceneSubsystem::PauseScene();
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Stop"))
-				{
-					if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->ResetSelection();
-					SceneSubsystem::StopScene();
-				}
+				case SceneState::Playing:
+					{
+						if (ImGui::Button("Pause"))
+						{
+							SceneSubsystem::PauseScene();
+						}
+						ImGui::SameLine();
+						if (ImGui::Button("Stop"))
+						{
+							if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->ResetSelection();
+							SceneSubsystem::StopScene();
+						}
+					}
+					break;
+
+				case SceneState::Stopped:
+					{
+						if (ImGui::Button("Play"))
+						{
+							SceneSubsystem::PlayScene();
+						}
+					}
+					break;
+
+				case SceneState::Paused:
+					{
+						if (ImGui::Button("Resume"))
+						{
+							SceneSubsystem::PauseScene();
+						}
+						ImGui::SameLine();
+						if (ImGui::Button("Stop"))
+						{
+							if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->ResetSelection();
+							SceneSubsystem::StopScene();
+						}
+					}
+					break;
 			}
 
 			// Scene Properties
 			if (ImGui::BeginMenu("Tools"))
 			{
-				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::Get()->m_BatchUpdateActors);
-				ImGui::Checkbox("Renderer Enabled", &RendererSubsystem::Get()->IsEnabled());
+				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::GetInstance()->m_BatchUpdateActors);
+				ImGui::Checkbox("Renderer Enabled", &RendererSubsystem::GetInstance()->IsEnabled());
 				if(ImGui::BeginMenu("Reflection"))
 				{
 					for (const auto& key : ReflectionSubsystem::GetCreateFuncs() | std::views::keys)

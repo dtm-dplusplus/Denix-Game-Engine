@@ -10,10 +10,9 @@ namespace Denix
 	void FileSubsystem::Initialize()
 	{
 		Subsystem::Initialize();
-
-		DE_LOG_CREATE(LogFile)
+		
 		DE_LOG(LogFile, Warn, "Initializing File Subsystem")
-		s_FileSubsystem = this;
+
 		// Get executable path
 		const char* p = SDL_GetBasePath();
 		if (!p)
@@ -22,7 +21,7 @@ namespace Denix
 			DE_LOG(LogFile, Critical, err)
 			throw std::exception(err.c_str());
 		}
-
+		
 		// Setup Project Paths - We fetch from the binary parent directory
 		const fs::path exePath = p;
 		SDL_free(const_cast<char*>(p));
@@ -59,7 +58,6 @@ namespace Denix
 	void FileSubsystem::Deinitialize()
 	{
 		DE_LOG(LogFile, Trace, "File Subsystem Deinitializing")
-		s_FileSubsystem = nullptr;
 		DE_LOG(LogFile, Trace, "File Subsystem Deinitialized")
 	}
 
@@ -86,7 +84,7 @@ namespace Denix
 		{
 			fullPath = _path;
 		}*/
-
+		
 		if (std::ifstream fileStream(fullPath); fileStream.is_open())
 		{
 			std::stringstream fileString;
@@ -158,7 +156,7 @@ namespace Denix
 			if (IsAbsolute(_path)) return inputPath.make_preferred().string();
 
 			// If the path is relative, combine it with the project root
-			fs::path combinedPath = s_FileSubsystem->m_ProjectRoot / inputPath;
+			fs::path combinedPath = s_Instance->m_ProjectRoot / inputPath;
 
 			// Convert to absolute path and normalize separators
 			return fs::absolute(combinedPath).make_preferred().string();
@@ -174,7 +172,7 @@ namespace Denix
 		if (!IsAbsolute(_path)) return _path;
 
 		// Calculate the relative path
-		std::filesystem::path relativePath = fs::relative(_path, s_FileSubsystem->m_ProjectRoot);
+		std::filesystem::path relativePath = fs::relative(_path, s_Instance->m_ProjectRoot);
 
 		return relativePath.make_preferred().string();
 	}
@@ -182,6 +180,6 @@ namespace Denix
 	bool FileSubsystem::IsAbsolute(const std::string& _path)
 	{
 		// Check if the input path starts with the project root path
-		return _path.find(s_FileSubsystem->m_ProjectRoot) == 0;
+		return _path.find(s_Instance->m_ProjectRoot) == 0;
 	}
 }

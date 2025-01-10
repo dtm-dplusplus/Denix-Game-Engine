@@ -9,21 +9,9 @@
 
 namespace Denix
 {
-	UISubsystem* UISubsystem::s_UISubSystem{ nullptr };
-
-
 	UISubsystem::UISubsystem()
 	{
-		s_UISubSystem = this;
-
-		DE_LOG_CREATE(LogUI)
 	}
-
-	UISubsystem::~UISubsystem()
-	{
-		s_UISubSystem = nullptr;
-	}
-
 
 	void UISubsystem::Initialize()
 	{
@@ -47,14 +35,15 @@ namespace Denix
 		ImGui::StyleColorsDark();
 
 		// Setup SDL3 Platform/Renderer backends
-		const WindowSubsystem* windowSystem = WindowSubsystem::Get();
-		if(!ImGui_ImplSDL3_InitForOpenGL(windowSystem->GetWindow()->GetSDLWindow(),
+		m_WindowRef = WindowSubsystem::GetWindow();
+		
+		if(!ImGui_ImplSDL3_InitForOpenGL(m_WindowRef.lock()->GetSDLWindow(),
 				SDL_GL_GetCurrentContext()))
 		{
 			throw std::runtime_error("ImGui_ImplSDL3_InitForOpenGL failed");
 		}
 
-		if(!ImGui_ImplOpenGL3_Init(windowSystem->GetWindow()->GetGLSLVersion().c_str()))
+		if(!ImGui_ImplOpenGL3_Init(m_WindowRef.lock()->GetGLSLVersion().c_str()))
 		{
 			throw std::runtime_error("ImGui_ImplOpenGL3_Init failed");
 		}
@@ -64,10 +53,13 @@ namespace Denix
 
 	void UISubsystem::Deinitialize()
 	{
+		DE_LOG(LogUI, Trace, "UI Subsystem Deinitializing")
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplSDL3_Shutdown();
 		ImPlot::DestroyContext();
 		ImGui::DestroyContext();
+		Subsystem::Deinitialize();
+		DE_LOG(LogUI, Trace, "UI Subsystem Deinitialized")
 	}
 	void UISubsystem::Update(float _deltaTime)
 	{
@@ -131,14 +123,15 @@ namespace Denix
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
-	void UISubsystem::ViewportUpdate(const Ref<SDL_GLWindow> _window)
+	void UISubsystem::ViewportUpdate() const
 	{
+		const auto& window = m_WindowRef.lock();
 		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 
-			SDL_GL_MakeCurrent(_window->GetSDLWindow(), _window->GetSDL_GLContext());
+			SDL_GL_MakeCurrent(window->GetSDLWindow(), window->GetSDL_GLContext());
 		}
 	}
 }

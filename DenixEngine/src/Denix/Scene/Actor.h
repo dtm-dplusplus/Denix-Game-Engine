@@ -34,9 +34,8 @@ namespace Denix
 		{
 			if(Ref<T> component = MakeRef<T>(std::forward<Args>(_args)...))
 			{
-				component->m_Parent = this;
 				m_Components.push_back(component);
-				m_ComponentMap[ReflectionHelper::GetDEClassName<T>()] = component;
+				m_ComponentMap[ReflectionHelper::GetClassNameDE<T>()] = component;
 				return component;
 			}
 
@@ -46,30 +45,33 @@ namespace Denix
 		template<typename T>
 		Ref<T> GetComponent() const
 		{
-			if (!m_ComponentMap.contains(ReflectionHelper::GetDEClassName<T>()))
+			if (!m_ComponentMap.contains(ReflectionHelper::GetClassNameDE<T>()))
 				return nullptr;
 
-			if (Ref<T> component = CastRef<T>(m_ComponentMap.at(ReflectionHelper::GetDEClassName<T>())))
+			if (Ref<T> component = CastRef<T>(m_ComponentMap.at(ReflectionHelper::GetClassNameDE<T>())))
 				return component;
 
 			return nullptr;
 		}
 
+		std::vector<Ref<Component>> &GetComponents()  { return m_Components; }
+		std::unordered_map<std::string, Ref<Component>>& GetComponentMap() { return m_ComponentMap; }
+
 		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
 
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
-		Ref<Collider> GetCollider() const { return m_PhysicsComponent->GetCollider(); }
+		Ref<Collider> GetCollider() const;
 
 		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
 
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 		// Physics Component
-		virtual void OnCollision(Ref<Actor>& _other, CollisionData& _collision) {} //const Ref<Actor>& _other
+		//virtual void OnCollision(Ref<Actor>& _other, CollisionData& _collision) {} //const Ref<Actor>& _other
 
-		virtual void OnTriggerEnter(Ref<Actor> _other);
-		virtual void OnTriggerStay(Ref<Actor> _other);
-		virtual void OnTriggerExit(Ref<Actor> _other);
+		virtual void OnTriggerEnter(Ref<Actor> _other){}
+		virtual void OnTriggerStay(Ref<Actor> _other){}
+		virtual void OnTriggerExit(Ref<Actor> _other){}
 
 		void Destroy();
 
@@ -80,7 +82,7 @@ namespace Denix
 		void BeginPlay() override;
 		void EndPlay() override;
 
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+		void Update(float _deltaTime) override;
 
 	protected:
 		std::unordered_map<std::string, Ref<Component>> m_ComponentMap;
@@ -94,8 +96,16 @@ namespace Denix
 
 		Ref<RenderComponent> m_RenderComponent;
 
-		friend class SceneSubsystem;
 		friend class Scene;
+		friend class SceneSubsystem;
+
+		friend class PhysicsComponent;
+		friend class PhysicsSubsystem;
+		
+		friend class MeshComponent;
+		friend class RenderComponent;
+		friend class TransformComponent;
+
 		friend class RendererSubsystem;
 	};
 }

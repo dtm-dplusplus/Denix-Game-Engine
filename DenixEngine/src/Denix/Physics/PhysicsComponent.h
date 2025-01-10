@@ -1,11 +1,26 @@
 #pragma once
 
+#include <PxRigidBody.h>
+#include <foundation/PxTransform.h>
+
 #include "Denix/Core.h"
 #include "Denix/Core/Math.h"
 
 #include "Denix/Scene/Component.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Physics/Collider.h"
+#include "Denix/Scene/Actor.h"
+
+namespace physx
+{
+	class PxRigidDynamic;
+	class PxRigidActor;
+}
+
+namespace physx
+{
+	class PxShape;
+}
 
 namespace Denix
 {
@@ -37,16 +52,12 @@ namespace Denix
 	public:
 		PhysicsComponent();
 
-		PhysicsComponent(const Ref<TransformComponent>& _parentTransform);
-
-		PhysicsComponent(const std::string& _parentName);
-
-		~PhysicsComponent() override = default;
+		~PhysicsComponent() override;
+		
 
 		void BeginScene() override;
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-
-		void StepSimulation(float _deltaTime);
+		
+		void Update(float _deltaTime) override;
 
 
 		void AddForce(const glm::vec3& _force)
@@ -64,9 +75,20 @@ namespace Denix
 			m_Torque += _torque;
 		}
 
-		bool m_RotationEnabled = false;
+		bool m_RotationEnabled = true;
 
+		void SetShape(ColliderType _type);
+		void SetupPhysX();
+		void UpdatePhysX();
+		void UpdatePxDynamicActor(physx::PxRigidDynamic* _actor);
 
+		float m_PxSlopCoefficient = 0.1f;
+		physx::PxRigidBodyFlags m_PxRigidBodyFlags;
+		physx::PxShape* m_PxShape = nullptr;
+		physx::PxRigidActor* m_PxActor = nullptr;
+		//physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
+		ColliderType m_ColliderType = ColliderType::Cube;
+		
 	private:
 		/* Physics Component Settings */
 		/** Set to decide if the physics component should update simulation */
@@ -104,12 +126,6 @@ namespace Denix
 
 		/** Collision used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
-
-		/** Broad collider used for broad phase collision detection */
-		Ref<SphereCollider> m_BroadCollider;
-
-		/** Transform component which is attached to this components game object */
-		Ref<class TransformComponent> m_ParentTransform;
 
 	private:
 		/////////////////////* Linear Properties *///////////////////////
@@ -167,122 +183,9 @@ namespace Denix
 
 		private:
 			void BeginPlay() override;
-
+			void EndPlay() override;
 			void EndScene() override;
 
-			void RegisterComponent() override;
-
-			void UnregisterComponent() override;
-
-	private:
-		/**/
-		void ComputeTriggerState()
-		{
-			/*if (collisionDetected)
-			{
-				trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Stay : TriggerState::Enter;
-			}
-			else
-			{
-				trigger.TrigData.NewState = physicsComp->m_IsColliding ? TriggerState::Exit : TriggerState::Null;
-			}
-
-
-
-			if (trigger.TrigData.NewState != TriggerState::Null) m_TriggerEvents.push_back(trigger);*/
-		}
-
-		void ComputeCenterOfMass();
-
-		void ComputeObjectInertiaTensor()
-		{
-			m_ObjectInteriaTensor = m_ParentTransform->m_RotationMatrix * m_BodyInteriaTensor * glm::transpose(m_ParentTransform->m_RotationMatrix);
-		}
-		void ComputeObjectInverseInertiaTensor()
-		{
-			m_ObjectInteriaTensorInverse = m_ParentTransform->m_RotationMatrix *
-				m_BodyInteriaTensorInverse * glm::transpose(m_ParentTransform->m_RotationMatrix);
-		}
-
-		void ComputeBodyInertiaTensor()
-		{
-			// Set Inertia Tensor && inverse Inertia Tensor
-			if (m_Collider)
-			{
-				switch (m_Collider->GetColliderType())
-				{
-				case ColliderType::Cube:
-				{
-					Ref<CubeCollider> cubeCol = CastRef<CubeCollider>(m_Collider);
-
-				} break;
-
-				case ColliderType::Sphere:
-				{
-					Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider);
-					m_BodyInteriaTensor = glm::mat3((2.0f / 5.0f) * m_Mass * pow(sphereCol->GetRadius(), 2));
-					m_BodyInteriaTensorInverse = glm::inverse(m_BodyInteriaTensor);
-				} break;
-				}
-			}
-		}
-
-		void ComputeTorqueArm(const glm::vec3& _contactPoint, const glm::vec3& _force)
-		{
-			glm::vec3 torqueArm = _contactPoint - m_CenterOfMass;
-			m_Torque += glm::cross(torqueArm, _force);
-		}
-		void ComputeAngularVelocity()
-		{
-			m_AngularVelocity = m_ObjectInteriaTensorInverse * m_AngularMomentum;
-		}
-
-		void ComputeRotationMatrix(float _deltaTime);
-
-		void ComputeTorque(const glm::vec3& _torqueArm, const glm::vec3& _force)
-		{
-			m_Torque += glm::cross(_torqueArm, _force);
-		}
-
-		glm::mat3 GetSkewMatrix(const glm::vec3& _vector)
-		{
-			return glm::mat3(
-				0.0f, -_vector.z, _vector.y,
-				_vector.z, 0.0f, -_vector.x,
-				-_vector.y, _vector.x, 0.0f);
-		}
-
-		glm::vec3 GetEulerAngles(const glm::mat3& _rotationMatrix) const
-		{
-			float value = pow(_rotationMatrix[0][0], 2) + pow(_rotationMatrix[1][0], 2);
-			float sy = sqrt(value);
-
-			float x, y, z;
-
-			if (sy < 1e-6)
-			{
-				x = atan2(_rotationMatrix[2][1], _rotationMatrix[2][2]);
-				y = atan2(-_rotationMatrix[2][0], sy);
-				z = atan2(_rotationMatrix[1][0], _rotationMatrix[0][0]);
-			}
-			else
-			{
-				x = atan2(-_rotationMatrix[1][2], _rotationMatrix[1][1]);
-				y = atan2(-_rotationMatrix[2][0], sy);
-				z = 0.0f;
-			}
-
-			return glm::vec3(x, y, z);
-		}
-
-		glm::vec3 FrictionForce(const glm::vec3& _relVel, const glm::vec3& _contactNormal,
-			const glm::vec3& _forceNormal, float _mu)
-		{
-
-		}
-		void ComputeStepEuler(float _deltaTime);
-
-		void ComputeStepRK2(float _deltaTime);
 	private:
 		/* Stateful members below. These dictacte engine behaviour, e.g. IsCollidig determines collider render color */
 		bool m_SteppedThisFrame = false;
@@ -473,13 +376,9 @@ namespace Denix
 		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
 		void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
 
-		Ref<TransformComponent> GetParentTransform() { return m_ParentTransform; }
+		Ref<Collider> GetCollider() const;
+		Ref<Collider>& GetCollider();
 
-		Ref<Collider> GetCollider() const { return m_Collider; }
-		Ref<Collider>& GetCollider() { return m_Collider; }
-		void SetCollider(const Ref<Collider>& _collider)
-		{
-			m_Collider = _collider;
-		}
+		void SetCollider(const Ref<Collider>& _collider);
 	};
 }

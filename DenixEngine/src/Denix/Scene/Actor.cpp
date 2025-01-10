@@ -1,11 +1,11 @@
 #include "Actor.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 #include "yaml-cpp/yaml.h"
 #include "Denix/Core/YAMLHelper.h"
 #include "Denix/Profile/ProfileSubsystem.h"
-#include "Denix/Resource/Asset.h"
+#include "Denix/Asset/Asset.h"
 #include "Denix/Thread/JobSubsystem.h"
 
 namespace Denix
@@ -15,7 +15,7 @@ namespace Denix
         m_TransformComponent = AddComponent<TransformComponent>();
         m_MeshComponent = AddComponent<MeshComponent>();
         m_RenderComponent = AddComponent<RenderComponent>();
-        m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
+        m_PhysicsComponent = AddComponent<PhysicsComponent>();
     }
 
     Actor::Actor(const ObjectInit& _object_init) : BaseObject(_object_init)
@@ -23,21 +23,12 @@ namespace Denix
         m_TransformComponent = AddComponent<TransformComponent>();
         m_MeshComponent = AddComponent<MeshComponent>();
         m_RenderComponent = AddComponent<RenderComponent>();
-        m_PhysicsComponent = AddComponent<PhysicsComponent>(m_TransformComponent);
+        m_PhysicsComponent = AddComponent<PhysicsComponent>();
     }
 
     void Actor::Serialize(YAML::Emitter& _out)
     {
-        // Object Data. We can  serialize the object data here without the need for reflection.
-        _out << YAML::Comment("Object Data");
-        _out << YAML::Key << "m_Object" << YAML::BeginMap;
-        {
-            _out << YAML::Key << "m_GUID" << YAML::Value << GetGUID();
-            _out << YAML::Key << "m_Name" << YAML::Value << GetName();
-            _out << YAML::Key << "m_ClassName" << YAML::Value << m_ClassName;
-        }
-        _out << YAML::EndMap;
-        // End Object Data
+        BaseObject::Serialize(_out);
         
         // Render Component
         _out << YAML::Newline << YAML::Comment("Render Component");
@@ -64,12 +55,6 @@ namespace Denix
             {
                 _out << YAML::Newline << YAML::Comment("Material");
                 _out << YAML::Key << "m_Material" << YAML::Value << (mat->GetAsset() ? mat->GetAsset()->GetAssetPath() : "");
-
-                // Save Material - Should be done in the editor.
-                YAML::Emitter matAsssetEmitter;
-                mat->Serialize(matAsssetEmitter);
-                FileSubsystem::WriteFile(mat->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
-                DE_LOG(LogScene, Info, "Saved Material: {}", mat->GetAsset()->GetAssetFileName())
             }
         }
         _out << YAML::EndMap;
@@ -114,7 +99,7 @@ namespace Denix
         _out << YAML::Newline << YAML::Comment("Mesh Component");
         _out << YAML::Key << "m_MeshComponent" << YAML::BeginMap;
         {
-            _out << YAML::Key << "m_Mesh" << YAML::Value << m_MeshComponent->GetModel()->GetName(); // Temp until asset scraper built
+            _out << YAML::Key << "m_Mesh" << YAML::Value << m_MeshComponent->GetModel()->GetAssetName(); // Temp until asset scraper built
         }
         _out << YAML::EndMap;
         // End Mesh Component
@@ -123,8 +108,9 @@ namespace Denix
     void Actor::Deserialize(const YAML::Node& _in)
     {
         // Object instantiation is done in the SceneSubsystem so we don't need to do it here
-        
-         // Render Component
+        BaseObject::Deserialize(_in);
+
+        // Render Component
         if(const YAML::Node& renderCompNode = _in["m_RenderComponent"]; renderCompNode)
         {
             m_RenderComponent->SetIsVisible(renderCompNode["m_IsVisible"].as<bool>());
@@ -144,7 +130,7 @@ namespace Denix
             // Material
             if (const YAML::Node matNode = renderCompNode["m_Material"]; !matNode.IsDefined())
             {
-                m_RenderComponent->SetMaterial(ResourceSubsystem::GetMaterial(matNode["m_Material"].as<std::string>()));
+                m_RenderComponent->SetMaterial(AssetSubsystem::GetMaterial(matNode["m_Material"].as<std::string>()));
             }
         }
 
@@ -181,7 +167,7 @@ namespace Denix
         // Mesh Component
         if (const YAML::Node meshComp = _in["m_MeshComponent"]; meshComp)
         {
-            if (const Ref<Model> model = ResourceSubsystem::GetModel(meshComp["m_Mesh"].as<std::string>()))
+            if (const Ref<Model> model = AssetSubsystem::GetModel(meshComp["m_Mesh"].as<std::string>()))
             {
                 m_MeshComponent->SetModel(model); // Temp until asset scraper built
             }
@@ -189,14 +175,8 @@ namespace Denix
         }
     }
 
-    void Actor::OnTriggerEnter(Ref<Actor> _other)
-    {}
-
-    void Actor::OnTriggerStay(Ref<Actor> _other)
-    {}
-
-    void Actor::OnTriggerExit(Ref<Actor> _other)
-    {}
+    Ref<Collider> Actor::GetCollider() const
+    { return m_PhysicsComponent->GetCollider(); }
 
     void Actor::Destroy()
     {
@@ -208,7 +188,11 @@ namespace Denix
     {
         BaseObject::BeginScene();
 
-        for (const auto& component : m_Components) component->BeginScene();
+        for (const auto& component : m_Components)
+        {
+            component->m_Parent = shared_from_this();
+            component->BeginScene();
+        }
     }
 
     void Actor::EndScene()

@@ -19,7 +19,6 @@ namespace Denix
         //void Begin() override;
         //void End() override;
 
-        void LightWidget(const Ref<Actor>& _selectedObject) const;
         void PhysicsWidget(const Ref<Actor>& _selectedObject) const;
         void CollisionWidget(const Ref<Actor>& _selectedObject) const;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GL/glew.h>
+#include <gl/glew.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
 
@@ -16,13 +16,8 @@ namespace Denix
 
 		virtual ~Window() = default;
 
-		virtual bool Initialize() = 0;
-		virtual void Deinitialize() = 0;
-
 		virtual void ClearBuffer() = 0;
 		virtual void SwapBuffers() = 0;
-
-		virtual void WindowEvent(const SDL_Event* _event) {}
 
 		bool IsOpen() const { return m_IsOpen; }
 		bool IsFullscreen() const { return m_IsFullscreen; }
@@ -50,22 +45,16 @@ namespace Denix
 		glm::vec4 m_ClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 		friend class WindowSubsystem;
+		friend class InputSubsystem;
 	};
 
 
 	class SDL_GLWindow final : public Window
 	{
 	public:
-		SDL_GLWindow() : m_SDL_GLWindow(nullptr), m_SDL_GLContext(nullptr)
-		{
-			m_SDL_WindowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+		SDL_GLWindow();
 
-		}
-
-		~SDL_GLWindow() override = default;
-
-		void WindowEvent(const SDL_Event* _event) override;
-
+		~SDL_GLWindow() override;
 
 		void ToggleFullscreen()
 		{
@@ -99,15 +88,12 @@ namespace Denix
 		// void SetSDL_GLWindowFlags(const int flags) { m_SDL_WindowFlags = m_SDL_WindowFlags | static_cast<SDL_WindowFlags>(flags); }
 		SDL_WindowFlags GetSDL_GLWindowFlags() const { return m_SDL_WindowFlags; }
 
-		bool Initialize() override;
-		void Deinitialize() override;
-
 		void ClearBuffer() override;
 		void SwapBuffers() override;
 
-		std::string GetGLSLVersion() const { return m_GLSLVersion; }
-		int GetGLMajorVersion() const { return m_GLMajorVersion; }
-		int GetGLMinorVersion() const { return m_GLMinorVersion; }
+		static std::string GetGLSLVersion() { return m_GLSLVersion; }
+		static int GetGLMajorVersion() { return m_GLMajorVersion; }
+		static int GetGLMinorVersion() { return m_GLMinorVersion; }
 
 		SDL_GLContext GetSDL_GLContext() const { return m_SDL_GLContext; }
 
@@ -115,29 +101,19 @@ namespace Denix
 		void SetVsyncMode(const SDL_GLVsyncMode mode) 
 		{
 			m_VsyncMode = mode; 
-			if (SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
+			if (!SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)))
 			{
-				DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
+				DE_LOG(LogWindow, Error, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
 			}
 		}
+		
+	private:
 		void ToggleVsync()
 		{
-			if (m_VsyncMode == SDL_GLVsyncMode::Off)
-			{
-				m_VsyncMode = SDL_GLVsyncMode::On;
-			}
-			else
-			{
-				m_VsyncMode = SDL_GLVsyncMode::Off;
-			}
-
-			if (SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)) < 0)
-			{
-				DE_LOG(LogWindow, Critical, "SDL_GL_SetSwapInterval failed! SDL_Error: {}", SDL_GetError())
-			}
+			m_VsyncMode = static_cast<SDL_GLVsyncMode>(!static_cast<bool>(m_VsyncMode));
+			SetVsyncMode(m_VsyncMode);
 		}
-	private:
-
+		
 		SDL_Window* m_SDL_GLWindow;
 
 		SDL_WindowFlags m_SDL_WindowFlags;
@@ -147,15 +123,15 @@ namespace Denix
 		SDL_GLVsyncMode m_VsyncMode = SDL_GLVsyncMode::Off;
 
 		// GL Attributes
-		std::string m_GLSLVersion = "#version 330";
-		int m_GLMajorVersion = 3;
-		int m_GLMinorVersion = 0;
+		inline static std::string m_GLSLVersion = "#version 330";
+		inline static int m_GLMajorVersion = 3;
+		inline static int m_GLMinorVersion = 0;
 
-		int m_GLDepthSize = 24;
-		int m_GLStencilSize = 8;
-		int m_GLDoubleBuffer = 1;
+		inline static int m_GLDepthSize = 24;
+		inline static int m_GLStencilSize = 8;
+		inline static int m_GLDoubleBuffer = 1;
 
 		friend class WindowSubsystem;
-
+		friend class InputSubsystem;
 	};
 }

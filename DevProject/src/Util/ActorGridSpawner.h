@@ -2,7 +2,7 @@
 #include "Denix/Core.h"
 #include "Denix/Core/Timer.h"
 #include "Denix/Scene/Scene.h"
-#include "Scene/CPG/CPGCube.h"
+#include "Scene/CPG/CPGActor.h"
 
 using namespace  Denix;
 
@@ -14,7 +14,7 @@ public:
         if (!_scene) return;
 
         // Adjust vector
-        std::vector<Ref<Actor>>& _sceneObjects = _scene->GetSceneObjects();
+        std::vector<Ref<Actor>>& _sceneObjects = _scene->GetSceneActors();
        for (const auto& actor : _sceneObjects)  actor->Destroy();
         
         Timer spawnTime;
@@ -24,7 +24,7 @@ public:
         {
             for (int j = 0; j < GridSize; j++)
             {
-                _scene->SpawnActor<CPGCube>(glm::vec3((float)i * 2.5f, SpawnHeight, (float)j * 2.5f));
+                _scene->SpawnActor<CPGActor>(glm::vec3((float)i * 2.5f, SpawnHeight, (float)j * 2.5f));
             }
         }
         spawnTime.Stop();

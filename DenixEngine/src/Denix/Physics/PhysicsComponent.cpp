@@ -1,180 +1,161 @@
 #include "PhysicsComponent.h"
 
 #include "Denix/Physics/PhysicsSubsystem.h"
+#include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 
 namespace Denix
 {
     PhysicsComponent::PhysicsComponent(): Component(ObjectInit("Physics Component")), m_Collider(nullptr)
     {
-		m_BroadCollider = MakeRef<SphereCollider>();
-		m_BroadCollider->GetRadius() = 2.0f;
     }
 
-    PhysicsComponent::PhysicsComponent(const Ref<TransformComponent>& _parentTransform): 
-        Component(ObjectInit("Physics Component")), m_Collider(nullptr)
+    PhysicsComponent::~PhysicsComponent()
     {
-        m_ParentTransform = _parentTransform;
-        m_BroadCollider = MakeRef<SphereCollider>();
-        m_BroadCollider->GetRadius() = 2.0f;
-    }
-
-    PhysicsComponent::PhysicsComponent(const std::string& _parentName): 
-        Component(_parentName, ObjectInit("Physics Component")), m_Collider(nullptr)
-    {
-        m_BroadCollider = MakeRef<SphereCollider>();
-        m_BroadCollider->GetRadius() = 2.0f;
-    }
-
-    void PhysicsComponent::ComputeCenterOfMass()
-    {
-        // Compute the center of mass of the object
-        // For now, we will assume the center of mass is at the center of the object
-        m_CenterOfMass = m_ParentTransform->GetPosition();
-    }
-
-    void PhysicsComponent::ComputeRotationMatrix(float _deltaTime)
-    {
-        m_ParentTransform->m_RotationMatrix += GetSkewMatrix(m_AngularVelocity) * m_ParentTransform->m_RotationMatrix * _deltaTime;
-    }
-
-    void PhysicsComponent::ComputeStepEuler(float _deltaTime)
-    {
-        //////////////* Linear */////////////////////
-		// Calculate acceleration at time t
-		m_Acceleration = m_Force / m_Mass;
-
-        // Calculate new velocity at time t + dt
-        m_Velocity += m_Acceleration * _deltaTime;
-
-        // Calculate new displacement at time t + dt
-        m_ParentTransform->m_Position += m_Velocity * _deltaTime;
-
-        ////////////* Angular */////////////////////
-        if (!m_RotationEnabled) return;
-        
-        // Calulate angular momentum
-        m_AngularMomentum += m_Torque * _deltaTime;
-
-        // Calculate Inverse Inertia Tensor
-        ComputeObjectInverseInertiaTensor();
-
-        // Calulate angular velocity
-        m_AngularVelocity = m_ObjectInteriaTensorInverse * m_AngularMomentum;
-
-        // Reconstruct skew matrix
-         /*glm::mat3 skewMatrix = glm::mat3(
-             0.0f, -m_AngularVelocity.z, m_AngularVelocity.y,
-             m_AngularVelocity.z, 0.0f, -m_AngularVelocity.x,
-             -m_AngularVelocity.y, m_AngularVelocity.x, 0.0f);*/
-
-        // Update rotation matrix
-        ComputeRotationMatrix(_deltaTime);
-
-        glm::vec3 angles = GetEulerAngles(m_ParentTransform->m_RotationMatrix);
-        m_ParentTransform->GetRotation() += angles;
-    }
-
-    void PhysicsComponent::ComputeStepRK2(float _deltaTime)
-    {
-        //////////////* Linear */////////////////////
-        m_Acceleration = m_Force / m_Mass;
-        const glm::vec3 k1 = m_Acceleration * _deltaTime;
-
-        // Calculate k2
-        m_Force-= m_LinearDrag * (m_Velocity + k1);
-        m_Acceleration = m_Force / m_Mass;
-        const glm::vec3 k2 = m_Acceleration * _deltaTime;
-
-        // Calculate new velocity at time t + dt
-        m_Velocity += (k1 + k2) / 2.f;
-
-        // Calculate new displacement at time t + dt
-        m_ParentTransform->GetPosition() += m_Velocity * _deltaTime;
        
-        ////////////* Angular */////////////////////
-        // Calulate angular momentum
-        m_AngularMomentum += m_Torque * _deltaTime;
+    }
 
-        // Calculate Inverse Inertia Tensor
-        ComputeObjectInverseInertiaTensor();
+    Ref<Collider> PhysicsComponent::GetCollider() const
+    { return m_Collider; }
 
-        // Calulate angular velocity
-        m_AngularVelocity = m_ObjectInteriaTensorInverse * m_AngularMomentum;
+    Ref<Collider>& PhysicsComponent::GetCollider()
+    { return m_Collider; }
 
-        // Reconstruct skew matrix
-        glm::mat3 skewMatrix = glm::mat3(
-            0.0f, -m_AngularVelocity.z, m_AngularVelocity.y,
-            m_AngularVelocity.z, 0.0f, -m_AngularVelocity.x,
-            -m_AngularVelocity.y, m_AngularVelocity.x, 0.0f);
-
-        // Update rotation matrix
-        ComputeRotationMatrix(_deltaTime);
-
-        glm::vec3 angles = GetEulerAngles(m_ParentTransform->m_RotationMatrix);
-        m_ParentTransform->GetRotation() += angles;
+    void PhysicsComponent::SetCollider(const Ref<Collider>& _collider)
+    {
+        m_Collider = _collider;
     }
 
     void PhysicsComponent::BeginScene()
     {
         Component::BeginScene();
-        
+
         RegisterComponent();
     }
 
-    void PhysicsComponent::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
+
+    void PhysicsComponent::SetShape(ColliderType _type)
     {
-        Component::Update(_deltaTime, _waitCounter);
-
-        m_ParentTransform->m_PhysicsRotationOverride = m_SimulatePhysics;
-
-        if (!m_Collider) return;
-        
-        m_Collider->m_TransformComponent->m_Position = m_ParentTransform->m_Position;
+       // PX_RELEASE(m_PxShape)
 
         switch (m_Collider->GetColliderType())
         {
         case ColliderType::Cube:
             {
-                if (!m_CollisonDimesionOverride)
-                    CastRef<CubeCollider>(m_Collider)->m_Dimensions= m_ParentTransform->m_Scale;
+                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(2, .5, 2), *PhysicsSubsystem::m_PxMaterial);
             } break;
 
         case ColliderType::Sphere:
             {
-                if(const Ref<SphereCollider> sphereCol = CastRef<SphereCollider>(m_Collider))
-               {
-                    m_MomentOfInertia = 0.4f * m_Mass * (sphereCol->m_Radius * sphereCol->m_Radius);
-                    m_ParentTransform->m_Scale = glm::vec3(sphereCol->m_Radius * 2.0f);
-                    m_Collider->m_TransformComponent->m_Scale = m_ParentTransform->m_Scale;
-               }
+                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxSphereGeometry(.5), *PhysicsSubsystem::m_PxMaterial);
             } break;
         }
     }
 
-    void PhysicsComponent::StepSimulation(float _deltaTime)
+    void PhysicsComponent::SetupPhysX()
     {
-        //if (!m_SimulatePhysics || m_SteppedThisFrame) return;
+        const auto scale = m_Parent->m_TransformComponent->m_Scale;
+        const auto scaleH = m_Parent->m_TransformComponent->m_Scale / 2.0f;
+        const auto pos = m_Parent->m_TransformComponent->m_Position;
+        const auto rot = Math::Radians(m_Parent->m_TransformComponent->m_Rotation);
+        physx::PxTransform tform = physx::PxTransform(pos.x, pos.y, pos.z);
+        
+        switch (m_ColliderType)
+        {
+        case ColliderType::Plane:
+        {
+            m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(scale.x, 0.01f, scale.z), *PhysicsSubsystem::m_PxMaterial);
+        } break;
+            
+        case ColliderType::Cube:
+            {
+                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(scaleH.x, scaleH.y, scaleH.z), *PhysicsSubsystem::m_PxMaterial);
+            } break;
 
-        m_SteppedThisFrame = m_SteppedNextFrame;
-        m_SteppedNextFrame = false;
-        m_IsColliding = false;
+        case ColliderType::Sphere:
+            {
+                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxSphereGeometry(scaleH.x), *PhysicsSubsystem::m_PxMaterial);
+            } break;
+        }
         
-       m_Force = m_Mass *glm::vec3(0.0f, -9.81f, 0.0f);
-                                    
-        m_Torque = glm::vec3(0.0f);
-        
-       m_PreviousPosition = m_ParentTransform->m_Position;
-        
-        m_CenterOfMass = m_ParentTransform->m_Position;
-        
-        // Calculate the net force - Null effect if Drag = 0
-        m_Force -= m_LinearDrag * m_Velocity;
-        m_Torque -= m_AngularDrag * m_AngularVelocity;
+        switch (m_Parent->m_TransformComponent->m_Moveability)
+        {
+        case 0:
+            {
+                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidStatic(physx::PxTransform(pos.x, pos.y, pos.z));
+            } break;
 
-        ComputeStepEuler(_deltaTime);
+        case 1:
+            {
+                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(pos.x, pos.y, pos.z));
+                UpdatePxDynamicActor(m_PxActor->is<physx::PxRigidDynamic>());
+            } break;
+        }
+        
+        
+        m_PxActor->userData = m_Parent.get();
+        m_PxActor->attachShape(*m_PxShape);
+    }
 
-        m_SteppedThisFrame = true;
+    void PhysicsComponent::UpdatePhysX()
+    {
+        const auto scale = m_Parent->m_TransformComponent->m_Scale;
+        const auto scaleH = m_Parent->m_TransformComponent->m_Scale / 2.0f;
+        const auto pos = m_Parent->m_TransformComponent->m_Position;
+
+        switch (m_ColliderType)
+        {
+        case ColliderType::Plane:
+        {
+            m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(scale.x, 0.01f, scale.z), *PhysicsSubsystem::m_PxMaterial);
+        } break;
+            
+        case ColliderType::Cube:
+            {
+                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(scaleH.x, scaleH.y, scaleH.z), *PhysicsSubsystem::m_PxMaterial);
+            } break;
+
+        case ColliderType::Sphere:
+            {
+                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxSphereGeometry(scaleH.x), *PhysicsSubsystem::m_PxMaterial);
+            } break;
+        }
+        
+        switch (m_Parent->m_TransformComponent->m_Moveability)
+        {
+        case 0:
+            {
+                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidStatic(physx::PxTransform(pos.x, pos.y, pos.z));
+            } break;
+
+        case 1:
+            {
+                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(pos.x, pos.y, pos.z));
+            } break;
+        }
+        
+        
+
+        m_PxActor->userData = m_Parent.get();
+        m_PxActor->attachShape(*m_PxShape);
+        PhysicsSubsystem::RegisterPxActor(m_PxActor);
+    }
+
+    void PhysicsComponent::UpdatePxDynamicActor(physx::PxRigidDynamic* _actor)
+    {
+        if (!_actor) return;
+
+        _actor->setMass(m_Mass);
+        _actor->setLinearDamping(m_LinearDrag);
+        _actor->setAngularDamping(m_AngularDrag);
+        _actor->setLinearVelocity({m_Velocity.x, m_Velocity.y, m_Velocity.z});
+        _actor->setAngularVelocity({m_AngularVelocity.x, m_AngularVelocity.y, m_AngularVelocity.z});
+
+        _actor->setContactSlopCoefficient(m_PxSlopCoefficient);
+
+        _actor->setMassSpaceInertiaTensor({m_MomentOfInertia, m_MomentOfInertia, m_MomentOfInertia});
+        physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidBody&>(*m_PxActor), m_Mass);
+        _actor->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, false);
     }
 
     void PhysicsComponent::BeginPlay()
@@ -182,44 +163,32 @@ namespace Denix
         // Register the physics component with the physics subsystem
         Component::BeginPlay();
 
+       SetupPhysX();
+        PhysicsSubsystem::RegisterPxActor(m_PxActor);
+    }
 
-        // Initialize the physics component
-        m_CenterOfMass = m_ParentTransform->GetPosition();
-        m_PreviousPosition = m_ParentTransform->GetPosition();
-        m_ParentTransform->m_RotationMatrix = glm::mat4(1.0f);
+    void PhysicsComponent::EndPlay()
+    {
+        Component::EndPlay();
 
-        m_Force = glm::vec3(0.0f);
-        m_Torque = glm::vec3(0.0f);
-        m_Acceleration = glm::vec3(0.0f);
-        m_Velocity = glm::vec3(0.0f);
-        m_AngularMomentum = glm::vec3(0.0f);
-        m_AngularVelocity = glm::vec3(0.0f);
-        ComputeBodyInertiaTensor();
-        ComputeObjectInverseInertiaTensor();
-        ComputeAngularVelocity();
-
+        PhysicsSubsystem::UnregisterPxActor(m_PxActor);
     }
 
     void PhysicsComponent::EndScene()
     {
-        UnregisterComponent();
-
         Component::EndScene();
     }
 
-    void PhysicsComponent::RegisterComponent()
+    void PhysicsComponent::Update(float _deltaTime)
     {
-        if (PhysicsSubsystem* physicsSystem = PhysicsSubsystem::Get())
-        {
-            physicsSystem->RegisterComponent(shared_from_this());
-        }
-    }
+        Component::Update(_deltaTime);
 
-    void PhysicsComponent::UnregisterComponent()
-    {
-        if (PhysicsSubsystem* physicsSystem = PhysicsSubsystem::Get())
+        if (SceneSubsystem::GetSceneState() == SceneState::Playing)
         {
-            physicsSystem->UnregisterComponent(shared_from_this());
+            physx::PxVec3 pos = m_PxActor->getGlobalPose().p;
+            physx::PxQuat rot = m_PxActor->getGlobalPose().q;
+            m_Parent->m_TransformComponent->m_Position = {pos.x, pos.y, pos.z};
+            m_Parent->m_TransformComponent->m_Rotation = Math::Degrees(glm::eulerAngles(glm::quat(rot.w, rot.x, rot.y, rot.z)));
         }
     }
 

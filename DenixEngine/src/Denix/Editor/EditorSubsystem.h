@@ -14,35 +14,33 @@ namespace Denix
 	class EngineProfilerWidget;
 	class PerformanceSettingsWidget;
 	
-	class EditorSubsystem : public Subsystem
+	class EditorSubsystem : public Subsystem<EditorSubsystem>
 	{
 	public:
 		EditorSubsystem();
 
-		~EditorSubsystem() override
-		{
-			s_EditorSubsystem = nullptr;
-		}
+		~EditorSubsystem() override = default;
+
+		EditorSubsystem(const EditorSubsystem& _other) = delete;
+		EditorSubsystem(EditorSubsystem&& _other) noexcept = delete;
+		EditorSubsystem& operator=(const EditorSubsystem& _other) = delete;
+		EditorSubsystem& operator=(EditorSubsystem&& _other) noexcept = delete;
 
 		void SetActiveScene(const Ref<Scene>& _scene);
 
-	public:
-		static EditorSubsystem* Get() { return s_EditorSubsystem; }
+	private:
+		void MainMenuBar();
+
 		void Update(float _deltaTime) override;
 		void Initialize() override;
 		void Deinitialize() override;
-	private:
-		static EditorSubsystem* s_EditorSubsystem;
-
-		void MainMenuBar();
-
+		
 		bool ShowDemoWindow = false;
 		bool ShowPlotDemoWindow = false;
 
 		float m_DragSpeed;
 		
-		Ref<Scene> m_ActiveScene;
-
+		WRef<Scene> m_ActiveScene;
 
 		Ref<SceneOrganizerWidget> m_SceneOrganizerWidget;
 		
@@ -55,5 +53,7 @@ namespace Denix
 		Ref<EngineProfilerWidget> m_EngineProfilerWidget;
 
 		Ref<InputDebuggerWidget> m_InputDebuggerWidget;
+
+		friend class Engine;
 	};
 }

@@ -15,12 +15,14 @@
 /* Data Structures */
 #include <string>
 #include <string_view>
+#include <cstdint>
 
 
 /* IO */
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <sstream>
 
 /* Time */

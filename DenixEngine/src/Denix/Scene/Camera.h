@@ -14,22 +14,15 @@ namespace Denix
 		/**
 		 *  @brief Constructor for the Camera class
 		 * @param _position Option to set the position of the camera 
-		 * @param _objInit ObjectInitializer for the Actor 
 		 */
-		Camera(const ObjectInit& _objInit = {"Camera"}, const glm::vec3 _position = {0.0f, 5.0f, 25.0f}) : Actor(ObjectInit(_objInit))
-		{
-			m_TransformComponent->SetPosition(_position);
-			m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
-			m_RenderComponent->SetIsVisible(false);
-			m_Viewport = MakeRef<Viewport>(GetName() + "_Viewport");
-		}
+		Camera();
 		
 		~Camera() override = default;
 
 		void ProcessKeyboardInput(float _deltaTime);
 		void ProccessMouseMovement(float _deltaTime);
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
+		void Update(float _deltaTime) override;
 
 		glm::mat4 GetProjectionMatrix() const
 		{
@@ -82,6 +75,7 @@ namespace Denix
 		
 		// Camera Properties
 	public:
+		bool m_IsGameCamera = false;
 		bool m_IsPerspective = true;
 		float m_Fov = 45.f;
 		float m_NearPlane = 0.1f;
@@ -105,8 +99,8 @@ namespace Denix
 		Ref<Viewport> m_Viewport;
 
 		// Matrices
-		glm::mat4 m_Projection = glm::mat4(1.0f);
-		glm::mat4 m_View = glm::mat4(1.0f);
+		glm::mat4 m_Projection;
+		glm::mat4 m_View;
 		
 		friend class Engine;
 		friend class RendererSubsystem;

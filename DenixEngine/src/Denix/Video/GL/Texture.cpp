@@ -23,7 +23,7 @@ namespace Denix
 		unsigned char* texData = stbi_load(m_FilePath.c_str(), &m_Width, &m_Height, &m_BitDepth, 0);
 		if (!texData)
 		{
-			DE_LOG(LogRenderer, Error, "Failed to find: {}", m_FilePath)
+			DE_LOG(LogRender, Error, "Failed to find: {}", m_FilePath)
 			return false;
 		}
 
@@ -42,7 +42,7 @@ namespace Denix
 		}
 		else
 		{
-			DE_LOG(LogRenderer, Error, "Unsupported Bit Depth: {}", m_BitDepth)
+			DE_LOG(LogRender, Error, "Unsupported Bit Depth: {}", m_BitDepth)
 			return false;
 		}
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, internalFormat, GL_UNSIGNED_BYTE, texData);

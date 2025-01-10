@@ -6,16 +6,12 @@
 
 namespace Denix
 {
-    class Timer: public Object
+    class Timer
     {
     public:
         Timer() = default;
+        ~Timer() = default;
         
-        Timer(const ObjectInit& _objInit, bool _start = false): Object(_objInit)
-        {
-            if (_start) Start();
-        }
-
         void Reset()
         {
             m_TimeEvent.Duration = 0.0f;

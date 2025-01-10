@@ -2,10 +2,9 @@
 #include "ActorDetailsWidget.h"
 #include "Denix/UI/UISubsystem.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Actor.h"
-#include "Denix/Scene/Object/Light/LightObject.h"
 #include "Denix/Editor/Widget/ShaderEditor.h"
 
 
@@ -25,7 +24,7 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime)
     //ImGui::SetNextWindowSize(ImVec2((ImGui::GetWindowWidth() / 5), ImGui::GetWindowHeight()), ImGuiCond_Appearing);
     //ImGui::SetNextWindowPos(ImVec2((WinX / 6), MenuBarHeight), ImGuiCond_Appearing);
 
-    ImGui::SetNextWindowDockID(UISubsystem::Get()->DockRightID, ImGuiCond_Appearing);
+    ImGui::SetNextWindowDockID(UISubsystem::GetDockRightID(), ImGuiCond_Appearing);
     ImGui::Begin("Actor Details");
     //ImGui::SetWindowDock(ImGui::GetCurrentWindow(), UISubsystem::Get()->DockRightID, ImGuiCond_Appearing);
 
@@ -33,9 +32,19 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime)
     {
         ImGui::SeparatorText(actorRef->GetName().c_str());
 
+        // Component Preview
+        ImGui::SeparatorText("Components");
+        ImGui::BeginChild("Component List", ImVec2(ImGui::GetWindowWidth(), 100), true);
+        for (const auto& name : actorRef->GetComponentMap() | std::views::keys)
+        {
+           ImGui::Text(name.c_str());
+        }
+      
+        ImGui::EndChild();
+        
+        // Component Widgets
         TransformWidget(actorRef);
         CameraWidget(actorRef);
-        LightWidget(actorRef);
         PhysicsWidget(actorRef);
         CollisionWidget(actorRef);
         RenderWidget(actorRef);
@@ -72,44 +81,6 @@ void Denix::ActorDetailsWidget::TransformWidget(const Ref<Actor>& _object) const
         if (ImGui::Combo("Moveability", &transform->GetMoveabilityI(), "Static\0Dynamic\0\0"))
         {
             transform->SetMoveability(static_cast<Moveability>(transform->GetMoveabilityI()));
-        }
-    }
-}
-
-void Denix::ActorDetailsWidget::LightWidget(const Ref<Actor>& _selectedObject) const
-{
-    if (const Ref<Light> light = CastRef<Light>(_selectedObject))
-    {
-        ImGui::CollapsingHeader("Light Settings", ImGuiTreeNodeFlags_DefaultOpen);
-        ImGui::ColorEdit3("Light Color", &light->GetLightColor()[0]);
-        ImGui::DragFloat("Ambient Intensity", &light->GetAmbientIntensity(), m_DragSpeed);
-        ImGui::DragFloat("Diffuse Intensity", &light->GetDiffuseIntensity(), m_DragSpeed);
-        ImGui::DragFloat("Specular Intensity", &light->GetSpecularIntensity(), m_DragSpeed);
-
-        if (const Ref<DirectionalLight> dirLight = CastRef<DirectionalLight>(_selectedObject))
-        {
-            ImGui::SeparatorText("Directional Light Settings");
-            ImGui::DragFloat3("Light Direction", &dirLight->GetLightDirection()[0], m_DragSpeed);
-        }
-
-        else if (const Ref<SpotLight> spotLight = CastRef<SpotLight>(_selectedObject))
-        {
-            ImGui::SeparatorText("Spot Light Settings");
-            ImGui::DragFloat("Edge", &spotLight->GetEdge(), m_DragSpeed);
-            ImGui::DragFloat3("Direction", &spotLight->GetDirection()[0], m_DragSpeed);
-
-            ImGui::SeparatorText("Attenuation");
-            ImGui::DragFloat("Constant", &spotLight->GetConstant(), m_DragSpeed);
-            ImGui::DragFloat("Linear", &spotLight->GetLinear(), m_DragSpeed);
-            ImGui::DragFloat("Exponent", &spotLight->GetExponent(), m_DragSpeed);
-        }
-        else if (const Ref<PointLight> pointLight = CastRef<PointLight>(_selectedObject))
-        {
-            ImGui::SeparatorText("Point Light Settings");
-            ImGui::SeparatorText("Attenuation");
-            ImGui::DragFloat("Constant", &pointLight->GetConstant(), m_DragSpeed);
-            ImGui::DragFloat("Linear", &pointLight->GetLinear(), m_DragSpeed);
-            ImGui::DragFloat("Exponent", &pointLight->GetExponent(), m_DragSpeed);
         }
     }
 }
@@ -295,7 +266,6 @@ void Denix::ActorDetailsWidget::RenderWidget(const Ref<Actor>& _selectedObject)
         const Ref<RenderComponent> render = _selectedObject->GetRenderComponent();
 
         ImGui::Checkbox("Visible", &render->IsVisible());
-        ImGui::Checkbox("Affects Lighting", &render->AffectsLighting());
         MaterialWidget(_selectedObject);
     }
 }
@@ -330,12 +300,19 @@ void Denix::ActorDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject
         ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
 
         ImGui::Separator();
-        ImGui::Text(mat->GetShader()->GetName().c_str());
-        ImGui::SameLine();
-        if (ImGui::Button("Edit Shader"))
+        if (Ref<Shader> shader = mat->GetShader())
         {
-            m_ShaderEditor = MakeRef<ShaderEditor>(mat->GetShader());
-            ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Appearing);
+            ImGui::Text("Shader: %s", shader->GetDirectoryName().c_str());
+            if (ImGui::Button("Edit Shader"))
+            {
+                m_ShaderEditor = MakeRef<ShaderEditor>(shader);
+                ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Appearing);
+            }
+            if (m_ShaderEditor) m_ShaderEditor->Update();
+        }
+        else
+        {
+            ImGui::Text("No Shader Selected");
         }
         if (m_ShaderEditor) m_ShaderEditor->Update();
 
@@ -376,7 +353,7 @@ void Denix::ActorDetailsWidget::MaterialSelectionWidget(Ref<RenderComponent>& _r
     if (ImGui::BeginCombo("##MaterialName", _rendComp->GetMaterial()->GetName().c_str(),
                           ImGuiComboFlags_WidthFitPreview))
     {
-        for (auto& [fst, snd] : ResourceSubsystem::GetMaterialStore())
+        for (auto& [fst, snd] : AssetSubsystem::GetMaterialStore())
         {
             ImGui::PushID(fst.c_str());
             if (ImGui::Selectable(fst.c_str(), false,
@@ -410,7 +387,7 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
     // Texture Selection
     if (ImGui::BeginCombo("##TextureSelection", preview.c_str(), ImGuiComboFlags_WidthFitPreview))
     {
-        for (auto& [fst, snd] : ResourceSubsystem::GetTextureStore())
+        for (auto& [fst, snd] : AssetSubsystem::GetTextureStore())
         {
             ImGui::PushID(snd->GetTextureName().c_str());
             ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100));
@@ -434,9 +411,9 @@ void Denix::ActorDetailsWidget::ShaderSelectionWidget(Ref<Material>& _material)
     ImGui::SeparatorText("Shader");
     if (Ref<Shader> shader = _material->GetShader())
     {
-        if (ImGui::BeginCombo("##ShaderName", shader->GetName().c_str()))
+        if (ImGui::BeginCombo("##ShaderName", shader->GetDirectoryName().c_str()))
         {
-            for (auto& [fst, snd] : ResourceSubsystem::GetShaderStore())
+            for (auto& [fst, snd] : AssetSubsystem::GetShaderStore())
             {
                 ImGui::PushID(fst.c_str());
                 if (ImGui::Selectable(fst.c_str()))
@@ -458,17 +435,17 @@ void Denix::ActorDetailsWidget::MeshWidget(const Ref<Actor>& _selectedObject)
 
         const Ref<MeshComponent> meshComp = _selectedObject->GetMeshComponent();
         std::string preview = "Empty";
-        if (const Ref<Model> model = meshComp->GetModel()) preview = model->GetName();
+        if (const Ref<Model> model = meshComp->GetModel()) preview = model->GetAssetName();
 
         if (ImGui::BeginCombo("##ModelName", preview.c_str()))
         {
-            for (auto& [fst, snd] : ResourceSubsystem::GetModelStore())
+            for (auto& [fst, snd] : AssetSubsystem::GetModelStore())
             {
                 ImGui::PushID(fst.c_str());
                 if (ImGui::Selectable(fst.c_str()))
                 {
                     meshComp->SetModel(snd);
-                    DE_LOG(LogEditor, Info, "Model on {} set to: {}", _selectedObject->GetName(), snd->GetName())
+                    DE_LOG(LogEditor, Info, "Model on {} set to: {}", _selectedObject->GetName(), snd->GetAssetName())
                 }
                 ImGui::PopID();
             }

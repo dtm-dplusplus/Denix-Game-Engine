@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include <map>
+#include <string>
+
 #include "Denix/Core.h"
 #include "Denix/System/Subsystem.h"
 #include "Profile.h"
@@ -15,23 +18,19 @@ namespace Denix
 {
 	struct JobDeclaration;
 
-	class ProfileSubsystem final : public Subsystem
+	class ProfileSubsystem final : public Subsystem<ProfileSubsystem>
 	{
 	public:
 		ProfileSubsystem();
 
-		~ProfileSubsystem() override;
+		~ProfileSubsystem() override = default;
 
 		ProfileSubsystem(const ProfileSubsystem& _other) = delete;
 		ProfileSubsystem(ProfileSubsystem&& _other) noexcept = delete;
 		ProfileSubsystem& operator=(const ProfileSubsystem& _other) = delete;
 		ProfileSubsystem& operator=(ProfileSubsystem&& _other) noexcept = delete;
 		
-		static ProfileSubsystem* Get() { return s_ProfileSubsystem; }
-
-		void Initialize() override;
-
-		void Deinitialize() override;
+		
 
 		static void StartProfileSession();
 		static void EndProfileSession();
@@ -42,13 +41,16 @@ namespace Denix
 		static void StartJobProfile(const Ref<JobDeclaration>& _job);
 		static void EndJobProfile(const Ref<JobDeclaration>& _job);
 		
-		static Ref<ProfileSession> GetActiveProfileSession() { return s_ProfileSubsystem->m_ActiveProfileSession; }
+		static Ref<ProfileSession> GetActiveProfileSession() { return s_Instance->m_ActiveProfileSession; }
 
 		Ref<ProfileSession> m_ActiveProfileSession;
 
 		std::vector<Ref<ProfileSession>> m_ProfileSessions;
+		
 	private:
-		static ProfileSubsystem* s_ProfileSubsystem;
+		void Initialize() override;
+
+		void Deinitialize() override;
 
 		std::map<std::string, Ref<Profile>> m_Profiles;
 		

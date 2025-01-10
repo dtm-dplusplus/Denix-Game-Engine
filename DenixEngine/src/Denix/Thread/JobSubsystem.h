@@ -33,7 +33,7 @@ namespace Denix
         * The JobSubsystem is responsible for managing and executing jobs across multiple threads.
         * It provides functionality to add jobs, start and stop thread profiling, and manage worker threads.
         */
-    class JobSubsystem : public Subsystem, public std::enable_shared_from_this<JobSubsystem>
+    class JobSubsystem : public Subsystem<JobSubsystem>
     {
     public:
         /**
@@ -44,7 +44,7 @@ namespace Denix
         /**
         * \brief Destructs the JobSubsystem.
         */
-        ~JobSubsystem() override;
+        ~JobSubsystem() override = default;
 
         // Delete Copy and Move Constructors. Ensure only one instance of JobSubsystem
         JobSubsystem(const JobSubsystem& _other) = delete;
@@ -90,7 +90,7 @@ namespace Denix
                 std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
             );
 
-            s_JobSubsystem->m_Jobs.push(job);
+            s_Instance->m_Jobs.push(job);
         }
 
         /**
@@ -164,6 +164,7 @@ namespace Denix
             const size_t objectCount = _objects.size();
             if (objectCount == 0)
             {
+             //   DE_LOG(LogJob, Error, "Vector is empty. No jobs added: {}", _namePrefix)
                 return;
             }
 
@@ -182,18 +183,19 @@ namespace Denix
             // count = 144
             // bMod = 144/15 = 9 Remainder
             // bSize = 144/15 = 9
-            const size_t batchSize = objectCount / s_JobSubsystem->m_ActiveWorkerThreads;
+            const size_t batchSize = objectCount / s_Instance->m_ActiveWorkerThreads;
 
-            s_JobSubsystem->m_CurrentBatchCount = batchSize;
+            s_Instance->m_CurrentBatchCount = batchSize;
 
-            if (objectCount > s_JobSubsystem->m_BatchUpdateThreshold)
+            if (objectCount > s_Instance->m_BatchUpdateThreshold && objectCount > s_Instance->
+                m_AvailableWorkerThreads)
             {
-                for (size_t batchIndex = 0; batchIndex < s_JobSubsystem->m_ActiveWorkerThreads; batchIndex++)
+                for (size_t batchIndex = 0; batchIndex < s_Instance->m_ActiveWorkerThreads; batchIndex++)
                 {
                     size_t begin = batchIndex * batchSize;
                     size_t end = begin + batchSize;
 
-                    if (batchIndex + 1 == s_JobSubsystem->m_AvailableWorkerThreads) end = objectCount;
+                    if (batchIndex + 1 == s_Instance->m_AvailableWorkerThreads) end = objectCount;
 
                     AddJob(_namePrefix + std::to_string(batchIndex), _priority, _waitCounter,
                            [begin, end, &_objects, _func, _args...]
@@ -219,21 +221,21 @@ namespace Denix
        */
         static void UpdateActiveThreads();
 
-        static bool& IsAutoBatchingEnabled() { return s_JobSubsystem->m_AutoBatchingEnabled; }
+        static bool& IsAutoBatchingEnabled() { return s_Instance->m_AutoBatchingEnabled; }
 
-        static int& GetBatchUpdateThreshold() { return s_JobSubsystem->m_BatchUpdateThreshold; }
+        static int& GetBatchUpdateThreshold() { return s_Instance->m_BatchUpdateThreshold; }
 
         /**
         * \brief Gets the number of system threads.
         * \return The number of system threads.
         */
-        static int GetSystemThreads() { return s_JobSubsystem->m_SystemThreads; }
+        static int GetSystemThreads() { return s_Instance->m_SystemThreads; }
 
         /**
         * \brief Gets the number of active worker threads.
         * \return The number of active worker threads.
         */
-        static int GetActiveThreads() { return s_JobSubsystem->m_ActiveWorkerThreads; }
+        static int GetActiveThreads() { return s_Instance->m_ActiveWorkerThreads; }
 
         /**
          * \brief Gets a reference to the number of active worker threads.
@@ -241,9 +243,9 @@ namespace Denix
          * Adjusting this value will not effect the number of worker threads until UpdateActiveThreads() is called.
          * \return A reference to the number of active worker threads.
          */
-        static int& GetActiveThreadsRef() { return s_JobSubsystem->m_ActiveWorkerThreads; }
+        static int& GetActiveThreadsRef() { return s_Instance->m_ActiveWorkerThreads; }
 
-        static size_t GetBatchSize() { return s_JobSubsystem->m_CurrentBatchCount; }
+        static size_t GetBatchSize() { return s_Instance->m_CurrentBatchCount; }
 
         /**
          * \brief Gets the size of the job queue.
@@ -251,19 +253,19 @@ namespace Denix
          * Usfeul for debugging and profiling purposes at different synchronization points.
          * \return The size of the job queue.
          */
-        static size_t GetJobQueueSize() { return s_JobSubsystem->m_Jobs.size(); }
+        static size_t GetJobQueueSize() { return s_Instance->m_Jobs.size(); }
 
         /**
          * \brief Gets the worker threads.
          * \return A vector of references to the worker threads.
          */
-        static std::vector<Ref<Thread>>& GetWorkerThreads() { return s_JobSubsystem->m_WorkerThreads; }
+        static std::vector<Ref<Thread>>& GetWorkerThreads() { return s_Instance->m_WorkerThreads; }
 
         /**
          * \brief Gets a shared reference to the JobSubsystem.
          * \return A shared reference to the JobSubsystem.
          */
-        static Ref<JobSubsystem> Get() { return s_JobSubsystem->shared_from_this(); }
+        static Ref<JobSubsystem> Get() { return s_Instance->shared_from_this(); }
 
     private:
         /**
@@ -300,15 +302,14 @@ namespace Denix
          */
         void Deinitialize() override;
 
+        void WaitForAllJobs();
+
         /**
       * \brief Thread-safe queue of jobs, sorted by priority. JobComparator struct is used to compare job priorities.
       * AddJob() pushes jobs to the queue. RequestJob() pops the top job from the queue. 
       * Microsoft Implementation of a concurrent_priority_queue https://learn.microsoft.com/en-us/cpp/parallel/concrt/reference/concurrent-priority-queue-class?view=msvc-170
       */
         Concurrency::concurrent_priority_queue<Ref<JobDeclaration>, JobComparator> m_Jobs;
-
-        /* Static JobSubsystem instance */
-        static JobSubsystem* s_JobSubsystem;
 
         std::vector<Ref<Thread>> m_WorkerThreads;
 

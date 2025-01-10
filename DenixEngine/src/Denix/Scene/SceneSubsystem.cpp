@@ -1,61 +1,75 @@
 #include "SceneSubsystem.h"
 #include "Denix/Video/Window/WindowSubsystem.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Video/Renderer/RendererSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"
-#include "Denix/Resource/Asset.h"
-#include <omp.h>
+#include "Denix/Asset/Asset.h"
 
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Thread/JobSubsystem.h"
 #include "Denix/Thread/ThreadPrimitive.h"
+#include "Denix/Asset/Asset.h"
+
+#include  "yaml-cpp/yaml.h"
 
 namespace Denix
 {
-	SceneSubsystem* SceneSubsystem::s_SceneSubsystem{ nullptr };
-
+	SceneSubsystem::SceneSubsystem(const Ref<Asset>& _startupScene)
+	{
+		m_StartupScene = _startupScene;
+		m_BatchUpdateActors = true;
+	}
+	
 	void SceneSubsystem::Initialize()
 	{
+		Subsystem::Initialize();
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
 
-		Ref<Scene> startScene = nullptr;
+		// Ensure we always have a default scene
 		
-		// Check engine config for startup scene. This is validated in the LoadConfig function
+		
+		// Load Startup scene if it exists
 		if(m_StartupScene)
 		{
 			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(m_StartupScene->GetAssetName())))
 			{
+				scene->m_Name = m_StartupScene->GetAssetName();
 				scene->m_SceneAsset =m_StartupScene; // Reflection doesn't support constructor arguments yet
 				OpenScene(scene);
 			}
 			else
 			{
-				assert(false, "Failed to create startup scene. No Reflection Class Found");
+				DE_LOG(LogScene, Error, "Failed to create startup scene {}. No Reflection Class Found", m_StartupScene->GetAssetName())
+				OpenScene(MakeRef<Scene>());
 			}
 		}
-		// Create a default scene
 		else
 		{
-			DE_LOG(LogScene, Warn, "No startup scene found. Created default scene")
 			OpenScene(MakeRef<Scene>());
 		}
+		
 
 		DE_LOG(LogScene, Info, "Scene Subsystem Initialized")
 	}
 
 	void SceneSubsystem::Deinitialize()
 	{
+		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitializing")
+
+		CloseScene();
+		m_StartupScene.reset();
 		DE_LOG(LogScene, Trace, "Scene Subsystem Deinitialized")
+		Subsystem::Deinitialize();
 	}
 
 	Ref<Camera> SceneSubsystem::GetActiveCamera()
 	{
-		if (s_SceneSubsystem->m_ActiveScene)
+		if (s_Instance->m_ActiveScene)
 		{
-			return s_SceneSubsystem->m_ActiveScene->GetViewportCamera();
+			return s_Instance->m_ActiveScene->GetViewportCamera();
 		}
 
 		DE_LOG(LogScene, Error, "No active scene")
@@ -74,48 +88,12 @@ namespace Denix
 		// Load the scene data
 		DeserializeScene(_scene);
 		
-		// Load the scene - This should probably be skipped now we have the deserialization
-		if (!_scene->Load())
-		{
-			DE_LOG(LogScene, Critical, "Failed to load scene")
-			return false;
-		}
-
-		s_SceneSubsystem->m_LoadedScenes[_scene->GetName()] = _scene;
-
 		if(_scene->m_SceneAsset) DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->m_SceneAsset->GetAssetName())
 		else DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->GetName())
 		
 		return true;
 	}
 	
-	void SceneSubsystem::UnloadScene(const std::string& _name)
-	{
-		if (const Ref<Scene>scene = s_SceneSubsystem->m_LoadedScenes[_name])
-		{
-			// Unload the scene
-			scene->Unload();
-			s_SceneSubsystem->m_LoadedScenes.erase(_name);
-
-			DE_LOG(LogScene, Info, "Unloaded Scene: {}", _name)
-			return;
-		}
-
-		DE_LOG(LogScene, Error, "Load Scene: Invalid scene name, or the scene isn't loaded")
-	}
-
-	void SceneSubsystem::OpenScene(const std::string& _name)
-	{
-		//if (const Ref<Scene> scene = s_SceneSubsystem->m_LoadedScenes[_name])
-		if (const Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(_name)))
-		{
-			OpenScene(scene);
-			return;
-		}
-	
-		DE_LOG(LogScene, Error, "Cound't find Scene: {}", _name)
-	}
-
 	void SceneSubsystem::OpenScene(const Ref<Asset>& _sceneAsset)
 	{
 		if (!_sceneAsset)
@@ -139,68 +117,91 @@ namespace Denix
 			return;
 		}
 
-		// Load the scene if it isn't already loaded
-		if(!_scene->IsLoaded()) LoadScene(_scene);
+		// Close the current scene if it's open
+		if (s_Instance->m_ActiveScene && s_Instance->m_ActiveScene->m_IsOpen) s_Instance->CloseScene();
+		
+		// Load the scene
+		LoadScene(_scene);
 
 		// Set the active scene. Take ownership of the scene pointer
-		s_SceneSubsystem->m_ActiveScene = std::move(_scene);
+		s_Instance->m_ActiveScene = std::move(_scene);
 		
 		// Set dependencies with new scene pointer
-		RendererSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
-		PhysicsSubsystem::SetActiveScene(s_SceneSubsystem->m_ActiveScene);
-		if(EditorSubsystem::Get()) EditorSubsystem::Get()->SetActiveScene(s_SceneSubsystem->m_ActiveScene);
+		RendererSubsystem::SetActiveScene(s_Instance->m_ActiveScene);
+		PhysicsSubsystem::SetActiveScene(s_Instance->m_ActiveScene);
+		if(EditorSubsystem::GetInstance()) EditorSubsystem::GetInstance()->SetActiveScene(s_Instance->m_ActiveScene);
 
 		// Begin new scene
-		s_SceneSubsystem->m_ActiveScene->BeginScene();
+		s_Instance->m_ActiveScene->m_IsOpen = true;
+		s_Instance->m_ActiveScene->BeginScene();
 
+
+		// Update scene state - For shipped games, playing is the default state
+		m_SceneState = SceneState::Stopped;
 		DE_LOG(LogScene, Info, "Activated Scene: {}",
-			s_SceneSubsystem->m_ActiveScene->GetName())
+			s_Instance->m_ActiveScene->GetName())
 	}
 
 	void SceneSubsystem::PlayScene()
 	{
-		if (!s_SceneSubsystem->m_ActiveScene) return;
+		if (!s_Instance->m_ActiveScene) return;
 
-		s_SceneSubsystem->m_ActiveScene->BeginPlay();
-
+		s_Instance->m_ActiveScene->BeginPlay();
+		s_Instance->m_ActiveScene->m_IsPlaying = true;
+		m_SceneState = SceneState::Playing;
+		
 		// Check for Game Camera
-		if(const Ref<Camera> camera = s_SceneSubsystem->m_ActiveScene->GetGameCamera())
+		if(const Ref<Camera> camera = s_Instance->m_ActiveScene->FindGameCamera())
 		{
 			// Set the camera as the active camera
-			s_SceneSubsystem->m_ActiveScene->m_ActiveCamera = camera;
-			DE_LOG(LogScene, Info, "Game Camera Found: {}", camera->GetName())
-		}
-		else
-		{
-			DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
+			s_Instance->m_ActiveScene->m_ActiveCamera = camera;
+			
 		}
 
-		DE_LOG(LogScene, Trace, "Started Playing Scene: {}", s_SceneSubsystem->m_ActiveScene->GetName())
+		DE_LOG(LogScene, Trace, "Started Playing Scene: {}", s_Instance->m_ActiveScene->GetName())
 	}
 
 	void SceneSubsystem::StopScene()
 	{
-		if (s_SceneSubsystem->m_ActiveScene)
+		if (s_Instance->m_ActiveScene)
 		{
-			s_SceneSubsystem->m_ActiveScene->EndPlay();
+			s_Instance->CloseScene();
+			m_SceneState = SceneState::Stopped;
 
 			// Need to establish a better way of handling scenes
-			s_SceneSubsystem->LoadScene(s_SceneSubsystem->m_ActiveScene);
+			s_Instance->OpenScene(s_Instance->m_ActiveScene->m_SceneAsset);
 			DE_LOG(LogScene, Trace, "Scene Stopped")
 		}
 	}
 
 	void SceneSubsystem::PauseScene()
 	{
-		DE_LOG(LogScene, Trace, "Scene Paused")
+		// Pause Logic
+		if (m_SceneState == SceneState::Playing)
+		{
+			m_SceneState = SceneState::Paused;
+			DE_LOG(LogScene, Trace, "Scene Paused")
+		}
+
+		// Resume logic
+		else if (m_SceneState == SceneState::Paused)
+		{
+			m_SceneState = SceneState::Playing;
+			DE_LOG(LogScene, Trace, "Scene Resumed")
+		}
 	}
 
-	SceneSubsystem::SceneSubsystem(const Ref<Asset>& _startupScene)
+	void SceneSubsystem::CloseScene()
 	{
-		s_SceneSubsystem = this;
-		m_StartupScene = _startupScene;
-		m_BatchUpdateActors = true;
+		if (m_ActiveScene)
+		{
+			if (m_ActiveScene->m_IsPlaying) m_ActiveScene->EndPlay();
+			m_ActiveScene->EndScene();
+			m_ActiveScene->m_IsOpen = false;
+			//m_ActiveScene.reset();
+		}
 	}
+
 
 	void SceneSubsystem::CleanRubbish()
 	{
@@ -228,57 +229,50 @@ namespace Denix
 		DE_PROFILE(Scene Update)
 
 		// Validate Scene
-		if (!m_ActiveScene)
-		{
-			DE_LOG(LogScene, Error, "No active scene")
-			DE_PROFILE_END(Scene Update)
-			return;
-		}
-		
-		if (m_ActiveScene->m_RequestStop)
-		{
-			StopScene();
-			return;
-		}
+		assert(m_ActiveScene && "No active scene found");
 
-		if (m_ActiveScene->m_RequestStart)
-		{
-			PlayScene();
-			return;
-		}
-
+		DE_PROFILE(Scene Camera)
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
 			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
-			cam->Update(_deltaTime, _waitCounter);
+			cam->Update(_deltaTime);
 		}
-
-		// Client Scene Update
-		m_ActiveScene->Update(_deltaTime, _waitCounter);
+		DE_PROFILE_END(Scene Camera)
 		
 		// Scene update implementation
+		DE_PROFILE(Scene Actors)
+		Ref<Counter> actorCounter = MakeRef<Counter>();
 		if(m_BatchUpdateActors)
 		{
 			// Submit jobs for each actor
-			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime, _waitCounter);
+			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, actorCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
+			WaitForCounter(actorCounter.get());
 		}
 		else
 		{
-			for (auto actor: m_ActiveScene->m_Actors)
+			JobSubsystem::AddJobInline("Actor Update", Priority::NORMAL, actorCounter, [this, _deltaTime]()
 			{
-				actor->Update(_deltaTime, _waitCounter);
-			}
+				for (const auto actor: m_ActiveScene->m_Actors) actor->Update(_deltaTime);
+			});
 		}
+		DE_PROFILE_END(Scene Actors)
+
+		DE_PROFILE(Scene Client)
+		// Client Scene Update
+		m_ActiveScene->Update(_deltaTime);
+		m_ActiveScene->DebugUI(_deltaTime);
+		DE_PROFILE_END(Scene Client)
+		
 		DE_PROFILE_END(Scene Update)
 	}
 
 	void SceneSubsystem::SerializeScene()
 	{
-		SerializeScene(s_SceneSubsystem->m_ActiveScene.get());
+		SerializeScene(s_Instance->m_ActiveScene);
 	}
 	
-	bool SceneSubsystem::SerializeScene(const Scene* _scene)
+	bool SceneSubsystem::SerializeScene(const Ref<Scene>& _scene)
 	{
 		// Check if the pointer is valid
 		if (!_scene)
@@ -347,31 +341,25 @@ namespace Denix
 		YAML::Node sceneNode = YAML::LoadFile(_scene->m_SceneAsset->GetAssetPath());
 
 		// Check if the scene data is valid
-		if (!sceneNode)
+		if (!sceneNode.IsDefined())
 		{
-			DE_LOG(LogScene, Error, "Failed to load scene asset data: {}", _scene->m_SceneAsset->GetAssetPath())
+			DE_LOG(LogScene, Error, "Failed to load scene asset: {}", _scene->m_SceneAsset->GetAssetPath())
 			return;
 		}
         	
 		// Load the scene objects
-		std::vector<Ref<Actor>> Actors;
-		DeserializeSceneObjects(sceneNode, Actors);
-		
-		for (const auto& newActor : Actors)
-			_scene->SpawnActor(newActor);
-		
-		DE_LOG(LogScene, Info, "Deserialized scene: {}", _scene->GetName())
+		DeserializeSceneObjects(_scene, sceneNode);
 	}
 
-	bool SceneSubsystem::DeserializeSceneObjects(const YAML::Node& _sceneNode,
-	                                             std::vector<Ref<Actor>>& _actors)
+	bool SceneSubsystem::DeserializeSceneObjects(const Ref<Scene>& _scene,
+	                                             const YAML::Node& _sceneNode)
 	{
 		// Load the scene objects
 		YAML::Node sceneObjectsNode = _sceneNode["m_SceneObjects"];
 
-		if(sceneObjectsNode.IsNull())
+		if(!sceneObjectsNode.IsDefined())
 		{
-			DE_LOG(LogScene, Warn, "No Scene Actos found")
+			DE_LOG(LogScene, Error, "Failed to load scene asset")
 			return false;
 		}
 		
@@ -380,61 +368,22 @@ namespace Denix
 			// Create an actor placeholder. 
 			Ref<Actor> newActor;
 
-			// Initialize the actor base object
-			if(const YAML::Node& objDataNode = objNode["m_Object"]; objDataNode.IsDefined())
+			// Initialize the actor base object with class type
+			if(const YAML::Node& objClassNode = objNode["m_Object"]["m_ClassName"]; objClassNode.IsDefined())
+				newActor = ReflectionSubsystem::Create<Actor>(objClassNode.as<std::string>());
+
+			// If reflection failed to find the class, create the actor with the default class
+			if(!newActor)
 			{
-				if(const YAML::Node& objClassNode = objDataNode["m_ClassName"]; objClassNode.IsDefined())
-				{
-					// Create the actor with the custom class. This will be used for custom actors
-					newActor = ReflectionSubsystem::Create<Actor>(objClassNode.as<std::string>());
-				}
-
-				// If reflection failed to find the class, create the actor with the default class
-				if(!newActor)
-				{
-					newActor = MakeRef<Actor>();
-					DE_LOG(LogScene, Warn, "Failed to create actor with custom class. Using default class")
-				}
-
-				// Set the object GUID
-				if(const YAML::Node& objGUIDNode = objDataNode["m_GUID"]; objGUIDNode.IsDefined())
-				{
-					newActor->m_GUID = objGUIDNode.as<unsigned int>();
-				}
-				else
-				{
-					DE_LOG(LogScene, Warn, "No object GUID found. Using default GUID")
-				}
-				
-				// Set the object name
-				if(const YAML::Node& objNameNode = objDataNode["m_Name"]; objNameNode.IsDefined())
-				{
-					newActor->SetName(objNameNode.as<std::string>());
-				}
-				else
-				{
-					newActor->SetName("New Actor");
-					DE_LOG(LogScene, Warn, "No object name found. Using default name")
-				}
+				newActor = MakeRef<Actor>();
+				DE_LOG(LogScene, Error, "Failed to create actor with custom class. Using default class")
 			}
 			
 			// Deserialize the game object
 			newActor->Deserialize(objNode);
-			_actors.push_back(newActor);
+			_scene->SpawnActor(newActor);
 		}
 		
 		return true;
-	}
-
-	void SceneSubsystem::SpawnSceneObject(const Ref<Actor>& _object)
-	{
-		if (s_SceneSubsystem->m_ActiveScene)
-		{
-			s_SceneSubsystem->m_ActiveScene->SpawnActor(_object);
-		}
-		else
-		{
-			DE_LOG(LogScene, Critical, "No active scene")
-		}
 	}
 }

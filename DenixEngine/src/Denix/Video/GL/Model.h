@@ -1,53 +1,33 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/Scene/Object.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+#include "Denix/Asset/Asset.h"
+
 namespace Denix
 {
 	class Mesh;
 	class Texture;
 
-	/*struct aiNode;
-	struct aiMesh;
-	struct aiScene;*/
-
-	class Model : public Object
+	class Model : public Asset
 	{
 	public:
-		Model(const ObjectInit& _objInit = {"Model"}): Object(_objInit) {}
+		Model(const AssetInit& _assetInit): Asset(_assetInit) {}
 
-		Model(const std::string& _name, const std::string& _path) :
-			Object(ObjectInit(_name)), m_Path(_path) 
+		~Model()
 		{
-			LoadModel(_path);
+			m_Meshes.clear();
+			m_Textures.clear();
+			m_MeshToTex.clear();
 		}
 
-		~Model(){}
-
-		bool LoadModel(const std::string& _path);
+		bool LoadModel();
 		void RenderModel();
-		void ClearModel()
-		{
-			//for (unsigned int i = 0; i < m_Meshes.size(); i++)
-			//{
-			//	if (m_Meshes[i])
-			//	{
-			//		//m_Meshes[i]->ClearMesh();
-			//	}
-			//}
-			//
-			//for (const auto& m_Texture : m_Textures)
-			//{
-			//	if (m_Texture)
-			//	{
-			//		m_Texture->ClearTexture();
-			//	}
-			//}
-		}
+		
 	//private:
 
 		void LoadNode(aiNode* _node, const aiScene* _scene);
@@ -56,7 +36,6 @@ namespace Denix
 		void LoadMaterials(const aiScene* _scene);
 
 		bool m_IsLoaded = false;
-		std::string m_Path;
 		std::vector<Ref<Mesh>> m_Meshes;
 		std::vector<Ref<Texture>> m_Textures;
 		std::vector<unsigned int> m_MeshToTex;

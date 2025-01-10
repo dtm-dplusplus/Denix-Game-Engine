@@ -3,7 +3,7 @@
 #include "Denix/Video/GL/Shader.h"
 #include "imgui.h"
 #include "misc/cpp/imgui_stdlib.h"
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 namespace Denix
 {
@@ -26,7 +26,7 @@ namespace Denix
                         ImGuiInputTextFlags_CtrlEnterForNewLine ;
                     if(ImGui::Button("Recompile Shader"))
                     {
-                        ResourceSubsystem::ReloadShader(ShaderObject);
+                        AssetSubsystem::ReloadShader(ShaderObject);
                     }
                     ImGui::BeginChild(shaderSource.FileName.c_str());
                     ImGui::InputTextMultiline("##source", &shaderSource.Source, ImGui::GetWindowSize(), flags);

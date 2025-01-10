@@ -19,12 +19,9 @@ namespace Denix
     class BaseObject: public Object
     {
     public:
-        BaseObject() : Object(ObjectInit()), m_ClassName("BaseObject")
-        {
-        }
-
-        BaseObject(const ObjectInit& _objInit): Object(_objInit), m_ClassName("BaseObject") {}
-        ~BaseObject() override = default;
+        BaseObject() = default;
+        BaseObject(const ObjectInit& _objInit): Object(_objInit){}
+        /*~BaseObject() override = default;*/
 
         
         // Called each frame if the game is playing
@@ -40,10 +37,5 @@ namespace Denix
         
         virtual void Serialize(YAML::Emitter& _out);
         virtual void Deserialize(const YAML::Node& _in);
-
-    protected:
-        std::string m_ClassName;
-
-        friend class ReflectionSubsystem;
     };
 }

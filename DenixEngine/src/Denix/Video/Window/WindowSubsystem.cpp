@@ -1,13 +1,10 @@
 #include "WindowSubsystem.h"
-#include "Denix/Video/GL/Viewport.h"
 
 namespace Denix
 {
-    WindowSubsystem* WindowSubsystem::s_WindowSubsystem{ nullptr };
-
     void WindowSubsystem::ToggleFullscreen()
     {
-        s_WindowSubsystem->m_Window->ToggleFullscreen();
+        s_Instance->m_Window->ToggleFullscreen();
     }
 
     void WindowSubsystem::Initialize()
@@ -15,23 +12,38 @@ namespace Denix
         Subsystem::Initialize();
         DE_LOG(LogWindow, Warn, "Initializing Window Subsystem")
 
-        //Create window
-        if (const Ref<SDL_GLWindow> window = MakeRef<SDL_GLWindow>())
+        SDL_GLWindow::m_GLMajorVersion = 3;
+        SDL_GLWindow::m_GLMinorVersion = 0;
+        SDL_GLWindow::m_GLDepthSize = 24;
+        SDL_GLWindow::m_GLStencilSize = 8;
+        SDL_GLWindow::m_GLDoubleBuffer = 1;
+        
+        
+        //Create main window
+        m_Window = MakeRef<SDL_GLWindow>();
+        if (!m_Window->m_IsOpen)
         {
-            if (!window->Initialize()) return;
-            m_Window = window;
+            const std::string error = "Failed to create main window";
+            DE_LOG(LogWindow, Critical, error)
+            throw std::runtime_error(error.c_str());
         }
 
         // Init Glew
         if (glewInit() != GLEW_OK)
         {
-        	DE_LOG(LogWindow, Critical, "glewInit(): failed")
-        		return;
+            DE_LOG(LogWindow, Critical, "glewInit(): failed")
+                return;
         }
         DE_LOG(LogWindow, Trace, "glewInit(): success")
         
-        //m_DefaultViewport = MakeRef<Viewport>(m_Window->GetWidth(), m_Window->GetHeight());
-
         DE_LOG(LogWindow, Info, "Window Subsystem Initialized")
+    }
+
+    void WindowSubsystem::Deinitialize()
+    {
+        DE_LOG(LogWindow, Trace, "Window Subsystem Deinitializing")
+        m_Window.reset();
+        Subsystem::Deinitialize();
+        DE_LOG(LogWindow, Trace, "Window Subsystem Deinitialized")
     }
 }

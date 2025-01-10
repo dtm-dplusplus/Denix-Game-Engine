@@ -37,3 +37,21 @@ add_library(Imgui STATIC
         ${ENGINE_SOURCE_DIR}/contrib/imgui/implot_items.cpp
         ${ENGINE_SOURCE_DIR}/contrib/imgui/implot_demo.cpp
 )
+
+# Add Dependency to support the SDL3 Backend
+#add_dependencies(${PROJECT_NAME} SDL3::SDL3)
+
+# Enable Edit and Continue for MSVC
+#[[if(MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
+    target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
+endif()]]
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:/MTd>
+        $<$<CONFIG:Release>:/MT>
+)
+
+# Set the C++ flags to enable multi-processor compilation
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")

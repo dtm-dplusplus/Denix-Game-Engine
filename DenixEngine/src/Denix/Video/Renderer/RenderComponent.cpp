@@ -1,6 +1,6 @@
 #include "RenderComponent.h"
 
-#include "Denix/Resource/ResourceSubsystem.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 
 namespace Denix
@@ -8,9 +8,9 @@ namespace Denix
 
 	RenderComponent::RenderComponent(): Component(ObjectInit("Render Component"))
 	{
-		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
-		m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-		m_Material = ResourceSubsystem::GetMaterial(FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset");
+		m_Shader = AssetSubsystem::GetShader("DefaultShader");
+		m_Texture = AssetSubsystem::GetTexture("DefaultTexture");
+		m_Material = AssetSubsystem::GetDefaultMaterial();
 	}
 
 	RenderComponent::RenderComponent(Ref<RenderComponent> _other)
@@ -23,13 +23,6 @@ namespace Denix
 		m_AffectsLighting = _other->m_AffectsLighting;
 	}
 
-	RenderComponent::RenderComponent(const std::string& _parentName): Component(_parentName, ObjectInit("Render Component"))
-	{
-		m_Shader = ResourceSubsystem::GetShader("DefaultShader");
-		m_Texture = ResourceSubsystem::GetTexture("DefaultTexture");
-		m_Material =  ResourceSubsystem::GetMaterial(FileSubsystem::GetEngineContentRoot() + "Material\\MAT_Default.asset");
-	}
-
 	void RenderComponent::SetMaterial(const Ref<Material>& _material)
 	{
 		// Check if the material is valid
@@ -40,6 +33,7 @@ namespace Denix
 		}
 		
 		m_Material = _material;
+		m_Material->CheckBaseType();
 	}
 
 	void RenderComponent::BeginScene()
