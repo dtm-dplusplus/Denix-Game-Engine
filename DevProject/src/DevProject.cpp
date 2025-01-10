@@ -1,11 +1,10 @@
  #include "Denix.h"
+
 #include "Scene/AudioScene.h"
-
-#include "Scene/CPGScene.h"
+#include "Scene/GACPScene.h"
 #include "Scene/DevScene.h"
-#include "Scene/ThreadScene.h"
+#include "Scene/CPG/CPGActor.h"
 
- //using namespace Denix;
 class DevProject final: public Engine
 {
 public:
@@ -18,8 +17,8 @@ public:
 
 		DE_LOG_CREATE(LogDevProject)
 		ReflectionSubsystem::Register<DevScene>();
-		ReflectionSubsystem::Register<CPGScene>();
-		ReflectionSubsystem::Register<ThreadScene>();
+		ReflectionSubsystem::Register<GACPScene>();
+		ReflectionSubsystem::Register<GACPScene>();
 		ReflectionSubsystem::Register<AudioScene>();
 		ReflectionSubsystem::Register<CPGActor>();
 	}

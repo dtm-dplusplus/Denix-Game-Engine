@@ -229,42 +229,34 @@ namespace Denix
 		DE_PROFILE(Scene Update)
 
 		// Validate Scene
-		assert(m_ActiveScene && "No active scene found");
+		DE_ASSERT(m_ActiveScene,"No active scene found")
 
-		DE_PROFILE(Scene Camera)
 		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
 		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
 		{
 			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
 			cam->Update(_deltaTime);
 		}
-		DE_PROFILE_END(Scene Camera)
 		
 		// Scene update implementation
-		DE_PROFILE(Scene Actors)
-		Ref<Counter> actorCounter = MakeRef<Counter>();
 		if(m_BatchUpdateActors)
 		{
 			// Submit jobs for each actor
-			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, actorCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
-			WaitForCounter(actorCounter.get());
+			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
 		}
 		else
 		{
-			JobSubsystem::AddJobInline("Actor Update", Priority::NORMAL, actorCounter, [this, _deltaTime]()
+			JobSubsystem::AddJobInline("Actor Update", Priority::NORMAL, _waitCounter, [this, _deltaTime]()
 			{
 				for (const auto actor: m_ActiveScene->m_Actors) actor->Update(_deltaTime);
 			});
 		}
-		DE_PROFILE_END(Scene Actors)
 
-		DE_PROFILE(Scene Client)
 		// Client Scene Update
+		DE_PROFILE(Scene Client)
 		m_ActiveScene->Update(_deltaTime);
 		m_ActiveScene->DebugUI(_deltaTime);
 		DE_PROFILE_END(Scene Client)
-		
-		DE_PROFILE_END(Scene Update)
 	}
 
 	void SceneSubsystem::SerializeScene()

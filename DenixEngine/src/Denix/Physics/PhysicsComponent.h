@@ -77,9 +77,7 @@ namespace Denix
 
 		bool m_RotationEnabled = true;
 
-		void SetShape(ColliderType _type);
 		void SetupPhysX();
-		void UpdatePhysX();
 		void UpdatePxDynamicActor(physx::PxRigidDynamic* _actor);
 
 		float m_PxSlopCoefficient = 0.1f;

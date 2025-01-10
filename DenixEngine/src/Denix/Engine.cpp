@@ -181,7 +181,6 @@ namespace Denix
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
 			Ref<Counter> inputCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, inputCounter, &InputSubsystem::Update, m_InputSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			//WaitForCounter(inputCounter.get());
 			
 			// Clear the offscreen frame buffer
 			Ref<Counter> clearCounter = MakeRef<Counter>();
@@ -194,7 +193,6 @@ namespace Denix
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				DE_PROFILE_END(Clear Frame Buffer)
 			});
-			//WaitForCounter(clearCounter.get());
 			
 			// Update the physics system. Collision detection and resolution will be here
 			Ref<Counter> physicsCounter = MakeRef<Counter>();
@@ -205,6 +203,22 @@ namespace Denix
 			Ref<Counter> sceneCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem.get(), m_TimerSubsystem->m_DeltaTime, sceneCounter);
 			WaitForCounter(sceneCounter.get());
+			DE_PROFILE_END(Scene Update)
+
+			// Update Physics Components 
+			for (const auto& actor : m_SceneSubsystem->m_ActiveScene->m_Actors)
+			{
+				if (const Ref<PhysicsComponent> physcComp = actor->GetPhysicsComponent())
+				{
+					if (!physcComp->m_PxActor) continue;
+					
+					if (physx::PxRigidDynamic* pxActor = physcComp->m_PxActor->is<physx::PxRigidDynamic>())
+					{
+						const glm::vec3& pos = actor->GetTransformComponent()->GetPosition();
+						pxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
+					}
+				}
+			}
 			
 			// Update the UI & Editor for any changes
 			Ref<Counter> uiCounter = MakeRef<Counter>();
@@ -214,12 +228,10 @@ namespace Denix
 			// Run on main due to opengl context when initializing the scene
 			Ref<Counter> editorCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem.get(), m_TimerSubsystem->m_DeltaTime);
-			//WaitForCounter(editorCounter.get());
 
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			Ref<Counter> renderCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter, &RendererSubsystem::RenderScene, m_RendererSubsystem.get());
-			//WaitForCounter(renderCounter.get());
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			Ref<Counter> drawCounter = MakeRef<Counter>();
@@ -233,7 +245,6 @@ namespace Denix
 				m_UISubsystem->ViewportUpdate();
 				DE_PROFILE_END(Draw Viewport)
 			});
-			//WaitForCounter(drawCounter.get());
 			
 			// Run the garbage collector
 			Ref<Counter> garbageCounter = MakeRef<Counter>();

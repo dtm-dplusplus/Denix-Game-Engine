@@ -5,6 +5,7 @@
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Core/TimerSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
+#include "Denix/Scene/Object/Shapes/Shapes.h"
 
 using namespace Denix;
 

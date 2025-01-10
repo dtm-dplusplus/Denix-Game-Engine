@@ -6,7 +6,8 @@
 #include "Denix/Thread/JobSubsystem.h"
 #include "Util/ActorGridSpawner.h"
 
-CPGActor::CPGActor()
+
+Denix::CPGActor::CPGActor()
 {
     // m_ClassName = "CPGActor";
     m_PhysicsComponent->SimulatePhysics() = true;
@@ -16,14 +17,14 @@ CPGActor::CPGActor()
     m_RenderComponent->GetMaterial() = MakeRef<Material>(m_RenderComponent->GetMaterial());
 }
 
-void CPGActor::BeginPlay()
+void Denix::CPGActor::BeginPlay()
 {
     Cube::BeginPlay();
 
     m_PhysicsComponent->GetMass() = Math::RandF(10.0f, 1000.0f);
 }
 
-void CPGActor::Update(float _deltaTime)
+void Denix::CPGActor::Update(float _deltaTime)
 {
     Cube::Update(_deltaTime);
 
@@ -44,7 +45,7 @@ void CPGActor::Update(float _deltaTime)
     }
 }
 
-void CPGActor::RandomModel()
+void Denix::CPGActor::RandomModel() const
 {
     static size_t modelStoreSize = AssetSubsystem::GetModelStore().size();
     static std::unordered_map<std::string, Ref<Model>> modelStore = AssetSubsystem::GetModelStore();

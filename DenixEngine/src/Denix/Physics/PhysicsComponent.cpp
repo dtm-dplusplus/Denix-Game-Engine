@@ -33,25 +33,6 @@ namespace Denix
         RegisterComponent();
     }
 
-
-    void PhysicsComponent::SetShape(ColliderType _type)
-    {
-       // PX_RELEASE(m_PxShape)
-
-        switch (m_Collider->GetColliderType())
-        {
-        case ColliderType::Cube:
-            {
-                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(2, .5, 2), *PhysicsSubsystem::m_PxMaterial);
-            } break;
-
-        case ColliderType::Sphere:
-            {
-                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxSphereGeometry(.5), *PhysicsSubsystem::m_PxMaterial);
-            } break;
-        }
-    }
-
     void PhysicsComponent::SetupPhysX()
     {
         const auto scale = m_Parent->m_TransformComponent->m_Scale;
@@ -97,50 +78,7 @@ namespace Denix
         m_PxActor->attachShape(*m_PxShape);
     }
 
-    void PhysicsComponent::UpdatePhysX()
-    {
-        const auto scale = m_Parent->m_TransformComponent->m_Scale;
-        const auto scaleH = m_Parent->m_TransformComponent->m_Scale / 2.0f;
-        const auto pos = m_Parent->m_TransformComponent->m_Position;
-
-        switch (m_ColliderType)
-        {
-        case ColliderType::Plane:
-        {
-            m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(scale.x, 0.01f, scale.z), *PhysicsSubsystem::m_PxMaterial);
-        } break;
-            
-        case ColliderType::Cube:
-            {
-                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(scaleH.x, scaleH.y, scaleH.z), *PhysicsSubsystem::m_PxMaterial);
-            } break;
-
-        case ColliderType::Sphere:
-            {
-                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxSphereGeometry(scaleH.x), *PhysicsSubsystem::m_PxMaterial);
-            } break;
-        }
-        
-        switch (m_Parent->m_TransformComponent->m_Moveability)
-        {
-        case 0:
-            {
-                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidStatic(physx::PxTransform(pos.x, pos.y, pos.z));
-            } break;
-
-        case 1:
-            {
-                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(pos.x, pos.y, pos.z));
-            } break;
-        }
-        
-        
-
-        m_PxActor->userData = m_Parent.get();
-        m_PxActor->attachShape(*m_PxShape);
-        PhysicsSubsystem::RegisterPxActor(m_PxActor);
-    }
-
+    
     void PhysicsComponent::UpdatePxDynamicActor(physx::PxRigidDynamic* _actor)
     {
         if (!_actor) return;

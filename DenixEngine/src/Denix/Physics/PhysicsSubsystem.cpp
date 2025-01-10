@@ -24,6 +24,10 @@ namespace Denix
         m_PxDispatcher = PxDefaultCpuDispatcherCreate((PxU32)JobSubsystem::GetActiveThreads());
         
         m_PxMaterial = m_PxPhysics->createMaterial(0.5f, 0.5f, 0.5f);
+
+        // Set the logging level to suppress debug messages for now
+        m_PxFoundation->setErrorLevel(PxErrorCode::eDEBUG_INFO);
+        
         DE_LOG(LogPhysics, Info, "PhysicsSubsystem Initialized")
     }
 
@@ -89,13 +93,11 @@ namespace Denix
             return;
         }
         
-        DE_PROFILE(Physics Simulation)
         if (activeScene->m_PxScene)
         {
             activeScene->m_PxScene->simulate(_deltaTime);
             activeScene->m_PxScene->fetchResults(true);
         }
-        DE_PROFILE_END(Physics Simulation)
 
         DE_PROFILE_END(Physics Update)
     }

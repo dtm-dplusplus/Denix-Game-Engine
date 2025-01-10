@@ -1,24 +1,23 @@
 ﻿#pragma once
 
-#include "CPG/JobSubsystemWidget.h"
-#include "Denix/Core/Timer.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Thread/Thread.h"
 #include "Util/ActorGridSpawner.h"
 
-using namespace Denix;
-struct ActorGridSpawner;
+namespace Denix
+{
+    class JobSubsystemWidget;
+}
 
-class ThreadScene: public Scene
+using namespace Denix;
+
+class GACPScene: public Scene
 {
 public:
-    ThreadScene() ;
+    GACPScene() ;
     void BeginScene() override;
-    void Update(float _deltaTime) override;
     void DebugUI(float _deltaTime) override;
     
 
-    Ref<Counter> DebugCounter;
 
     ActorGridSpawner m_GridSpawner;
     Ref<JobSubsystemWidget> m_JobSubsystemWidget;

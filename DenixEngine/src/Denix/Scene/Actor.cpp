@@ -226,10 +226,10 @@ namespace Denix
         }
 
         // Update physics actor if scene update modifies the transform
-        if (m_PhysicsComponent->m_PxActor)
+        /*if (m_PhysicsComponent->m_PxActor)
         {
             const glm::vec3& pos = m_TransformComponent->m_Position;
             m_PhysicsComponent->m_PxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
-        }
+        }*/
     }
 }
