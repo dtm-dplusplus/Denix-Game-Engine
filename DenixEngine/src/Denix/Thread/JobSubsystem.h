@@ -186,8 +186,7 @@ namespace Denix
 
             s_JobSubsystem->m_CurrentBatchCount = batchSize;
 
-            if (objectCount > s_JobSubsystem->m_BatchUpdateThreshold && objectCount > s_JobSubsystem->
-                m_AvailableWorkerThreads)
+            if (objectCount > s_JobSubsystem->m_BatchUpdateThreshold)
             {
                 for (size_t batchIndex = 0; batchIndex < s_JobSubsystem->m_ActiveWorkerThreads; batchIndex++)
                 {

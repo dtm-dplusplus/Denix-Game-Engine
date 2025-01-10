@@ -37,10 +37,9 @@ void CPGScene::DebugUI(float _deltaTime)
 
     if (ImGui::CollapsingHeader("Dev Stuff", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        ImGui::Checkbox("Batch Update Actors", &SceneSubsystem::Get()->m_BatchUpdateActors);
         ImGui::SeparatorText("Spawner");
         ImGui::DragFloat("Spawn Height", &ActorGridSpawner::SpawnHeight, 1.0f, 0.0f, 1000.0f);
-        ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, 100);
+        ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, 200);
         ImGui::SameLine();
         if (ImGui::Button("Spawn Grid"))  m_GridSpawner.SpawnGrid(shared_from_this());
         if (ImGui::CollapsingHeader("Job Subsystem", ImGuiTreeNodeFlags_DefaultOpen))

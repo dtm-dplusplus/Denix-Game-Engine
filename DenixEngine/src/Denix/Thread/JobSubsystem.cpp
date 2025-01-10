@@ -13,7 +13,7 @@ Denix::JobSubsystem::JobSubsystem()
     m_AvailableWorkerThreads = 0;
     m_AutoBatchingEnabled = true;
     m_ManualBatchSize = 100;
-    m_BatchUpdateThreshold = 50;
+    m_BatchUpdateThreshold = 1000;
     DE_LOG_CREATE(LogThread)
     DE_LOG_CREATE(LogJob)
 }
@@ -26,7 +26,7 @@ Denix::JobSubsystem::~JobSubsystem()
 void Denix::JobSubsystem::UpdateActiveThreads()
 {
     // Clamp the active threads to the system thread count
-    s_JobSubsystem->m_ActiveWorkerThreads = std::clamp(s_JobSubsystem->m_ActiveWorkerThreads, 1,
+    s_JobSubsystem->m_ActiveWorkerThreads = std::clamp(s_JobSubsystem->m_ActiveWorkerThreads, 2,
                                                        s_JobSubsystem->m_AvailableWorkerThreads);
     DE_LOG(LogJob, Trace, "Set Active Worker Threads: {} of {}", s_JobSubsystem->m_ActiveWorkerThreads,
            s_JobSubsystem->m_AvailableWorkerThreads)

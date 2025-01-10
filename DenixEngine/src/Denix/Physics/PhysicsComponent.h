@@ -64,7 +64,7 @@ namespace Denix
 			m_Torque += _torque;
 		}
 
-		bool m_RotationEnabled = true;
+		bool m_RotationEnabled = false;
 
 
 	private:

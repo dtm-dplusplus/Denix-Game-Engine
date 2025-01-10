@@ -30,46 +30,14 @@ namespace Denix
         if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
     }
 
-    void PhysicsSubsystem::Update(float _deltaTime)
+    void PhysicsSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
         if (!m_Enabled || !m_ActiveScene->IsPlaying()) return;
 
         DE_PROFILE(Physics Update)
 
-         // Clean collision colData
-                m_CollisionEvents.clear();
-        
-        // Set status
-        for (const auto& comp : m_PhysicsComponents)
-        {
-            comp->m_SteppedThisFrame = comp->m_SteppedNextFrame;
-            comp->m_SteppedNextFrame = false;
-            comp->m_IsColliding = false;
-        
-            comp->m_Force = comp->m_SimulateGravity
-                                        ? glm::vec3(
-                                            0.0f, comp->m_Mass * -m_ActiveScene->
-                                            GetGravity(), 0.0f)
-                                        : glm::vec3(0.0f);
-        
-            comp->m_Torque = glm::vec3(0.0f);
-        
-            comp->m_PreviousPosition = comp->m_ParentTransform->m_Position;
-        
-            comp->m_CenterOfMass = comp->m_ParentTransform->m_Position;
-
-            if (comp->CollisionDetectionEnabled())
-            {
-                if (comp->m_ParentTransform->m_Moveability == 0) m_StaticPhysicsComponents.push_back(comp);
-                else m_DynamicPhysicsComponents.push_back(comp);
-            }
-        }
-                
-        if (m_CollisionDetectionEnabled) CollisionDetectionPhase(_deltaTime);
-
-        if (m_CollisionResponseEnabled) CollisionResonsePhase(_deltaTime);
-
-        PhysicsSimulationPhase(_deltaTime);
+        JobSubsystem::AddJobBatch("Physics Simulation", Priority::NORMAL, _waitCounter, m_PhysicsComponents,
+                                  &PhysicsComponent::StepSimulation, _deltaTime);
 
         DE_PROFILE_END(Physics Update)
     }
@@ -268,10 +236,7 @@ namespace Denix
     void PhysicsSubsystem::PhysicsSimulationPhase(float _deltaTime)
     {
         // Submit batch job
-        Ref<Counter> pCompCounter = MakeRef<Counter>();
-        JobSubsystem::AddJobBatch("Physics Simulation", Priority::NORMAL, pCompCounter, m_PhysicsComponents,
-                                  &PhysicsComponent::StepSimulation, _deltaTime);
-        WaitForCounter(pCompCounter.get());
+        
     }
 
     void PhysicsSubsystem::ImpulseResponse(const Ref<PhysicsComponent>& _compA, const Ref<PhysicsComponent>& _compB)

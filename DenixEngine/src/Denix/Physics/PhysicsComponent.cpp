@@ -154,7 +154,19 @@ namespace Denix
 
     void PhysicsComponent::StepSimulation(float _deltaTime)
     {
-        if (!m_SimulatePhysics || m_SteppedThisFrame) return;
+        //if (!m_SimulatePhysics || m_SteppedThisFrame) return;
+
+        m_SteppedThisFrame = m_SteppedNextFrame;
+        m_SteppedNextFrame = false;
+        m_IsColliding = false;
+        
+       m_Force = m_Mass *glm::vec3(0.0f, -9.81f, 0.0f);
+                                    
+        m_Torque = glm::vec3(0.0f);
+        
+       m_PreviousPosition = m_ParentTransform->m_Position;
+        
+        m_CenterOfMass = m_ParentTransform->m_Position;
         
         // Calculate the net force - Null effect if Drag = 0
         m_Force -= m_LinearDrag * m_Velocity;

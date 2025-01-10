@@ -253,14 +253,15 @@ namespace Denix
 			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
 			cam->Update(_deltaTime, _waitCounter);
 		}
+
+		// Client Scene Update
+		m_ActiveScene->Update(_deltaTime, _waitCounter);
 		
 		// Scene update implementation
-		Ref<Counter> actorCounter = MakeRef<Counter>();
 		if(m_BatchUpdateActors)
 		{
 			// Submit jobs for each actor
-			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, actorCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime, _waitCounter);
-			WaitForCounter(actorCounter.get());
+			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime, _waitCounter);
 		}
 		else
 		{
@@ -269,10 +270,6 @@ namespace Denix
 				actor->Update(_deltaTime, _waitCounter);
 			}
 		}
-
-		// Client Scene Update
-		m_ActiveScene->Update(_deltaTime, _waitCounter);
-		
 		DE_PROFILE_END(Scene Update)
 	}
 
