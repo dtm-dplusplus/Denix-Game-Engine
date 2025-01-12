@@ -24,20 +24,17 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
     std::vector<Ref<ProfileSession>>& profileSessions = ProfileSubsystem::GetInstance()->m_ProfileSessions;
 
     ImGui::Begin("Profiler Widget");
-
+    ImGui::SeparatorText("Profiler");
+    if (!activeProfileSession){if (ImGui::Button("Begin Profiling")) ProfileSubsystem::StartProfileSession();}
+    else {if (ImGui::Button("End Profiling")) ProfileSubsystem::EndProfileSession();}
+        
     ImGui::SeparatorText("Engine Metrics");
     ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
     ImGui::Text("Program time: %.2fs", elaspedTime);
     ImGui::Text("Frame time: %.2fms", TimerSubsystem::GetFrameTimeMs());
     ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
 
-    ImGui::SeparatorText("Profiler Settings");
-    //ImGui::DragInt("Profile Average Count", &Profile::s_AverageDurationCount, 1, 3, 100);
-
     ImGui::SeparatorText("Profile Sessions");
-    if (!activeProfileSession){if (ImGui::Button("Begin Profiling")) ProfileSubsystem::StartProfileSession();}
-    else {if (ImGui::Button("End Profiling")) ProfileSubsystem::EndProfileSession();}
-        
 
     // Display  Profile Sessions
     for (const auto& session : profileSessions)
@@ -45,29 +42,20 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
         std::unordered_map<std::string, Ref<Profile>>& inlineProfiles = session->GetInlineProfileMap();
         static float history = 10.0f;
 
-        ImGui::SeparatorText("Profile Data");
-        ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
-
-        const Ref<Profile>& engprofile = TimerSubsystem::GetInstance()->m_EngineProfile;
-
-        /*if (ImPlot::BeginPlot("Engine Frame Time", "Elapsed Time (s)", "Frame Time (ms)", ImVec2(-1, 0),
-                              ImPlotFlags_None,
-                              ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
-        {
-            ImPlot::SetupAxisLimits(ImAxis_X1, elaspedTime - history, elaspedTime, ImGuiCond_Always);
-            ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
-        }*/
-        
-        
 
         if (ImGui::TreeNode(session->GetName().c_str()))
         {
+            ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
+
             ImGui::SeparatorText("Profile Session");
             ImGui::Text("Start Time: %f", session->GetSessionTimer()->GetStartTime());
             if (!session->IsProfiling())
             {
                 ImGui::Text("End Time: %f", session->GetSessionTimer()->GetEndTime());
                 ImGui::Text("Duration: %f", session->GetSessionTimer()->GetDuration());
+                ImGui::Text("Average FPS: %d", session->GetAverageFramesPerSecond());
+                ImGui::Text("Average Frame Time: %f", session->GetAverageFrameTime());
+                ImGui::Text("Min Frame Time: %f", session->GetMinFrameTime());
             }
             
             ImGui::SeparatorText("Profiles");

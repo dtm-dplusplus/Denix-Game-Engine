@@ -10,6 +10,7 @@
 
 #include <ranges>
 #include <algorithm>
+#include <numeric>
 #include <utility>
 
 /* Data Structures */

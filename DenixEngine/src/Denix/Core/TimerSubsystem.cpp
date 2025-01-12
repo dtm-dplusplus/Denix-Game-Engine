@@ -74,6 +74,13 @@ TimerSubsystem::TimerSubsystem()
 			frameCounter = 0;
 			timeInFrame = 0.0f;
 		}
+
+		// Submit data if an active profiles session exists
+		if (Ref<ProfileSession> activeProfileSession = ProfileSubsystem::GetActiveProfileSession())
+		{
+			activeProfileSession->m_FrameTimes.push_back(m_FrameTime);
+			activeProfileSession->m_FramesPerSeconds.push_back(m_FramesPerSecond);
+		}
 	}
 
 	float TimerSubsystem::GetProgramElaspedTime()

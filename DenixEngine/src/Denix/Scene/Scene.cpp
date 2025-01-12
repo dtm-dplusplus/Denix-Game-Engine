@@ -188,6 +188,11 @@ namespace Denix
 
     void Scene::ClearScene()
     {
+        for (const auto& actor : m_Actors)
+        {
+            actor->EndScene();
+            if (m_IsPlaying) actor->EndPlay();
+        }
         m_Actors.clear();
         m_ActorNames.clear();
     }

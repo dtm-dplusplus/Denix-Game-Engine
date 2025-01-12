@@ -32,7 +32,7 @@ namespace Denix
 		
 		
 
-		static void StartProfileSession();
+		static void StartProfileSession(const std::string& _name = "ProfileSession");
 		static void EndProfileSession();
 		
 		static void StartProfile(const std::string& _name);

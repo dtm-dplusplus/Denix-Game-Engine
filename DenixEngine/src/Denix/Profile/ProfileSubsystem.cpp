@@ -38,7 +38,7 @@ namespace Denix
         DE_LOG(LogProfile, Trace, "Profile Subsystem Deinitialized")
     }
 
-    void ProfileSubsystem::StartProfileSession()
+    void ProfileSubsystem::StartProfileSession(const std::string& _name)
     {
         if (s_Instance->m_ActiveProfileSession)
         {
@@ -46,12 +46,12 @@ namespace Denix
             return;
         }
         
-        s_Instance->m_ProfileSessions.emplace_back(MakeRef<ProfileSession>(ObjectInit("ProfileSession " + std::to_string(s_Instance->m_ProfileSessions.size()))));
+        s_Instance->m_ProfileSessions.emplace_back(MakeRef<ProfileSession>(ObjectInit(std::to_string(s_Instance->m_ProfileSessions.size()) + "_"+ _name)));
         s_Instance->m_ActiveProfileSession = s_Instance->m_ProfileSessions.back();
         s_Instance->m_ActiveProfileSession->StartSession();
         
         JobSubsystem::StartThreadProfiling();
-        DE_LOG(LogProfile, Info, "Profile Session Started")
+        DE_LOG(LogProfile, Info, "Profile Session Started: {}", s_Instance->m_ActiveProfileSession->GetName())
     }
 
     void ProfileSubsystem::EndProfileSession()
@@ -62,8 +62,8 @@ namespace Denix
             return;
         }
 
-        DE_LOG(LogProfile, Info, "Profile Session Ended")
-        
+        DE_LOG(LogProfile, Info, "Profile Session Ended: {}", s_Instance->m_ActiveProfileSession->GetName())
+            
         // Do end of session processing
         JobSubsystem::StopThreadProfiling();
         s_Instance->m_ActiveProfileSession->EndSession();

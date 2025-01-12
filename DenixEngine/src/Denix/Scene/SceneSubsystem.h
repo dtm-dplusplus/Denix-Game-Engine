@@ -36,7 +36,7 @@ namespace Denix
 		SceneSubsystem& operator=(SceneSubsystem&& _other) noexcept = delete;
 		
 
-		bool m_BatchUpdateActors;
+		inline static bool m_BatchUpdateActors;
 
 		static Ref<Scene> GetActiveScene() { return s_Instance->m_ActiveScene; }
 

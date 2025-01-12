@@ -61,6 +61,9 @@ namespace Denix
             case SDL_EVENT_WINDOW_MOVED: break; /**< Window has been moved to data1: data2 */
             case SDL_EVENT_WINDOW_RESIZED:
                 {
+                    // Check the window reference
+                    if (event.window.windowID != SDL_GetWindowID(window->GetSDLWindow())) break;
+                    
                      /**< Window has been resized to data1xdata2 */
                     window->m_WinX = event.window.data1;
                     window->m_WinY = event.window.data2;

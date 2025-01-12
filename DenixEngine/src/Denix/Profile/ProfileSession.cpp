@@ -1,6 +1,9 @@
 #include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
 #include "ProfileSession.h"
 
+#include <algorithm>
+#include <numeric>
+
 #include "Denix/Thread/JobProfile.h"
 
 using namespace Denix;
@@ -23,6 +26,23 @@ void ProfileSession::EndSession()
         m_ThreadSleepTimes.push_back(thread.m_ThreadSleepTime);
     }
 
+    // Calculate session frame times
+    for (const auto& frameTime: m_FrameTimes)
+    {
+        m_TotalFrameTime += frameTime;
+        if (frameTime < m_MinFrameTime || m_MinFrameTime == 0.0f) m_MinFrameTime = frameTime;
+        m_MaxFrameTime = std::max(frameTime, m_MaxFrameTime);
+    }
+    m_AverageFrameTime = m_TotalFrameTime / static_cast<float>(m_FrameTimes.size());
+
+    // Calculate session frames per second
+    m_AverageFramesPerSecond = std::accumulate(m_FramesPerSeconds.begin(), m_FramesPerSeconds.end(), 0) / m_FramesPerSeconds.size();
+
+    // Flush the frame times
+    m_FrameTimes.clear();
+    m_FramesPerSeconds.clear();
+
+    // Signal the end of the session
     m_IsProfiling = false;
 }
 
@@ -58,7 +78,7 @@ Ref<Profile> ProfileSession::GetInlineProfile(const std::string& _name)
     {
         m_InlineProfiles.emplace_back(MakeRef<Profile>(_name));
         m_InlineProfileMap[_name] = m_InlineProfiles.back();
-        DE_LOG(LogProfile, Trace, "Profile {} created", _name)
+        //DE_LOG(LogProfile, Trace, "Profile {} created", _name)
     }
     
     return m_InlineProfileMap[_name];
@@ -71,7 +91,7 @@ Ref<JobProfile> ProfileSession::GetJobProfile(const std::string& _name)
     {
         m_JobProfiles.emplace_back(MakeRef<JobProfile>(_name));
         m_JobProfilesMap[_name] = m_JobProfiles.back();
-        DE_LOG(LogProfile, Trace, "Job Profile {} created", _name)
+        //DE_LOG(LogProfile, Trace, "Job Profile {} created", _name)
     }
 
     return m_JobProfilesMap[_name];

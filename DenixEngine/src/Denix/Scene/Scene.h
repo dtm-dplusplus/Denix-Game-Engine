@@ -63,6 +63,9 @@ namespace Denix
 
 		size_t GetActorCount() const { return m_Actors.size(); }
 
+		// Debug Utility - Use with caution
+		void ClearScene();
+		
 		physx::PxScene*	m_PxScene;
 		physx::PxSceneDesc*		m_PxSceneDesc;
 	protected:
@@ -86,8 +89,7 @@ namespace Denix
 		
 		Ref<Camera> m_ActiveCamera;
 
-		// Debug Utility - Use with caution
-		void ClearScene();
+		
 
 	private:
 		/** List of Objects in the scene */
