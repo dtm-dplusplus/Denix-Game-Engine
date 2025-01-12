@@ -27,11 +27,18 @@ namespace Denix
         int m_SpawnIncrement;
         int m_SpawnCountMax;
 
+        int m_TestVariant;
+        int m_TestVariantMax;
+        
         int m_TestCount;
         int m_TestCountMax;
         float m_TestTimeMax;
         float m_TestCooldownTime;
         Ref<Timer> m_CooldownTimer;
+
+        int m_CoreCount;
+        int m_CoreIncrement;
+        int m_CoreCountMax;
         
         bool m_BenchmarkOnPlay;
         bool m_IsBenchmarking;

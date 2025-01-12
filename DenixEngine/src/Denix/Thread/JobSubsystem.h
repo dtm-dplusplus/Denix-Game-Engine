@@ -228,6 +228,13 @@ namespace Denix
         static int& GetActiveThreadsRef() { return s_Instance->m_ActiveWorkerThreads; }
 
         /**
+         * \brief Gets the number of available worker threads.
+         * Do not confuse this with the number of active worker threads.
+         * @return The number of available worker threads. 
+         */
+        static int GetAvailableThreads() { return s_Instance->m_AvailableWorkerThreads; }
+        
+        /**
          * \brief Gets the size of the job queue.
          *
          * Usfeul for debugging and profiling purposes at different synchronization points.
@@ -294,7 +301,7 @@ namespace Denix
         /**
          * \brief Number of worker threads initialized
          *
-         * This Value is always n -1 where n is the number of system threads.
+         * This Value is always n -1 to account for main thread where n is the number of system threads.
          * This ensures our process only uses the available system threads to reduce contention.
          */
         int m_AvailableWorkerThreads;

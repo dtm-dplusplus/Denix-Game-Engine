@@ -33,6 +33,9 @@ void ProfileSession::EndSession()
         if (frameTime < m_MinFrameTime || m_MinFrameTime == 0.0f) m_MinFrameTime = frameTime;
         m_MaxFrameTime = std::max(frameTime, m_MaxFrameTime);
     }
+
+    m_MinFrameTime*= 1000.0f;
+    m_MaxFrameTime*= 1000.0f;
     m_AverageFrameTime = m_TotalFrameTime / static_cast<float>(m_FrameTimes.size());
 
     // Calculate session frames per second
