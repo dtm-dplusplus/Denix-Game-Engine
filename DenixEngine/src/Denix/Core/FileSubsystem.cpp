@@ -26,7 +26,7 @@ namespace Denix
 		const fs::path exePath = p;
 		SDL_free(const_cast<char*>(p));
 		m_BinaryRoot = exePath.parent_path().string() + R"(\)";
-		m_ProjectRoot = exePath.parent_path().parent_path().string() + R"(\)";
+		m_ProjectRoot = exePath.parent_path().parent_path().parent_path().string() + R"(\)";
 
 		// Find Project file
 		for (const auto& entry : fs::directory_iterator(m_ProjectRoot))

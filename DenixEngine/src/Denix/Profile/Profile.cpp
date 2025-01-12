@@ -20,16 +20,16 @@ namespace Denix
     void Profile::End()
     {
         m_Timer->Stop();
-        const float durationMs = m_Timer->GetDurationMs();
+        const float duration = m_Timer->GetDuration();
         
         // Record the duration
         m_DurationBuffer.SaveResult(m_Timer->m_TimeEvent);
         
         // Update the minimum duration. Minimum duration equals 0.0f if it hasn't been set yet
-        if (durationMs < m_MinimumDuration || m_MinimumDuration == 0.0f)  m_MinimumDuration = durationMs;
+        if (duration < m_MinimumDuration || m_MinimumDuration == 0.0f)  m_MinimumDuration = duration;
 
         // Update the maximum duration
-        m_MaximumDuration = std::max(durationMs, m_MaximumDuration);
+        m_MaximumDuration = std::max(duration, m_MaximumDuration);
 
         // Calculate the average duration. We average the last m_AverageDurationCount durations
         if (m_DurationBuffer.ProfileResults.size() < s_AverageDurationCount) return;

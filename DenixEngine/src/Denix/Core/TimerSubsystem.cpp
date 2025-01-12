@@ -76,10 +76,10 @@ TimerSubsystem::TimerSubsystem()
 		}
 
 		// Submit data if an active profiles session exists
-		if (Ref<ProfileSession> activeProfileSession = ProfileSubsystem::GetActiveProfileSession())
+		if (const Ref<ProfileSession> session = ProfileSubsystem::GetActiveProfileSession())
 		{
-			activeProfileSession->m_FrameTimes.push_back(m_FrameTime);
-			activeProfileSession->m_FramesPerSeconds.push_back(m_FramesPerSecond);
+			session->m_FrameTimes.push_back(m_FrameTime);
+			session->m_FramesPerSeconds.push_back(m_FramesPerSecond);
 		}
 	}
 
@@ -96,6 +96,10 @@ TimerSubsystem::TimerSubsystem()
 	float TimerSubsystem::GetFrameTime() { return s_Instance->m_FrameTime; }
 	float TimerSubsystem::GetFrameTimeMs() {return s_Instance->m_FrameTime * 1000.0f; }
 
-	float TimerSubsystem::GetFrameTimeMsAverage()
-	{ return s_Instance->m_EngineProfile->m_AverageDuration * 1000.0f; }
+	float TimerSubsystem::GetAverageFrameTime()
+	{ return s_Instance->m_EngineProfile->m_AverageDuration; }
+
+	float TimerSubsystem::GetAverageFrameTimeMs()
+{ return s_Instance->m_EngineProfile->m_AverageDuration * 1000.0f; }
+
 }

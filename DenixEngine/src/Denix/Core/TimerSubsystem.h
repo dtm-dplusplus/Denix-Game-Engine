@@ -32,7 +32,8 @@ namespace Denix
 		static void SetMaxFPS(int _maxFPS) { s_Instance->m_MaxLimitFPS = _maxFPS; }
 		static float GetFrameTime();
 		static float GetFrameTimeMs();
-		static float GetFrameTimeMsAverage();
+		static float GetAverageFrameTime();
+		static float GetAverageFrameTimeMs();
 		
 		static float GetDeltaTime() {return s_Instance->m_DeltaTime; }
 		static float& GetGameTimeSpeed() { return s_Instance->m_GameTimeSpeed; }

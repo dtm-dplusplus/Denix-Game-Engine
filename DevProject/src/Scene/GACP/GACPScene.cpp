@@ -10,9 +10,9 @@
 using namespace Denix;
 
 GACPScene::GACPScene():
-    m_SpawnCount(0), m_SpawnIncrement(25), m_SpawnCountMax(50), m_TestVariant(0), m_TestVariantMax(0), m_TestCount(0),
+    m_SpawnCount(0), m_SpawnIncrement(10), m_SpawnCountMax(100), m_TestVariant(0), m_TestVariantMax(0), m_TestCount(0),
     m_TestCountMax(0),
-    m_TestTimeMax(20), m_TestCooldownTime(2),
+    m_TestTimeMax(15), m_TestCooldownTime(2),
     m_CooldownTimer(MakeRef<Timer>()), m_CoreCount(0), m_CoreIncrement(2), m_CoreCountMax(0),
     m_BenchmarkOnPlay(true),
     m_IsBenchmarking(false),

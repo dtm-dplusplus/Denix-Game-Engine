@@ -42,7 +42,7 @@ void Denix::JobSubsystem::Deinitialize()
 
     for (const auto& thread: m_WorkerThreads) thread->m_Active = false;
     
-    m_Jobs.clear();
+    //m_Jobs.clear();
     m_WorkerThreads.clear();
 
     DE_LOG(LogJob, Trace, "Cleared Job Queue & Threads")
@@ -73,6 +73,7 @@ Denix::Ref<Denix::JobDeclaration> Denix::JobSubsystem::RequestJob()
 {
     // Pop the next job from the queue
     if (Ref<JobDeclaration> job; s_Instance->m_Jobs.try_pop(job)) return job;
+    //if (Ref<JobDeclaration> job; s_Instance->m_Jobs.try_dequeue(job)) return job;
     return nullptr;
 }
 
@@ -95,19 +96,19 @@ void Denix::JobSubsystem::StopThreadProfiling()
     // Disable internal profiling flag for the threads
     Thread::s_ShouldProfile = false;
 
-    // Get the active profile session
-    const Ref<ProfileSession> activeProfileSession;
-    if (!activeProfileSession) return;
-
     // Submit the thread data to the active profile session
-    for (const auto& thread : s_Instance->m_WorkerThreads)
+    if (const Ref<ProfileSession> session = ProfileSubsystem::GetActiveProfileSession())
     {
-        activeProfileSession->m_ThreadData.push_back({
-            .m_ThreadID = thread->m_ThreadIDInt, .m_JobExecCount = thread->m_JobExecCount,
-            .m_ThreadExecTime = thread->
-            m_ThreadExecTime,
-            .m_ThreadSleepTime = thread->m_ThreadSleepTime
-        });
+        // Submit the thread data to the active profile session
+        for (const auto& thread : s_Instance->m_WorkerThreads)
+        {
+            session->m_ThreadData.push_back({
+                .m_ThreadID = thread->m_ThreadID, .m_JobExecCount = thread->m_JobExecCount,
+                .m_ThreadExecTime = thread->
+                m_ThreadExecTime,
+                .m_ThreadSleepTime = thread->m_ThreadSleepTime
+            });
+        }
     }
 }
 

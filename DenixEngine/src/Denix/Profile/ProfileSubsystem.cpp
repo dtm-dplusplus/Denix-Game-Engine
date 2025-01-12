@@ -6,26 +6,10 @@
 
 namespace Denix
 {
-    ProfileSubsystem::ProfileSubsystem()
-    {
-    }
-
     void ProfileSubsystem::Initialize()
     {
-        Subsystem::Initialize();
-
         DE_LOG(LogProfile, Warn, "Profile Subsystem Initializing")
-
-        // Get the engine timer profile
-        if(const Ref<Profile>& timerProfile = TimerSubsystem::GetInstance()->m_EngineProfile)
-        {
-            m_Profiles[timerProfile->GetName()] = timerProfile;
-            DE_LOG(LogProfile, Info, "Added Timer Profile to Profile Subsystem")
-        }
-        else
-        {
-            throw std::runtime_error("Timer Profile not found in Timer Subsystem");
-        }
+        Subsystem::Initialize();
 
         DE_LOG(LogProfile, Info, "Profile Subsystem Initialized")
     }
@@ -33,7 +17,8 @@ namespace Denix
     void ProfileSubsystem::Deinitialize()
     {
         DE_LOG(LogProfile, Trace, "Profile Subsystem Deinitializing")
-        m_Profiles.clear();
+        m_ProfileSessions.clear();
+        m_ActiveProfileSession.reset();
         Subsystem::Deinitialize();
         DE_LOG(LogProfile, Trace, "Profile Subsystem Deinitialized")
     }
@@ -71,7 +56,7 @@ namespace Denix
         // clear active session
         s_Instance->m_ActiveProfileSession = nullptr;
     }
-    void ProfileSubsystem::StartProfile(const std::string& _name)
+    void ProfileSubsystem::StartInlineProfile(const std::string& _name)
     {
         // Check if we have an active profile session to record the profile
         if (!s_Instance->m_ActiveProfileSession) return;
@@ -79,7 +64,7 @@ namespace Denix
         s_Instance->m_ActiveProfileSession->StartInlineProfile(_name);
     }
 
-    void ProfileSubsystem::EndProfile(const std::string& _name)
+    void ProfileSubsystem::EndInlineProfile(const std::string& _name)
     {
         // Check if we have an active profile session to record the profile
         if (!s_Instance->m_ActiveProfileSession) return;

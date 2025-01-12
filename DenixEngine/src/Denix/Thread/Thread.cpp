@@ -4,7 +4,7 @@
 #include "JobSubsystem.h"
 #include "Denix/Profile/ProfileSubsystem.h"
 
-Denix::Thread::Thread(const int _index): m_ThreadIDInt(0),
+Denix::Thread::Thread(const int _index): m_ThreadID(0),
                                          m_ThreadIndex(_index),
                                          m_JobExecCount(0),
                                          m_ThreadExecTime(0.0f),
@@ -13,8 +13,8 @@ Denix::Thread::Thread(const int _index): m_ThreadIDInt(0),
     m_Thread = std::thread(&Thread::Work, this);
     std::stringstream ss;
     ss << m_Thread.get_id();
-    m_ThreadIDInt = std::stoi(ss.str());
-    DE_LOG(LogThread, Trace, "Thread Index: {} ID: {}", m_ThreadIndex, m_ThreadIDInt)
+    m_ThreadID = std::stoi(ss.str());
+    DE_LOG(LogThread, Trace, "Thread Index: {} ID: {}", m_ThreadIndex, m_ThreadID)
 }
 
 Denix::Thread::~Thread()
@@ -22,11 +22,11 @@ Denix::Thread::~Thread()
     if (m_Thread.joinable())
     {
         m_Thread.join();
-        DE_LOG(LogThread, Trace, "Thread {} joined", m_ThreadIDInt)
+        DE_LOG(LogThread, Trace, "Thread {} joined", m_ThreadID)
     }
     else
     {
-        DE_LOG(LogThread, Error, "Thread {} not joinable", m_ThreadIDInt)
+        DE_LOG(LogThread, Error, "Thread {} not joinable", m_ThreadID)
     }
 }
 

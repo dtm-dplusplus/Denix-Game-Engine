@@ -22,11 +22,11 @@ namespace Denix
     {
     public:
         explicit ProfileSession(const ObjectInit& _objInit): Object(_objInit),
-                                                            m_MinFrameTime(0),
+                                                             m_MinFrameTime(0),
                                                              m_MaxFrameTime(0),
                                                              m_TotalFrameTime(0),
                                                              m_AverageFrameTime(0),
-                                                             m_AverageFramesPerSecond(0),
+                                                             m_AverageFramesPerSecond(0), m_GraphHistory(10.0f),
                                                              m_IsProfiling(false)
         {
             // Reserve to reduce reallocations during profiling.
@@ -54,11 +54,23 @@ namespace Denix
         std::vector<float>& GetThreadJobExecTimes() { return m_ThreadJobExecTimes; }
         std::vector<float>& GetThreadSleepTimes() { return m_ThreadSleepTimes; }
 
+        float GetStartTime() const { return m_SessionTimer->GetStartTime(); }
+        float GetEndTime() const { return m_SessionTimer->GetEndTime(); }
+        float GetDuration() const { return m_SessionTimer->GetDuration(); }
+        
         int GetAverageFramesPerSecond() const { return m_AverageFramesPerSecond; }
+        
         float GetAverageFrameTime() const { return m_AverageFrameTime; }
-        float GetMinFrameTime() const { return m_MinFrameTime; }
-        float GetMaxFrameTime() const { return m_MaxFrameTime; }
+        float GetAverageFrameTimeMs() const { return m_AverageFrameTime * 1000.0f; }
 
+        float GetMinFrameTime() const { return m_MinFrameTime; }
+        float GetMinFrameTimeMs() const { return m_MinFrameTime * 1000.0f; }
+        
+        float GetMaxFrameTime() const { return m_MaxFrameTime; }
+        float GetMaxFrameTimeMs() const { return m_MaxFrameTime * 1000.0f; }
+        
+        float& GetGraphHistory() { return m_GraphHistory; }
+        float GetGraphHistory() const { return m_GraphHistory; }
     private:
         void StartSession();
         void EndSession();
@@ -93,8 +105,9 @@ namespace Denix
         float m_AverageFrameTime;
         int m_AverageFramesPerSecond;
 
+        float m_GraphHistory;
         bool m_IsProfiling;
-
+        
         friend class ProfileSubsystem;
         friend class JobSubsystem;
         friend class TimerSubsystem;

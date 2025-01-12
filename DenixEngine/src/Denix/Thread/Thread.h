@@ -10,7 +10,7 @@ namespace Denix
     class Thread
     {
     public:
-        explicit Thread(const int _index);
+        explicit Thread(int _index);
 
         ~Thread();
 
@@ -41,7 +41,7 @@ namespace Denix
          * @brief The ID of the thread. Used for debugging
          * Matches the ID available in the debugger
          */
-        size_t m_ThreadIDInt;
+        size_t m_ThreadID;
         
         /**
          * @brief Index of the thread in the thread pool

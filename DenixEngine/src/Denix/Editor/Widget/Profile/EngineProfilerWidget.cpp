@@ -2,6 +2,7 @@
 #include "EngineProfilerWidget.h"
 
 #include "JobTableWidget.h"
+#include "PerformanceSettingsWidget.h"
 #include "Denix/Core/TimerSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 
@@ -20,19 +21,22 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
     EditorWidget::Update(_deltaTime);
 
     const float elaspedTime = Timer::GetProgramElaspedTime();
-    Ref<ProfileSession> activeProfileSession = ProfileSubsystem::GetActiveProfileSession();
-    std::vector<Ref<ProfileSession>>& profileSessions = ProfileSubsystem::GetInstance()->m_ProfileSessions;
+    const std::vector<Ref<ProfileSession>>& profileSessions = ProfileSubsystem::GetProfileSessions();
 
+    ImGui::SetNextWindowSize({600, 800}, ImGuiCond_FirstUseEver);
     ImGui::Begin("Profiler Widget");
     ImGui::SeparatorText("Profiler");
-    if (!activeProfileSession){if (ImGui::Button("Begin Profiling")) ProfileSubsystem::StartProfileSession();}
-    else {if (ImGui::Button("End Profiling")) ProfileSubsystem::EndProfileSession();}
+    if (!ProfileSubsystem::GetActiveProfileSession())
+    {
+        if (ImGui::Button("Begin Profiling")) ProfileSubsystem::StartProfileSession();
+    }
+    else
+    {
+        if (ImGui::Button("End Profiling")) ProfileSubsystem::EndProfileSession();
+    }
         
     ImGui::SeparatorText("Engine Metrics");
-    ImGui::DragInt("Max FPS", &TimerSubsystem::GetMaxFPS(), 1, 0, 240);
-    ImGui::Text("Program time: %.2fs", elaspedTime);
-    ImGui::Text("Frame time: %.2fms", TimerSubsystem::GetFrameTimeMs());
-    ImGui::Text("FPS: %d", TimerSubsystem::GetFPS());
+    PerformanceSettingsWidget::Show();
 
     ImGui::SeparatorText("Profile Sessions");
 
@@ -40,34 +44,33 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
     for (const auto& session : profileSessions)
     {
         std::unordered_map<std::string, Ref<Profile>>& inlineProfiles = session->GetInlineProfileMap();
-        static float history = 10.0f;
-
 
         if (ImGui::TreeNode(session->GetName().c_str()))
         {
-            ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
+            ImGui::SliderFloat("History", &session->GetGraphHistory(), 1, session->GetDuration(), "%.1f s");
 
             ImGui::SeparatorText("Profile Session");
-            ImGui::Text("Start Time: %f", session->GetSessionTimer()->GetStartTime());
+            ImGui::Text("Start Time: %fs", session->GetSessionTimer()->GetStartTime());
             if (!session->IsProfiling())
             {
-                ImGui::Text("End Time: %f", session->GetSessionTimer()->GetEndTime());
-                ImGui::Text("Duration: %f", session->GetSessionTimer()->GetDuration());
+                ImGui::Text("End Time: %fs", session->GetSessionTimer()->GetEndTime());
+                ImGui::Text("Duration: %fs", session->GetSessionTimer()->GetDuration());
                 ImGui::Text("Average FPS: %d", session->GetAverageFramesPerSecond());
-                ImGui::Text("Average Frame Time: %f", session->GetAverageFrameTime());
-                ImGui::Text("Min Frame Time: %f", session->GetMinFrameTime());
+                ImGui::Text("Average Frame Time: %.2fms", session->GetAverageFrameTimeMs());
+                ImGui::Text("Min Frame Time: %.2fms", session->GetMinFrameTimeMs());
+                ImGui::Text("Max Frame Time: %.2fms", session->GetMaxFrameTimeMs());
             }
             
             ImGui::SeparatorText("Profiles");
             if (ImGui::TreeNode("Inline Profiles"))
             {
-                static float yAxisScale = 0.001f; // Example scaling factor
-                if (ImPlot::BeginPlot("Profile Visualizer", "Elapsed Time (s)", "Frame Time (s)", ImVec2(-1, 0),
-                                  ImPlotFlags_None,
-                                  ImPlotFlags_None, ImPlotAxisFlags_AutoFit))
+                if (ImPlot::BeginPlot("Profile Visualizer", "Elapsed Time (s)", "Frame Time (s)", ImVec2(-1, 300),
+                    ImPlotFlags_None, ImPlotAxisFlags_None, ImPlotAxisFlags_None))
                 {
-                    float sessionElapsedTime = session->IsProfiling()? elaspedTime : session->GetSessionTimer()->GetEndTime();
-                    ImPlot::SetupAxisLimits(ImAxis_X1, sessionElapsedTime - history, sessionElapsedTime, ImGuiCond_Always);
+                    const float sessionElapsedTime = session->IsProfiling()? elaspedTime : session->GetSessionTimer()->GetEndTime();
+                    const float yMax = session->IsProfiling()? TimerSubsystem::GetAverageFrameTime() : session->GetAverageFrameTime();
+                    ImPlot::SetupAxisLimits(ImAxis_X1, sessionElapsedTime - session->GetGraphHistory(), sessionElapsedTime, ImGuiCond_Always);
+                    ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0f, yMax, ImGuiCond_Always);
                     ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
 
                     // Apply a scaling factor to the Y-axis
@@ -80,9 +83,9 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
 
                         if (ImGui::TreeNode(name.c_str()))
                         {
-                            ImGui::Text("Minimum Duration: %fms", profile->GetMinDurationMs());
-                            ImGui::Text("Maximum Duration: %fms", profile->GetMaxDurationMs());
-                            ImGui::Text("Average Duration: %fms", profile->GetAverageDurationMs());
+                            ImGui::Text("Minimum Duration: %.2fms", profile->GetMinDurationMs());
+                            ImGui::Text("Maximum Duration: %.2fms", profile->GetMaxDurationMs());
+                            ImGui::Text("Average Duration: %.2fms", profile->GetAverageDurationMs());
                             ImGui::TreePop();
                         }
                     }
@@ -101,31 +104,13 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
 
             if (ImGui::TreeNode("Thread Profiles"))
             {
-                // Calc Load Difference
-                /*float jobLoadMin = threads[0]->m_JobExecCount, jobLoadMax = 0;
-                float execTimeMin = threads[0]->m_ThreadExecTime, execTimeMax = 0;
-
-                for (const auto& thread : threads)
-                {
-                    if (thread->m_JobExecCount > jobLoadMax) jobLoadMax = thread->m_JobExecCount;
-                    if (thread->m_JobExecCount < jobLoadMin) jobLoadMin = thread->m_JobExecCount;
-
-                    if (thread->m_ThreadExecTime > execTimeMax) execTimeMax = thread->m_ThreadExecTime;
-                    if (thread->m_ThreadExecTime < execTimeMin) execTimeMin = thread->m_ThreadExecTime;
-                }*/
-
-                /*float jobLoadDiff = 1.0f - jobLoadMin / jobLoadMax;
-                float execTimeDiff = execTimeMin / execTimeMax;
-                ImGui::Text("Load Diff: %f%", jobLoadDiff * 100.0f);
-                ImGui::Text("Exec Diff: %f%", execTimeDiff * 100.0f);*/
-
                 if (!session->IsProfiling())
                 {
                     std::vector<ThreadData>& threadData = session->GetThreadData();
 
                     static const char*  ilabels[]   = {"Job Count","Exec Time","Sleep Time"};
 
-                    // Our Threads never change so we can use a static initializer
+                    // Our System Threads never change so we can use a static initializer
                     static std::vector<std::string>  xLabelsStr   = [threadData] {
                         std::vector<std::string> labels;
                         for (const auto& thread : threadData)
@@ -220,8 +205,6 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
                     ImGui::NewLine();
                     ImGui::Text("Finish Profiling to view results");                        
                 }
-
-                
                 
                 ImGui::TreePop();
             }

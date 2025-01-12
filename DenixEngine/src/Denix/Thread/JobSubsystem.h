@@ -6,13 +6,14 @@
 #include "Denix/Profile/ProfileSubsystem.h"
 
 #include <concurrent_priority_queue.h>
+//#include "concurrentqueue.h"
 
 namespace Denix
 {
     /**
          * \brief Comparator for job priority.
          */
-    struct JobComparator
+    struct JobComparator//: public moodycamel::ConcurrentQueueDefaultTraits
     {
         /**
              * \brief Compares two jobs based on their priority.
@@ -82,13 +83,18 @@ namespace Denix
             // Increment the wait counter
             _waitCounter->Increment();
 
+            //DE_LOG(LogJob, Trace, "Creating Job: {}", _name)
             // Create the job
-            s_Instance->m_Jobs.push(MakeRef<JobDeclaration>(
+            Ref<JobDeclaration> job = MakeRef<JobDeclaration>(
                 _name,
                 _priority,
                 _waitCounter,
-                std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)));
-                
+                std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
+            );
+
+           // DE_LOG(LogJob, Trace, "Adding Job to Queue: {}", _name)
+            //s_Instance->m_Jobs.try_enqueue(job);
+            s_Instance->m_Jobs.push(job);
         }
 
         /**
@@ -136,7 +142,6 @@ namespace Denix
                 DE_PROFILE_JOB_END(job)
             job->m_WaitCounter->Decrement();
         }
-
 
         /**
          * \brief Parallel For Each function.
@@ -234,14 +239,6 @@ namespace Denix
          */
         static int GetAvailableThreads() { return s_Instance->m_AvailableWorkerThreads; }
         
-        /**
-         * \brief Gets the size of the job queue.
-         *
-         * Usfeul for debugging and profiling purposes at different synchronization points.
-         * \return The size of the job queue.
-         */
-        static size_t GetJobQueueSize() { return s_Instance->m_Jobs.size(); }
-
     private:
         /**
          * \brief Requests the next job from the job queue.
@@ -284,6 +281,7 @@ namespace Denix
       * Microsoft Implementation of a concurrent_priority_queue https://learn.microsoft.com/en-us/cpp/parallel/concrt/reference/concurrent-priority-queue-class?view=msvc-170
       */
         Concurrency::concurrent_priority_queue<Ref<JobDeclaration>, JobComparator> m_Jobs;
+       //moodycamel::ConcurrentQueue<Ref<JobDeclaration>, JobComparator> m_Jobs;
 
         std::vector<Ref<Thread>> m_WorkerThreads;
 

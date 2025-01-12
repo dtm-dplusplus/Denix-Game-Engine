@@ -14,17 +14,23 @@ namespace Denix
         Subsystem::Initialize();
         DE_LOG(LogPhysics, Warn, "PhysicsSubsystem Initializing")
         m_PxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_PxAllocator, m_PxErrorCallback);
-
+        DE_ASSERT(m_PxFoundation, "Failed to create PhysX Foundation")
+        
         m_PxPvd = PxCreatePvd(*m_PxFoundation);
+        DE_ASSERT(m_PxPvd, "Failed to create PhysX PVD")
         PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
+        DE_ASSERT(transport, "Failed to create PhysX PVD Transport")
         m_PxPvd->connect(*transport,PxPvdInstrumentationFlag::eALL);
 
         m_PxPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_PxFoundation, PxTolerancesScale(), true, m_PxPvd);
-
+        DE_ASSERT(m_PxPhysics, "Failed to create PhysX Physics")
+        
         m_PxDispatcher = PxDefaultCpuDispatcherCreate((PxU32)JobSubsystem::GetActiveThreads());
+        DE_ASSERT(m_PxDispatcher, "Failed to create PhysX Dispatcher")
         
         m_PxMaterial = m_PxPhysics->createMaterial(0.5f, 0.5f, 0.5f);
-
+        DE_ASSERT(m_PxMaterial, "Failed to create PhysX Material")
+        
         // Set the logging level to suppress debug messages for now
         m_PxFoundation->setErrorLevel(PxErrorCode::eDEBUG_INFO);
         
@@ -83,7 +89,6 @@ namespace Denix
     void PhysicsSubsystem::Update(float _deltaTime)
     {
         DE_PROFILE(Physics Update)
-
         auto activeScene = s_Instance->m_ActiveScene.lock();
         
         if (!m_Enabled || !activeScene->IsPlaying() ||

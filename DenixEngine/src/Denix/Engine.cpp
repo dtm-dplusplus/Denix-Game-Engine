@@ -173,14 +173,18 @@ namespace Denix
 
 	void Engine::EngineLoop()
 	{
+		DE_LOG(LogEngine, Info, "Engine Loop Started")
+		
 		while(m_WindowSubsystem->m_Window->IsOpen())
 		{
 			// Setup timer system for the new frame.
 			m_TimerSubsystem->BeginFrame();
-
+			//DE_LOG(LogEngine, Trace, "Frame Start")
+			
 			// Poll input & Events. Events will be dispatched to the appropriate subsystems
 			Ref<Counter> inputCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, inputCounter, &InputSubsystem::Update, m_InputSubsystem, m_TimerSubsystem->m_DeltaTime);
+			//DE_LOG(LogEngine, Trace, "Input Poll")
 			
 			// Clear the offscreen frame buffer
 			Ref<Counter> clearCounter = MakeRef<Counter>();
@@ -193,6 +197,7 @@ namespace Denix
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				DE_PROFILE_END(Clear Frame Buffer)
 			});
+			//DE_LOG(LogEngine, Trace, "Clear Frame Buffer")
 			
 			// Update the physics system. Collision detection and resolution will be here
 			Ref<Counter> physicsCounter = MakeRef<Counter>();
@@ -204,8 +209,9 @@ namespace Denix
 			m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update, m_SceneSubsystem, m_TimerSubsystem->m_DeltaTime, sceneCounter);
 			WaitForCounter(sceneCounter);
 			DE_PROFILE_END(Scene Update)
-
-			// Update Physics Components 
+			
+			// Update Physics Components
+			DE_PROFILE(Physics Post)
 			for (const auto& actor : m_SceneSubsystem->m_ActiveScene->m_Actors)
 			{
 				if (const Ref<PhysicsComponent> physcComp = actor->GetPhysicsComponent())
@@ -219,19 +225,23 @@ namespace Denix
 					}
 				}
 			}
+			DE_PROFILE_END(Physics Post)
 			
 			// Update the UI & Editor for any changes
 			Ref<Counter> uiCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem, m_TimerSubsystem->m_DeltaTime);
 			WaitForCounter(uiCounter);
-
+			//DE_LOG(LogEngine, Trace, "UI Update")
+			
 			// Run on main due to opengl context when initializing the scene
 			Ref<Counter> editorCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, editorCounter, &EditorSubsystem::Update, m_EditorSubsystem, m_TimerSubsystem->m_DeltaTime);
-
+			//DE_LOG(LogEngine, Trace, "Update Editor")
+			
 			// Render the scene. This runs on the main thread as it requires the opengl context
 			Ref<Counter> renderCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter, &RendererSubsystem::RenderScene, m_RendererSubsystem);
+			//DE_LOG(LogEngine, Trace, "Render Scene")
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			Ref<Counter> drawCounter = MakeRef<Counter>();
@@ -245,13 +255,16 @@ namespace Denix
 				m_UISubsystem->ViewportUpdate();
 				DE_PROFILE_END(Draw Viewport)
 			});
+			//DE_LOG(LogEngine, Trace, "Draw Viewport")
 			
 			// Run the garbage collector
+			//DE_LOG(LogEngine, Trace, "Clean Rubbish")
 			Ref<Counter> garbageCounter = MakeRef<Counter>();
 			m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, garbageCounter, &SceneSubsystem::CleanRubbish, m_SceneSubsystem);
 			WaitForCounter(garbageCounter);
 			
 			m_TimerSubsystem->EndFrame();
+			//DE_LOG(LogEngine, Trace, "Frame End")
 		}
 	}
 
