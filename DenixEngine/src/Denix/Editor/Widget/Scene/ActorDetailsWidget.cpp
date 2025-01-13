@@ -504,9 +504,13 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
 
             if (ImGui::TreeNode("Advance Camera Settings"))
             {
-                ImGui::DragFloat3("Forward", &camera->GetCameraFront()[0], m_DragSpeed);
-                ImGui::DragFloat3("Right", &camera->m_CameraRight[0], m_DragSpeed);
-                ImGui::DragFloat3("Up", &camera->m_CameraUp[0], m_DragSpeed);
+                glm::vec3& front = camera->GetTransformComponent()->GetForward();
+                glm::vec3& right = camera->GetTransformComponent()->GetRight();
+                glm::vec3& up = camera->GetTransformComponent()->GetUp();
+                
+                ImGui::DragFloat3("Forward", &front[0], m_DragSpeed);
+                ImGui::DragFloat3("Right", &right[0], m_DragSpeed);
+                ImGui::DragFloat3("Up", &up[0], m_DragSpeed);
 
                 ImGui::DragFloat3("Camera Position",
                                   &camera->GetTransformComponent()->GetPosition()[0],

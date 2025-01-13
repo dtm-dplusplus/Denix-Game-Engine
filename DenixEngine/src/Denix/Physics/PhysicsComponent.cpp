@@ -31,7 +31,7 @@ namespace Denix
         Component::BeginScene();
 
         SetupPhysX();
-        PhysicsSubsystem::RegisterPxActor(m_PxActor);
+        PhysicsSubsystem::RegisterComponent(shared_from_this());
     }
 
     void PhysicsComponent::BeginPlay()
@@ -48,7 +48,7 @@ namespace Denix
 
     void PhysicsComponent::EndScene()
     {
-        PhysicsSubsystem::UnregisterPxActor(m_PxActor);
+        PhysicsSubsystem::UnregisterComponent(shared_from_this());
 
         Component::EndScene();
     }
@@ -57,7 +57,7 @@ namespace Denix
     {
         Component::Update(_deltaTime);
 
-        if (SceneSubsystem::GetSceneState() == SceneState::Playing)
+        if (m_PxActor && SceneSubsystem::GetSceneState() == SceneState::Playing)
         {
             physx::PxVec3 pos = m_PxActor->getGlobalPose().p;
             physx::PxQuat rot = m_PxActor->getGlobalPose().q;
@@ -65,7 +65,20 @@ namespace Denix
             m_Parent->m_TransformComponent->m_Rotation = Math::Degrees(glm::eulerAngles(glm::quat(rot.w, rot.x, rot.y, rot.z)));
         }
     }
-    
+
+    void PhysicsComponent::AddImpulse(const glm::vec3& _impulse)
+    {
+        if (!m_PxActor) return;
+        
+        if (const auto dynamicActor = m_PxActor->is<physx::PxRigidDynamic>())
+        {
+            dynamicActor->addForce({ _impulse.x, _impulse.y, _impulse.z }, physx::PxForceMode::eIMPULSE);
+            return;
+        }
+        
+        DE_LOG(LogPhysics, Error, "Cannot add impulse to a static actor {}", m_Parent->GetName());    
+    }
+
     void PhysicsComponent::SetupPhysX()
     {
         const auto scale = m_Parent->m_TransformComponent->m_Scale;
@@ -105,8 +118,6 @@ namespace Denix
                 UpdatePxDynamicActor(m_PxActor->is<physx::PxRigidDynamic>());
             } break;
         }
-        
-        
         m_PxActor->userData = m_Parent.get();
         m_PxActor->attachShape(*m_PxShape);
     }

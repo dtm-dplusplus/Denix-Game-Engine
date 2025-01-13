@@ -28,17 +28,13 @@ namespace Denix
 	{
 	public:
 		// Constructors
-		TransformComponent() : Component(ObjectInit("Transform Component")) {}
+		TransformComponent();
 
 		// Destructors
 		~TransformComponent() override = default;
 
 		void BeginScene() override;
 		void EndScene() override;
-
-		void RegisterComponent() override;
-		void UnregisterComponent() override;
-
 
 		void Update(float _deltaTime) override;
 
@@ -63,6 +59,15 @@ namespace Denix
 		glm::vec3 GetScale() const { return m_Scale; }
 		glm::vec3& GetScale() { return m_Scale; }
 
+		glm::vec3 GetForward() const { return m_Forward; }
+		glm::vec3& GetForward() { return m_Forward; }
+
+		glm::vec3 GetRight() const { return m_Right; }
+		glm::vec3& GetRight() { return m_Right; }
+
+		glm::vec3 GetUp() const { return m_Up; }
+		glm::vec3& GetUp() { return m_Up; }
+		
 		// Setters
 		void SetPosition(const float _x, const float _y, const float _z) { m_Position = { _x, _y, _z }; }
 		void SetPosition(const glm::vec3& _position) { m_Position = _position; }
@@ -71,6 +76,9 @@ namespace Denix
 		void SetScale(const float _x, const float _y, const float _z) { m_Scale = { _x, _y, _z }; }
 		void SetScale(const glm::vec3& _scale) { m_Scale = _scale; }
 
+		glm::vec3 m_Forward;
+		glm::vec3 m_Right;
+		glm::vec3 m_Up;
 	protected:
 		
 		int m_Moveability = static_cast<int>(Moveability::Static);
@@ -80,12 +88,14 @@ namespace Denix
 		
 		bool m_PhysicsRotationOverride = false;
 
-		glm::vec3 m_Position = glm::vec3(0.f);
-		glm::vec3 m_Rotation = glm::vec3(0.f);
-		glm::vec3 m_Scale = glm::vec3(1.f);
+		glm::vec3 m_Position; 
+		glm::vec3 m_Rotation;
+		glm::vec3 m_Scale;
 
-		glm::mat4 m_Model = glm::mat4(1.f);
-		glm::mat3 m_RotationMatrix = glm::mat3(1.f);
+		
+		
+		glm::mat4 m_Model;
+		glm::mat3 m_RotationMatrix;
 		
 		friend class Actor;
 		friend class Scene;

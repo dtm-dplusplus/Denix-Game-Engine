@@ -13,6 +13,11 @@
 
 namespace physx
 {
+	class PxController;
+}
+
+namespace physx
+{
 	class PxRigidDynamic;
 	class PxRigidActor;
 }
@@ -65,10 +70,7 @@ namespace Denix
 			m_Force += _force;
 		}
 
-		void AddImpulse(const glm::vec3& _impulse)
-		{
-            m_Velocity += _impulse / m_Mass;
-        }
+		void AddImpulse(const glm::vec3& _impulse);
 
 		void AddTorque(const glm::vec3& _torque)
 		{
@@ -84,6 +86,7 @@ namespace Denix
 		physx::PxRigidBodyFlags m_PxRigidBodyFlags;
 		physx::PxShape* m_PxShape = nullptr;
 		physx::PxRigidActor* m_PxActor = nullptr;
+		
 		//physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
 		ColliderType m_ColliderType = ColliderType::Cube;
 		

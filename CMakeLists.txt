@@ -128,6 +128,7 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC PhysXExtensions_static_64
         PUBLIC PhysXPvdSDK_static_64
         PUBLIC SceneQuery_static_64
+        PUBLIC PhysXCharacterKinematic_static_64
         PUBLIC PVDRuntime_64
 )
 

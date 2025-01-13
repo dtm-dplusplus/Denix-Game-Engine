@@ -231,13 +231,6 @@ namespace Denix
 
 		// End Profile is called after wait counter as the scene is updated in parallel
 		DE_PROFILE(Scene Update)
-
-		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
-		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
-		{
-			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
-			cam->Update(_deltaTime);
-		}
 		
 		// Scene update implementation
 		if(m_BatchUpdateActors)
@@ -257,6 +250,13 @@ namespace Denix
 		// Client Scene Update
 		m_ActiveScene->Update(_deltaTime);
 		m_ActiveScene->DebugUI(_deltaTime);
+		
+		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
+		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
+		{
+			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
+			cam->Update(_deltaTime);
+		}
 	}
 
 	void SceneSubsystem::SerializeScene()

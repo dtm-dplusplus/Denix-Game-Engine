@@ -361,10 +361,8 @@ namespace Denix
 
 	Ref<Model> AssetSubsystem::GetModel(const std::string& _name)
 	{
-		if (s_Instance->m_ModelStore.contains(_name))
-		{
-			return s_Instance->m_ModelStore[_name];
-		}
+		if (const std::string path = FileSubsystem::FormatPath(_name); s_Instance->m_ModelStore.contains(path))
+			return s_Instance->m_ModelStore[path];
 
 		return nullptr;
 	}

@@ -219,9 +219,6 @@ namespace Denix
     {
         BaseObject::Update(_deltaTime);
 
-        for(const auto& component : m_Components)
-        {
-            component->Update(_deltaTime);
-        }
+        for(const auto& component : m_Components) component->Update(_deltaTime);
     }
 }

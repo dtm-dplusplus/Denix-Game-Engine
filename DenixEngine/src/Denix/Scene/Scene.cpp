@@ -30,8 +30,13 @@ namespace Denix
         m_PxSceneDesc->gravity = physx::PxVec3(0.0f, -m_Gravity, 0.0f);
         m_PxSceneDesc->cpuDispatcher	= PhysicsSubsystem::m_PxDispatcher;
         m_PxSceneDesc->filterShader = physx::PxDefaultSimulationFilterShader;
-        m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(*m_PxSceneDesc);
 
+        m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(*m_PxSceneDesc);
+        DE_ASSERT(m_PxScene, "Failed to create PhysX Scene");
+        
+        m_PxControllerManager = PxCreateControllerManager(*m_PxScene);
+        DE_ASSERT(m_PxControllerManager, "Failed to create PhysX Controller Manager");
+        
         physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
         PhysicsSubsystem::m_PxPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
         
@@ -77,24 +82,6 @@ namespace Denix
     {
         for (const auto& obj : m_Actors) obj->EndPlay();
 
-        // Iterate over all actors in the scene
-        physx::PxActorTypeFlags actorFlags = physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC;
-        physx::PxU32 numActors = m_PxScene->getNbActors(actorFlags);
-
-        /*if (numActors > 0)
-            {
-            std::vector<physx::PxActor*> actors(numActors);
-            m_PxScene->getActors(actorFlags, actors.data(), numActors);
-            // Release each actor
-            for (physx::PxActor* actor : actors) {
-                if (actor) {
-                    actor->userData = nullptr;
-                    m_PxScene->removeActor(*actor);
-                    actor->release();
-                }
-            }
-        }*/
-        
         m_Actors.clear();
         m_ActorNames.clear();
         

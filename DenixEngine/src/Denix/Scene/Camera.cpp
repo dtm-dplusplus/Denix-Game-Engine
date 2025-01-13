@@ -4,7 +4,7 @@
 
 namespace Denix
 {
-	Camera::Camera(): Actor({"Camera"}),  m_Viewport(MakeRef<Viewport>())
+	Camera::Camera(): Actor({"Camera"}), m_Viewport(MakeRef<Viewport>()), m_Projection(1.0f), m_View(1.0f)
 	{
 		m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
 		m_TransformComponent->SetPosition({0.0f, 10.0f, 25.0f});
@@ -13,6 +13,19 @@ namespace Denix
 
 	void Camera::Update(float _deltaTime)
 	{
+		// Camera Movement
+		if (!m_ExternalControl)
+		{
+			ProcessKeyboardInput(_deltaTime);
+
+			ProccessMouseMovement(_deltaTime);
+		}
+		
+		Actor::Update(_deltaTime);
+		m_CameraFront = m_TransformComponent->GetForward();
+		m_CameraRight = m_TransformComponent->GetRight();
+		m_CameraUp = m_TransformComponent->GetUp();
+
 		// m_Projection matrix
 		if (m_IsPerspective)
 		{
@@ -22,23 +35,7 @@ namespace Denix
 		{
 			m_Projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, m_NearPlane, m_FarPlane);
 		}
-
-		// Camera Movement
-		ProcessKeyboardInput(_deltaTime);
-
-		ProccessMouseMovement(_deltaTime);
-
-		// calculates the front, right and up vectors
-		glm::vec3 front;
-		const glm::vec3& rot= m_TransformComponent->GetRotation();
-		front.x = cos(glm::radians(rot.y)) * cos(glm::radians(rot.x));
-		front.y = sin(glm::radians(rot.x));
-		front.z = sin(glm::radians(rot.y)) * cos(glm::radians(rot.x));
-		m_CameraFront = glm::normalize(front);
-
-		m_CameraRight = glm::normalize(glm::cross(m_CameraFront, {0.0f, 1.0f, 0.0f})); // World up
-		m_CameraUp = glm::normalize(glm::cross(m_CameraRight, m_CameraFront));
-
+		
 		// Calculate the view matrix
 		m_View = glm::lookAt(m_TransformComponent->GetPosition(), m_TransformComponent->GetPosition() + m_CameraFront, m_CameraUp);
 	}
@@ -48,19 +45,19 @@ namespace Denix
 		// XZ 
 		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_W))
 		{
-			GetTransformComponent()->GetPosition() += m_MoveSpeed * m_CameraFront * _deltaTime;
+			m_TransformComponent->GetPosition() += m_MoveSpeed * m_CameraFront * _deltaTime;
 		}
 		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_S))
 		{
-			GetTransformComponent()->GetPosition() -= m_MoveSpeed * m_CameraFront * _deltaTime;
+			m_TransformComponent->GetPosition() -= m_MoveSpeed * m_CameraFront * _deltaTime;
 		}
 		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_A))
 		{
-			GetTransformComponent()->GetPosition() -= m_MoveSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * _deltaTime;
+			m_TransformComponent->GetPosition() -= m_MoveSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * _deltaTime;
 		}
 		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_D))
 		{
-			GetTransformComponent()->GetPosition() += m_MoveSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * _deltaTime;
+			m_TransformComponent->GetPosition() += m_MoveSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * _deltaTime;
 		}
 	}
 
@@ -69,24 +66,24 @@ namespace Denix
 		const MouseData& mouseData = InputSubsystem::GetMouseData();
 		
 		// Pan Camera if right _mouse down
-		if (mouseData.Right && abs(mouseData.RelY) + abs(mouseData.RelX) > 0.1f)
+		if (m_EnableRotation && mouseData.Right && abs(mouseData.RelY) + abs(mouseData.RelX) > 0.1f)
 		{
-			GetTransformComponent()->GetRotation().y += mouseData.RelX * m_YawRotationRate * _deltaTime * m_RotationFactor;
-			GetTransformComponent()->GetRotation().x -= mouseData.RelY * m_PitchRotationRate * _deltaTime * m_RotationFactor;
+			m_TransformComponent->GetRotation().y += mouseData.RelX * m_YawRotationRate * _deltaTime * m_RotationFactor;
+			m_TransformComponent->GetRotation().x -= mouseData.RelY * m_PitchRotationRate * _deltaTime * m_RotationFactor;
 
 			// make sure that when pitch is out of bounds, screen doesn't get flipped
-			if (GetTransformComponent()->GetRotation().x > 89.0f)
-				GetTransformComponent()->GetRotation().x = 89.0f;
-			else if (GetTransformComponent()->GetRotation().x < -89.0f)
-				GetTransformComponent()->GetRotation().x = -89.0f;
+			if (m_TransformComponent->GetRotation().x > 89.0f)
+				m_TransformComponent->GetRotation().x = 89.0f;
+			else if (m_TransformComponent->GetRotation().x < -89.0f)
+				m_TransformComponent->GetRotation().x = -89.0f;
 		}
 
 		// Change Height if middle _mouse down
 		const float mouseRelMag = abs(mouseData.RelY) + abs(mouseData.RelX);
 		if(mouseData.Middle &&  mouseRelMag > 0.1f)
 		{
-			GetTransformComponent()->GetPosition().y -= mouseData.RelY * m_MoveSpeed * _deltaTime;
-			GetTransformComponent()->GetPosition().x += mouseData.RelX * m_MoveSpeed * _deltaTime;
+			m_TransformComponent->GetPosition().y -= mouseData.RelY * m_MoveSpeed * _deltaTime;
+			m_TransformComponent->GetPosition().x += mouseData.RelX * m_MoveSpeed * _deltaTime;
 		}
 
 		// Change move speed if _mouse wheel is scrolled

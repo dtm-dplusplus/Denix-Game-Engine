@@ -72,6 +72,8 @@ namespace Denix
 		{
 			return m_Viewport;
 		}
+
+		bool m_ExternalControl = false;
 		
 		// Camera Properties
 	public:
@@ -84,6 +86,7 @@ namespace Denix
 		glm::vec2 m_Aspect = glm::vec2(800.f, 600.f);
 
 		// Factor used to represent the speed of the rotation within respectable limits
+		bool m_EnableRotation = true;
 		float m_RotationFactor = 100.0f;
 		float m_PitchRotationRate = 1.0f;
 		float m_YawRotationRate = 1.0f;

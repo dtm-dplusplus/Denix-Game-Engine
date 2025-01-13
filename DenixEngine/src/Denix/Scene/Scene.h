@@ -5,6 +5,7 @@
 
 namespace physx
 {
+	class PxControllerManager;
 	class PxSceneDesc;
 	class PxScene;
 }
@@ -37,7 +38,7 @@ namespace Denix
 		bool IsPlaying() const;
 
 		template <class T = Actor, typename... Args>
-		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f));
+		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 		
 		void SpawnActor(const Ref<Actor>& _obj);
 
@@ -65,9 +66,10 @@ namespace Denix
 
 		// Debug Utility - Use with caution
 		void ClearScene();
-		
+
 		physx::PxScene*	m_PxScene;
 		physx::PxSceneDesc*		m_PxSceneDesc;
+		physx::PxControllerManager*	m_PxControllerManager;
 	protected:
 
 		/** Name of the scene. Must be uniqiue */
@@ -109,7 +111,7 @@ namespace Denix
 	};
 
 	template <class T, typename... Args>
-	Ref<T> Scene::SpawnActor(Args&&... _args, const glm::vec3& _position, const glm::vec3& _rotation)
+	Ref<T> Scene::SpawnActor(Args&&... _args, const glm::vec3& _position, const glm::vec3& _rotation, const glm::vec3& _scale)
 {
 	// Check if T is derived from Actor
 	static_assert(IsBase<Actor, T>(), "T must be derived from Actor");
@@ -140,7 +142,8 @@ namespace Denix
 		// Set Transform Component
 		actor->m_TransformComponent->m_Position = _position;
 		actor->m_TransformComponent->m_Rotation = _rotation;
-
+		actor->m_TransformComponent->m_Scale = _scale;
+		
 		// Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
 		actor->BeginScene();
 		if (m_IsPlaying) actor->BeginPlay();						

@@ -31,8 +31,10 @@ namespace Denix
 		static bool CollisionResponseEnabled() { return s_Instance->m_CollisionResponseEnabled; }
 		static bool& CollisionResponseEnabledRef() { return s_Instance->m_CollisionResponseEnabled; }
 
-		static void RegisterPxActor(physx::PxRigidActor* _actor);
-		static void UnregisterPxActor(physx::PxRigidActor* _actor);
+		static void RegisterComponent(const Ref<PhysicsComponent>& _comp);
+		static void UnregisterComponent(const Ref<PhysicsComponent>& _comp);
+
+		static bool RayCast(const glm::vec3& _origin, const glm::vec3& _direction, float _distance, physx::PxRaycastBuffer& _hit);
 		
 		inline static physx::PxDefaultAllocator		m_PxAllocator;
 		inline static physx::PxDefaultErrorCallback	m_PxErrorCallback;
@@ -43,7 +45,6 @@ namespace Denix
 		inline static physx::PxMaterial* m_PxMaterial = nullptr;
 		
 		static physx::PxScene* CreatePxScene(const physx::PxSceneDesc* _sceneDesc);
-
 
 	private:
 		void Update(float _deltaTime) override;

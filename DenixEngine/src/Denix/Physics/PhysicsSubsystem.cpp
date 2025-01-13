@@ -32,7 +32,7 @@ namespace Denix
         DE_ASSERT(m_PxMaterial, "Failed to create PhysX Material")
         
         // Set the logging level to suppress debug messages for now
-        m_PxFoundation->setErrorLevel(PxErrorCode::eDEBUG_INFO);
+        //m_PxFoundation->setErrorLevel(PxErrorCode::eDEBUG_INFO);
         
         DE_LOG(LogPhysics, Info, "PhysicsSubsystem Initialized")
     }
@@ -56,34 +56,53 @@ namespace Denix
         Subsystem::Deinitialize();
     }
     
-    void PhysicsSubsystem::RegisterPxActor(physx::PxRigidActor* _actor)
+    void PhysicsSubsystem::RegisterComponent(const Ref<PhysicsComponent>& _comp)
     {
-        if (!_actor)
+        if (!_comp)
+        {
+            DE_LOG(LogPhysics, Error, "Invalid Componentt")
+            return;
+        }
+
+        if (!_comp->m_PxActor)
         {
             DE_LOG(LogPhysics, Error, "Invalid PxActor")
             return;
         }
-
+        
         auto scene = s_Instance->m_ActiveScene.lock();
          if (scene->m_PxScene)
          {
-             scene->m_PxScene->addActor(*_actor);
+             scene->m_PxScene->addActor(*_comp->m_PxActor);
          }
     }
 
-    void PhysicsSubsystem::UnregisterPxActor(physx::PxRigidActor* _actor)
+    void PhysicsSubsystem::UnregisterComponent(const Ref<PhysicsComponent>& _comp)
     {
-        if (!_actor)
+        if (!_comp)
         {
-            DE_LOG(LogPhysics, Error, "Invalid PxActor")
+            DE_LOG(LogPhysics, Error, "Invalid Commponent")
             return;
         }
 
         auto scene = s_Instance->m_ActiveScene.lock();
         if (scene->m_PxScene)
         {
-          scene->m_PxScene->removeActor(*_actor->is<physx::PxActor>());
+          scene->m_PxScene->removeActor(*_comp->m_PxActor->is<physx::PxActor>());
         }
+    }
+
+    bool PhysicsSubsystem::RayCast(const glm::vec3& _origin, const glm::vec3& _direction, float _distance,
+        physx::PxRaycastBuffer& _hit)
+    {
+        if (!s_Instance->m_ActiveScene.lock()->m_PxScene)
+        {
+            DE_LOG(LogPhysics, Error, "No PhysX Scene")
+            return false;
+        }
+
+        return s_Instance->m_ActiveScene.lock()->m_PxScene->raycast({ _origin.x, _origin.y, _origin.z },
+            { _direction.x, _direction.y, _direction.z }, _distance, _hit);
     }
 
     void PhysicsSubsystem::Update(float _deltaTime)

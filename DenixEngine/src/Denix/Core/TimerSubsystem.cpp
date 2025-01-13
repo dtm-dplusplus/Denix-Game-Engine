@@ -10,7 +10,7 @@ TimerSubsystem::TimerSubsystem()
 	  m_FrameTime(0.167f),
 	  m_DeltaTime(0.167f),
 	  m_GameTimeSpeed(1.0f),
-	  m_MaxLimitFPS(60)
+	  m_MaxLimitFPS(120)
 {
 }
 
