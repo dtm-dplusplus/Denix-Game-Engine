@@ -3,6 +3,9 @@
 
 namespace Denix
 {
+    /**
+     * Utility class for creating a GACP Actor
+     */
     class GACPActor: public Cube
     {
     public:
