@@ -86,10 +86,6 @@ namespace Denix
 		if (Ref<Material> defMat = LoadMaterial(MakeRef<Asset>(defMatPath))) m_DefaultMaterial = defMat;
 		else throw std::runtime_error("Default Material not loaded");
 			
-		std::string defTexPath = FileSubsystem::GetEngineContentRoot() + R"(textures\DefaultTexture.png)";
-		if (Ref<Texture> defTex = LoadTexture(defTexPath)) m_DefaultTexture = defTex;
-		else throw std::runtime_error("Default Texture not loaded");
-			
 		// Search Project directory for assets
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(FileSubsystem::GetContentRoot()))
 		{
@@ -268,19 +264,21 @@ namespace Denix
 	////////////////////////  TEXTURES ///////////////////////////////
 	Ref<Texture> AssetSubsystem::LoadTexture(const std::string& _path)
 	{
+		std::string path =FileSubsystem::FormatPath(_path);
+		
 		// Check it isn't already loaded
-		if (s_Instance->m_TextureStore.contains(_path))
+		if (s_Instance->m_TextureStore.contains(path))
 		{
-			DE_LOG(LogAsset, Warn, "Load Texture: A texture name: {} is already loaded", _path)
-				return s_Instance->m_TextureStore[_path];
+			DE_LOG(LogAsset, Warn, "Load Texture: A texture name: {} is already loaded", path)
+				return s_Instance->m_TextureStore[path];
 		}
 
-		Ref<Texture> texture = MakeRef<Texture>(_path);
+		Ref<Texture> texture = MakeRef<Texture>(path);
 
 		if (!texture->LoadTexture()) return nullptr;
 
-		s_Instance->m_TextureStore[_path] = texture;
-		DE_LOG(LogAsset, Trace, "Texture loaded: {}", _path)
+		s_Instance->m_TextureStore[path] = texture;
+		DE_LOG(LogAsset, Trace, "Texture loaded: {}", path)
 
 		return texture;
 	}

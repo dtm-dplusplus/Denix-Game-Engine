@@ -2,6 +2,7 @@
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Core/YAMLHelper.h"
 #include "Denix/Asset/Asset.h"
+#include "Denix/Core/FileSubsystem.h"
 
 namespace Denix
 {
@@ -75,7 +76,7 @@ namespace Denix
 
 	YAML::Node Material::Deserialize(const Ref<Asset>& _asset)
 	{
-		YAML::Node matNode = YAML::LoadFile(_asset->GetAssetPath());
+		YAML::Node matNode = YAML::LoadFile(FileSubsystem::FormatPath(_asset->GetAssetPath()));
 
 		if(matNode["m_Material"])
 		{
