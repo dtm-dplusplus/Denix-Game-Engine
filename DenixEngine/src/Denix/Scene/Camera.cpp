@@ -4,7 +4,7 @@
 
 namespace Denix
 {
-	Camera::Camera(): Actor({"Camera"}), m_Viewport(MakeRef<Viewport>()), m_Projection(1.0f), m_View(1.0f)
+	Camera::Camera(): Actor({"Camera"})
 	{
 		m_CameraComponent = AddComponent<CameraComponent>();
 		m_TransformComponent->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
@@ -16,10 +16,5 @@ namespace Denix
 	{
 		Actor::Update(_deltaTime);
 		
-		const auto& fwd = m_TransformComponent->GetForward();
-		const auto& up = m_TransformComponent->GetUp();
-
-		m_Projection = m_CameraComponent->GetProjectionMatrix();
-		m_View = m_CameraComponent->GetViewMatrix();
 	}
 }

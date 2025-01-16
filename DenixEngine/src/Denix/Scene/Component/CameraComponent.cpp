@@ -4,8 +4,9 @@
 #include "Denix/Scene/Actor.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Input/InputSubsystem.h"
+#include "Denix/Video/WindowSubsystem.h"
 
-Denix::CameraComponent::CameraComponent(): Component({"CameraComponent"})
+Denix::CameraComponent::CameraComponent(): Component({"CameraComponent"}), m_Viewport(MakeRef<Viewport>())
 {
 }
 
@@ -39,7 +40,7 @@ void Denix::CameraComponent::Update(float _deltaTime)
 
 	// Prepare Aspect
 	m_Aspect = WindowSubsystem::GetWindowSize();
-
+	
     // m_Projection matrix
     if (m_IsPerspective)
     {
@@ -47,12 +48,11 @@ void Denix::CameraComponent::Update(float _deltaTime)
     }
     else
     {
-        m_Projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, m_NearPlane, m_FarPlane);
+        m_Projection = glm::ortho(0.0f, m_Aspect.x, m_Aspect.y, 0.0f, m_NearPlane, m_FarPlane);
     }
 		
     // Calculate the view matrix
     m_View = glm::lookAt(pos, pos + fwd, up);
-
 }
 
 void Denix::CameraComponent::ProcessKeyboardInput(float _deltaTime)

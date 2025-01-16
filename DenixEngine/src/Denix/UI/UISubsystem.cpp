@@ -123,9 +123,9 @@ namespace Denix
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
-	void UISubsystem::ViewportUpdate() const
+	void UISubsystem::ViewportUpdate()
 	{
-		const auto& window = m_WindowRef.lock();
+		const auto& window = s_Instance->m_WindowRef.lock();
 		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			ImGui::UpdatePlatformWindows();

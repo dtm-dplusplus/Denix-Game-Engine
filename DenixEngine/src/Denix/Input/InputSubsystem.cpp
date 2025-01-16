@@ -4,6 +4,7 @@
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Video/WindowSubsystem.h"
+#include "Denix/Video/GL/Viewport.h"
 
 namespace Denix
 {
@@ -68,7 +69,7 @@ namespace Denix
                     window->m_WinX = event.window.data1;
                     window->m_WinY = event.window.data2;
                     glViewport(0, 0,  window->m_WinX, window->m_WinY);
-                    SceneSubsystem::GetActiveCamera()->GetViewport()->m_FrameBuffer->Resize(window->m_WinX, window->m_WinY);
+                    SceneSubsystem::GetActiveCamera()->GetCameraComponent()->GetViewport()->m_FrameBuffer->Resize(window->m_WinX, window->m_WinY);
 
                     DE_LOG(LogWindow, Trace, "Window Resized Event. Res: {}x{}", window->m_WinX, window->m_WinY)
 

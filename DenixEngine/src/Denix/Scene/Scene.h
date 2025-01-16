@@ -85,6 +85,8 @@ namespace Denix
 		/** Gravity of the scene */
 		float m_Gravity = 9.81f;
 
+		Ref<Actor> m_GameCamera;
+		
 		Ref<Camera> m_ViewportCamera;
 
 		Ref<Camera> m_ActiveCamera;
@@ -117,14 +119,16 @@ namespace Denix
 	if (Ref<Actor> actor = MakeRef<T>(std::forward<Args>(_args)...))
 	{
 		// Perform type checks to cache engine actor types
-		if (typeid(T) == typeid(Camera))
-		{
-			if (!CastRef<Camera>(actor)->m_IsGameCamera)
-			{
-				DE_LOG(LogScene, Error, "Scene already has a game camera")
-				return nullptr;
-			}
-		}
+		if (Ref<CameraComponent> camComp = actor->GetComponent<CameraComponent>())
+        {
+            if (m_GameCamera)
+            {
+                DE_LOG(LogScene, Error, "Scene already has a game camera")
+                return nullptr;
+            }
+	
+			m_GameCamera = actor;
+        }
 		
 		// Validate Name. We cannont have two objects with the same name
 		if (m_ActorNames.contains(actor->GetName()))

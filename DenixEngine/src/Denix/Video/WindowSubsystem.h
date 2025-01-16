@@ -4,6 +4,7 @@
 #include "Denix/Core/Subsystem.h"
 
 #include "Denix/Video/Window/Window.h"
+#include "GL/Viewport.h"
 
 namespace Denix
 {
@@ -23,12 +24,13 @@ namespace Denix
 		static int GetWindowHeight() { return s_Instance->m_Window->GetHeight(); }
 		
 	private:
+		void NewFrame();
+		void PresentFrame();
 		void Initialize() override;
 
 		void Deinitialize() override;
 
 		Ref<SDL_GLWindow> m_Window;
-
 
 		friend class Engine;
 	};

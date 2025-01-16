@@ -1,10 +1,35 @@
 #include "WindowSubsystem.h"
 
+#include "Denix/Profile/ProfileSubsystem.h"
+#include "Denix/Scene/SceneSubsystem.h"
+#include "Denix/UI/UISubsystem.h"
+
 namespace Denix
 {
     void WindowSubsystem::ToggleFullscreen()
     {
         s_Instance->m_Window->ToggleFullscreen();
+    }
+
+    void WindowSubsystem::NewFrame()
+    {
+        DE_PROFILE(Clear Frame Buffer)
+        UISubsystem::NewFrame();
+        m_Window->ClearBuffer();
+        SceneSubsystem::GetActiveScene()->GetActiveCamera()->GetCameraComponent()->GetViewport()->m_FrameBuffer->Bind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        DE_PROFILE_END(Clear Frame Buffer)
+    }
+
+    void WindowSubsystem::PresentFrame()
+    {
+        DE_PROFILE(Draw Viewport)
+        FrameBuffer::Unbind();
+        SceneSubsystem::GetActiveScene()->GetActiveCamera()->GetCameraComponent()->GetViewport()->DrawViewport();
+        UISubsystem::RenderUI(); // Swap buffers and render UI
+        m_Window->SwapBuffers();
+        UISubsystem::ViewportUpdate();
+        DE_PROFILE_END(Draw Viewport)
     }
 
     void WindowSubsystem::Initialize()
@@ -17,8 +42,8 @@ namespace Denix
         SDL_GLWindow::m_GLDepthSize = 24;
         SDL_GLWindow::m_GLStencilSize = 8;
         SDL_GLWindow::m_GLDoubleBuffer = 1;
-        
-        
+
+
         //Create main window
         m_Window = MakeRef<SDL_GLWindow>();
         if (!m_Window->m_IsOpen)
@@ -32,10 +57,10 @@ namespace Denix
         if (glewInit() != GLEW_OK)
         {
             DE_LOG(LogWindow, Critical, "glewInit(): failed")
-                return;
+            return;
         }
         DE_LOG(LogWindow, Trace, "glewInit(): success")
-        
+
         DE_LOG(LogWindow, Info, "Window Subsystem Initialized")
     }
 

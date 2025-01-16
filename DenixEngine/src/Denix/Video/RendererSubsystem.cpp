@@ -41,7 +41,7 @@ namespace Denix
     void RendererSubsystem::RenderDefaultViewport() const
     {
         Ref<Scene> activeScene = m_ActiveScene.lock();
-        if (!activeScene->m_ActiveCamera)
+        if (!activeScene->m_ActiveCamera || !activeScene->m_ActiveCamera->m_CameraComponent)
         {
             DE_LOG(LogRender, Error, "No Active Camera in Scene")
             return;
@@ -55,12 +55,12 @@ namespace Denix
         // Upload the camera matrices relative to Object
         glUniformMatrix4fv(defaultShader->GetUniform("u_Projection"), 1,
                            GL_FALSE, glm::value_ptr(
-                               activeScene->m_ActiveCamera->m_Projection));
+                               activeScene->m_ActiveCamera->m_CameraComponent->m_Projection));
 
         glUniformMatrix4fv(defaultShader->GetUniform("u_View"), 1,
-                           GL_FALSE, glm::value_ptr(
-                               activeScene->m_ActiveCamera->m_View));
-
+                          GL_FALSE, glm::value_ptr(
+                              activeScene->m_ActiveCamera->m_CameraComponent->m_View));
+        
         for (const Ref<Actor>& actor : activeScene->m_Actors)
         {
             if (!actor->m_RenderComponent->IsVisible() || !actor->m_RenderComponent->m_Material || !actor->m_MeshComponent->m_Model) continue;

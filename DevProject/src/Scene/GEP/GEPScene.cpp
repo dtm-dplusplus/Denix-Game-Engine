@@ -61,8 +61,9 @@ void GEPScene::DebugUI(float _deltaTime)
 
     ImGui::Begin("GEP Scene");
     ImGui::SeparatorText("Camera");
-    ImGui::Checkbox("External Camera Control", &m_ActiveCamera->m_ExternalControl);
-    ImGui::Checkbox("Rotation", &m_ActiveCamera->m_EnableRotation);
+    auto camComp = m_ActiveCamera->GetCameraComponent();
+    ImGui::Checkbox("External Camera Control", &camComp->m_ExternalControl);
+    ImGui::Checkbox("Rotation", &camComp->m_EnableRotation);
 
     static bool MatchCharacter = false;
     ImGui::Checkbox("Match Character", &MatchCharacter);

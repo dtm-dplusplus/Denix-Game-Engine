@@ -35,7 +35,7 @@ namespace Denix
 
 		static void NewFrame();
 		static void RenderUI();
-		void ViewportUpdate() const;
+		static void ViewportUpdate();
 
 		ImGuiID DockLeftID;
 		ImGuiID DockRightID;
@@ -44,5 +44,6 @@ namespace Denix
 		WRef<SDL_GLWindow> m_WindowRef;
 		friend class Engine;
 		friend class EditorSubsystem;
+		friend class WindowSubsystem;
 	};
 }
