@@ -3,7 +3,6 @@
 #include "Denix/Core.h"
 #include "Denix/Core/Math/Math.h"
 #include "Actor.h"
-#include "Denix/Input/InputSubsystem.h"
 #include "Denix/Video/GL/Viewport.h"
 
 namespace Denix
@@ -13,7 +12,6 @@ namespace Denix
 	public:
 		/**
 		 *  @brief Constructor for the Camera class
-		 * @param _position Option to set the position of the camera 
 		 */
 		Camera();
 		
@@ -42,32 +40,6 @@ namespace Denix
 			return m_View;
 		}
 
-		glm::vec3 GetCameraFront() const
-		{
-			return m_CameraFront;
-		}
-		glm::vec3& GetCameraFront()
-		{
-			return m_CameraFront;
-		}
-		void SetCameraFront(const glm::vec3& _cameraFront)
-		{
-			m_CameraFront = _cameraFront;
-		}
-
-		glm::vec3 GetCameraUp() const
-		{
-			return m_CameraUp;
-		}
-		glm::vec3& GetCameraUp()
-		{
-			return m_CameraUp;
-		}
-		void SetCameraUp(const glm::vec3& _cameraUp)
-		{
-			m_CameraUp = _cameraUp;
-		}
-
 		Ref<Viewport> GetViewport() const
 		{
 			return m_Viewport;
@@ -93,10 +65,6 @@ namespace Denix
 		float m_MoveSpeed = 10.0f;
 		float m_MouseScrollSpeed = 0.5f;
 	
-		glm::vec3 m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-		glm::vec3 m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		glm::vec3 m_CameraRight = glm::vec3(1.0f, 0.0f, 0.0f);
-		
 	private:
 		// Viewport
 		Ref<Viewport> m_Viewport;

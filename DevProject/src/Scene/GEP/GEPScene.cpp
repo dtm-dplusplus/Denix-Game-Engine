@@ -1,11 +1,9 @@
 ﻿#include "GEPScene.h"
 
-#include <PxScene.h>
-
 #include "Character.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Scene/Actor/Shapes.h"
-
+#include "Denix/Input/InputSubsystem.h"
 
 GEPScene::GEPScene()
 {

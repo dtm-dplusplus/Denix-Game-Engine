@@ -22,10 +22,10 @@ namespace Denix
 		}
 		
 		Actor::Update(_deltaTime);
-		m_CameraFront = m_TransformComponent->GetForward();
-		m_CameraRight = m_TransformComponent->GetRight();
-		m_CameraUp = m_TransformComponent->GetUp();
 
+		const auto& fwd = m_TransformComponent->GetForward();
+		const auto& up = m_TransformComponent->GetUp();
+		
 		// m_Projection matrix
 		if (m_IsPerspective)
 		{
@@ -37,27 +37,30 @@ namespace Denix
 		}
 		
 		// Calculate the view matrix
-		m_View = glm::lookAt(m_TransformComponent->GetPosition(), m_TransformComponent->GetPosition() + m_CameraFront, m_CameraUp);
+		m_View = glm::lookAt(m_TransformComponent->GetPosition(), m_TransformComponent->GetPosition() + fwd, up);
 	}
 		
 	void Camera::ProcessKeyboardInput(float _deltaTime)
 	{
+		const auto& fwd = m_TransformComponent->GetForward();
+		const auto& right = m_TransformComponent->GetRight();
+		
 		// XZ 
 		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_W))
 		{
-			m_TransformComponent->GetPosition() += m_MoveSpeed * m_CameraFront * _deltaTime;
+			m_TransformComponent->GetPosition() += m_MoveSpeed * fwd * _deltaTime;
 		}
 		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_S))
 		{
-			m_TransformComponent->GetPosition() -= m_MoveSpeed * m_CameraFront * _deltaTime;
+			m_TransformComponent->GetPosition() -= m_MoveSpeed * fwd * _deltaTime;
 		}
 		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_A))
 		{
-			m_TransformComponent->GetPosition() -= m_MoveSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * _deltaTime;
+			m_TransformComponent->GetPosition() -= m_MoveSpeed * right * _deltaTime;
 		}
 		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_D))
 		{
-			m_TransformComponent->GetPosition() += m_MoveSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * _deltaTime;
+			m_TransformComponent->GetPosition() += m_MoveSpeed * right * _deltaTime;
 		}
 	}
 
