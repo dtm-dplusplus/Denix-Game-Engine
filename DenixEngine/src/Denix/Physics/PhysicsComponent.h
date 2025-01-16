@@ -65,17 +65,13 @@ namespace Denix
 		void Update(float _deltaTime) override;
 
 
-		void AddForce(const glm::vec3& _force)
-		{
-			m_Force += _force;
-		}
+		void AddForce(const glm::vec3& _force) const;
 
-		void AddImpulse(const glm::vec3& _impulse);
+		void AddAcceleration(const glm::vec3& _acceleration) const;
 
-		void AddTorque(const glm::vec3& _torque)
-		{
-			m_Torque += _torque;
-		}
+		void AddImpulse(const glm::vec3& _impulse) const;
+
+		void AddTorque(const glm::vec3& _torque) const;
 
 		bool m_RotationEnabled = true;
 

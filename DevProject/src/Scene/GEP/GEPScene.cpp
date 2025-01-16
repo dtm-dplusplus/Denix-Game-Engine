@@ -72,8 +72,8 @@ void GEPScene::DebugUI(float _deltaTime)
     ImGui::DragFloat3("Offset", &offset[0], 0.1f);
     if (MatchCharacter) m_ActiveCamera->GetTransformComponent()->SetPosition(m_Character->GetTransformComponent()->GetPosition() + offset);
 
-    ImGui::DragFloat("Move Speed", &m_Character->m_MoveSpeed, 0.1f, 0.0f, 10.0f);
-    ImGui::DragFloat("Jump Force", &m_Character->m_JumpForce, 0.1f, 0.0f, 10.0f);
+    ImGui::DragFloat("Move Speed", &m_Character->m_MoveSpeed, 0.1f, 0.0f, 200.0f);
+    ImGui::DragFloat("Jump Force", &m_Character->m_JumpForce, 0.1f, 0.0f, 200.0f);
 
     static physx::PxVec3 pos= physx::PxVec3(0.0f, 0.5f, 0.0f);
     static physx::PxVec3 direction = physx::PxVec3(0.0f, -1.0f, 0.0f);

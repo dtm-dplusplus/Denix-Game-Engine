@@ -66,7 +66,9 @@ namespace Denix
         }
     }
 
-    void PhysicsComponent::AddImpulse(const glm::vec3& _impulse)
+    
+
+    void PhysicsComponent::AddImpulse(const glm::vec3& _impulse) const
     {
         if (!m_PxActor) return;
         
@@ -79,6 +81,45 @@ namespace Denix
         DE_LOG(LogPhysics, Error, "Cannot add impulse to a static actor {}", m_Parent->GetName());    
     }
 
+    void PhysicsComponent::AddTorque(const glm::vec3& _torque) const
+    {
+        if (!m_PxActor) return;
+
+        if (const auto dynamicActor = m_PxActor->is<physx::PxRigidDynamic>())
+        {
+            dynamicActor->addTorque({ _torque.x, _torque.y, _torque.z }, physx::PxForceMode::eFORCE);
+            return;
+        }
+
+        DE_LOG(LogPhysics, Error, "Cannot add torque to a static actor {}", m_Parent->GetName());
+    }
+
+    void PhysicsComponent::AddForce(const glm::vec3& _force) const
+    {
+        if (!m_PxActor) return;
+
+        if (const auto dynamicActor = m_PxActor->is<physx::PxRigidDynamic>())
+        {
+            dynamicActor->addForce({ _force.x, _force.y, _force.z }, physx::PxForceMode::eFORCE);
+            return;
+        }
+
+        DE_LOG(LogPhysics, Error, "Cannot add force to a static actor {}", m_Parent->GetName());
+    }
+
+    void PhysicsComponent::AddAcceleration(const glm::vec3& _acceleration) const
+    {
+        if (!m_PxActor) return;
+
+        if (const auto dynamicActor = m_PxActor->is<physx::PxRigidDynamic>())
+        {
+            dynamicActor->addForce({ _acceleration.x, _acceleration.y, _acceleration.z }, physx::PxForceMode::eACCELERATION);
+            return;
+        }
+
+        DE_LOG(LogPhysics, Error, "Cannot add acceleration to a static actor {}", m_Parent->GetName());
+    }
+    
     void PhysicsComponent::SetupPhysX()
     {
         const auto scale = m_Parent->m_TransformComponent->m_Scale;
