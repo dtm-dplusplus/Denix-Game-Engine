@@ -3,9 +3,9 @@
 #include <functional>
 
 #include <map>
-#include "Denix/Scene/BaseObject.h"
-#include "Denix/System/SubSystem.h"
-#include "Denix/Reflection/ReflectionHelper.h"
+#include "Denix/Core/BaseObject.h"
+#include "Denix/Core/Subsystem.h"
+#include "Denix/Core/Reflection/ReflectionHelper.h"
 
 namespace Denix
 {

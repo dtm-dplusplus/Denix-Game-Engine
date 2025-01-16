@@ -1,5 +1,5 @@
 #pragma once
-#include "Denix/System/SubSystem.h"
+#include "Denix/Core/Subsystem.h"
 #include "Denix/Core.h"
 
 namespace Denix
@@ -7,10 +7,7 @@ namespace Denix
     class FileSubsystem: public Subsystem<FileSubsystem>
     {
 	public:
-		FileSubsystem()
-		{
-			
-		}
+		FileSubsystem() = default;
 
 		~FileSubsystem() override = default;
 

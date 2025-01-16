@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Denix/Scene/Object.h"
-#include "Denix/Core/Timer.h"
+#include "Denix/Core/Object.h"
+#include "Denix/Core/Time/Timer.h"
 
 namespace Denix
 {

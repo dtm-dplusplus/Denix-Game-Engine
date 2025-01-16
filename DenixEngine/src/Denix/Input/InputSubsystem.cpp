@@ -3,7 +3,7 @@
 #include "backends/imgui_impl_sdl3.h"
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
-#include "Denix/Video/Window/WindowSubsystem.h"
+#include "Denix/Video/WindowSubsystem.h"
 
 namespace Denix
 {

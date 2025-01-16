@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Denix/System/Subsystem.h"
+#include "Denix/Core/Subsystem.h"
 
 #include <SDL3/SDL_audio.h>
 #include "al/al.h"

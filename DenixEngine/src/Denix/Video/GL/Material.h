@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Denix/Scene/BaseObject.h"
-#include "Denix/Scene/Object.h"
+#include "Denix/Core/BaseObject.h"
+#include "Denix/Core/Object.h"
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Video/GL/Shader.h"
 

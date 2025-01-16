@@ -4,7 +4,7 @@
 #include "AudioPrimitive.h"
 #include "AudioSubsystem.h"
 
-#include "Denix/Core/Logger.h"
+#include "Denix/Core/Log/Logger.h"
 
 Denix::AudioSource::AudioSource(): BaseObject({"AudioSource"})
 {

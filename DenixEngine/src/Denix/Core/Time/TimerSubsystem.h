@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Denix/System/Subsystem.h"
+#include "Denix/Core/Subsystem.h"
 #include "Denix/Core.h"
 #include "Timer.h"
 

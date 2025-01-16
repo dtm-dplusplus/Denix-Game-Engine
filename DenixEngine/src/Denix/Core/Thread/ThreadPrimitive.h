@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Denix/Core.h"
-#include "Denix/Core/TimePrimitive.h"
+#include "Denix/Core/Time/TimePrimitive.h"
 
 namespace Denix
 {

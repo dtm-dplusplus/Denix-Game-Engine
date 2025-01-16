@@ -1,7 +1,7 @@
 	#pragma once
 
 #include "Denix/Core.h"
-#include "Denix/Core/Math.h"
+#include "Denix/Core/Math/Math.h"
 #include "Actor.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/Video/GL/Viewport.h"

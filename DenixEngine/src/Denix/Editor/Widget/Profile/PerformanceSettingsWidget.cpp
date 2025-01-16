@@ -1,7 +1,7 @@
 ﻿
 #include "PerformanceSettingsWidget.h"
 #include "Denix/UI/UISubsystem.h"
-#include "Denix/Core/TimerSubsystem.h"
+#include "Denix/Core/Time/TimerSubsystem.h"
 
 Denix::PerformanceSettingsWidget::PerformanceSettingsWidget(): EditorWidget({"Performance Settings"})
 {

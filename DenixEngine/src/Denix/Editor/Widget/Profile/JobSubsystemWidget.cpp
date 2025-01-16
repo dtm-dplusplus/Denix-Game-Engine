@@ -2,7 +2,7 @@
 
 #include "imgui.h"
 #include "Denix/Scene/SceneSubsystem.h"
-#include "Denix/Thread/JobSubsystem.h"
+#include "Denix/Core/Thread/JobSubsystem.h"
 
 
 namespace Denix

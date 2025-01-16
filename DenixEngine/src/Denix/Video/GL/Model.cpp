@@ -2,8 +2,8 @@
 
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Video/GL/Mesh.h"
-#include "Denix/Core/FileSubsystem.h"
-#include "Denix/Core/Math.h"
+#include "Denix/Core/File/FileSubsystem.h"
+#include "Denix/Core/Math/Math.h"
 
 
 bool Denix::Model::LoadModel()

@@ -4,7 +4,7 @@
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Actor.h"
-#include "Denix/Scene/Object/Shapes/Shapes.h"
+#include "Denix/Scene/Actor/Shapes.h"
 
 Denix::AddActorWidget::AddActorWidget(const WRef<Scene>& _scene)
 {

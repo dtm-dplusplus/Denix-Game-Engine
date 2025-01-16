@@ -1,5 +1,5 @@
 #pragma once
-#include "Denix/System/SubSystem.h"
+#include "Denix/Core/Subsystem.h"
 #include <SDL3/SDL_events.h>
 #include "Denix/Core.h"
 

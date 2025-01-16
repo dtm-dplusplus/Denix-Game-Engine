@@ -2,9 +2,9 @@
 
 #include "imgui.h"
 #include "Denix/Engine.h"
-#include "Denix/Core/TimerSubsystem.h"
+#include "Denix/Core/Time/TimerSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
-#include "Denix/Thread/JobSubsystem.h"
+#include "Denix/Core/Thread/JobSubsystem.h"
 #include "Denix/Editor/Widget/Profile/JobSubsystemWidget.h"
 
 using namespace Denix;

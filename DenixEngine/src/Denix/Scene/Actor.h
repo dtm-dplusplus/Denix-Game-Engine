@@ -2,7 +2,7 @@
 
 #include <ranges>
 
-#include "Denix/Scene/BaseObject.h"
+#include "Denix/Core/BaseObject.h"
 #include "Denix/Scene/Component.h"
 
 #include "Denix/Scene/Component/RenderComponent.h"

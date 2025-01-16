@@ -47,7 +47,7 @@ namespace Denix
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
         }
         
-        for (const auto& obj : m_Actors) obj->BeginScene();
+        for (const auto& actor : m_Actors) actor->BeginScene();
     }
 
     void Scene::EndScene()
@@ -80,7 +80,7 @@ namespace Denix
 
     void Scene::EndPlay()
     {
-        for (const auto& obj : m_Actors) obj->EndPlay();
+        for (const auto& actor : m_Actors) actor->EndPlay();
 
         m_Actors.clear();
         m_ActorNames.clear();
@@ -131,11 +131,11 @@ namespace Denix
 
     Ref<Actor> Scene::GetActorByName(const std::string& _name) const
     {
-        for (const auto& obj : m_Actors)
+        for (const auto& actor : m_Actors)
         {
-            if (obj->GetName() == _name)
+            if (actor->GetName() == _name)
             {
-                return obj;
+                return actor;
             }
         }
 
@@ -144,29 +144,29 @@ namespace Denix
 
     
 
-    void Scene::SpawnActor(const Ref<Actor>& _obj)
+    void Scene::SpawnActor(const Ref<Actor>& _actor)
     {
-        if (!_obj)
+        if (!_actor)
         {
             DE_LOG(LogScene, Error, "SpawnActor: Invalid Actor")
             return;
         }
         
-        _obj->BeginScene();
+        _actor->BeginScene();
 
         if (m_IsPlaying)
-            _obj->BeginPlay();
+            _actor->BeginPlay();
 
-        m_Actors.push_back(std::move(_obj));
+        m_Actors.push_back(std::move(_actor));
     }
 
     Ref<Camera> Scene::FindGameCamera() const
     {
-        for (const auto& obj : m_Actors)
+        for (const auto& actor : m_Actors)
         {
-            if (typeid(Camera) == typeid(*obj))
+            if (typeid(Camera) == typeid(*actor))
             {
-                return std::static_pointer_cast<Camera>(obj);
+                return std::static_pointer_cast<Camera>(actor);
             }
         }
 

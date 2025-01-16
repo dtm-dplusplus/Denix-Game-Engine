@@ -5,7 +5,7 @@
 #include "backends/imgui_impl_sdl3.h"
 
 #include "Denix/Video/Window/Window.h"
-#include "Denix/Video/Window/WindowSubsystem.h"
+#include "Denix/Video/WindowSubsystem.h"
 
 namespace Denix
 {

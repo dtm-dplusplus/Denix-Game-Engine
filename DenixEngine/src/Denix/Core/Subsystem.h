@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/Thread/ThreadPrimitive.h"
+#include "Denix/Core/Thread/ThreadPrimitive.h"
 
 namespace Denix
 {

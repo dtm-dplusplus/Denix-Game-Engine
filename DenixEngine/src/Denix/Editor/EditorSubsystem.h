@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/System/Subsystem.h"
+#include "Denix/Core/Subsystem.h"
 #include "Denix/Editor/EditorWidget.h"
 
 namespace Denix

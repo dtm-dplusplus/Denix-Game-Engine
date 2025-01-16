@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Denix/Thread/ThreadPrimitive.h"
+#include "Denix/Core/Thread/ThreadPrimitive.h"
 #include <thread>
 
 namespace Denix

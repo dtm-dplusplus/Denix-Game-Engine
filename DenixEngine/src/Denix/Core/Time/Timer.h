@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "Denix/Scene/Object.h"
-#include "Denix/Core/TimePrimitive.h"
+#include "Denix/Core/Object.h"
+#include "Denix/Core/Time/TimePrimitive.h"
 
 #include <chrono>
 

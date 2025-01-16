@@ -1,13 +1,13 @@
 #include "EditorSubsystem.h"
 
 #include "Denix.h"
-#include "Denix/Core/FileSubsystem.h"
+#include "Denix/Core/File/FileSubsystem.h"
 #include "Denix/Editor/Widget/Scene/ActorDetailsWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneOrganizerWidget.h"
 #include "Denix/Editor/Widget/AssetBrowserWidget.h"
 #include "Denix/Editor/Widget/Profile/EngineProfilerWidget.h"
 #include "Denix/Editor/Widget/InputDebuggerWidget.h"
-#include "Denix/Thread/JobSubsystem.h"
+#include "Denix/Core/Thread/JobSubsystem.h"
 #include "Widget/Profile/PerformanceSettingsWidget.h"
 
 #include "yaml-cpp/yaml.h"

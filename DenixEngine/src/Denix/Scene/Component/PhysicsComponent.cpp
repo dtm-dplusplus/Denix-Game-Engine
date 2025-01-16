@@ -61,8 +61,10 @@ namespace Denix
         {
             physx::PxVec3 pos = m_PxActor->getGlobalPose().p;
             physx::PxQuat rot = m_PxActor->getGlobalPose().q;
-            m_Parent->m_TransformComponent->m_Position = {pos.x, pos.y, pos.z};
-            m_Parent->m_TransformComponent->m_Rotation = Math::Degrees(glm::eulerAngles(glm::quat(rot.w, rot.x, rot.y, rot.z)));
+
+            auto parent = m_Parent.lock();
+            parent->m_TransformComponent->m_Position = {pos.x, pos.y, pos.z};
+            parent->m_TransformComponent->m_Rotation = Math::Degrees(glm::eulerAngles(glm::quat(rot.w, rot.x, rot.y, rot.z)));
         }
     }
 
@@ -78,7 +80,7 @@ namespace Denix
             return;
         }
         
-        DE_LOG(LogPhysics, Error, "Cannot add impulse to a static actor {}", m_Parent->GetName());    
+        DE_LOG(LogPhysics, Error, "Cannot add impulse to a static actor {}", m_Parent.lock()->GetName());    
     }
 
     void PhysicsComponent::AddTorque(const glm::vec3& _torque) const
@@ -91,7 +93,7 @@ namespace Denix
             return;
         }
 
-        DE_LOG(LogPhysics, Error, "Cannot add torque to a static actor {}", m_Parent->GetName());
+        DE_LOG(LogPhysics, Error, "Cannot add torque to a static actor {}", m_Parent.lock()->GetName());
     }
 
     void PhysicsComponent::AddForce(const glm::vec3& _force) const
@@ -104,7 +106,7 @@ namespace Denix
             return;
         }
 
-        DE_LOG(LogPhysics, Error, "Cannot add force to a static actor {}", m_Parent->GetName());
+        DE_LOG(LogPhysics, Error, "Cannot add force to a static actor {}", m_Parent.lock()->GetName());
     }
 
     void PhysicsComponent::AddAcceleration(const glm::vec3& _acceleration) const
@@ -117,15 +119,16 @@ namespace Denix
             return;
         }
 
-        DE_LOG(LogPhysics, Error, "Cannot add acceleration to a static actor {}", m_Parent->GetName());
+        DE_LOG(LogPhysics, Error, "Cannot add acceleration to a static actor {}", m_Parent.lock()->GetName());
     }
     
     void PhysicsComponent::SetupPhysX()
     {
-        const auto scale = m_Parent->m_TransformComponent->m_Scale;
-        const auto scaleH = m_Parent->m_TransformComponent->m_Scale / 2.0f;
-        const auto pos = m_Parent->m_TransformComponent->m_Position;
-        const auto rot = Math::Radians(m_Parent->m_TransformComponent->m_Rotation);
+        auto parent = m_Parent.lock();
+        const auto scale = parent->m_TransformComponent->m_Scale;
+        const auto scaleH = parent->m_TransformComponent->m_Scale / 2.0f;
+        const auto pos = parent->m_TransformComponent->m_Position;
+        const auto rot = Math::Radians(parent->m_TransformComponent->m_Rotation);
         physx::PxTransform tform = physx::PxTransform(pos.x, pos.y, pos.z);
         
         switch (m_ColliderType)
@@ -146,7 +149,7 @@ namespace Denix
             } break;
         }
         
-        switch (m_Parent->m_TransformComponent->m_Moveability)
+        switch (parent->m_TransformComponent->m_Moveability)
         {
         case 0:
             {
@@ -159,7 +162,7 @@ namespace Denix
                 UpdatePxDynamicActor(m_PxActor->is<physx::PxRigidDynamic>());
             } break;
         }
-        m_PxActor->userData = m_Parent.get();
+        m_PxActor->userData = parent.get();
         m_PxActor->attachShape(*m_PxShape);
     }
 

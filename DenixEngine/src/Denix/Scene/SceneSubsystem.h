@@ -2,7 +2,7 @@
 
 #include "Denix/Core.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/System/SubSystem.h"
+#include "Denix/Core/Subsystem.h"
 
 namespace YAML
 {
@@ -68,7 +68,7 @@ namespace Denix
 
 		static void DeserializeScene(const Ref<Scene>& _scene);
 
-		static bool DeserializeSceneObjects(const Ref<Scene>& _scene, const YAML::Node& _sceneNode);
+		static bool DeserializeActors(const Ref<Scene>& _scene, const YAML::Node& _sceneNode);
 
 		void CleanRubbish();
 

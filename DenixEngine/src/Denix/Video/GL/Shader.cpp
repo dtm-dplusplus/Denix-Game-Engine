@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-#include "Denix/Core/FileSubsystem.h"
+#include "Denix/Core/File/FileSubsystem.h"
 
 GLuint Denix::Shader::CreateProgram()
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/System/SubSystem.h"
+#include "Denix/Core/Subsystem.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"

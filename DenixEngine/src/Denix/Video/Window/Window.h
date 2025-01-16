@@ -5,7 +5,7 @@
 #include <SDL3/SDL_video.h>
 
 #include "Denix/Core.h"
-#include "Denix/Core/Math.h"
+#include "Denix/Core/Math/Math.h"
 
 namespace Denix
 {

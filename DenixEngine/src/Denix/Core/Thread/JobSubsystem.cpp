@@ -1,6 +1,6 @@
 ﻿#include "JobSubsystem.h"
 
-#include "Denix/Core/TimerSubsystem.h"
+#include "Denix/Core/Time/TimerSubsystem.h"
 
 Denix::JobSubsystem::JobSubsystem():
     m_BatchUpdateThreshold(225),

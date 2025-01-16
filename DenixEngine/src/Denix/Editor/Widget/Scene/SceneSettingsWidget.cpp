@@ -4,7 +4,7 @@
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Video/Renderer/RendererSubSystem.h"
+#include "Denix/Video/RendererSubsystem.h"
 
 Denix::SceneSettingsWidget::SceneSettingsWidget(const WRef<Scene>& _scene): SceneEditorWidget({"Scene Settings"}, _scene)
 {

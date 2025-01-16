@@ -1,7 +1,7 @@
 ﻿#include "ProfileSubsystem.h"
 
-#include "Denix/Core/TimerSubsystem.h"
-#include "Denix/Thread/JobSubsystem.h"
+#include "Denix/Core/Time/TimerSubsystem.h"
+#include "Denix/Core/Thread/JobSubsystem.h"
 
 namespace Denix
 {

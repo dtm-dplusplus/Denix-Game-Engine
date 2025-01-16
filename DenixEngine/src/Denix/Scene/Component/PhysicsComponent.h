@@ -4,7 +4,7 @@
 #include <foundation/PxTransform.h>
 
 #include "Denix/Core.h"
-#include "Denix/Core/Math.h"
+#include "Denix/Core/Math/Math.h"
 
 #include "Denix/Scene/Component.h"
 #include "Denix/Scene/Component/TransformComponent.h"

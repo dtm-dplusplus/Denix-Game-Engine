@@ -40,7 +40,7 @@ namespace Denix
 		template <class T = Actor, typename... Args>
 		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 		
-		void SpawnActor(const Ref<Actor>& _obj);
+		void SpawnActor(const Ref<Actor>& _actor);
 
 		float GetGravity() const;
 		float& GetGravity();
@@ -155,7 +155,7 @@ namespace Denix
 		return CastRef<T>(m_Actors.back());
 	}
 			
-	DE_LOG(LogScene, Error, "Failed to create object of type: {}", typeid(T).name());
+	DE_LOG(LogScene, Error, "Failed to create actor of type: {}", typeid(T).name());
 
 	return nullptr;
 }
@@ -163,8 +163,8 @@ namespace Denix
 	template <class T>
 	Ref<Actor> Scene::GetActorByClass() const
 	{
-		for (const auto& obj : m_Actors)
-			if (typeid(T) == typeid(*obj)) return obj;
+		for (const auto& actor : m_Actors)
+			if (typeid(T) == typeid(*actor)) return actor;
 
 		return nullptr;
 	}
@@ -174,8 +174,8 @@ namespace Denix
 	{
 		std::vector<Ref<Actor>> actors;
 
-		for (const auto& obj : m_Actors)
-			if (typeid(T) == typeid(*obj)) actors.push_back(obj);
+		for (const auto& actor : m_Actors)
+			if (typeid(T) == typeid(*actor)) actors.push_back(actor);
 
 		return actors;
 	}

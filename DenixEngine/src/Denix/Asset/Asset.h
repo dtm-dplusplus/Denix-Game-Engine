@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <string>
 #include <filesystem>
-#include "Denix/Core/Logger.h"
+#include "Denix/Core/Log/Logger.h"
 
 namespace Denix
 {

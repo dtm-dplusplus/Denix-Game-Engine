@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Object.h"
-#include "Denix/Reflection/ReflectionHelper.h"
+#include "Reflection/ReflectionHelper.h"
 
 namespace YAML
 {

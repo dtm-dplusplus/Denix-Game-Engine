@@ -4,7 +4,7 @@
 
 #include "Character.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
-#include "Denix/Scene/Object/Shapes/Shapes.h"
+#include "Denix/Scene/Actor/Shapes.h"
 
 
 GEPScene::GEPScene()

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/Scene/Object.h"
+#include "Denix/Core/Object.h"
 #include "Denix/Scene/Component/MeshComponent.h"
 #include <Denix/Scene/Component/TransformComponent.h>
 

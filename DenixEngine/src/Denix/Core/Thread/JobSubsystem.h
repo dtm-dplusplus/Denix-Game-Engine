@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "Denix/System/Subsystem.h"
+#include "Denix/Core/Subsystem.h"
 
-#include "Denix/Thread/Thread.h"
+#include "Denix/Core/Thread/Thread.h"
 
 #include "Denix/Profile/ProfileSubsystem.h"
 
