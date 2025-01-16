@@ -3,7 +3,7 @@
 #include "Denix/System/Subsystem.h"
 #include "Denix/Core.h"
 
-#include "Denix/Video/Renderer/RenderComponent.h"
+#include "Denix/Scene/Component/RenderComponent.h"
 
 namespace Denix
 {

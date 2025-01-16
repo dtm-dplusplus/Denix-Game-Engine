@@ -6,7 +6,7 @@
 
 #include "yaml-cpp/yaml.h"
 
-#include "Audio/AudioComponent.h"
+#include "Denix/Scene/Component/AudioComponent.h"
 #include "Denix/System/SubSystem.h"
 #include "Denix/Thread/JobSubsystem.h"
 #include "Denix/Reflection/ReflectionSubsystem.h"

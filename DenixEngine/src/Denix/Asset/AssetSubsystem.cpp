@@ -1,6 +1,6 @@
 #include "AssetSubsystem.h"
 #include "Denix/Core/FileSubsystem.h"
-#include "Denix/Video/Renderer/RenderComponent.h"
+#include "Denix/Scene/Component/RenderComponent.h"
 #include "Denix/Video/GL/Shader.h"
 #include "Denix/Video/GL/Texture.h"
 #include "Denix/Video/GL/Material.h"
