@@ -8,8 +8,10 @@ set(ENGINE_CONTRIB_DIR ${ENGINE_DIR}/contrib)
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+endif ()
 
 # Create Imgui Library
 add_subdirectory(${ENGINE_DIR}/contrib/imgui)
@@ -40,15 +42,13 @@ add_library(DenixEngine STATIC ${SOURCE_FILES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
 
 # Add Precompiled Header - We Can add multiple precompiled headers
-target_precompile_headers(DenixEngine PUBLIC ${ENGINE_SOURCE_DIR}/depch.h)
+target_precompile_headers(DenixEngine PRIVATE ${ENGINE_SOURCE_DIR}/depch.h)
 
 
 # Set dependencies for DenixEngine
 add_dependencies(${PROJECT_NAME}
         Imgui
 )
-
-#add_definitions($<$<CONFIG:Debug>:DE_DEBUG> $<$<CONFIG:Release>:DE_RELEASE>)
 
 # Enable Incremental linking
 if(MSVC)

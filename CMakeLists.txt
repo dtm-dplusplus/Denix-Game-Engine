@@ -167,4 +167,8 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${ENGINE_CONTRIB_DIR}/OpenAL/bin/Win64 $<TARGET_FILE_DIR:${PROJECT_NAME}>
+
+        #COMMAND ${CMAKE_COMMAND} -E echo "Launching Nvidia PVD3"
+        #COMMAND ${CMAKE_COMMAND} -E start ${ENGINE_CONTRIB_DIR}/physx/PVD3/PVD3.exe
+
 )

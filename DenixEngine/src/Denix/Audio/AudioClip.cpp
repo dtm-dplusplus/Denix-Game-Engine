@@ -1,5 +1,4 @@
-﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
-#include "AudioClip.h"
+﻿#include "AudioClip.h"
 #include "al/al.h"
 #include "al/alc.h"
 #include "al/alext.h"

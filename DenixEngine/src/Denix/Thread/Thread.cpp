@@ -1,5 +1,4 @@
-﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
-#include "Thread.h"
+﻿#include "Thread.h"
 
 #include "JobSubsystem.h"
 #include "Denix/Profile/ProfileSubsystem.h"
