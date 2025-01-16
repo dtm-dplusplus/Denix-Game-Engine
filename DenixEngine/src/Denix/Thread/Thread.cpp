@@ -33,12 +33,14 @@ void Denix::Thread::Work()
 {
     while (m_Active)
     {
+       // DE_LOG(LogThread, Trace, "Thread {} Waiting for work", m_ThreadID)
         // Request a job from the job queue
         if (m_ShouldWork) m_Job = JobSubsystem::RequestJob();
 
         // If a job was found in the queue, execute it
         if (m_Job)
         {
+            //        DE_LOG(LogThread, Trace, "Thread {} Got work {}", m_ThreadID, m_Job->m_Name)
             if (s_ShouldProfile)
             {
                 m_Job->m_ThreadIndex = m_ThreadIndex;

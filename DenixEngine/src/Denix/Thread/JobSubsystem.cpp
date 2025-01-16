@@ -6,7 +6,8 @@ Denix::JobSubsystem::JobSubsystem():
     m_BatchUpdateThreshold(225),
     m_SystemThreads(0),
     m_AvailableWorkerThreads(0),
-    m_ActiveWorkerThreads(0)
+    m_ActiveWorkerThreads(0),
+    m_JobMutex(MakeRef<Mutex>())
 {
 }
 
@@ -70,9 +71,17 @@ void Denix::JobSubsystem::UpdateActiveThreads()
 
 Denix::Ref<Denix::JobDeclaration> Denix::JobSubsystem::RequestJob()
 {
+    //std::lock_guard lock(s_Instance->m_RequestJobMutex);
+    
     // Pop the next job from the queue
-    if (Ref<JobDeclaration> job; s_Instance->m_Jobs.try_pop(job)) return job;
-    //if (Ref<JobDeclaration> job; s_Instance->m_Jobs.try_dequeue(job)) return job;
+    //DE_LOG(LogJob, Trace, "Requesting Job")
+    if (Ref<JobDeclaration> job; s_Instance->m_Jobs.try_pop(job) && job)
+    {
+        //DE_LOG(LogJob, Trace, "Job Found: {}", job->m_Name)
+        return job;
+    }
+    
+    //DE_LOG(LogJob, Trace, "No Job Found")
     return nullptr;
 }
 

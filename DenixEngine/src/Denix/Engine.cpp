@@ -27,7 +27,7 @@
 
 namespace Denix
 {
-	Engine::Engine(std::string _projectName): m_ProjectName(std::move(_projectName))
+	Engine::Engine(std::string _projectName): m_ProjectName(std::move(_projectName)), m_FrameCount(0)
 	{
 	}
 
@@ -264,6 +264,7 @@ namespace Denix
 			WaitForCounter(garbageCounter);
 			
 			m_TimerSubsystem->EndFrame();
+			m_FrameCount++;
 			//DE_LOG(LogEngine, Trace, "Frame End")
 		}
 	}

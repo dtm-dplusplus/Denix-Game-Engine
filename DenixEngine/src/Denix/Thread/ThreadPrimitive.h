@@ -46,6 +46,65 @@ namespace Denix
     };
 
     /**
+     * @brief Mutex struct to manage thread locking
+     */
+    struct Mutex
+    {
+        Mutex() = default;
+
+        /**
+         * @brief Lock the mutex
+         */
+        void Lock() {m_Lock = true;}
+
+        /**
+         * @brief Unlock the mutex
+         */
+        void Unlock() {m_Lock = false;}
+
+        /**
+         * @brief Check if the mutex is locked
+         * @return True if the mutex is locked, false otherwise
+         */
+        bool IsLocked() const {return m_Lock;} 
+        
+        std::atomic_bool m_Lock{false};
+    };
+
+    /*struct Lock
+    {
+        Lock(Mutex& _mutex): m_Mutex(_mutex)
+        {
+            m_Mutex.Lock();
+        }
+
+        ~Lock()
+        {
+        }
+
+        Mutex& m_Mutex;
+    };*/
+
+    struct LockGuard
+    {
+        LockGuard(Mutex& _mutex): m_Mutex(_mutex)
+        {
+            while (m_Mutex.IsLocked())
+            {
+                // Spin lock
+            }
+            m_Mutex.Lock();
+        }
+
+        ~LockGuard()
+        {
+            m_Mutex.Unlock();
+        }
+
+        Mutex& m_Mutex;
+    };
+    
+    /**
      * @brief This struct is used to declare a job to the job subsystem
      * It contains all the information needed to execute a job
      * Profile information is also stored here
