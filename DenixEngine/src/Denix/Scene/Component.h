@@ -16,8 +16,8 @@ namespace Denix
 		// Destructors
 		~Component() override = default;
 		
-
-	public: // Object Interface
+		Ref<Actor> GetParent() const { return m_Parent.lock(); }
+		
 		void BeginScene() override
 		{
 			BaseObject::BeginScene();

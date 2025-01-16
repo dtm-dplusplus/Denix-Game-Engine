@@ -57,7 +57,7 @@ namespace Denix
 	public:
 		PhysicsComponent();
 
-		~PhysicsComponent() override;
+		~PhysicsComponent() override = default;
 		
 
 		void BeginScene() override;

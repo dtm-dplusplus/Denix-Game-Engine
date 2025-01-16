@@ -140,9 +140,7 @@ namespace Denix
 		m_ActorNames.insert(actor->m_Name);
 
 		// Set Transform Component
-		actor->m_TransformComponent->m_Position = _position;
-		actor->m_TransformComponent->m_Rotation = _rotation;
-		actor->m_TransformComponent->m_Scale = _scale;
+		actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);
 		
 		// Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
 		actor->BeginScene();

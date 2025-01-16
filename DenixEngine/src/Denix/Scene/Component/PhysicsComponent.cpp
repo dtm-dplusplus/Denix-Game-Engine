@@ -10,10 +10,6 @@ namespace Denix
     {
     }
 
-    PhysicsComponent::~PhysicsComponent()
-    {
-       
-    }
 
     Ref<Collider> PhysicsComponent::GetCollider() const
     { return m_Collider; }
@@ -59,12 +55,11 @@ namespace Denix
 
         if (m_PxActor && SceneSubsystem::GetSceneState() == SceneState::Playing)
         {
-            physx::PxVec3 pos = m_PxActor->getGlobalPose().p;
-            physx::PxQuat rot = m_PxActor->getGlobalPose().q;
-
+            physx::PxTransform tform = m_PxActor->getGlobalPose();
+            
             auto parent = m_Parent.lock();
-            parent->m_TransformComponent->m_Position = {pos.x, pos.y, pos.z};
-            parent->m_TransformComponent->m_Rotation = Math::Degrees(glm::eulerAngles(glm::quat(rot.w, rot.x, rot.y, rot.z)));
+            parent->m_TransformComponent->m_Transform.Position = {tform.p.x, tform.p.y, tform.p.z};
+            parent->m_TransformComponent->m_Transform.Rotation = Math::Degrees(glm::eulerAngles(glm::quat(tform.q.w, tform.q.x, tform.q.y, tform.q.z)));
         }
     }
 
@@ -125,27 +120,24 @@ namespace Denix
     void PhysicsComponent::SetupPhysX()
     {
         auto parent = m_Parent.lock();
-        const auto scale = parent->m_TransformComponent->m_Scale;
-        const auto scaleH = parent->m_TransformComponent->m_Scale / 2.0f;
-        const auto pos = parent->m_TransformComponent->m_Position;
-        const auto rot = Math::Radians(parent->m_TransformComponent->m_Rotation);
-        physx::PxTransform tform = physx::PxTransform(pos.x, pos.y, pos.z);
+        const auto transform = parent->m_TransformComponent->m_Transform;
+        const auto scaleHalf = transform.Scale * 0.5f;
         
         switch (m_ColliderType)
         {
         case ColliderType::Plane:
         {
-            m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(scale.x, 0.01f, scale.z), *PhysicsSubsystem::m_PxMaterial);
+            m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(transform.Scale.x, 0.01f, transform.Scale.z), *PhysicsSubsystem::m_PxMaterial);
         } break;
             
         case ColliderType::Cube:
             {
-                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(scaleH.x, scaleH.y, scaleH.z), *PhysicsSubsystem::m_PxMaterial);
+                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxBoxGeometry(scaleHalf.x, scaleHalf.y, scaleHalf.z), *PhysicsSubsystem::m_PxMaterial);
             } break;
 
         case ColliderType::Sphere:
             {
-                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxSphereGeometry(scaleH.x), *PhysicsSubsystem::m_PxMaterial);
+                m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(physx::PxSphereGeometry(scaleHalf.x), *PhysicsSubsystem::m_PxMaterial);
             } break;
         }
         
@@ -153,12 +145,12 @@ namespace Denix
         {
         case 0:
             {
-                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidStatic(physx::PxTransform(pos.x, pos.y, pos.z));
+                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidStatic(physx::PxTransform(transform.Position.x, transform.Position.y, transform.Position.z));
             } break;
 
         case 1:
             {
-                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(pos.x, pos.y, pos.z));
+                m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(transform.Position.x, transform.Position.y, transform.Position.z));
                 UpdatePxDynamicActor(m_PxActor->is<physx::PxRigidDynamic>());
             } break;
         }
