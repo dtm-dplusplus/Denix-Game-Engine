@@ -90,6 +90,8 @@ namespace Denix
          */
         inline static Ref<Engine> s_Engine;
 
+        size_t m_FrameCount;
+        
         Ref<JobSubsystem> m_JobSubsystem;
 
         Ref<TimerSubsystem> m_TimerSubsystem;

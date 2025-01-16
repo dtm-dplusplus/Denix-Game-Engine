@@ -92,9 +92,13 @@ namespace Denix
                 std::bind(std::forward<Func>(_func), std::forward<Args>(_args)...)
             );
 
-           // DE_LOG(LogJob, Trace, "Adding Job to Queue: {}", _name)
+            //LockGuard lockGuard(*s_Instance->m_JobMutex);
+            std::lock_guard lock(s_Instance->m_STDMutex);
+            
+           DE_LOG(LogJob, Trace, "Adding Job to Queue: {}", _name)
             //s_Instance->m_Jobs.try_enqueue(job);
             s_Instance->m_Jobs.push(job);
+            DE_LOG(LogJob, Trace, "Job Added to Queue: {}", _name)
         }
 
         /**
@@ -281,8 +285,12 @@ namespace Denix
       * Microsoft Implementation of a concurrent_priority_queue https://learn.microsoft.com/en-us/cpp/parallel/concrt/reference/concurrent-priority-queue-class?view=msvc-170
       */
         Concurrency::concurrent_priority_queue<Ref<JobDeclaration>, JobComparator> m_Jobs;
-       //moodycamel::ConcurrentQueue<Ref<JobDeclaration>, JobComparator> m_Jobs;
 
+        Ref<Mutex> m_JobMutex;
+
+        std::mutex m_RequestJobMutex;
+        std::mutex  m_STDMutex;
+        
         std::vector<Ref<Thread>> m_WorkerThreads;
 
         /**
