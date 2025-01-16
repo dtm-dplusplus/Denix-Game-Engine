@@ -61,13 +61,6 @@ namespace Denix
                            GL_FALSE, glm::value_ptr(
                                activeScene->m_ActiveCamera->m_View));
 
-        /*glUniform3f(defaultShader->GetUniform("u_CameraPosition"), 
-            activeScene->m_ActiveCamera->m_TransformComponent->m_Position.x,
-            activeScene->m_ActiveCamera->m_TransformComponent->m_Position.y,
-            activeScene->m_ActiveCamera->m_TransformComponent->m_Position.z);
-            */
-
-        
         for (const Ref<Actor>& actor : activeScene->m_Actors)
         {
             if (!actor->m_RenderComponent->IsVisible() || !actor->m_RenderComponent->m_Material || !actor->m_MeshComponent->m_Model) continue;

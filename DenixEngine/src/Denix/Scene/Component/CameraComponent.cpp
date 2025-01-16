@@ -20,20 +20,26 @@ void Denix::CameraComponent::Update(float _deltaTime)
 {
     Component::Update(_deltaTime);
 
+
     // Camera Movement
     if (!m_ExternalControl)
     {
         ProcessKeyboardInput(_deltaTime);
 
         ProccessMouseMovement(_deltaTime);
+
+    	m_TransformComponent.lock()->Update(_deltaTime); // Updating x2 for correct view - not ideal
     }
 
 	auto transform = m_TransformComponent.lock();
+	const auto& fwd = transform->GetForward();
+	const auto& up = transform->GetUp();
 	
-    m_CameraFront = transform->GetForward();
-    m_CameraRight = transform->GetRight();
-    m_CameraUp = transform->GetUp();
 	const glm::vec3& pos = transform->GetPosition();
+
+	// Prepare Aspect
+	m_Aspect = WindowSubsystem::GetWindowSize();
+
     // m_Projection matrix
     if (m_IsPerspective)
     {
@@ -45,39 +51,43 @@ void Denix::CameraComponent::Update(float _deltaTime)
     }
 		
     // Calculate the view matrix
-    m_View = glm::lookAt(pos, pos + m_CameraFront, m_CameraUp);
+    m_View = glm::lookAt(pos, pos + fwd, up);
 
 }
 
 void Denix::CameraComponent::ProcessKeyboardInput(float _deltaTime)
-	{
-		glm::vec3& pos = m_TransformComponent.lock()->GetPosition();
+{
+	const auto& transform = m_TransformComponent.lock();
+	glm::vec3& pos = transform->GetPosition();
+	const glm::vec3& fwd = transform->GetForward();
+	const glm::vec3& right = transform->GetRight();
 	
-		// XZ 
-		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_W))
-		{
-			pos += m_MoveSpeed * m_CameraFront * _deltaTime;
-		}
-		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_S))
-		{
-			pos -= m_MoveSpeed * m_CameraFront * _deltaTime;
-		}
-		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_A))
-		{
-			pos -= m_MoveSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * _deltaTime;
-		}
-		if (InputSubsystem::IsKeyDown(SDL_SCANCODE_D))
-		{
-			pos += m_MoveSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * _deltaTime;
-		}
+	// XZ 
+	if (InputSubsystem::IsKeyDown(SDL_SCANCODE_W))
+	{
+		pos += m_MoveSpeed * fwd * _deltaTime;
 	}
+	if (InputSubsystem::IsKeyDown(SDL_SCANCODE_S))
+	{
+		pos -= m_MoveSpeed * fwd * _deltaTime;
+	}
+	if (InputSubsystem::IsKeyDown(SDL_SCANCODE_A))
+	{
+		pos -= m_MoveSpeed * right * _deltaTime;
+	}
+	if (InputSubsystem::IsKeyDown(SDL_SCANCODE_D))
+	{
+		pos += m_MoveSpeed * right * _deltaTime;
+	}
+}
 
 	void Denix::CameraComponent::ProccessMouseMovement(float _deltaTime)
 	{
 		const MouseData& mouseData = InputSubsystem::GetMouseData();
 
-	glm::vec3& pos = m_TransformComponent.lock()->GetPosition();
-	glm::vec3& rot = m_TransformComponent.lock()->GetRotation();
+	const auto& transform = m_TransformComponent.lock();
+	glm::vec3& pos = transform->GetPosition();
+	glm::vec3& rot = transform->GetRotation();
 	
 		// Pan Camera if right _mouse down
 		if (m_EnableRotation && mouseData.Right && abs(mouseData.RelY) + abs(mouseData.RelX) > 0.1f)
@@ -86,10 +96,7 @@ void Denix::CameraComponent::ProcessKeyboardInput(float _deltaTime)
 			rot.x -= mouseData.RelY * m_PitchRotationRate * _deltaTime * m_RotationFactor;
 
 			// make sure that when pitch is out of bounds, screen doesn't get flipped
-			if (rot.x > 89.0f)
-				rot.x = 89.0f;
-			else if (rot.x < -89.0f)
-				rot.x = -89.0f;
+			rot.x = glm::clamp(rot.x, -89.0f, 89.0f);
 		}
 
 		// Change Height if middle _mouse down
@@ -106,9 +113,6 @@ void Denix::CameraComponent::ProcessKeyboardInput(float _deltaTime)
 			m_MoveSpeed += mouseData.WheelY * m_MouseScrollSpeed;
 
 			// Constrain the move speed
-			if (m_MoveSpeed < 1.0f)
-				m_MoveSpeed = 1.0f;
-			else if (m_MoveSpeed > 100.0f)
-				m_MoveSpeed = 50.0f;
+			m_MoveSpeed = glm::clamp(m_MoveSpeed, 0.5f, 100.0f);
 		}
 	}

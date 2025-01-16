@@ -3,6 +3,7 @@
 #include "Denix/Core.h"
 #include "Denix/Core/Math/Math.h"
 #include "Actor.h"
+#include "Component/CameraComponent.h"
 #include "Denix/Video/GL/Viewport.h"
 
 namespace Denix
@@ -16,9 +17,6 @@ namespace Denix
 		Camera();
 		
 		~Camera() override = default;
-
-		void ProcessKeyboardInput(float _deltaTime);
-		void ProccessMouseMovement(float _deltaTime);
 
 		void Update(float _deltaTime) override;
 
@@ -44,11 +42,9 @@ namespace Denix
 		{
 			return m_Viewport;
 		}
-
+ 
 		bool m_ExternalControl = false;
 		
-		// Camera Properties
-	public:
 		bool m_IsGameCamera = false;
 		bool m_IsPerspective = true;
 		float m_Fov = 45.f;
@@ -64,7 +60,8 @@ namespace Denix
 		float m_YawRotationRate = 1.0f;
 		float m_MoveSpeed = 10.0f;
 		float m_MouseScrollSpeed = 0.5f;
-	
+		Ref<CameraComponent> m_CameraComponent;
+
 	private:
 		// Viewport
 		Ref<Viewport> m_Viewport;

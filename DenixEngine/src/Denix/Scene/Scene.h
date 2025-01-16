@@ -87,8 +87,6 @@ namespace Denix
 
 		Ref<Camera> m_ViewportCamera;
 
-		Ref<Camera> m_GameCamera;
-		
 		Ref<Camera> m_ActiveCamera;
 
 		
@@ -121,13 +119,11 @@ namespace Denix
 		// Perform type checks to cache engine actor types
 		if (typeid(T) == typeid(Camera))
 		{
-			if (m_GameCamera && !CastRef<Camera>(actor)->m_IsGameCamera)
+			if (!CastRef<Camera>(actor)->m_IsGameCamera)
 			{
 				DE_LOG(LogScene, Error, "Scene already has a game camera")
 				return nullptr;
 			}
-
-			m_GameCamera = CastRef<Camera>(actor);
 		}
 		
 		// Validate Name. We cannont have two objects with the same name

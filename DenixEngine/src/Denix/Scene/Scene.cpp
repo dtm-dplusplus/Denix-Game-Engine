@@ -16,7 +16,6 @@ namespace Denix
 
     Scene::~Scene()
     {
-        m_GameCamera.reset();
         m_ViewportCamera.reset();
         m_ActiveCamera.reset();
         ClearScene();
@@ -46,7 +45,8 @@ namespace Denix
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
         }
-        
+
+        m_ViewportCamera->BeginScene();
         for (const auto& actor : m_Actors) actor->BeginScene();
     }
 
@@ -54,8 +54,8 @@ namespace Denix
     {
         // Call EndScene on all actors
         for (const auto& actor : m_Actors) actor->EndScene();
-
-        m_GameCamera.reset();
+        m_ViewportCamera->EndScene();
+        
         m_ViewportCamera.reset();
         m_ActiveCamera.reset();
         ClearScene();
@@ -65,17 +65,20 @@ namespace Denix
     void Scene::BeginPlay()
     {
         BaseObject::BeginPlay();
+
         
-        if (m_GameCamera)
+        if (Ref<Camera> cam = FindGameCamera())
         {
-            m_ActiveCamera = m_GameCamera;
+            m_ActiveCamera = cam;
             DE_LOG(LogScene, Info, "Game Camera Found: {}", m_ActiveCamera->GetName())
         }
         else
         {
+            m_ActiveCamera->BeginPlay(); // We need to call BeginPlay on the viewport camera manually
             DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
         }
-        
+
+        for (const auto& actor : m_Actors) actor->BeginPlay();
     }
 
     void Scene::EndPlay()
@@ -102,6 +105,12 @@ namespace Denix
     void Scene::Update(float _deltaTime)
     {
         BaseObject::Update(_deltaTime);
+
+        // Update Camera - This works regardless of the camer type (viewport/GameCamera)
+        if (m_ActiveCamera)
+        {
+           m_ActiveCamera->Update(_deltaTime);
+        }
     }
 
 

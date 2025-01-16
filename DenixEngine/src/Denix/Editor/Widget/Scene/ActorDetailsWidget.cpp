@@ -1,5 +1,4 @@
-﻿
-#include "ActorDetailsWidget.h"
+﻿#include "ActorDetailsWidget.h"
 #include "Denix/UI/UISubsystem.h"
 
 #include "Denix/Asset/AssetSubsystem.h"
@@ -28,7 +27,7 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime)
     ImGui::Begin("Actor Details");
     //ImGui::SetWindowDock(ImGui::GetCurrentWindow(), UISubsystem::Get()->DockRightID, ImGuiCond_Appearing);
 
-    if(const Ref<Actor> actorRef = m_ActorRef.lock())
+    if (const Ref<Actor> actorRef = m_ActorRef.lock())
     {
         ImGui::SeparatorText(actorRef->GetName().c_str());
 
@@ -37,11 +36,11 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime)
         ImGui::BeginChild("Component List", ImVec2(ImGui::GetWindowWidth(), 100), true);
         for (const auto& name : actorRef->GetComponentMap() | std::views::keys)
         {
-           ImGui::Text(name.c_str());
+            ImGui::Text(name.c_str());
         }
-      
+
         ImGui::EndChild();
-        
+
         // Component Widgets
         TransformWidget(actorRef);
         CameraWidget(actorRef);
@@ -98,8 +97,9 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         if (ImGui::Checkbox("Simulate Gravity", &comp->GetSimulateGravity())) comp->ToggleGravity();
 
         // Collision Detection
-        if (ImGui::Checkbox("Collision Detection", &comp->CollisionDetectionEnabled())) comp->
-            ToggleCollisionDetection();
+        if (ImGui::Checkbox("Collision Detection", &comp->CollisionDetectionEnabled()))
+            comp->
+                ToggleCollisionDetection();
         ImGui::SameLine();
         const std::string state = comp->IsColliding() ? "Colliding" : "Not Colliding";
         ImGui::Text(" State: %s", state.c_str());
@@ -466,79 +466,78 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
 {
     if (!_camera) return;
 
-    if (const Ref<Camera> camera = CastRef<Camera>(_camera))
+    if (const Ref<CameraComponent> camComp = _camera->GetComponent<CameraComponent>())
     {
+        glm::vec3& front = _camera->GetTransformComponent()->GetForward();
+        glm::vec3& right = _camera->GetTransformComponent()->GetRight();
+        glm::vec3& up = _camera->GetTransformComponent()->GetUp();
+
         ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
         if (ImGui::CollapsingHeader("Camera Component"))
         {
-            ImGui::Checkbox("Perspective Projection", &camera->m_IsPerspective);
+            ImGui::Checkbox("Perspective Projection", &camComp->m_IsPerspective);
 
-            ImGui::DragFloat("Fov", &camera->m_Fov, m_DragSpeed, 1.f, 170.f);
+            ImGui::DragFloat("Fov", &camComp->m_Fov, m_DragSpeed, 1.f, 170.f);
             ImGui::SameLine();
-            if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) camera->m_Fov = 45.f;
+            if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) camComp->m_Fov = 45.f;
             ImGui::SetItemTooltip("Reset");
 
-            ImGui::DragFloat("Rotation Factor", &camera->m_RotationFactor, m_DragSpeed);
+            ImGui::DragFloat("Rotation Factor", &camComp->m_RotationFactor, m_DragSpeed);
             ImGui::SameLine();
-            if (ImGui::ArrowButton("##ResetRotationFactor", ImGuiDir_Left)) camera->m_RotationFactor = 0.1f;
+            if (ImGui::ArrowButton("##ResetRotationFactor", ImGuiDir_Left)) camComp->m_RotationFactor = 0.1f;
             ImGui::SetItemTooltip("Reset");
 
-            ImGui::DragFloat("Pitch Rotation Rate", &camera->m_PitchRotationRate, m_DragSpeed);
+            ImGui::DragFloat("Pitch Rotation Rate", &camComp->m_PitchRotationRate, m_DragSpeed);
             ImGui::SameLine();
-            if (ImGui::ArrowButton("##ResetPitchRotationRate", ImGuiDir_Left)) camera->m_PitchRotationRate = 0.1f;
+            if (ImGui::ArrowButton("##ResetPitchRotationRate", ImGuiDir_Left)) camComp->m_PitchRotationRate = 0.1f;
 
-            ImGui::DragFloat("Yaw Rotation Rate", &camera->m_YawRotationRate, m_DragSpeed);
+            ImGui::DragFloat("Yaw Rotation Rate", &camComp->m_YawRotationRate, m_DragSpeed);
             ImGui::SameLine();
-            if (ImGui::ArrowButton("##ResetYawRotationRate", ImGuiDir_Left)) camera->m_YawRotationRate = 0.1f;
+            if (ImGui::ArrowButton("##ResetYawRotationRate", ImGuiDir_Left)) camComp->m_YawRotationRate = 0.1f;
             ImGui::SetItemTooltip("Reset");
 
-            ImGui::DragFloat("Near Plane", &camera->m_NearPlane, m_DragSpeed);
+            ImGui::DragFloat("Near Plane", &camComp->m_NearPlane, m_DragSpeed);
             ImGui::SameLine();
-            if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) camera->m_NearPlane = 0.1f;
+            if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) camComp->m_NearPlane = 0.1f;
             ImGui::SetItemTooltip("Reset");
 
-            ImGui::DragFloat("Far Plane", &camera->m_FarPlane, m_DragSpeed);
+            ImGui::DragFloat("Far Plane", &camComp->m_FarPlane, m_DragSpeed);
             ImGui::SameLine();
-            if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) camera->m_FarPlane = 100.f;
+            if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) camComp->m_FarPlane = 100.f;
             ImGui::SetItemTooltip("Reset");
 
             if (ImGui::TreeNode("Advance Camera Settings"))
             {
-                glm::vec3& front = camera->GetTransformComponent()->GetForward();
-                glm::vec3& right = camera->GetTransformComponent()->GetRight();
-                glm::vec3& up = camera->GetTransformComponent()->GetUp();
-                
+                auto transform = _camera->GetTransformComponent();
+                glm::vec3& position = transform->GetPosition();
+                glm::vec3& rotation = transform->GetRotation();
+
                 ImGui::DragFloat3("Forward", &front[0], m_DragSpeed);
                 ImGui::DragFloat3("Right", &right[0], m_DragSpeed);
                 ImGui::DragFloat3("Up", &up[0], m_DragSpeed);
 
-                ImGui::DragFloat3("Camera Position",
-                                  &camera->GetTransformComponent()->GetPosition()[0],
-                                  m_DragSpeed);
+                ImGui::DragFloat3("Camera Position", &position[0], m_DragSpeed);
+
                 ImGui::SameLine();
-                if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left))
-                    camera->
-                        GetTransformComponent()->SetPosition(glm::vec3(0.f));
+                if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left)) position = glm::vec3(0.f);
                 ImGui::SetItemTooltip("Reset");
 
-                ImGui::DragFloat3("Viewport Rotation",
-                                  &camera->GetTransformComponent()->GetRotation()[0],
-                                  m_DragSpeed);
+                ImGui::DragFloat3("Viewport Rotation", &rotation[0], m_DragSpeed);
+
+
                 ImGui::SameLine();
-                if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left))
-                    camera->
-                        GetTransformComponent()->SetRotation(glm::vec3(0.f));
+                if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) rotation = glm::vec3(0.f);
                 ImGui::SetItemTooltip("Reset");
 
-                ImGui::DragFloat("m_MoveSpeed", &camera->m_MoveSpeed, m_DragSpeed, 1.f,
+                ImGui::DragFloat("m_MoveSpeed", &camComp->m_MoveSpeed, m_DragSpeed, 1.f,
                                  10.f);
                 ImGui::SameLine();
                 if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left))
-                    camera->
+                    camComp->
                         m_MoveSpeed;
                 ImGui::SetItemTooltip("Reset");
 
-                ImGui::DragFloat("Scoll Wheel Speed", &camera->m_MouseScrollSpeed,
+                ImGui::DragFloat("Scoll Wheel Speed", &camComp->m_MouseScrollSpeed,
                                  m_DragSpeed, 0.1f, 10.f);
 
                 ImGui::TreePop();
