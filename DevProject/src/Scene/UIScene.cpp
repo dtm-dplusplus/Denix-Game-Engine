@@ -1,7 +1,6 @@
 ﻿#include "UIScene.h"
 
 #include "imgui.h"
-#include "Denix/Core/File/FileSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 
 #define WIDTH   640
@@ -9,12 +8,11 @@
 
 /* origin is the upper left corner */
 unsigned char image[HEIGHT][WIDTH];
-GLuint textureID;
 #include <GL/glew.h>
 
 // Function to convert the image to an OpenGL texture
-GLuint ConvertImageToTexture(unsigned char image[HEIGHT][WIDTH]) {
-    GLuint textureID;
+GLuint ConvertImageToTexture(unsigned char image[HEIGHT][WIDTH])
+{
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -32,12 +30,9 @@ GLuint ConvertImageToTexture(unsigned char image[HEIGHT][WIDTH]) {
 
     return textureID;
 }
-/* Replace this function with something useful. */
 
-void
-draw_bitmap(FT_Bitmap* bitmap,
-            FT_Int x,
-            FT_Int y)
+/* Replace this function with something useful. */
+void draw_bitmap(FT_Bitmap* bitmap, FT_Int x, FT_Int y)
 {
     FT_Int i, j, p, q;
     FT_Int x_max = x + bitmap->width;
@@ -60,99 +55,69 @@ draw_bitmap(FT_Bitmap* bitmap,
     }
 }
 
+
 void Denix::UIScene::BeginScene()
 {
     Scene::BeginScene();
 
-    FT_Face face;
-        FT_GlyphSlot slot;
-        FT_Matrix matrix = {0x10000, 0, 0, 0x10000};
-        float m = 0x10000;
-        FT_Vector pen; /* untransformed origin  */
+    FT_Face& face = UISubsystem::m_Face;
+    FT_Matrix matrix; /* transformation matrix */
+    FT_Vector pen; /* untransformed origin  */
 
 
-        double angle;
-        int target_height;
-        int n, num_chars;
+    double angle = 0.0f; //(25.0 / 360) * 3.14159 * 2; /* use 25 degrees     */
+    int target_height = HEIGHT;
+
+    /* use 50pt at 100dpi */
+    FT_Error error = FT_Set_Char_Size(face, CharSize * 64, 0,
+                                      100, 0); /* set character size */
+    if (error)
+    {
+        DE_LOG(LogRender, Error, "Failed to set character size")
+    }
+    /* cmap selection omitted;                                        */
+    /* for simplicity we assume that the font contains a Unicode cmap */
 
 
-        /*if ( argc != 3 )
-        {
-          fprintf ( stderr, "usage: %s font sample-text\n", argv[0] );
-          exit( 1 );
-        }*/
+    /* set up matrix */
+    matrix.xx = (FT_Fixed)(cos(angle) * 0x10000L);
+    matrix.xy = (FT_Fixed)(-sin(angle) * 0x10000L);
+    matrix.yx = (FT_Fixed)(sin(angle) * 0x10000L);
+    matrix.yy = (FT_Fixed)(cos(angle) * 0x10000L);
 
-        std::string font_name = FileSubsystem::FormatPath("Content/Engine/fonts/arial.ttf");
-        const char* filename = font_name.c_str();
-        /* first argument     */
-        const char* text = "Hello World"; /* second argument    */
-        num_chars = strlen(text);
-        angle = 0.0f; //(25.0 / 360) * 3.14159 * 2; /* use 25 degrees     */
-        target_height = HEIGHT;
+    /* the pen position in 26.6 cartesian space coordinates; */
+    /* start at (300,200) relative to the upper left corner  */
+    pen.x = Position.x * 64;
+    pen.y = (target_height - Position.y) * 64;
+    FT_GlyphSlot slot = face->glyph;
+    for (const char n : Text)
+    {
+        /* set transformation */
+        FT_Set_Transform(face, &matrix, &pen);
 
-     FT_Error error;
-        error = FT_New_Face(UISubsystem::m_FtLibrary, filename, 0, &face); /* create face object */
-        if (error == FT_Err_Unknown_File_Format)
-        {
-            DE_LOG(LogRender, Error, "Font format not supported")
-        }
-        else if (error)
-        {
-            DE_LOG(LogRender, Error, "Failed to load font")
-        }
-        
-        /* use 50pt at 100dpi */
-        error = FT_Set_Char_Size(face, 50 * 64, 0,
-                                 100, 0); /* set character size */
+
+        /* load glyph image into the slot (erase previous one) */
+        error = FT_Load_Char(face, n, FT_LOAD_RENDER);
         if (error)
-        {
-            DE_LOG(LogRender, Error, "Failed to set character size")
-        }
-        /* cmap selection omitted;                                        */
-        /* for simplicity we assume that the font contains a Unicode cmap */
+            continue; /* ignore errors */
 
-        slot = face->glyph;
+        /* now, draw to our target surface (convert position) */
+        draw_bitmap(&slot->bitmap,
+                    slot->bitmap_left,
+                    target_height - slot->bitmap_top);
 
-        /* set up matrix */
-        matrix.xx = (FT_Fixed)(cos(angle) * 0x10000L);
-        matrix.xy = (FT_Fixed)(-sin(angle) * 0x10000L);
-        matrix.yx = (FT_Fixed)(sin(angle) * 0x10000L);
-        matrix.yy = (FT_Fixed)(cos(angle) * 0x10000L);
+        /* increment pen position */
+        pen.x += slot->advance.x;
+        pen.y += slot->advance.y;
+    }
 
-        /* the pen position in 26.6 cartesian space coordinates; */
-        /* start at (300,200) relative to the upper left corner  */
-        pen.x = 220 * 64;
-        pen.y = (target_height- 240) * 64;
-        for (n = 0; n < num_chars; n++)
-        {
-            /* set transformation */
-            FT_Set_Transform(face, &matrix, &pen);
-
-            
-            /* load glyph image into the slot (erase previous one) */
-            error = FT_Load_Char(face, text[n], FT_LOAD_RENDER);
-            if (error)
-                continue; /* ignore errors */
-
-            /* now, draw to our target surface (convert position) */
-            draw_bitmap(&slot->bitmap,
-                        slot->bitmap_left,
-                        target_height - slot->bitmap_top);
-
-            /* increment pen position */
-            pen.x += slot->advance.x;
-            pen.y += slot->advance.y;
-        }
-
-        textureID = ConvertImageToTexture(image);
-        
-        FT_Done_Face(face);
+    textureID = ConvertImageToTexture(image);
 }
 
 void Denix::UIScene::Update(float _deltaTime)
 {
     Scene::Update(_deltaTime);
-    
+
     ImGui::Begin("Font Rendering");
     ImGui::Image((void*)(intptr_t)textureID, ImVec2(WIDTH, HEIGHT));
     ImGui::End();
