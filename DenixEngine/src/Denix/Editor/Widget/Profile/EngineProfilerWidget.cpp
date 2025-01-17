@@ -1,6 +1,7 @@
 ﻿
 #include "EngineProfilerWidget.h"
 
+#include "implot.h"
 #include "JobTableWidget.h"
 #include "PerformanceSettingsWidget.h"
 #include "Denix/Core/Time/TimerSubsystem.h"

@@ -4,18 +4,7 @@
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Actor.h"
-#include "Denix/Physics/Collider.h"
 #include "Denix/Profile/ProfileSubsystem.h"
-
-#include <ft2build.h>
-
-#include "imgui.h"
-#include "Denix/Core/File/FileSubsystem.h"
-
-#include FT_FREETYPE_H
-
-
-
 
 namespace Denix
 {

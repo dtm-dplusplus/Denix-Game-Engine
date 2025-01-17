@@ -1,7 +1,10 @@
 ﻿#include "ActorDetailsWidget.h"
+
+#include "imgui.h"
 #include "Denix/UI/UISubsystem.h"
 
 #include "Denix/Asset/AssetSubsystem.h"
+#include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Actor.h"
 #include "Denix/Editor/Widget/ShaderEditor.h"
@@ -23,7 +26,7 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime)
     //ImGui::SetNextWindowSize(ImVec2((ImGui::GetWindowWidth() / 5), ImGui::GetWindowHeight()), ImGuiCond_Appearing);
     //ImGui::SetNextWindowPos(ImVec2((WinX / 6), MenuBarHeight), ImGuiCond_Appearing);
 
-    ImGui::SetNextWindowDockID(UISubsystem::GetDockRightID(), ImGuiCond_Appearing);
+    ImGui::SetNextWindowDockID(EditorSubsystem::GetDockRightID(), ImGuiCond_Appearing);
     ImGui::Begin("Actor Details");
     //ImGui::SetWindowDock(ImGui::GetCurrentWindow(), UISubsystem::Get()->DockRightID, ImGuiCond_Appearing);
 
