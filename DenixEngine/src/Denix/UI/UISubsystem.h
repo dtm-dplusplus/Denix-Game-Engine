@@ -3,7 +3,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "Denix/Core.h"
 #include "Denix/Core/Subsystem.h"
 
 namespace Denix
@@ -19,7 +18,7 @@ namespace Denix
 		UISubsystem& operator=(const UISubsystem& _other) = delete;
 		UISubsystem& operator=(UISubsystem&& _other) noexcept = delete;
 
-		FT_Library m_FtLibrary;
+		inline static FT_Library m_FtLibrary;
 	private:
 		void Initialize() override;
 

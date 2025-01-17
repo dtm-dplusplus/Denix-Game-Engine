@@ -3,6 +3,7 @@
 #include "Scene/AudioScene.h"
 #include "Scene/GACP/GACPScene.h"
 #include "Scene/DevScene.h"
+#include "Scene/UIScene.h"
 #include "Scene/GACP/GACPActor.h"
 #include "Scene/GEP/GEPScene.h"
 
@@ -19,6 +20,7 @@ public:
 		DE_LOG_CREATE(LogDevProject)
 		ReflectionSubsystem::Register<DevScene>();
 		ReflectionSubsystem::Register<GACPScene>();
+		ReflectionSubsystem::Register<UIScene>();
 		ReflectionSubsystem::Register<GEPScene>();
 		ReflectionSubsystem::Register<AudioScene>();
 		ReflectionSubsystem::Register<GACPActor>();
