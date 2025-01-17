@@ -30,6 +30,7 @@ include_directories(${PROJECT_NAME}
         ${ENGINE_CONTRIB_DIR}/yaml-cpp/include
         ${ENGINE_CONTRIB_DIR}/OpenAL/include
         ${ENGINE_CONTRIB_DIR}/physx/include
+        ${ENGINE_CONTRIB_DIR}/freetype/include
 )
 
 # Create the Engine library & Solution Folder
