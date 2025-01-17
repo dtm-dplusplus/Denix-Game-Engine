@@ -19,6 +19,7 @@ namespace Denix
 		UISubsystem& operator=(UISubsystem&& _other) noexcept = delete;
 
 		inline static FT_Library m_FtLibrary;
+		inline static FT_Face m_Face;
 	private:
 		void Initialize() override;
 

@@ -1,7 +1,6 @@
 ﻿#include "UIScene.h"
 
 #include "imgui.h"
-#include "Denix/Core/File/FileSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 
 #define WIDTH   640
@@ -64,46 +63,19 @@ void Denix::UIScene::BeginScene()
 {
     Scene::BeginScene();
 
-    FT_Face face;
-        FT_GlyphSlot slot;
-        FT_Matrix matrix = {0x10000, 0, 0, 0x10000};
-        float m = 0x10000;
-        FT_Vector pen; /* untransformed origin  */
+    FT_Face& face = UISubsystem::m_Face;
+    FT_Matrix matrix = {0x10000, 0, 0, 0x10000};
+    float m = 0x10000;
+    FT_Vector pen; /* untransformed origin  */
 
 
-        double angle;
-        int target_height;
-        int n, num_chars;
+    std::string text = "Hello World"; /* second argument    */
+        double angle = 0.0f; //(25.0 / 360) * 3.14159 * 2; /* use 25 degrees     */
+        int target_height = HEIGHT;
 
-
-        /*if ( argc != 3 )
-        {
-          fprintf ( stderr, "usage: %s font sample-text\n", argv[0] );
-          exit( 1 );
-        }*/
-
-        std::string font_name = FileSubsystem::FormatPath("Content/Engine/fonts/arial.ttf");
-        const char* filename = font_name.c_str();
-        /* first argument     */
-        const char* text = "Hello World"; /* second argument    */
-        num_chars = strlen(text);
-        angle = 0.0f; //(25.0 / 360) * 3.14159 * 2; /* use 25 degrees     */
-        target_height = HEIGHT;
-
-     FT_Error error;
-        error = FT_New_Face(UISubsystem::m_FtLibrary, filename, 0, &face); /* create face object */
-        if (error == FT_Err_Unknown_File_Format)
-        {
-            DE_LOG(LogRender, Error, "Font format not supported")
-        }
-        else if (error)
-        {
-            DE_LOG(LogRender, Error, "Failed to load font")
-        }
-        
-        /* use 50pt at 100dpi */
-        error = FT_Set_Char_Size(face, 50 * 64, 0,
-                                 100, 0); /* set character size */
+    /* use 50pt at 100dpi */
+        FT_Error error = FT_Set_Char_Size(face, CharSize * 64, 0,
+                                          100, 0); /* set character size */
         if (error)
         {
             DE_LOG(LogRender, Error, "Failed to set character size")
@@ -111,7 +83,7 @@ void Denix::UIScene::BeginScene()
         /* cmap selection omitted;                                        */
         /* for simplicity we assume that the font contains a Unicode cmap */
 
-        slot = face->glyph;
+        FT_GlyphSlot slot = face->glyph;
 
         /* set up matrix */
         matrix.xx = (FT_Fixed)(cos(angle) * 0x10000L);
@@ -121,9 +93,9 @@ void Denix::UIScene::BeginScene()
 
         /* the pen position in 26.6 cartesian space coordinates; */
         /* start at (300,200) relative to the upper left corner  */
-        pen.x = 220 * 64;
-        pen.y = (target_height- 240) * 64;
-        for (n = 0; n < num_chars; n++)
+        pen.x = Position.x * 64;
+        pen.y = (target_height- Position.y) * 64;
+        for (int n = 0; n < text.size(); n++)
         {
             /* set transformation */
             FT_Set_Transform(face, &matrix, &pen);
@@ -146,7 +118,6 @@ void Denix::UIScene::BeginScene()
 
         textureID = ConvertImageToTexture(image);
         
-        FT_Done_Face(face);
 }
 
 void Denix::UIScene::Update(float _deltaTime)
