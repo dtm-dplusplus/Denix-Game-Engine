@@ -60,6 +60,20 @@ void Denix::UIScene::BeginScene()
 {
     Scene::BeginScene();
 
+    textureID = CreateTextBox(Text, Position, {WIDTH, HEIGHT}, {1.0f, 1.0f, 1.0f});
+}
+
+void Denix::UIScene::Update(float _deltaTime)
+{
+    Scene::Update(_deltaTime);
+
+    ImGui::Begin("Font Rendering");
+    ImGui::Image((void*)(intptr_t)textureID, ImVec2(WIDTH, HEIGHT));
+    ImGui::End();
+}
+
+unsigned int Denix::UIScene::CreateTextBox(std::string _text, glm::vec2 _position, glm::vec2 _size, glm::vec3 _color)
+{
     FT_Face& face = UISubsystem::m_Face;
     FT_Matrix matrix; /* transformation matrix */
     FT_Vector pen; /* untransformed origin  */
@@ -90,11 +104,10 @@ void Denix::UIScene::BeginScene()
     pen.x = Position.x * 64;
     pen.y = (target_height - Position.y) * 64;
     FT_GlyphSlot slot = face->glyph;
-    for (const char n : Text)
+    for (const char n : _text)
     {
         /* set transformation */
         FT_Set_Transform(face, &matrix, &pen);
-
 
         /* load glyph image into the slot (erase previous one) */
         error = FT_Load_Char(face, n, FT_LOAD_RENDER);
@@ -111,14 +124,5 @@ void Denix::UIScene::BeginScene()
         pen.y += slot->advance.y;
     }
 
-    textureID = ConvertImageToTexture(image);
-}
-
-void Denix::UIScene::Update(float _deltaTime)
-{
-    Scene::Update(_deltaTime);
-
-    ImGui::Begin("Font Rendering");
-    ImGui::Image((void*)(intptr_t)textureID, ImVec2(WIDTH, HEIGHT));
-    ImGui::End();
+    return ConvertImageToTexture(image);
 }

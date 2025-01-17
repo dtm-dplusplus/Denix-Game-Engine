@@ -15,6 +15,7 @@ namespace Denix
 
         void BeginScene() override;
         void Update(float _deltaTime) override;
-        
+
+        unsigned int CreateTextBox(std::string _text, glm::vec2 _position, glm::vec2 _size, glm::vec3 _color);
     };
 }
