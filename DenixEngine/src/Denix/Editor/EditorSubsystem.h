@@ -5,6 +5,7 @@
 #include "Denix/Editor/EditorWidget.h"
 #include "imgui.h"
 #include "implot.h"
+#include "misc/cpp/imgui_stdlib.h"
 
 namespace Denix
 {

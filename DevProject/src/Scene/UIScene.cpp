@@ -3,16 +3,12 @@
 #include "imgui.h"
 #include "Denix/UI/UISubsystem.h"
 
-#define WIDTH   640
-#define HEIGHT  480
-
-/* origin is the upper left corner */
-unsigned char image[HEIGHT][WIDTH];
-#include <GL/glew.h>
+std::vector<unsigned char> image(WIDTH * HEIGHT);
 
 // Function to convert the image to an OpenGL texture
-GLuint ConvertImageToTexture(unsigned char image[HEIGHT][WIDTH])
+GLuint ConvertImageToTexture(const std::vector<unsigned char>& _image)
 {
+    GLuint textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -23,7 +19,7 @@ GLuint ConvertImageToTexture(unsigned char image[HEIGHT][WIDTH])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Upload the image data to the texture
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WIDTH, HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WIDTH, HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, _image.data());
 
     // Unbind the texture
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -38,10 +34,8 @@ void draw_bitmap(FT_Bitmap* bitmap, FT_Int x, FT_Int y)
     FT_Int x_max = x + bitmap->width;
     FT_Int y_max = y + bitmap->rows;
 
-
     /* for simplicity, we assume that `bitmap->pixel_mode' */
     /* is `FT_PIXEL_MODE_GRAY' (i.e., not a bitmap font)   */
-
     for (i = x, p = 0; i < x_max; i++, p++)
     {
         for (j = y, q = 0; j < y_max; j++, q++)
@@ -50,7 +44,7 @@ void draw_bitmap(FT_Bitmap* bitmap, FT_Int x, FT_Int y)
                 i >= WIDTH || j >= HEIGHT)
                 continue;
 
-            image[j][i] |= bitmap->buffer[q * bitmap->width + p];
+            image[j * WIDTH + i] |= bitmap->buffer[q * bitmap->width + p];
         }
     }
 }
