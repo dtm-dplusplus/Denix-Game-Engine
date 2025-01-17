@@ -1,5 +1,8 @@
 #pragma once
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "Denix/Core.h"
 #include "Denix/Core/Subsystem.h"
 
@@ -15,7 +18,7 @@ namespace Denix
 	class UISubsystem: public Subsystem<UISubsystem>
 	{
 	public:
-		UISubsystem();
+		UISubsystem() = default;
 		~UISubsystem() override = default;
 
 		UISubsystem(const UISubsystem& _other) = delete;
@@ -26,6 +29,8 @@ namespace Denix
 		static ImGuiID GetDockLeftID()  { return s_Instance->DockLeftID; }
 		static ImGuiID GetDockRightID()  { return s_Instance->DockRightID; }
 		static ImGuiID GetDockDownID()  { return s_Instance->DockDownID; }
+
+		FT_Library m_FtLibrary;
 	private:
 		void Initialize() override;
 
