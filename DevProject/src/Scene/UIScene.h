@@ -2,12 +2,12 @@
 #include "Denix/Scene/Scene.h"
 
 inline static int CharSize = 25;
-inline static glm::vec2 Position = {0.0f, 240.0f};
-inline static std::string Text = "Hello World";
-inline unsigned int textureID;
-inline static int WIDTH = 800;
-inline static int HEIGHT = 600;
-
+inline static glm::vec2 Position = {50.0f, 100.0f};
+inline static glm::vec3 Color = {1.0f, 1.0f, 1.0f};
+inline static std::vector<std::string> Text = { "Hello ", "Hello 2" };
+inline static const int WIDTH = 400;
+inline static const int HEIGHT = 200;
+inline static GLuint textureID[2] = { 0, 0 };
 namespace Denix
 {
     class UIScene: public Scene
