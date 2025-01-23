@@ -29,6 +29,16 @@ namespace Denix
 		bool m_KeyboardLogging;
 		bool m_MouseLogging;
 	private:
+		void ProcessApplicationEvent(const SDL_Event& _event);
+		void ProcessDisplayEvent(const SDL_Event& _event);
+		void ProcessWindowEvent(const SDL_Event& _event);
+		void ProcessInputEvent(const SDL_Event& _event);
+		void ProcessFileEvent(const SDL_Event& _event);
+		void ProcessAudioEvent(const SDL_Event& _event);
+		void ProcessPenEvent(const SDL_Event& _event);
+		void ProcessCameraEvent(const SDL_Event& _event);
+		void ProcessRenderEvent(const SDL_Event& _event);
+		
 		void Initialize() override;
 		void Deinitialize() override;
 		void Update(float _deltaTime) override;
@@ -44,5 +54,4 @@ namespace Denix
 		
 		friend class Engine;
 	};
-
 }
