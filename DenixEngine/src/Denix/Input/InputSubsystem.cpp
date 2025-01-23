@@ -274,8 +274,22 @@ namespace Denix
 
         /* Mouse events */
         case SDL_EVENT_MOUSE_MOTION: break; /**< Mouse moved */
-        case SDL_EVENT_MOUSE_BUTTON_DOWN: break; /**< Mouse button pressed */
-        case SDL_EVENT_MOUSE_BUTTON_UP: break; /**< Mouse button released */
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            {
+                if (_event.button.button == SDL_BUTTON_LEFT) m_MouseData.Left = true;
+                if (_event.button.button == SDL_BUTTON_RIGHT) m_MouseData.Right = true;
+                if (_event.button.button == SDL_BUTTON_MIDDLE) m_MouseData.Middle = true;
+                if (_event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = true;
+                if (_event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = true;
+            }break; /**< Mouse button pressed */
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+            {
+                if (_event.button.button == SDL_BUTTON_LEFT) m_MouseData.Left = false;
+                if (_event.button.button == SDL_BUTTON_RIGHT) m_MouseData.Right = false;
+                if (_event.button.button == SDL_BUTTON_MIDDLE) m_MouseData.Middle = false;
+                if (_event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = false;
+                if (_event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = false;
+            }break; /**< Mouse button released */
         case SDL_EVENT_MOUSE_WHEEL:
             {
                 m_MouseData.WheelY = _event.wheel.y;
@@ -289,19 +303,11 @@ namespace Denix
         case SDL_EVENT_JOYSTICK_HAT_MOTION: break; /**< Joystick hat position change */
         case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
             {
-                if (_event.button.button == SDL_BUTTON_LEFT) m_MouseData.Left = true;
-                if (_event.button.button == SDL_BUTTON_RIGHT) m_MouseData.Right = true;
-                if (_event.button.button == SDL_BUTTON_MIDDLE) m_MouseData.Middle = true;
-                if (_event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = true;
-                if (_event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = true;
+               
             }break; /**< Joystick button pressed */
         case SDL_EVENT_JOYSTICK_BUTTON_UP:
             {
-                if (_event.button.button == SDL_BUTTON_LEFT) m_MouseData.Left = false;
-                if (_event.button.button == SDL_BUTTON_RIGHT) m_MouseData.Right = false;
-                if (_event.button.button == SDL_BUTTON_MIDDLE) m_MouseData.Middle = false;
-                if (_event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = false;
-                if (_event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = false;
+               
             }break; /**< Joystick button released */
         case SDL_EVENT_JOYSTICK_ADDED: break; /**< A new joystick has been inserted into the system */
         case SDL_EVENT_JOYSTICK_REMOVED: break; /**< An opened joystick has been removed */
