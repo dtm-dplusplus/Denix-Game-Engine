@@ -26,11 +26,11 @@ namespace Denix
 		static bool IsMouseButtonDown(const int _button) { return s_Instance->m_MouseData.SDL_State & SDL_BUTTON(_button); }
 		static MouseData& GetMouseData() { return s_Instance->m_MouseData; }
 
+		static void GetDevices();
 		bool m_KeyboardLogging;
 		bool m_MouseLogging;
 	private:
 		void ProcessInputEvent(const SDL_Event& _event);
-		void ProcessAudioEvent(const SDL_Event& _event);
 		void ProcessPenEvent(const SDL_Event& _event);
 		void ProcessCameraEvent(const SDL_Event& _event);
 		

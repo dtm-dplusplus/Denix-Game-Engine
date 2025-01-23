@@ -9,17 +9,6 @@ namespace Denix
 {
 	struct ShaderSource
 	{
-	public:
-		ShaderSource(const std::string& _path)
-		{
-			Path = _path;
-
-			std::string n;
-
-			auto it = Path.find_last_of('\\');
-			FileName = Path.substr(it + 1);
-		}
-
 		std::string Path;
 		std::string FileName;
 		std::string Source;
@@ -50,18 +39,11 @@ namespace Denix
 	class Shader: public Asset
 	{
 	public:
-		Shader():
-			m_GL_ID(0)
+		Shader(): m_GL_ID(0)
 		{
 			CreateProgram();
 		}
 
-		Shader(const AssetInit& _assetInit):
-			Asset(_assetInit),
-			m_GL_ID(0)
-		{
-			CreateProgram();
-		}
 
 		~Shader() override
 		{

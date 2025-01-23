@@ -28,154 +28,6 @@
 
 namespace Denix
 {
-    Engine::Engine(std::string _projectName): m_ProjectName(std::move(_projectName)), m_FrameCount(0)
-    {
-    }
-
-    void Engine::PreInitialize()
-    {
-        // Set the engine instance
-        s_Engine = shared_from_this();
-
-        // Initialize Logger
-        Logger::Initialize();
-
-        DE_LOG_CREATE(LogEngine)
-        DE_LOG_CREATE(LogCore)
-        DE_LOG_CREATE(LogFile)
-        DE_LOG_CREATE(LogTimer)
-        DE_LOG_CREATE(LogScene)
-        DE_LOG_CREATE(LogAsset)
-        DE_LOG_CREATE(LogAudio)
-        DE_LOG_CREATE(LogEvent)
-        DE_LOG_CREATE(LogInput)
-        DE_LOG_CREATE(LogPhysics)
-        DE_LOG_CREATE(LogProfile)
-        DE_LOG_CREATE(LogReflection)
-        DE_LOG_CREATE(LogThread)
-        DE_LOG_CREATE(LogJob)
-        DE_LOG_CREATE(LogUI)
-        DE_LOG_CREATE(LogRender)
-        DE_LOG_CREATE(LogGL)
-        DE_LOG_CREATE(LogWindow)
-        DE_LOG_CREATE(LogShader)
-        DE_LOG_CREATE(LogEditor)
-
-        // Load Config Here?
-
-
-        // Register all classes that need to be reflected here. 
-        m_ReflectionSubsystem = InitalizeSubsystem<ReflectionSubsystem>();
-
-        // Register classes - This will be moved to some kind of pre build event & parser in the future
-        ReflectionSubsystem::Register<BaseObject>();
-        ReflectionSubsystem::Register<Scene>();
-        ReflectionSubsystem::Register<Actor>();
-        ReflectionSubsystem::Register<Camera>();
-        ReflectionSubsystem::Register<Cube>();
-        ReflectionSubsystem::Register<Sphere>();
-        ReflectionSubsystem::Register<Plane>();
-
-        ReflectionSubsystem::Register<TransformComponent>();
-        ReflectionSubsystem::Register<RenderComponent>();
-        ReflectionSubsystem::Register<MeshComponent>();
-
-        ReflectionSubsystem::Register<PhysicsComponent>();
-        ReflectionSubsystem::Register<Collider>();
-        ReflectionSubsystem::Register<CubeCollider>();
-        ReflectionSubsystem::Register<SphereCollider>();
-
-        ReflectionSubsystem::Register<AudioComponent>();
-        ReflectionSubsystem::Register<AudioSource>();
-
-        DE_LOG(LogReflection, Info, "Registered Engine Classes")
-
-        //Initialize SDL
-        constexpr auto sdlInitFlags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_GAMEPAD;
-        if (!SDL_Init(sdlInitFlags))
-        {
-            std::string err = SDL_GetError();
-            DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", err)
-            throw std::runtime_error(err.c_str());
-        }
-        DE_LOG(Log, Trace, "SDL Init success")
-    }
-
-    void Engine::Initialize()
-    {
-        PreInitialize();
-
-        DE_LOG(LogEngine, Warn, "Engine Initializing")
-
-        m_JobSubsystem = InitalizeSubsystem<JobSubsystem>();
-
-        m_TimerSubsystem = InitalizeSubsystem<TimerSubsystem>();
-
-        m_ProfileSubsystem = InitalizeSubsystem<ProfileSubsystem>();
-
-        m_FileSubsystem = InitalizeSubsystem<FileSubsystem>();
-
-        m_WindowSubsystem = InitalizeSubsystem<WindowSubsystem>();
-
-        m_AudioSubsystem = InitalizeSubsystem<AudioSubsystem>();
-
-        m_AssetSubsystem = InitalizeSubsystem<AssetSubsystem>();
-
-        // set the engine config path
-        m_EngineConfigPath = FileSubsystem::GetProjectRoot() + "Config\\Engine.cfg";
-
-        // Load the engine config. This will set the startup scene and validate the engine config
-        LoadConfig();
-
-        m_RendererSubsystem = InitalizeSubsystem<RendererSubsystem>();
-
-        m_UISubsystem = InitalizeSubsystem<UISubsystem>();
-
-        m_PhysicsSubsystem = InitalizeSubsystem<PhysicsSubsystem>();
-
-        m_InputSubsystem = InitalizeSubsystem<InputSubsystem>();
-
-        m_EventSubsystem = InitalizeSubsystem<EventSubsystem>();
-        
-        m_SceneSubsystem = InitalizeSubsystem<SceneSubsystem>(m_StartupScene);
-
-        m_EditorSubsystem = InitalizeSubsystem<EditorSubsystem>();
-
-
-        DE_LOG(LogEngine, Info, "Engine Initialized")
-    }
-
-    void Engine::Deinitialize()
-    {
-        DE_LOG(LogEngine, Trace, "Engine Deinitializing")
-
-        SaveConfig();
-
-        // Clear Core Dependencies
-        //SDL_Quit();
-
-        // Clear Subsystem pointers
-        m_EditorSubsystem->Deinitialize();
-        m_SceneSubsystem->Deinitialize();
-        m_PhysicsSubsystem->Deinitialize();
-        m_InputSubsystem->Deinitialize();
-        m_EventSubsystem->Deinitialize();
-        m_UISubsystem->Deinitialize();
-        m_RendererSubsystem->Deinitialize();
-        m_AssetSubsystem->Deinitialize();
-        m_AudioSubsystem->Deinitialize();
-        m_WindowSubsystem->Deinitialize();
-        m_ProfileSubsystem->Deinitialize();
-        m_FileSubsystem->Deinitialize();
-        m_ReflectionSubsystem->Deinitialize();
-        m_TimerSubsystem->Deinitialize();
-        m_JobSubsystem->Deinitialize();
-        s_Engine.reset();
-
-        DE_LOG(LogEngine, Trace, "Engine Deinitialized")
-        Logger::Deinitialize();
-    }
-
     void Engine::EngineLoop()
     {
         DE_LOG(LogEngine, Info, "Engine Loop Started")
@@ -270,6 +122,7 @@ namespace Denix
     {
         try
         {
+            PreInitialize();
             Initialize();
             EngineLoop();
         }
@@ -277,7 +130,146 @@ namespace Denix
         {
             DE_LOG(LogEngine, Critical, "Unhandled exception: {0}", e.what());
         }
+        
         Deinitialize();
+    }
+    
+    void Engine::PreInitialize()
+    {
+        // Set the engine instance
+        s_Engine = shared_from_this();
+
+        // Initialize Logger
+        Logger::Initialize();
+
+        DE_LOG_CREATE(LogEngine)
+        DE_LOG_CREATE(LogCore)
+        DE_LOG_CREATE(LogFile)
+        DE_LOG_CREATE(LogTimer)
+        DE_LOG_CREATE(LogScene)
+        DE_LOG_CREATE(LogAsset)
+        DE_LOG_CREATE(LogAudio)
+        DE_LOG_CREATE(LogEvent)
+        DE_LOG_CREATE(LogInput)
+        DE_LOG_CREATE(LogPhysics)
+        DE_LOG_CREATE(LogProfile)
+        DE_LOG_CREATE(LogReflection)
+        DE_LOG_CREATE(LogThread)
+        DE_LOG_CREATE(LogJob)
+        DE_LOG_CREATE(LogUI)
+        DE_LOG_CREATE(LogRender)
+        DE_LOG_CREATE(LogGL)
+        DE_LOG_CREATE(LogWindow)
+        DE_LOG_CREATE(LogShader)
+        DE_LOG_CREATE(LogEditor)
+
+        // Initialize the file subsystem and establish the project paths
+        m_FileSubsystem = InitalizeSubsystem<FileSubsystem>();
+
+        // Load the engine config from project file. This will set the startup scene and validate the engine config
+        LoadConfig();
+
+        // Register all classes that need to be reflected here. 
+        m_ReflectionSubsystem = InitalizeSubsystem<ReflectionSubsystem>();
+
+        // Register classes - This will be moved to some kind of pre build event & parser in the future
+        ReflectionSubsystem::Register<BaseObject>();
+        ReflectionSubsystem::Register<Scene>();
+        ReflectionSubsystem::Register<Actor>();
+        ReflectionSubsystem::Register<Camera>();
+        ReflectionSubsystem::Register<Cube>();
+        ReflectionSubsystem::Register<Sphere>();
+        ReflectionSubsystem::Register<Plane>();
+
+        ReflectionSubsystem::Register<TransformComponent>();
+        ReflectionSubsystem::Register<RenderComponent>();
+        ReflectionSubsystem::Register<MeshComponent>();
+
+        ReflectionSubsystem::Register<PhysicsComponent>();
+        ReflectionSubsystem::Register<Collider>();
+        ReflectionSubsystem::Register<CubeCollider>();
+        ReflectionSubsystem::Register<SphereCollider>();
+
+        ReflectionSubsystem::Register<AudioComponent>();
+        ReflectionSubsystem::Register<AudioSource>();
+
+        DE_LOG(LogReflection, Info, "Registered Engine Classes")
+
+        // Initialize SDL - This is the foundation of the engine
+        constexpr auto sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO |
+            SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS | SDL_INIT_SENSOR | SDL_INIT_CAMERA;
+        if (!SDL_Init(sdlInitFlags))
+        {
+            std::string err = SDL_GetError();
+            DE_LOG(Log, Critical, "SDL Init failed! SDL_Error: {}", err)
+            throw std::runtime_error(err.c_str());
+        }
+        DE_LOG(Log, Trace, "SDL Init success")
+    }
+
+    void Engine::Initialize()
+    {
+        DE_LOG(LogEngine, Warn, "Engine Initializing")
+
+        m_JobSubsystem = InitalizeSubsystem<JobSubsystem>();
+
+        m_TimerSubsystem = InitalizeSubsystem<TimerSubsystem>();
+
+        m_ProfileSubsystem = InitalizeSubsystem<ProfileSubsystem>();
+
+        m_WindowSubsystem = InitalizeSubsystem<WindowSubsystem>();
+
+        m_AudioSubsystem = InitalizeSubsystem<AudioSubsystem>();
+
+        m_InputSubsystem = InitalizeSubsystem<InputSubsystem>();
+
+        m_EventSubsystem = InitalizeSubsystem<EventSubsystem>();
+        
+        m_AssetSubsystem = InitalizeSubsystem<AssetSubsystem>();
+
+        m_UISubsystem = InitalizeSubsystem<UISubsystem>();
+
+        m_RendererSubsystem = InitalizeSubsystem<RendererSubsystem>();
+
+        m_PhysicsSubsystem = InitalizeSubsystem<PhysicsSubsystem>();
+
+        m_SceneSubsystem = InitalizeSubsystem<SceneSubsystem>();
+
+        m_EditorSubsystem = InitalizeSubsystem<EditorSubsystem>();
+
+
+        DE_LOG(LogEngine, Info, "Engine Initialized")
+    }
+
+    void Engine::Deinitialize()
+    {
+        DE_LOG(LogEngine, Trace, "Engine Deinitializing")
+
+        SaveConfig();
+
+        // Clear Core Dependencies
+        //SDL_Quit();
+
+        // Clear Subsystem pointers
+        m_EditorSubsystem->Deinitialize();
+        m_SceneSubsystem->Deinitialize();
+        m_PhysicsSubsystem->Deinitialize();
+        m_InputSubsystem->Deinitialize();
+        m_EventSubsystem->Deinitialize();
+        m_UISubsystem->Deinitialize();
+        m_RendererSubsystem->Deinitialize();
+        m_AssetSubsystem->Deinitialize();
+        m_AudioSubsystem->Deinitialize();
+        m_WindowSubsystem->Deinitialize();
+        m_ProfileSubsystem->Deinitialize();
+        m_FileSubsystem->Deinitialize();
+        m_ReflectionSubsystem->Deinitialize();
+        m_TimerSubsystem->Deinitialize();
+        m_JobSubsystem->Deinitialize();
+        s_Engine.reset();
+
+        DE_LOG(LogEngine, Trace, "Engine Deinitialized")
+        Logger::Deinitialize();
     }
 
     void Engine::LoadConfig()
@@ -285,20 +277,24 @@ namespace Denix
         try
         {
             // Load the config file. Exception will be thrown if the file doesn't exist so no need to check
-            const YAML::Node& cfg = YAML::LoadFile(m_EngineConfigPath);
+            const YAML::Node& cfg = YAML::LoadFile(m_FileSubsystem->m_ProjectFile);
+            if (!cfg.IsDefined())
+            {
+                DE_LOG(LogEngine, Error, "Failed to Load Engine Config: Invalid YAML")
+                return;
+            }
 
-            // Validate startup scene
+            // Project Name
+            if (const YAML::Node& projectNameNode = cfg["Project Name"])
+            {
+                m_Config.ProjectName = projectNameNode.as<std::string>();
+                DE_LOG(LogEngine, Info, "Loaded Engine Config: Project Name: {0}", m_Config.ProjectName)
+            }
+            
+            // Startup scene
             if (const YAML::Node& startSceneNode = cfg["Startup Scene"])
             {
-                if (Ref<Asset> startSceneAsset = AssetSubsystem::GetSceneAsset(startSceneNode.as<std::string>()))
-                {
-                    m_StartupScene = startSceneAsset;
-                    DE_LOG(LogEngine, Info, "Loaded Engine Config: Startup Scene: {0}", startSceneAsset->GetAssetName())
-                }
-                else
-                {
-                    DE_LOG(LogEngine, Warn, "Load Engine Config: Startup Scene Not Found")
-                }
+               m_Config.StartupScenePath = startSceneNode.as<std::string>();
             }
         }
         catch (const std::exception& e)
@@ -313,7 +309,7 @@ namespace Denix
 
     void Engine::SaveConfig()
     {
-        try
+        /*try
         {
             YAML::Emitter cfgEmitter;
             cfgEmitter << YAML::Comment("DENIX ENGINE CONFIGURATION");
@@ -332,21 +328,6 @@ namespace Denix
 
             // Do some error handling
             assert(false, "Failed to Save Engine Config");
-        }
-    }
-
-    Ref<Asset> Engine::GetStartupScene() const
-    {
-        return m_StartupScene;
-    }
-
-    void Engine::SetStartupScene(const Ref<Asset>& _ref)
-    {
-        if (_ref)
-        {
-            s_Engine->m_StartupScene = _ref;
-            DE_LOG(LogEngine, Info, "Set Startup Scene: {0}", _ref->GetAssetPath())
-            s_Engine->SaveConfig();
-        }
+        }*/
     }
 }

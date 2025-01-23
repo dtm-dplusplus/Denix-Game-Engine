@@ -15,7 +15,6 @@ namespace Denix
         m_WindowSubsystemRef = WindowSubsystem::GetInstance();
         m_WindowRef = WindowSubsystem::GetWindow();
         m_InputRef = InputSubsystem::GetInstance();
-
         DE_ASSERT(m_WindowSubsystemRef.lock(), "Event: Window Subsystem reference is invalid");
         DE_ASSERT(m_WindowRef.lock(), "Event: Window reference is invalid");
         DE_ASSERT(m_InputRef.lock(), "Event: Input reference is invalid");
@@ -85,6 +84,13 @@ namespace Denix
             // Handle SDL Camera Events - Placeholder for now
             else if (event.type >= SDL_EVENT_CAMERA_DEVICE_ADDED && event.type <= SDL_EVENT_CAMERA_DEVICE_DENIED)
                 input->ProcessCameraEvent(event);
+
+            // Handle SDL Sensor Events - Placeholder for now
+            else if (event.type == SDL_EVENT_SENSOR_UPDATE)
+                DE_LOG(LogEvent, Trace, "Sensor Update Event")
+
+            // Handle Unknown Events - This should never happen but here for debugging
+            else DE_LOG(LogEvent, Warn, "Unknown Event Type: {}", event.type)
         }
 
         DE_PROFILE_END(Input Update)
@@ -93,7 +99,6 @@ namespace Denix
     void EventSubsystem::ProcessApplicationEvent(const SDL_Event& _event)
     {
         auto window = m_WindowRef.lock();
-
 
         switch (_event.type)
         {

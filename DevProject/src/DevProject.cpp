@@ -11,12 +11,14 @@
 {
 public:
 
-	DevProject(const std::string& _projectName): Engine(_projectName){}
-
+	DevProject() = default;
+	~DevProject() override = default;
+ 	
 	void PreInitialize() override
 	{
 		Engine::PreInitialize();
 
+		// Register project specific classes - These are pre-registered for reflection
 		DE_LOG_CREATE(LogDevProject)
 		ReflectionSubsystem::Register<DevScene>();
 		ReflectionSubsystem::Register<GACPScene>();
@@ -24,15 +26,19 @@ public:
 		ReflectionSubsystem::Register<GEPScene>();
 		ReflectionSubsystem::Register<AudioScene>();
 		ReflectionSubsystem::Register<GACPActor>();
+		DE_LOG(LogReflection, Info, "Registered DevProject Classes")
 	}
 	
 	void Initialize() override
 	{
 		Engine::Initialize();
+
+		// Do any project specific initialization here
+		DE_LOG(LogDevProject, Info, "DevProject Initialized")
 	}
 };
 
  Ref<Engine> Denix::MakeEngine()
 {
-	return MakeRef<DevProject>(ReflectionHelper::GetClassNameDE<DevProject>());
+	return MakeRef<DevProject>();
 }

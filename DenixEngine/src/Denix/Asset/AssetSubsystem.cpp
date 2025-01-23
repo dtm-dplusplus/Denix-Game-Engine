@@ -1,4 +1,6 @@
 #include "AssetSubsystem.h"
+
+#include "Denix/Engine.h"
 #include "Denix/Core/File/FileSubsystem.h"
 #include "Denix/Scene/Component/RenderComponent.h"
 #include "Denix/Video/GL/Shader.h"
@@ -9,14 +11,8 @@
 #include "Denix/Audio/AudioClip.h"
 #include "yaml-cpp/yaml.h"
 
-namespace fs = std::filesystem;
-
 namespace Denix
 {
-	AssetSubsystem::AssetSubsystem()
-	{
-	}
-
 	Ref<Asset> AssetSubsystem::GetAsset(const std::string& _path)
 	{
 		for (const auto& asset : s_Instance->m_AssetStore)
@@ -64,28 +60,26 @@ namespace Denix
 
 	void AssetSubsystem::Initialize()
 	{
-		Subsystem::Initialize();
 		DE_LOG(LogAsset, Warn, "Asset Subsystem Initializing")
+		Subsystem::Initialize();
 
 		// Iniatlize Default Assets
 		std::vector<ShaderSource> defaultShaders;
-		std::string defShaderPath = FileSubsystem::GetEngineContentRoot() + "shaders\\Default\\Vertex.glsl";
-		defaultShaders.emplace_back(defShaderPath);
-		defaultShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\Default\Fragment.glsl)");
-		if (Ref<Shader> defShader = LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = defShader;
-		else throw std::runtime_error("Default Shader not loaded");
+		defaultShaders.emplace_back(R"(Content/Engine/shaders/Default/Vertex.glsl)");
+		defaultShaders.emplace_back(R"(Content/Engine/shaders/Default/Fragment.glsl)");
 		
-		std::vector<ShaderSource> viewportShaders;
-		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FB\FBVertex.glsl)");
-		viewportShaders.emplace_back(FileSubsystem::GetEngineContentRoot() + R"(shaders\FB\FBFragment.glsl)");
-		if (Ref<Shader> fbShader = LoadShader(viewportShaders, "FBShader")) m_FramebufferShader = fbShader;
-		else throw std::runtime_error("Viewport Shader not loaded");
+		if (Ref<Shader> defShader = LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = defShader;
+		DE_ASSERT(m_DefaultShader, "Default Shader not loaded")
+		
+		std::vector<ShaderSource> fbShaders;
+		fbShaders.emplace_back(R"(Content/Engine/shaders/FB/FBVertex.glsl)");
+		fbShaders.emplace_back(R"(Content/Engine/shaders/FB/FBFragment.glsl)");
+		if (Ref<Shader> fbShader = LoadShader(fbShaders, "FBShader")) m_FramebufferShader = fbShader;
+		DE_ASSERT(m_FramebufferShader, "Framebuffer Shader not loaded")
 
+		if (Ref<Material> defMat = LoadMaterial(MakeRef<Asset>(FileSubsystem::FormatPath(R"(Content/Engine/materials/MAT_Default.asset)")))) m_DefaultMaterial = defMat;
+		DE_ASSERT(m_DefaultMaterial, "Default Material not loaded")
 
-		std::string defMatPath = FileSubsystem::GetEngineContentRoot() + R"(materials\MAT_Default.asset)";
-		if (Ref<Material> defMat = LoadMaterial(MakeRef<Asset>(defMatPath))) m_DefaultMaterial = defMat;
-		else throw std::runtime_error("Default Material not loaded");
-			
 		// Search Project directory for assets
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(FileSubsystem::GetContentRoot()))
 		{
@@ -141,6 +135,15 @@ namespace Denix
 			}
 		}
 
+		if (Ref<Asset> startSceneAsset = GetSceneAsset(Engine::GetInstance()->m_Config.StartupScenePath))
+		{
+			m_StartupScene = startSceneAsset;
+			DE_LOG(LogEngine, Info, "Loaded Engine Config: Startup Scene: {0}", startSceneAsset->GetAssetName())
+		}
+		else
+		{
+			DE_LOG(LogEngine, Warn, "Load Engine Config: Startup Scene Not Found")
+		}
 	    DE_LOG(LogAsset, Info, "Asset Subsystem Initialized")
 	}
 
@@ -188,7 +191,7 @@ namespace Denix
 	}
 
 	////////////////////////  SHADERS ///////////////////////////////
-	Ref<Shader> AssetSubsystem::LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _path)
+	Ref<Shader> AssetSubsystem::LoadShader(std::vector<ShaderSource>& _shaders, const std::string& _path)
 	{
 		// Check if the shader already exists
 		if (s_Instance->m_ShaderStore.contains(_path))
@@ -198,8 +201,16 @@ namespace Denix
 		}
 
 		// Create a new shader
-		if (const Ref<Shader> shader = MakeRef<Shader>(_shaders[0].Path))
+		if (const Ref<Shader> shader = MakeRef<Shader>())
 		{
+			// Format the shader sources
+			for (auto& source : _shaders)
+			{
+				source.Path = FileSubsystem::FormatPath(source.Path);
+				source.FileName = std::filesystem::path(source.Path).filename().string();
+				source.Source = FileSubsystem::ReadFile(source.Path);
+				source.Type = shader->GetShaderType(source.Source);
+			}
 			shader->m_ShaderSources = _shaders;
 
 			if (!shader->CompileProgram()) return nullptr;

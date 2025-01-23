@@ -16,12 +16,6 @@
 
 namespace Denix
 {
-	SceneSubsystem::SceneSubsystem(const Ref<Asset>& _startupScene)
-	{
-		m_StartupScene = _startupScene;
-		m_BatchUpdateActors = true;
-	}
-	
 	void SceneSubsystem::Initialize()
 	{
 		Subsystem::Initialize();
@@ -31,12 +25,12 @@ namespace Denix
 		
 		
 		// Load Startup scene if it exists
-		if(m_StartupScene)
+		if(Ref<Asset> startupScene = AssetSubsystem::GetStartupScene())
 		{
-			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(m_StartupScene->GetAssetName())))
+			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(startupScene->GetAssetName())))
 			{
-				scene->m_Name = m_StartupScene->GetAssetName();
-				scene->m_SceneAsset =m_StartupScene; // Reflection doesn't support constructor arguments yet
+				scene->m_Name = startupScene->GetAssetName();
+				scene->m_SceneAsset =m_StartupScene;
 				OpenScene(scene);
 			}
 			else
@@ -49,7 +43,6 @@ namespace Denix
 		{
 			OpenScene(MakeRef<Scene>());
 		}
-		
 
 		DE_LOG(LogScene, Info, "Scene Subsystem Initialized")
 	}
@@ -97,22 +90,25 @@ namespace Denix
 	{
 		if (!_sceneAsset)
 		{
-			DE_LOG(LogScene, Error, "Invalid Scene Asset")
+			DE_LOG(LogScene, Error, "Invalid Scene Asset. Loading Default Scene")
+			OpenScene(MakeRef<Scene>());
 			return;
 		}
 
 		if (const Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(_sceneAsset->GetAssetName())))
 		{
 			scene->m_SceneAsset = _sceneAsset;
+			scene->m_Name = _sceneAsset->GetAssetName();
 			OpenScene(scene);
 		}
 	}
 	
 	void SceneSubsystem::OpenScene(const Ref<Scene>& _scene)
 	{
-		if(!_scene)
+		if (!_scene)
 		{
-			DE_LOG(LogScene, Error, "Invalid Scene Reference")
+			DE_LOG(LogScene, Error, "Invalid Scene Asset. Loading Default Scene")
+			OpenScene(MakeRef<Scene>());
 			return;
 		}
 

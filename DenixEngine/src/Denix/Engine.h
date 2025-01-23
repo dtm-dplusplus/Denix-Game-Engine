@@ -31,7 +31,7 @@ namespace Denix
     class Engine: public std::enable_shared_from_this<Engine>
     {
     public:
-        Engine(std::string _projectName);
+        Engine() = default;
         virtual  ~Engine() = default;
 
         // Delete copy and move constructors and assignment operators
@@ -43,18 +43,20 @@ namespace Denix
        
         void LoadConfig();
         void SaveConfig();
-        Ref<Asset> GetStartupScene() const;
-        static void SetStartupScene(const Ref<Asset>& _ref);
 
         static Ref<Engine> GetInstance() { return s_Engine; }
 
-        std::string GetProjectName() const { return m_ProjectName; }
+        std::string GetProjectName() const { return m_Config.ProjectName; }
 
+        struct EngineConfig
+        {
+            std::string ProjectName;
+            std::string StartupScenePath;
+        } m_Config;
+        
     protected:
-        std::string m_ProjectName;
-        Ref<Asset> m_StartupScene;
-        std::string m_EngineConfigPath;
-
+        
+        
         virtual void PreInitialize();
         virtual void Initialize();
         virtual void Deinitialize();

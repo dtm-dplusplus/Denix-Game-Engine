@@ -19,9 +19,7 @@ namespace Denix
     class AssetSubsystem : public Subsystem<AssetSubsystem>
     {
     public:
-        AssetSubsystem();
-        
-
+        AssetSubsystem() = default;
         ~AssetSubsystem() override = default;
 
         AssetSubsystem(const AssetSubsystem& _other) = delete;
@@ -32,6 +30,8 @@ namespace Denix
         // Scenes
         static std::vector<Ref<Asset>>  GetSceneStore() { return s_Instance->m_SceneStore; }
         static Ref<Asset> GetSceneAsset(const std::string& _path);
+        static Ref<Asset> GetStartupScene() { return s_Instance->m_StartupScene; }
+        static void SetStartupScene(const Ref<Asset>& _ref) { s_Instance->m_StartupScene = _ref; }
         
         // Shaders
         static std::unordered_map<std::string, Ref<Shader>> GetShaderStore() 
@@ -39,7 +39,7 @@ namespace Denix
             return s_Instance->m_ShaderStore;
         }
 
-        Ref<Shader> LoadShader(const std::vector<ShaderSource>& _shaders, const std::string& _path);
+        Ref<Shader> LoadShader(std::vector<ShaderSource>& _shaders, const std::string& _path);
 
         static bool ReloadShader(const Ref<Shader>& _shader);
 
@@ -98,6 +98,7 @@ namespace Denix
         std::vector<Ref<Asset>> m_AssetStore;
 
         std::vector<Ref<Asset>> m_SceneStore;
+        Ref<Asset> m_StartupScene;
 
         friend class Engine;
     };

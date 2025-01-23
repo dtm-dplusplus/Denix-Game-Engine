@@ -1,6 +1,8 @@
 ﻿
 #include "AudioSubsystem.h"
 
+#include <SDL3/SDL_events.h>
+
 #include "AudioSource.h"
 
 Denix::AudioSubsystem::AudioSubsystem(): m_Device(nullptr), m_Context(nullptr)
@@ -56,3 +58,22 @@ void Denix::AudioSubsystem::Deinitialize()
     DE_LOG(LogAudio, Info, "Audio Subsystem Deinitialized")
     Subsystem::Deinitialize();
 }
+
+void Denix::AudioSubsystem::ProcessAudioEvent(const SDL_Event& _event)
+{
+    switch (_event.type)
+    {
+    case SDL_EVENT_AUDIO_DEVICE_ADDED:
+        DE_LOG(LogInput, Trace, "Audio Device Added Event");
+        break;
+    case SDL_EVENT_AUDIO_DEVICE_REMOVED:
+        DE_LOG(LogInput, Trace, "Audio Device Removed Event");
+        break;
+    case SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED:
+        DE_LOG(LogInput, Trace, "Audio Device Format Changed Event");
+        break;
+    default:
+        DE_LOG(LogInput, Error, "Unknown Audio Event");
+    }
+}
+

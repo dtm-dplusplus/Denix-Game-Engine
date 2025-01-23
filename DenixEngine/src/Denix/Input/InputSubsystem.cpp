@@ -4,7 +4,6 @@
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Video/WindowSubsystem.h"
-#include "Denix/Video/GL/Viewport.h"
 
 namespace Denix
 {
@@ -17,6 +16,8 @@ namespace Denix
         
         m_KeyboardLogging = false;
         m_MouseLogging = false;
+        GetDevices();
+
         DE_LOG(LogInput, Info, "Input Subsystem Initialized");
     }
 
@@ -42,6 +43,81 @@ namespace Denix
     bool InputSubsystem::IsKeyUp(const KeyCode _key)
     {
         return s_Instance->m_KeysUp.contains(_key);
+    }
+
+    void InputSubsystem::GetDevices()
+    {
+        int keyboardCount = 0;
+        if (SDL_KeyboardID* keyboardIDs = SDL_GetKeyboards(&keyboardCount))
+        {
+            for (int i = 0; i < keyboardCount; i++)
+            {
+                
+                DE_LOG(LogInput, Info, "Keyboard ID: {} Name: {}", keyboardIDs[i], SDL_GetKeyboardNameForID(keyboardIDs[i]))
+            }
+        }
+        else
+        {
+            DE_LOG(LogInput, Warn, "Failed to get Keyboard IDs. SDL_Error: {}", SDL_GetError())
+        }
+
+        int mouseCount = 0;
+        if (SDL_MouseID* mouseIDs = SDL_GetMice(&mouseCount))
+        {
+            for (int i = 0; i < mouseCount; i++)
+            {
+                DE_LOG(LogInput, Info, "Mouse ID: {} Name: {}", mouseIDs[i], SDL_GetMouseNameForID(i))
+            }
+        }
+        else
+        {
+            DE_LOG(LogInput, Error, "Failed to get Mouse IDs. SDL_Error: {}", SDL_GetError())
+        }
+
+        int gamepadCount = 0;
+        if (SDL_JoystickID* gamepadIDs = SDL_GetGamepads(&gamepadCount))
+        {
+            for (int i = 0; i < gamepadCount; i++)
+            {
+                DE_LOG(LogInput, Info, "Gamepad ID: {} Name: {}", gamepadIDs[0], SDL_GetGamepadNameForID(gamepadIDs[0]))
+            }
+        }
+
+        int joystickCount = 0;
+        if (SDL_JoystickID* joystickIDs = SDL_GetJoysticks(&joystickCount))
+        {
+            for (int i = 0; i < joystickCount; i++)
+            {
+                DE_LOG(LogInput, Info, "Joystick ID: {}", joystickIDs[i])
+            }
+        }
+
+        int touchCount = 0;
+        if (SDL_TouchID* touchIDs = SDL_GetTouchDevices(&touchCount))
+        {
+            for (int i = 0; i < touchCount; i++)
+            {
+                DE_LOG(LogInput, Info, "Touch ID: {}", touchIDs[i])
+            }
+        }
+
+        int sensorCount = 0;
+        if (SDL_SensorID* sensorIDs = SDL_GetSensors(&sensorCount))
+        {
+            for (int i = 0; i < sensorCount; i++)
+            {
+                DE_LOG(LogInput, Info, "Sensor ID: {}", sensorIDs[i])
+            }
+        }
+
+       int cameraCount = 0;
+        if (SDL_CameraID* cameraIDs = SDL_GetCameras(&cameraCount))
+        {
+            for (int i = 0; i < cameraCount; i++)
+            {
+                DE_LOG(LogInput, Info, "Camera ID: {}", cameraIDs[i])
+            }
+        }
     }
 
     void InputSubsystem::ProcessInputEvent(const SDL_Event& _event)
@@ -133,23 +209,6 @@ namespace Denix
         }
     }
 
-    void InputSubsystem::ProcessAudioEvent(const SDL_Event& _event)
-    {
-        switch (_event.type)
-        {
-        case SDL_EVENT_AUDIO_DEVICE_ADDED:
-            DE_LOG(LogInput, Trace, "Audio Device Added Event");
-            break;
-        case SDL_EVENT_AUDIO_DEVICE_REMOVED:
-            DE_LOG(LogInput, Trace, "Audio Device Removed Event");
-            break;
-        case SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED:
-            DE_LOG(LogInput, Trace, "Audio Device Format Changed Event");
-            break;
-        default:
-            DE_LOG(LogInput, Error, "Unknown Audio Event");
-        }
-    }
 
     void InputSubsystem::ProcessPenEvent(const SDL_Event& _event)
     {

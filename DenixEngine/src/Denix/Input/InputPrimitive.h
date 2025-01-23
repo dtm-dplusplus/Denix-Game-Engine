@@ -23,4 +23,15 @@ namespace Denix
         bool Side1 = false;
         bool Side2 = false;
     };
+
+    class HardwareDevice
+    {
+    public:
+        HardwareDevice() = default;
+        virtual ~HardwareDevice() = default;
+
+        std::string m_DeviceName;
+        int m_DeviceID;
+    };
+    
 }

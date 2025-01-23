@@ -10,9 +10,9 @@ namespace Denix
 {
     void RendererSubsystem::Initialize()
     {
-        Subsystem::Initialize();
         DE_LOG(LogRender, Warn, "Initializing RendererSubsystem")
-        m_DefaultShader = AssetSubsystem::GetShader("DefaultShader");
+        Subsystem::Initialize();
+        m_DefaultShader = AssetSubsystem::GetDefaultShader();
         DE_LOG(LogRender, Info, "RendererSubsystem Initialized")
     }
 
@@ -24,14 +24,9 @@ namespace Denix
 
     void RendererSubsystem::RenderScene()
     {
+        if (!m_Enabled) return;
+        
         DE_PROFILE(Render Scene)
-
-        if (!m_Enabled)
-        {
-            DE_PROFILE_END(Render Scene)
-            return;
-        }
-
         RenderDefaultViewport();
         DE_PROFILE_END(Render Scene)
     }

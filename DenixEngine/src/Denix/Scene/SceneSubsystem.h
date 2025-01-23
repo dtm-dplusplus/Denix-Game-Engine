@@ -26,7 +26,7 @@ namespace Denix
 	class SceneSubsystem final : public Subsystem<SceneSubsystem>
 	{
 	public:
-		explicit SceneSubsystem(const Ref<Asset>& _startupScene = nullptr);
+		SceneSubsystem() = default;
 
 		~SceneSubsystem() override = default;
 
@@ -35,9 +35,6 @@ namespace Denix
 		SceneSubsystem& operator=(const SceneSubsystem& _other) = delete;
 		SceneSubsystem& operator=(SceneSubsystem&& _other) noexcept = delete;
 		
-
-		inline static bool m_BatchUpdateActors;
-
 		static Ref<Scene> GetActiveScene() { return s_Instance->m_ActiveScene; }
 
 		static Ref<Camera> GetActiveCamera();
@@ -49,7 +46,8 @@ namespace Denix
 		static void OpenScene(const Ref<Scene>& _scene);
 
 		static SceneState GetSceneState() { return m_SceneState; }
-		
+
+		inline static bool m_BatchUpdateActors = true;
 	private:
 		/**
 		 * Start the scene. This is called by the editor when the play button is pressed.

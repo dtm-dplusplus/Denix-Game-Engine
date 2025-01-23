@@ -43,23 +43,6 @@ bool Denix::Shader::LinkProgram() const
 
 bool Denix::Shader::CompileShader(ShaderSource& _sourceObj) const
 {
-    // Check Shader Source
-    if (_sourceObj.Source.empty())
-    {
-        DE_LOG(LogShader, Error, "Failed to read shader source: {}", _sourceObj.Path)
-        return false;
-    }
-    // Get Shader Type
-    if (const GLenum type = GetShaderType(_sourceObj.Source); type != GL_FALSE)
-    {
-        _sourceObj.Type = type;
-    }
-    else
-    {
-        DE_LOG(LogShader, Error, "Failed to get shader type")
-        return false;
-    }
-
     // Compile Shader
     if (const GLuint shader = glCreateShader(_sourceObj.Type))
     {
@@ -83,7 +66,7 @@ bool Denix::Shader::CompileShader(ShaderSource& _sourceObj) const
         return true;
     }
 
-    DE_LOG(LogShader, Error, "Failed to create shader\n")
+    DE_LOG(LogShader, Error, "Failed to create shader")
     return false;
 }
 
@@ -126,19 +109,9 @@ bool Denix::Shader::CompileProgram()
 			
     for (ShaderSource& source : m_ShaderSources)
     {
-        // Account for recompliation. If we have a source being edited in memory, we don't need to read it from disk
-        if (source.Source.empty())
-        {
-            source.Source = FileSubsystem::ReadFile(source.Path);
-
-            // Check our source after reading
-            if (source.Source.empty())
-            {
-                DE_LOG(LogShader, Error, "Failed to read shader source: {}", source.Path)
-                return false;
-            }
-        }
-				
+        // Get Shader Type
+        if (!source.Type) return false;
+        
         if (!CompileShader(source)) return false;
     }
 

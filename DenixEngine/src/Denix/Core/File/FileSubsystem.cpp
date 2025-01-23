@@ -9,9 +9,8 @@ namespace Denix
 {
 	void FileSubsystem::Initialize()
 	{
-		Subsystem::Initialize();
-		
 		DE_LOG(LogFile, Warn, "Initializing File Subsystem")
+		Subsystem::Initialize();
 
 		// Get executable path
 		const char* p = SDL_GetBasePath();
@@ -33,7 +32,7 @@ namespace Denix
 		{
 			if (entry.path().extension() == ".proj")
 			{
-				m_ProjectFile = entry.path().parent_path().string() + R"(\)";
+				m_ProjectFile = entry.path().string();
 				break;
 			}
 		}
@@ -49,9 +48,9 @@ namespace Denix
 		m_EngineContentRoot = m_ContentRoot + R"(Engine\)";
 
 		DE_LOG(LogFile, Trace, "Project Root: {0}", m_ProjectRoot)
+		DE_LOG(LogFile, Trace, "Project File: {0}", m_ProjectFile)
 		DE_LOG(LogFile, Trace, "Binary Root: {0}", m_BinaryRoot)
 		DE_LOG(LogFile, Trace, "Content Root: {0}", m_ContentRoot)
-		DE_LOG(LogFile, Trace, "Engine Content Root: {0}", m_EngineContentRoot)
 		DE_LOG(LogFile, Info, "File Subsystem Initialized")
 	}
 
@@ -63,9 +62,12 @@ namespace Denix
 
 	bool FileSubsystem::CopyFileDE(const std::string& _oldPath, const std::string& _newPath)
 	{
+		std::string oldPath = FormatPath(_oldPath);
+		std::string newPath = FormatPath(_newPath);
+		
 		try
 		{
-			fs::copy(_oldPath, _newPath, fs::copy_options::overwrite_existing);
+			fs::copy(oldPath, newPath, fs::copy_options::overwrite_existing);
 			return true;
 		}
 		catch (const std::exception& e)
@@ -77,15 +79,9 @@ namespace Denix
 
 	std::string FileSubsystem::ReadFile(const std::string& _path)
 	{
-		std::string fullPath =  _path;
-
-		// Skip absolute path check for now
-		/*if (_absolute)
-		{
-			fullPath = _path;
-		}*/
+		std::string path =  FormatPath(_path);
 		
-		if (std::ifstream fileStream(fullPath); fileStream.is_open())
+		if (std::ifstream fileStream(path); fileStream.is_open())
 		{
 			std::stringstream fileString;
 
@@ -98,46 +94,48 @@ namespace Denix
 			return fileString.str();
 		}
 
-		DE_LOG(LogFile, Error, "Failed to open file: {}", fullPath)
+		DE_LOG(LogFile, Error, "Failed to open file: {}", path)
 			return "";
 	}
 
 	bool FileSubsystem::WriteFile(const std::string& _path, const std::string_view _data)
 	{
+		std::string path = FormatPath(_path);
+		
 		// Create directory if it doesn't exist
-		if(!DirectoryExists(_path))
+		if(!DirectoryExists(path))
 		{
-			DE_LOG(LogFile, Warn, "Directory does not exist: {}", _path)
-			CreateDirectoryDE(_path);
+			DE_LOG(LogFile, Warn, "Directory does not exist: {}", path)
+			CreateDirectoryDE(path);
 		}
 
 		// Open file and write data
-		if (std::ofstream stream(_path); stream.is_open())
+		if (std::ofstream stream(path); stream.is_open())
 		{
 			stream << _data;
 			stream.close();
 			return true;
 		}
 
-		DE_LOG(LogFile, Error, "Failed to open file: {}", _path)
+		DE_LOG(LogFile, Error, "Failed to open file: {}", path)
 			return false;
 	}
 
 	bool FileSubsystem::FileExists(const std::string& _path)
 	{
-		return std::filesystem::exists(_path.data());
+		return std::filesystem::exists(FormatPath(_path));
 	}
 
 	bool FileSubsystem::DirectoryExists(const std::string& _path)
 	{
-		 return  fs::exists(fs::path(_path).parent_path());
+		 return  fs::exists(fs::path(FormatPath(_path)).parent_path());
 	}
 
 	bool FileSubsystem::CreateDirectoryDE(const std::string& _path)
 	{
 	    try
 	    {
-	        fs::create_directories(fs::path(_path).parent_path());
+	        fs::create_directories(fs::path(FormatPath(_path)).parent_path());
     		return true;
 	    }
 	    catch (const std::exception& e)

@@ -32,9 +32,10 @@ namespace Denix
 
         m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(*m_PxSceneDesc);
         DE_ASSERT(m_PxScene, "Failed to create PhysX Scene");
-        
-        m_PxControllerManager = PxCreateControllerManager(*m_PxScene);
-        DE_ASSERT(m_PxControllerManager, "Failed to create PhysX Controller Manager");
+
+        // Not using PhysX Controller Manager for now
+        /*m_PxControllerManager = PxCreateControllerManager(*m_PxScene);
+        DE_ASSERT(m_PxControllerManager, "Failed to create PhysX Controller Manager");*/
         
         physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
         PhysicsSubsystem::m_PxPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);

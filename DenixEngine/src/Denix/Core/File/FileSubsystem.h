@@ -44,10 +44,7 @@ namespace Denix
     	static bool IsAbsolute(const std::string& _path);
 		
 	private:
-
-    	
 		void Initialize() override;
-
     	void Deinitialize() override;
     	
     	// Root of the project

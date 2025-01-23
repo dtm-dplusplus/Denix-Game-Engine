@@ -3,6 +3,8 @@
 #include "Denix/Core/Subsystem.h"
 
 #include <SDL3/SDL_audio.h>
+#include <SDL3/SDL_events.h>
+
 #include "al/al.h"
 #include "al/alc.h"
 #include "al/alext.h"
@@ -25,6 +27,8 @@ namespace Denix
         AudioSubsystem& operator=(AudioSubsystem&& _other) noexcept = delete;
 
     private:
+        void ProcessAudioEvent(const SDL_Event& _event);
+
         void Initialize() override;
         void Deinitialize() override;
         ALCdevice* m_Device;
