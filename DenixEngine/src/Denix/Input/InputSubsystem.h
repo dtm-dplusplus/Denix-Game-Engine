@@ -22,8 +22,8 @@ namespace Denix
 
 		static bool IsKeyDown(KeyCode _key);
 		static bool IsKeyUp(KeyCode _key);
-		static bool IsMouseButtonDown(const int _button) { return s_Instance->m_MouseData.SDL_State & SDL_BUTTON(_button); }
-		static MouseData& GetMouseData() { return s_Instance->m_MouseData; }
+		static bool IsMouseButtonDown(const int _button) { return s_Instance->m_Mouse->SDL_State & SDL_BUTTON(_button); }
+		static MouseData& GetMouseData() { return s_Instance->m_Mouse->m_MouseData; }
 
 		static void GetDevices();
 		
@@ -40,11 +40,8 @@ namespace Denix
 		//SDL_Event m_Event;
 		WRef<SDL_GLWindow> m_WindowRef;
 
-		// Mouse Properties
-		MouseData m_MouseData;
-
 		Ref<Keyboard> m_Keyboard;
-		
+		Ref<Mouse> m_Mouse;
 		friend class Engine;
 		friend class EventSubsystem;
 	};

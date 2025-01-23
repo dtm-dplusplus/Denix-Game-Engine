@@ -9,10 +9,7 @@ namespace Denix
 {
     struct MouseData
     {
-        uint32_t SDL_State;
-        uint32_t SDL_RelativeState;
-
-        // Movement
+         // Movement
         float X = 0;
         float Y = 0;
         float RelX = 0;
@@ -31,7 +28,13 @@ namespace Denix
     class Keyboard
     {
     public:
-        void ProcessKeyEvent(const SDL_Event& event);
+        Keyboard(): m_SDL_KeyboardState(SDL_GetKeyboardState(nullptr))
+        {
+        }
+        ~Keyboard()
+        {
+            m_SDL_KeyboardState = nullptr;
+        }
     
         bool IsKeyDown(KeyCode key) const;
         bool IsKeyUp(KeyCode key) const;
@@ -39,12 +42,42 @@ namespace Denix
 
         inline static bool m_KeyboardLogging;
         
-    //private:
-        std::unordered_set<KeyCode> KeyDown;
-        std::unordered_set<KeyCode> KeyHold;
-        std::unordered_set<KeyCode> KeyUp;
-        const bool* keyStates = SDL_GetKeyboardState(nullptr);
-        bool lastKeyStates[SDL_SCANCODE_COUNT] = {false};
+    private:
+        void ProcessKeyEvent(const SDL_Event& event);
+
+        std::unordered_set<KeyCode> m_KeysDown;
+        std::unordered_set<KeyCode> m_KeysHold;
+        std::unordered_set<KeyCode> m_KeysUp;
+        const bool* m_SDL_KeyboardState;
+
+        friend class InputSubsystem;
+        friend class EventSubsystem;
+    };
+
+    class Mouse
+    {
+    public:
+        Mouse() =default;
+        ~Mouse() = default;
+
+        MouseData m_MouseData;
+
+        inline static bool m_MouseInputLogging;
+        inline static bool m_MouseMotionLogging;
+    private:
+        void ProcessMouseEvent(const SDL_Event& _event);
+
+        //std::unordered_set<KeyCode> m_KeysDown;
+       //std::unordered_set<KeyCode> m_KeysHold;
+       //std::unordered_set<KeyCode> m_KeysUp;
+        //const bool* m_SDL_KeyStates;
+        uint32_t SDL_State;
+        uint32_t SDL_RelativeState;
+
+       
+        friend class InputSubsystem;
+        friend class EventSubsystem;
+        
     };
     
     class Device
@@ -56,5 +89,6 @@ namespace Denix
         std::string m_DeviceName;
         int m_DeviceID;
     };
-    
+
+   
 }

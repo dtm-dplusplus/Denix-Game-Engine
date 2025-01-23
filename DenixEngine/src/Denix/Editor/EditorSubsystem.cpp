@@ -333,7 +333,8 @@ namespace Denix
 			if (ImGui::BeginMenu("Tools"))
 			{
 				ImGui::Checkbox("Keyboard Logging", &Keyboard::m_KeyboardLogging);
-				ImGui::Checkbox("Mouse Logging", &InputSubsystem::GetInstance()->m_MouseLogging);
+				ImGui::Checkbox("Mouse Input Logging", &Mouse::m_MouseInputLogging);
+				ImGui::Checkbox("Mouse Motion Logging", &Mouse::m_MouseMotionLogging);
 				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::GetInstance()->m_BatchUpdateActors);
 				ImGui::Checkbox("Renderer Enabled", &RendererSubsystem::GetInstance()->IsEnabled());
 				if(ImGui::BeginMenu("Reflection"))

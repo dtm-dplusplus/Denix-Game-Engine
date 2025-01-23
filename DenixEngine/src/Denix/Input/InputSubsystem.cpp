@@ -11,15 +11,20 @@ namespace Denix
     {
         DE_LOG(LogInput, Warn, "Input Subsystem Initializing");
         Subsystem::Initialize();
+        
         m_WindowRef = WindowSubsystem::GetWindow();
         DE_ASSERT(m_WindowRef.lock(), "Input: Window reference is invalid");
 
-        Keyboard::m_KeyboardLogging = false;
-        m_MouseLogging = false;
+        Keyboard::m_KeyboardLogging = true;
+        Mouse::m_MouseInputLogging = true;
+        Mouse::m_MouseMotionLogging = false;
         GetDevices();
 
         m_Keyboard = MakeRef<Keyboard>();
         DE_ASSERT(m_Keyboard, "Input: Keyboard reference is invalid");
+
+        m_Mouse = MakeRef<Mouse>();
+        DE_ASSERT(m_Mouse, "Input: Mouse reference is invalid");
         
         DE_LOG(LogInput, Info, "Input Subsystem Initialized");
     }
@@ -27,6 +32,8 @@ namespace Denix
     void InputSubsystem::Deinitialize()
     {
         DE_LOG(LogInput, Trace, "Input Subsystem Deinitializing");
+        m_Keyboard.reset();
+        m_Mouse.reset();
         Subsystem::Deinitialize();
         DE_LOG(LogInput, Trace, "Input Subsystem Deinitialized");
     }
@@ -126,88 +133,77 @@ namespace Denix
 
     void InputSubsystem::ProcessInputEvent(const SDL_Event& _event)
     {
-        switch (_event.type)
-        {
         /* Keyboard events */
-        case SDL_EVENT_KEY_DOWN:
-            {
-                m_Keyboard->ProcessKeyEvent(_event);
-            }
-            break; /**< Key pressed */
-        case SDL_EVENT_KEY_UP:
-            {
-                m_Keyboard->ProcessKeyEvent(_event);
-            }
-            break; /**< Key released */
-        case SDL_EVENT_TEXT_EDITING: break; /**< Keyboard text editing (composition) */
-        case SDL_EVENT_TEXT_INPUT: break; /**< Keyboard text input */
-        case SDL_EVENT_KEYMAP_CHANGED: break;
-        /**< Keymap changed due to a system event such as an input language or keyboard layout change. */
-        case SDL_EVENT_KEYBOARD_ADDED: break; /**< A new keyboard has been inserted into the system */
-        case SDL_EVENT_KEYBOARD_REMOVED: break; /**< A keyboard has been removed */
-        case SDL_EVENT_TEXT_EDITING_CANDIDATES: break; /**< Keyboard text editing candidates */
+        if (_event.type >= SDL_EVENT_KEY_DOWN && _event.type <= SDL_EVENT_TEXT_EDITING_CANDIDATES)
+        {
+            m_Keyboard->ProcessKeyEvent(_event);
+        }
 
         /* Mouse events */
-        case SDL_EVENT_MOUSE_MOTION: break; /**< Mouse moved */
-        case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            {
-                if (_event.button.button == SDL_BUTTON_LEFT) m_MouseData.Left = true;
-                if (_event.button.button == SDL_BUTTON_RIGHT) m_MouseData.Right = true;
-                if (_event.button.button == SDL_BUTTON_MIDDLE) m_MouseData.Middle = true;
-                if (_event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = true;
-                if (_event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = true;
-            }break; /**< Mouse button pressed */
-        case SDL_EVENT_MOUSE_BUTTON_UP:
-            {
-                if (_event.button.button == SDL_BUTTON_LEFT) m_MouseData.Left = false;
-                if (_event.button.button == SDL_BUTTON_RIGHT) m_MouseData.Right = false;
-                if (_event.button.button == SDL_BUTTON_MIDDLE) m_MouseData.Middle = false;
-                if (_event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = false;
-                if (_event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = false;
-            }break; /**< Mouse button released */
-        case SDL_EVENT_MOUSE_WHEEL:
-            {
-                m_MouseData.WheelY = _event.wheel.y;
-            }break; /**< Mouse wheel motion */
-        case SDL_EVENT_MOUSE_ADDED: break; /**< A new mouse has been inserted into the system */
-        case SDL_EVENT_MOUSE_REMOVED: break; /**< A mouse has been removed */
+        else if (_event.type >= SDL_EVENT_MOUSE_MOTION && _event.type <= SDL_EVENT_MOUSE_REMOVED)
+        {
+            m_Mouse->ProcessMouseEvent(_event);
+        }
 
-        /* Joystick events */
-        case SDL_EVENT_JOYSTICK_AXIS_MOTION: break; /**< Joystick axis motion */
-        case SDL_EVENT_JOYSTICK_BALL_MOTION: break; /**< Joystick trackball motion */
-        case SDL_EVENT_JOYSTICK_HAT_MOTION: break; /**< Joystick hat position change */
-        case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
-            {
-               
-            }break; /**< Joystick button pressed */
-        case SDL_EVENT_JOYSTICK_BUTTON_UP:
-            {
-               
-            }break; /**< Joystick button released */
-        case SDL_EVENT_JOYSTICK_ADDED: break; /**< A new joystick has been inserted into the system */
-        case SDL_EVENT_JOYSTICK_REMOVED: break; /**< An opened joystick has been removed */
-        case SDL_EVENT_JOYSTICK_BATTERY_UPDATED: break; /**< Joystick battery level change */
-        case SDL_EVENT_JOYSTICK_UPDATE_COMPLETE: break; /**< Joystick update is complete */
+        /* Text Events */
+        else if (_event.type == SDL_EVENT_TEXT_EDITING || _event.type == SDL_EVENT_TEXT_INPUT)
+        {
+            DE_LOG(LogInput, Trace, "Text Event")
+        }
 
         /* Gamepad events */
-        case SDL_EVENT_GAMEPAD_AXIS_MOTION: break; /**< Gamepad axis motion */
-        case SDL_EVENT_GAMEPAD_BUTTON_DOWN: break; /**< Gamepad button pressed */
-        case SDL_EVENT_GAMEPAD_BUTTON_UP: break; /**< Gamepad button released */
-        case SDL_EVENT_GAMEPAD_ADDED: break; /**< A new gamepad has been inserted into the system */
-        case SDL_EVENT_GAMEPAD_REMOVED: break; /**< A gamepad has been removed */
-        case SDL_EVENT_GAMEPAD_REMAPPED: break; /**< The gamepad mapping was updated */
-        case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN: break; /**< Gamepad touchpad was touched */
-        case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION: break; /**< Gamepad touchpad finger was moved */
-        case SDL_EVENT_GAMEPAD_TOUCHPAD_UP: break; /**< Gamepad touchpad finger was lifted */
-        case SDL_EVENT_GAMEPAD_SENSOR_UPDATE: break; /**< Gamepad sensor was updated */
-        case SDL_EVENT_GAMEPAD_UPDATE_COMPLETE: break; /**< Gamepad update is complete */
-        case SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED: break; /**< Gamepad Steam handle has changed */
+        else if (_event.type >= SDL_EVENT_GAMEPAD_AXIS_MOTION && _event.type <= SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED)
+        {
+            DE_LOG(LogInput, Trace, "Gamepad Event")
+
+            /* Gamepad events */
+            //case SDL_EVENT_GAMEPAD_AXIS_MOTION: break; /**< Gamepad axis motion */
+            //case SDL_EVENT_GAMEPAD_BUTTON_DOWN: break; /**< Gamepad button pressed */
+            //case SDL_EVENT_GAMEPAD_BUTTON_UP: break; /**< Gamepad button released */
+            //case SDL_EVENT_GAMEPAD_ADDED: break; /**< A new gamepad has been inserted into the system */
+            //case SDL_EVENT_GAMEPAD_REMOVED: break; /**< A gamepad has been removed */
+            //case SDL_EVENT_GAMEPAD_REMAPPED: break; /**< The gamepad mapping was updated */
+            //case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN: break; /**< Gamepad touchpad was touched */
+            //case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION: break; /**< Gamepad touchpad finger was moved */
+            //case SDL_EVENT_GAMEPAD_TOUCHPAD_UP: break; /**< Gamepad touchpad finger was lifted */
+            //case SDL_EVENT_GAMEPAD_SENSOR_UPDATE: break; /**< Gamepad sensor was updated */
+            //case SDL_EVENT_GAMEPAD_UPDATE_COMPLETE: break; /**< Gamepad update is complete */
+            //case SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED: break; /**< Gamepad Steam handle has changed */
+        }
+        /* Joystick events */
+        else if (_event.type >= SDL_EVENT_JOYSTICK_AXIS_MOTION && _event.type <= SDL_EVENT_JOYSTICK_UPDATE_COMPLETE)
+        {
+            //DE_LOG(LogInput, Trace, "Joystick Event")
+            /* Joystick events */
+            /*case SDL_EVENT_JOYSTICK_AXIS_MOTION: break; /**< Joystick axis motion #1#
+            case SDL_EVENT_JOYSTICK_BALL_MOTION: break; /**< Joystick trackball motion #1#
+            case SDL_EVENT_JOYSTICK_HAT_MOTION: break; /**< Joystick hat position change #1#
+            case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+                {
+                   
+                }break; /**< Joystick button pressed #1#
+            case SDL_EVENT_JOYSTICK_BUTTON_UP:
+                {
+                   
+                }break; /**< Joystick button released #1#
+            case SDL_EVENT_JOYSTICK_ADDED: break; /**< A new joystick has been inserted into the system #1#
+            case SDL_EVENT_JOYSTICK_REMOVED: break; /**< An opened joystick has been removed #1#
+            case SDL_EVENT_JOYSTICK_BATTERY_UPDATED: break; /**< Joystick battery level change #1#
+            case SDL_EVENT_JOYSTICK_UPDATE_COMPLETE: break; /**< Joystick update is complete #1#*/
+        }
 
         /* Touch events */
-        case SDL_EVENT_FINGER_DOWN: break;
-        case SDL_EVENT_FINGER_UP: break;
-        case SDL_EVENT_FINGER_MOTION: break;
-        default: DE_LOG(LogInput, Error, "Unknown Input Event")
+        else if (_event.type >= SDL_EVENT_FINGER_DOWN && _event.type <= SDL_EVENT_FINGER_MOTION)
+        {
+            DE_LOG(LogInput, Trace, "Touch Event")
+            /* Touch events */
+            //case SDL_EVENT_FINGER_DOWN: break;
+            //case SDL_EVENT_FINGER_UP: break;
+            //case SDL_EVENT_FINGER_MOTION: break;
+        }
+        else
+        {
+            DE_LOG(LogInput, Error, "Unknown Input Event")
         }
     }
 
