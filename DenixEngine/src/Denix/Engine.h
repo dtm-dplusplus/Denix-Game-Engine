@@ -12,6 +12,7 @@ namespace Denix
     class JobSubsystem;
     class Asset;
     class ReflectionSubsystem;
+    class EventSubsystem;
     class InputSubsystem;
     class EditorSubsystem;
     class RendererSubsystem;
@@ -64,25 +65,7 @@ namespace Denix
         void Run();
         
         template<typename  T, typename ... Args>
-        Ref<T> InitalizeSubsystem(Args&& ... _args)
-        {
-            try
-            {
-                // Check if T is derived from Actor
-                Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...);
-                static_assert(IsBase<SubsystemBase, T>(), "T must be derived from Subsystem");
-                 subsystem->Initialize();
-                return subsystem;
-            }
-            catch (const std::exception& e)
-            {
-                // Assert and terminate
-                DE_LOG(LogEngine, Critical, "Failed to Initialize Subsystem: {0}", e.what())
-                assert(false, e.what());
-            }
-            
-            return nullptr;
-        }
+        Ref<T> InitalizeSubsystem(Args&& ... _args);
 
 
         /**
@@ -99,6 +82,11 @@ namespace Denix
         Ref<ReflectionSubsystem> m_ReflectionSubsystem;
 
         Ref<FileSubsystem> m_FileSubsystem;
+
+        Ref<InputSubsystem> m_InputSubsystem;
+
+        Ref<EventSubsystem> m_EventSubsystem;
+        
         Ref<ProfileSubsystem> m_ProfileSubsystem;
 
         Ref<WindowSubsystem> m_WindowSubsystem;
@@ -117,11 +105,33 @@ namespace Denix
 
         Ref<EditorSubsystem> m_EditorSubsystem;
 
-        Ref<InputSubsystem> m_InputSubsystem;
 
         friend int ::main(int argc, char** argv);
     };
 
     // Defined in client
     Ref<Engine> MakeEngine();
+    
+    template <typename T, typename ... Args>
+    Ref<T> Engine::InitalizeSubsystem(Args&&... _args)
+    {
+        try
+        {
+            // Check if T is derived from Actor
+            Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...);
+            static_assert(IsBase<SubsystemBase, T>(), "T must be derived from Subsystem");
+            subsystem->Initialize();
+            return subsystem;
+        }
+        catch (const std::exception& e)
+        {
+            // Assert and terminate
+            DE_LOG(LogEngine, Critical, "Failed to Initialize Subsystem: {0}", e.what())
+            assert(false, e.what());
+        }
+            
+        return nullptr;
+    }
+
+    
 }

@@ -132,6 +132,6 @@ namespace Denix
 		inline static int m_GLDoubleBuffer = 1;
 
 		friend class WindowSubsystem;
-		friend class InputSubsystem;
+		friend class EventSubsystem;
 	};
 }
