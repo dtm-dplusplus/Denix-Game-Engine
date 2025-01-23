@@ -1,6 +1,7 @@
 ﻿#include "UIScene.h"
 
 #include "imgui.h"
+#include "Denix/Input/InputSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 
 unsigned char image[HEIGHT][WIDTH];
@@ -72,6 +73,21 @@ void Denix::UIScene::Update(float _deltaTime)
         if (textureID[i]) ImGui::Image((void*)(intptr_t)textureID[i], ImVec2(WIDTH, HEIGHT));
     }
     ImGui::End();
+
+    if (InputSubsystem::IsKeyDown(KeyCode::DEK_W))
+    {
+        DE_LOG(LogDevProject, Trace, "W key is pressed");
+    }
+
+    if (InputSubsystem::IsKeyDown(KeyCode::DEK_A))
+    {
+        DE_LOG(LogDevProject, Trace, "A key is pressed");
+    }
+    
+    if (InputSubsystem::IsKeyUp(KeyCode::DEK_S))
+    {
+        DE_LOG(LogDevProject, Trace, "Backward key is pressed");
+    }
 }
 
 unsigned int Denix::UIScene::CreateTextBox(std::string _text, glm::vec2 _position, glm::vec2 _size, glm::vec3 _color)

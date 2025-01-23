@@ -63,19 +63,19 @@ void Denix::CameraComponent::ProcessKeyboardInput(float _deltaTime)
 	const glm::vec3& right = transform->GetRight();
 	
 	// XZ 
-	if (InputSubsystem::IsKeyDown(SDL_SCANCODE_W))
+	if (InputSubsystem::IsKeyDown(KeyCode::DEK_W))
 	{
 		pos += m_MoveSpeed * fwd * _deltaTime;
 	}
-	if (InputSubsystem::IsKeyDown(SDL_SCANCODE_S))
+	if (InputSubsystem::IsKeyDown(KeyCode::DEK_S))
 	{
 		pos -= m_MoveSpeed * fwd * _deltaTime;
 	}
-	if (InputSubsystem::IsKeyDown(SDL_SCANCODE_A))
+	if (InputSubsystem::IsKeyDown(KeyCode::DEK_A))
 	{
 		pos -= m_MoveSpeed * right * _deltaTime;
 	}
-	if (InputSubsystem::IsKeyDown(SDL_SCANCODE_D))
+	if (InputSubsystem::IsKeyDown(KeyCode::DEK_D))
 	{
 		pos += m_MoveSpeed * right * _deltaTime;
 	}

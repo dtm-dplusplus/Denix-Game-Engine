@@ -49,13 +49,13 @@ void Character::Update(float _deltaTime)
 
     glm::vec3 movement(0.0f);
 
-    if (InputSubsystem::IsKeyDown(SDL_SCANCODE_SPACE) && IsOnGround())
+    if (InputSubsystem::IsKeyDown(KeyCode::DEK_SPACE) && IsOnGround())
     {
         //DE_LOG(LogDevProject, Trace, "Space key is pressed");
         //m_PhysicsComponent->AddImpulse({0.0f, m_JumpForce, 0.0f});
     }
 
-    if (InputSubsystem::IsKeyDown(SDL_SCANCODE_W))
+    /*if (InputSubsystem::IsKeyDown(SDL_SCANCODE_W))
     {
         //DE_LOG(LogDevProject, Trace, "Forward key is pressed");
         movement += fwd * m_MoveSpeed * _deltaTime;
@@ -72,7 +72,7 @@ void Character::Update(float _deltaTime)
     if (InputSubsystem::IsKeyDown(SDL_SCANCODE_D))
     {
       //  movement += right * m_MoveSpeed * _deltaTime;
-    }
+    }*/
 }
 
 bool Character::IsOnGround()

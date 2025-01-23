@@ -8,24 +8,29 @@
 
 namespace Denix
 {
+    bool InputSubsystem::IsKeyDown(const KeyCode _key)
+    {
+       return s_Instance->m_KeysDown.contains(_key);
+    }
+
+    bool InputSubsystem::IsKeyUp(const KeyCode _key)
+    {
+        return s_Instance->m_KeysUp.contains(_key);
+    }
+
     void InputSubsystem::Initialize()
     {
         Subsystem::Initialize();
         DE_LOG(LogInput, Warn, "Input Subsystem Initializing");
-
         m_WindowRef = WindowSubsystem::GetWindow();
-        m_SDL_LastKeyboardState = new Uint8[322];
-        m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
-
+        m_KeyboardLogging = false;
+        m_MouseLogging = false;
         DE_LOG(LogInput, Info, "Input Subsystem Initialized");
     }
 
     void InputSubsystem::Deinitialize()
     {
         DE_LOG(LogInput, Trace, "Input Subsystem Deinitializing");
-        m_SDL_KeyboardState = nullptr;
-        delete[] m_SDL_LastKeyboardState;
-        
         Subsystem::Deinitialize();
         DE_LOG(LogInput, Trace, "Input Subsystem Deinitialized");
     }
@@ -41,16 +46,29 @@ namespace Denix
 
         m_MouseData.SDL_RelativeState = SDL_GetRelativeMouseState(&m_MouseData.RelX, &m_MouseData.RelY);
         m_MouseData.SDL_State = SDL_GetMouseState(&m_MouseData.X, &m_MouseData.Y);
-        m_SDL_KeyboardState = SDL_GetKeyboardState(NULL);
 
+        m_KeysDown.clear();
+        m_KeysUp.clear();
+        
         const auto window = m_WindowRef.lock();
         
         while (SDL_PollEvent(&event))
         {
+            // ImGui Event Processing - Updates Editor Widgets
             ImGui_ImplSDL3_ProcessEvent(&event);
 
             switch (event.type)
             {
+            case SDL_EVENT_KEY_DOWN:
+                {
+                    m_KeysDown.insert(static_cast<KeyCode>(event.key.key));
+                }
+                case SDL_EVENT_KEY_UP:
+                    {
+                        m_KeysUp.insert(static_cast<KeyCode>(event.key.key));
+                        if (m_KeyboardLogging) DE_LOG(LogInput, Trace, "Key Up Event. Key: {}", SDL_GetKeyName(event.key.key))
+                    } break;
+                    
             case SDL_EVENT_WINDOW_SHOWN: break; /**< Window has been shown */
             case SDL_EVENT_WINDOW_HIDDEN: break; /**< Window has been hidden */
             case SDL_EVENT_WINDOW_EXPOSED:
@@ -135,13 +153,6 @@ namespace Denix
                     if (event.button.button == SDL_BUTTON_MIDDLE) m_MouseData.Middle = false;
                     if (event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = false;
                     if (event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = false;
-                }
-                break;
-
-            case SDL_EVENT_KEY_DOWN:
-            case SDL_EVENT_KEY_UP:
-                {
-                    // DE_LOG(LogInput, Trace, "Key: {}", event.key.keysym.scancode);
                 }
                 break;
 
