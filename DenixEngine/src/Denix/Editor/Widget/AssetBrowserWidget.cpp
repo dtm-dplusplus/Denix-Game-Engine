@@ -1,8 +1,11 @@
 ﻿
 #include "AssetBrowserWidget.h"
+
+#include "imgui.h"
 #include "Denix/UI/UISubsystem.h"
 
 #include "Denix/Asset/AssetSubsystem.h"
+#include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Actor.h"
 #include "Denix/Editor/Widget/ShaderEditor.h"
@@ -15,7 +18,7 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime)
 {
     EditorWidget::Update(_deltaTime);
 
-    ImGui::SetNextWindowDockID(UISubsystem::GetDockDownID(), ImGuiCond_Appearing);
+    ImGui::SetNextWindowDockID(EditorSubsystem::GetDockDownID(), ImGuiCond_Appearing);
     bool open = !IsRubbish();
     ImGui::Begin("Asset Browser", &open);
   

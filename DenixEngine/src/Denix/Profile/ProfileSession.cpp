@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <numeric>
 
-#include "Denix/Thread/JobProfile.h"
+#include "Denix/Core/Thread/JobProfile.h"
 
 using namespace Denix;
 

@@ -1,14 +1,15 @@
 ﻿
 #include "EngineProfilerWidget.h"
 
+#include "implot.h"
 #include "JobTableWidget.h"
 #include "PerformanceSettingsWidget.h"
-#include "Denix/Core/TimerSubsystem.h"
+#include "Denix/Core/Time/TimerSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
-#include "Denix/Thread/JobSubsystem.h"
+#include "Denix/Core/Thread/JobSubsystem.h"
 
 
 Denix::EngineProfilerWidget::EngineProfilerWidget(): EditorWidget({"Engine Profiler"})

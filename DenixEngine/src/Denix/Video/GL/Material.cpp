@@ -1,8 +1,8 @@
 #include "Material.h"
 #include "Denix/Asset/AssetSubsystem.h"
-#include "Denix/Core/YAMLHelper.h"
+#include "Denix/Core/Reflection/YAMLHelper.h"
 #include "Denix/Asset/Asset.h"
-#include "Denix/Core/FileSubsystem.h"
+#include "Denix/Core/File/FileSubsystem.h"
 
 namespace Denix
 {

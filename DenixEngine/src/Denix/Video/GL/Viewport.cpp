@@ -1,7 +1,7 @@
 #include "Viewport.h"
 
 #include "Denix/Asset/AssetSubsystem.h"
-#include "Denix/Video/Window/WindowSubsystem.h"
+#include "Denix/Video/WindowSubsystem.h"
 
 Denix::Viewport::Viewport():
     m_Width(WindowSubsystem::GetWindowWidth()), m_Height(WindowSubsystem::GetWindowHeight()),

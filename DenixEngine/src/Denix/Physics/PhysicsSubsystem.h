@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Denix/System/Subsystem.h"
-#include "Denix/Physics/PhysicsComponent.h"
+#include "Denix/Core/Subsystem.h"
+#include "Denix/Scene/Component/PhysicsComponent.h"
 
 #include "PxPhysicsAPI.h"
 

@@ -3,12 +3,8 @@
 
 namespace Denix
 {
-    class AudioSource;
-}
-
-namespace Denix
-{
     class AudioClip;
+    class AudioSource;
 
     class AudioScene: public Scene
     {

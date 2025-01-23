@@ -1,7 +1,7 @@
 #include "GACPActor.h"
 
 #include "Denix/Asset/AssetSubsystem.h"
-#include "Denix/Thread/JobSubsystem.h"
+#include "Denix/Core/Thread/JobSubsystem.h"
 #include "GACPSpawner.h"
 #include <PxRigidDynamic.h>
 

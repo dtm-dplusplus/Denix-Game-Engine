@@ -3,7 +3,7 @@
 #include <yaml-cpp/node/node.h>
 
 #include "Denix/Core.h"
-#include "Denix/System/Subsystem.h"
+#include "Denix/Core/Subsystem.h"
 
 namespace Denix
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "Denix/Scene/Object/Shapes/Shapes.h"
+#include "Denix/Scene/Actor/Shapes.h"
 
 namespace Denix
 {

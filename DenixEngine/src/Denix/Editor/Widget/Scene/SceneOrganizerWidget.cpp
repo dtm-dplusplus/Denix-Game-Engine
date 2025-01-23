@@ -2,6 +2,8 @@
 #include "SceneOrganizerWidget.h"
 
 #include "ActorDetailsWidget.h"
+#include "imgui.h"
+#include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Scene/Scene.h"
 #include "Denix/Scene/Actor.h"
@@ -32,7 +34,7 @@ namespace Denix
         }
         
         // Scene Objects
-        ImGui::SetNextWindowDockID(UISubsystem::GetDockLeftID(), ImGuiCond_Appearing);
+        ImGui::SetNextWindowDockID(EditorSubsystem::GetDockLeftID(), ImGuiCond_Appearing);
         ImGui::Begin(GetName().c_str());
         ImGui::SeparatorText(m_SceneRef.lock()->GetName().c_str());
 

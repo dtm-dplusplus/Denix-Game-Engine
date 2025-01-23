@@ -1,5 +1,5 @@
 ﻿#include "GACPSpawner.h"
-#include "Denix/Core/Timer.h"
+#include "Denix/Core/Time/Timer.h"
 #include "Denix/Scene/Scene.h"
 #include "Scene/GACP/GACPActor.h"
 

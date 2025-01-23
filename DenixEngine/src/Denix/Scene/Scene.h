@@ -40,7 +40,7 @@ namespace Denix
 		template <class T = Actor, typename... Args>
 		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 		
-		void SpawnActor(const Ref<Actor>& _obj);
+		void SpawnActor(const Ref<Actor>& _actor);
 
 		float GetGravity() const;
 		float& GetGravity();
@@ -85,10 +85,10 @@ namespace Denix
 		/** Gravity of the scene */
 		float m_Gravity = 9.81f;
 
+		Ref<Actor> m_GameCamera;
+		
 		Ref<Camera> m_ViewportCamera;
 
-		Ref<Camera> m_GameCamera;
-		
 		Ref<Camera> m_ActiveCamera;
 
 		
@@ -119,16 +119,16 @@ namespace Denix
 	if (Ref<Actor> actor = MakeRef<T>(std::forward<Args>(_args)...))
 	{
 		// Perform type checks to cache engine actor types
-		if (typeid(T) == typeid(Camera))
-		{
-			if (m_GameCamera && !CastRef<Camera>(actor)->m_IsGameCamera)
-			{
-				DE_LOG(LogScene, Error, "Scene already has a game camera")
-				return nullptr;
-			}
-
-			m_GameCamera = CastRef<Camera>(actor);
-		}
+		if (Ref<CameraComponent> camComp = actor->GetComponent<CameraComponent>())
+        {
+            if (m_GameCamera)
+            {
+                DE_LOG(LogScene, Error, "Scene already has a game camera")
+                return nullptr;
+            }
+	
+			m_GameCamera = actor;
+        }
 		
 		// Validate Name. We cannont have two objects with the same name
 		if (m_ActorNames.contains(actor->GetName()))
@@ -140,9 +140,7 @@ namespace Denix
 		m_ActorNames.insert(actor->m_Name);
 
 		// Set Transform Component
-		actor->m_TransformComponent->m_Position = _position;
-		actor->m_TransformComponent->m_Rotation = _rotation;
-		actor->m_TransformComponent->m_Scale = _scale;
+		actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);
 		
 		// Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
 		actor->BeginScene();
@@ -155,7 +153,7 @@ namespace Denix
 		return CastRef<T>(m_Actors.back());
 	}
 			
-	DE_LOG(LogScene, Error, "Failed to create object of type: {}", typeid(T).name());
+	DE_LOG(LogScene, Error, "Failed to create actor of type: {}", typeid(T).name());
 
 	return nullptr;
 }
@@ -163,8 +161,8 @@ namespace Denix
 	template <class T>
 	Ref<Actor> Scene::GetActorByClass() const
 	{
-		for (const auto& obj : m_Actors)
-			if (typeid(T) == typeid(*obj)) return obj;
+		for (const auto& actor : m_Actors)
+			if (typeid(T) == typeid(*actor)) return actor;
 
 		return nullptr;
 	}
@@ -174,8 +172,8 @@ namespace Denix
 	{
 		std::vector<Ref<Actor>> actors;
 
-		for (const auto& obj : m_Actors)
-			if (typeid(T) == typeid(*obj)) actors.push_back(obj);
+		for (const auto& actor : m_Actors)
+			if (typeid(T) == typeid(*actor)) actors.push_back(actor);
 
 		return actors;
 	}

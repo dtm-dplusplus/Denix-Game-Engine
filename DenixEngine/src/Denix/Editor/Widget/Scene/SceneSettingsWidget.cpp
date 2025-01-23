@@ -1,10 +1,12 @@
 ﻿
 #include "SceneSettingsWidget.h"
 
+#include "imgui.h"
+#include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Video/Renderer/RendererSubSystem.h"
+#include "Denix/Video/RendererSubsystem.h"
 
 Denix::SceneSettingsWidget::SceneSettingsWidget(const WRef<Scene>& _scene): SceneEditorWidget({"Scene Settings"}, _scene)
 {
@@ -14,7 +16,7 @@ void Denix::SceneSettingsWidget::Update(float _deltaTime)
 {
     SceneEditorWidget::Update(_deltaTime);
 
-    ImGui::SetNextWindowDockID(UISubsystem::GetInstance()->GetDockLeftID(), ImGuiCond_Appearing);
+    ImGui::SetNextWindowDockID(EditorSubsystem::GetDockLeftID(), ImGuiCond_Appearing);
     ImGui::Begin(GetName().c_str());
 
     ImGui::SeparatorText("Scene");

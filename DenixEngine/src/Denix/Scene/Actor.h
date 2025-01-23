@@ -2,13 +2,13 @@
 
 #include <ranges>
 
-#include "Denix/Scene/BaseObject.h"
+#include "Denix/Core/BaseObject.h"
 #include "Denix/Scene/Component.h"
 
-#include "Denix/Video/Renderer/RenderComponent.h"
+#include "Denix/Scene/Component/RenderComponent.h"
 #include "Denix/Scene/Component/TransformComponent.h"
-#include "Denix/Physics/PhysicsComponent.h"
-#include "Denix/Video/GL/MeshComponent.h"
+#include "Denix/Scene/Component/PhysicsComponent.h"
+#include "Denix/Scene/Component/MeshComponent.h"
 
 namespace Denix
 {

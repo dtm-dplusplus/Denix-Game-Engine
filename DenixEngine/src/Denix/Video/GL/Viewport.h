@@ -9,8 +9,6 @@ namespace Denix
     class Viewport
     {
     public:
-
-        
         /**
          *  @brief Constructor for the Viewport class. Will create a viewport with the size of the window
          */
@@ -28,8 +26,6 @@ namespace Denix
         void DrawViewport() const;
         int GetWidth() const { return m_Width; }
         int GetHeight() const { return m_Height; }
-
-        Ref<FrameBuffer> GetFrameBuffer() const { return m_FrameBuffer; }
 
         int m_Width, m_Height;
         Ref<FrameBuffer> m_FrameBuffer;

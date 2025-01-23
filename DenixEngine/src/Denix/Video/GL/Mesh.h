@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/Core/Math.h"
+#include "Denix/Core/Math/Math.h"
 #include "Denix/Video/GL/VertexArray.h"
 #include "Denix/Video/GL/VertexBuffer.h"
 

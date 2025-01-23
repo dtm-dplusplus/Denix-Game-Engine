@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Profile.h"
-#include "Denix/Thread/JobProfile.h"
+#include "Denix/Core/Thread/JobProfile.h"
 
 #include <unordered_map>
 #include <vector>

@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Denix/Core.h"
-#include "Denix/System/Subsystem.h"
+#include "Denix/Core/Subsystem.h"
 #include "ProfileSession.h"
 
 // Macros for starting and ending inline profiles

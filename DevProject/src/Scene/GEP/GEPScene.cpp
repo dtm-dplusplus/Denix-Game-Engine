@@ -1,11 +1,9 @@
 ﻿#include "GEPScene.h"
 
-#include <PxScene.h>
-
 #include "Character.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
-#include "Denix/Scene/Object/Shapes/Shapes.h"
-
+#include "Denix/Scene/Actor/Shapes.h"
+#include "Denix/Input/InputSubsystem.h"
 
 GEPScene::GEPScene()
 {
@@ -29,23 +27,23 @@ void GEPScene::Update(float _deltaTime)
     glm::vec3 right = m_Character->GetTransformComponent()->GetRight();
     float m_MoveSpeed = m_Character->m_MoveSpeed;
     
-    if (InputSubsystem::IsKeyDown(SDL_SCANCODE_W))
-    {
-        //DE_LOG(LogDevProject, Trace, "Forward key is pressed");
-        movement += fwd * m_MoveSpeed;
-    }
-    if (InputSubsystem::IsKeyDown(SDL_SCANCODE_S))
-    {
-        movement -= fwd * m_MoveSpeed;
-    }
-    if (InputSubsystem::IsKeyDown(SDL_SCANCODE_A))
-    {
-        movement -= right * m_MoveSpeed;
-    }
-    if (InputSubsystem::IsKeyDown(SDL_SCANCODE_D))
-    {
-        movement += right * m_MoveSpeed;
-    }
+   if (InputSubsystem::IsKeyDown(KeyCode::DEK_W))
+{
+    //DE_LOG(LogDevProject, Trace, "Forward key is pressed");
+    movement += fwd * m_MoveSpeed;
+}
+if (InputSubsystem::IsKeyDown(KeyCode::DEK_S))
+{
+    movement -= fwd * m_MoveSpeed;
+}
+if (InputSubsystem::IsKeyDown(KeyCode::DEK_A))
+{
+    movement -= right * m_MoveSpeed;
+}
+if (InputSubsystem::IsKeyDown(KeyCode::DEK_D))
+{
+    movement += right * m_MoveSpeed;
+}
 
     movement *= _deltaTime;
     
@@ -63,8 +61,9 @@ void GEPScene::DebugUI(float _deltaTime)
 
     ImGui::Begin("GEP Scene");
     ImGui::SeparatorText("Camera");
-    ImGui::Checkbox("External Camera Control", &m_ActiveCamera->m_ExternalControl);
-    ImGui::Checkbox("Rotation", &m_ActiveCamera->m_EnableRotation);
+    auto camComp = m_ActiveCamera->GetCameraComponent();
+    ImGui::Checkbox("External Camera Control", &camComp->m_ExternalControl);
+    ImGui::Checkbox("Rotation", &camComp->m_EnableRotation);
 
     static bool MatchCharacter = false;
     ImGui::Checkbox("Match Character", &MatchCharacter);
@@ -86,7 +85,7 @@ void GEPScene::DebugUI(float _deltaTime)
     ImGui::DragFloat3("Position", &pos[0], 0.1f);
     ImGui::DragFloat3("Direction", &direction[0], 0.1f);
     ImGui::DragFloat("Max Distance", &maxDistance, 0.1f);
-    if (InputSubsystem::IsKeyDown(SDL_SCANCODE_SPACE))
+    if (InputSubsystem::IsKeyDown(KeyCode::DEK_SPACE))
     {
         // physx::PxVec3 position = m_Character->GetPhysicsComponent()->m_PxActor->getGlobalPose().p;
         glm::vec3 position = m_Character->GetTransformComponent()->GetPosition();

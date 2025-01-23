@@ -1,7 +1,7 @@
 # DE_ASSET_MATERIAL
 m_Material:
-  m_Asset: C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\Build\DevProject\Content\Engine\Material\MAT_Default.asset
-  m_BaseTexture: C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\Build\DevProject\Content\Engine\textures\DefaultTexture.png
+  m_Asset: Content\Engine\Material\MAT_Default.asset
+  m_BaseTexture: Content\Engine\textures\DefaultTexture.png
   m_BaseColor:
     - 1
     - 1

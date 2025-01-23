@@ -16,7 +16,6 @@ namespace Denix
 
     Scene::~Scene()
     {
-        m_GameCamera.reset();
         m_ViewportCamera.reset();
         m_ActiveCamera.reset();
         ClearScene();
@@ -46,16 +45,17 @@ namespace Denix
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
             pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
         }
-        
-        for (const auto& obj : m_Actors) obj->BeginScene();
+
+        m_ViewportCamera->BeginScene();
+        for (const auto& actor : m_Actors) actor->BeginScene();
     }
 
     void Scene::EndScene()
     {
         // Call EndScene on all actors
         for (const auto& actor : m_Actors) actor->EndScene();
-
-        m_GameCamera.reset();
+        m_ViewportCamera->EndScene();
+        
         m_ViewportCamera.reset();
         m_ActiveCamera.reset();
         ClearScene();
@@ -65,22 +65,25 @@ namespace Denix
     void Scene::BeginPlay()
     {
         BaseObject::BeginPlay();
+
         
-        if (m_GameCamera)
+        if (Ref<Camera> cam = FindGameCamera())
         {
-            m_ActiveCamera = m_GameCamera;
+            m_ActiveCamera = cam;
             DE_LOG(LogScene, Info, "Game Camera Found: {}", m_ActiveCamera->GetName())
         }
         else
         {
+            m_ActiveCamera->BeginPlay(); // We need to call BeginPlay on the viewport camera manually
             DE_LOG(LogScene, Warn, "No Game Camera found. Using Viewport Camera Instead")
         }
-        
+
+        for (const auto& actor : m_Actors) actor->BeginPlay();
     }
 
     void Scene::EndPlay()
     {
-        for (const auto& obj : m_Actors) obj->EndPlay();
+        for (const auto& actor : m_Actors) actor->EndPlay();
 
         m_Actors.clear();
         m_ActorNames.clear();
@@ -102,6 +105,12 @@ namespace Denix
     void Scene::Update(float _deltaTime)
     {
         BaseObject::Update(_deltaTime);
+
+        // Update Camera - This works regardless of the camer type (viewport/GameCamera)
+        if (m_ActiveCamera)
+        {
+           m_ActiveCamera->Update(_deltaTime);
+        }
     }
 
 
@@ -131,11 +140,11 @@ namespace Denix
 
     Ref<Actor> Scene::GetActorByName(const std::string& _name) const
     {
-        for (const auto& obj : m_Actors)
+        for (const auto& actor : m_Actors)
         {
-            if (obj->GetName() == _name)
+            if (actor->GetName() == _name)
             {
-                return obj;
+                return actor;
             }
         }
 
@@ -144,29 +153,29 @@ namespace Denix
 
     
 
-    void Scene::SpawnActor(const Ref<Actor>& _obj)
+    void Scene::SpawnActor(const Ref<Actor>& _actor)
     {
-        if (!_obj)
+        if (!_actor)
         {
             DE_LOG(LogScene, Error, "SpawnActor: Invalid Actor")
             return;
         }
         
-        _obj->BeginScene();
+        _actor->BeginScene();
 
         if (m_IsPlaying)
-            _obj->BeginPlay();
+            _actor->BeginPlay();
 
-        m_Actors.push_back(std::move(_obj));
+        m_Actors.push_back(std::move(_actor));
     }
 
     Ref<Camera> Scene::FindGameCamera() const
     {
-        for (const auto& obj : m_Actors)
+        for (const auto& actor : m_Actors)
         {
-            if (typeid(Camera) == typeid(*obj))
+            if (typeid(Camera) == typeid(*actor))
             {
-                return std::static_pointer_cast<Camera>(obj);
+                return std::static_pointer_cast<Camera>(actor);
             }
         }
 

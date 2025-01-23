@@ -3,7 +3,7 @@
 #include "Denix/Physics/Collider.h"
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
-#include "Denix/Thread/JobSubsystem.h"
+#include "Denix/Core/Thread/JobSubsystem.h"
 
 using namespace physx;
 

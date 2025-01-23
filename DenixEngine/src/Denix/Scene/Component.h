@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseObject.h"
+#include "Denix/Core/BaseObject.h"
 
 namespace Denix
 {
@@ -11,15 +11,13 @@ namespace Denix
 	{
 	public:
 		// Constructors
-		Component(const ObjectInit& _objectInitializer = ObjectInit()) : BaseObject(_objectInitializer)
-		{
-		}
+		Component(const ObjectInit& _objectInitializer = ObjectInit());
 
 		// Destructors
 		~Component() override = default;
 		
-
-	public: // Object Interface
+		Ref<Actor> GetParent() const { return m_Parent.lock(); }
+		
 		void BeginScene() override
 		{
 			BaseObject::BeginScene();
@@ -47,7 +45,7 @@ namespace Denix
 		virtual void RegisterComponent() {}
 		virtual void UnregisterComponent() {}
 		
-		Ref<Actor> m_Parent;
+		WRef<Actor> m_Parent;
 
 		friend class Actor;
 		friend class BaseObject;

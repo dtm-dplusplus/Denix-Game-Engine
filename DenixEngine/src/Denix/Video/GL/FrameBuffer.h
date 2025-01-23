@@ -2,7 +2,7 @@
 
 #include "Denix/Core.h"
 #include "GL/glew.h"
-#include "Denix/Video/Window/WindowSubsystem.h"
+#include "Denix/Video/WindowSubsystem.h"
 
 namespace Denix
 {

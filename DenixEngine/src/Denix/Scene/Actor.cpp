@@ -3,8 +3,7 @@
 #include "Denix/Asset/AssetSubsystem.h"
 
 #include "yaml-cpp/yaml.h"
-#include "Denix/Core/YAMLHelper.h"
-#include "Denix/Profile/ProfileSubsystem.h"
+#include "Denix/Core/Reflection/YAMLHelper.h"
 #include "Denix/Asset/Asset.h"
 
 namespace Denix

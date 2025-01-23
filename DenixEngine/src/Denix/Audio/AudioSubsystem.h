@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Denix/System/Subsystem.h"
+#include "Denix/Core/Subsystem.h"
 
 #include <SDL3/SDL_audio.h>
 #include "al/al.h"
@@ -8,7 +8,7 @@
 #include "al/alext.h"
 #include "AudioClip.h"
 #include "AudioSource.h"
-#include "AudioComponent.h"
+#include "Denix/Scene/Component/AudioComponent.h"
 
 namespace Denix
 {

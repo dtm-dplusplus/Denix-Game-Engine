@@ -1,17 +1,16 @@
 #include "SceneSubsystem.h"
-#include "Denix/Video/Window/WindowSubsystem.h"
+#include "Denix/Video/WindowSubsystem.h"
 #include "Denix/Asset/AssetSubsystem.h"
-#include "Denix/Video/Renderer/RendererSubsystem.h"
+#include "Denix/Video/RendererSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
-#include "Denix/Core/FileSubsystem.h"
-#include "Denix/Reflection/ReflectionSubsystem.h"
+#include "Denix/Core/File/FileSubsystem.h"
+#include "Denix/Core/Reflection/ReflectionSubsystem.h"
 #include "Denix/Asset/Asset.h"
 
 #include "Denix/Profile/ProfileSubsystem.h"
-#include "Denix/Thread/JobSubsystem.h"
-#include "Denix/Thread/ThreadPrimitive.h"
-#include "Denix/Asset/Asset.h"
+#include "Denix/Core/Thread/JobSubsystem.h"
+#include "Denix/Core/Thread/ThreadPrimitive.h"
 
 #include  "yaml-cpp/yaml.h"
 
@@ -207,7 +206,7 @@ namespace Denix
 	{
 		DE_PROFILE(Clean Rubbish)
 
-		// Cleanup rubbish objects here. TEMP loop, will be moved to a queue
+		// Cleanup rubbish actors here. 
 		for (const auto& actor : m_ActiveScene->m_Actors)
 		{
 			if (!actor) continue;
@@ -250,13 +249,6 @@ namespace Denix
 		// Client Scene Update
 		m_ActiveScene->Update(_deltaTime);
 		m_ActiveScene->DebugUI(_deltaTime);
-		
-		// Update Camera - This works regardless of the camer type (viewport/GameCamera)
-		if (const Ref<Camera> cam = m_ActiveScene->m_ActiveCamera)
-		{
-			cam->m_Aspect = WindowSubsystem::GetWindow()->GetWindowSize();
-			cam->Update(_deltaTime);
-		}
 	}
 
 	void SceneSubsystem::SerializeScene()
@@ -292,7 +284,7 @@ namespace Denix
 			SceneEmitter << YAML::Comment("DE_ASSET_SCENE");
 			SceneEmitter << YAML::Newline << YAML::Comment( _scene->GetName() + " Scene Data");
 			SceneEmitter << YAML::BeginMap;
-			SceneEmitter << YAML::Key << "m_SceneObjects" << YAML::BeginSeq;
+			SceneEmitter << YAML::Key << "m_Actors" << YAML::BeginSeq;
 
 			// Serialize the actors
 			for(auto& actor : _scene->m_Actors)
@@ -339,30 +331,30 @@ namespace Denix
 			return;
 		}
         	
-		// Load the scene objects
-		DeserializeSceneObjects(_scene, sceneNode);
+		// Load the scene actors
+		DeserializeActors(_scene, sceneNode);
 	}
 
-	bool SceneSubsystem::DeserializeSceneObjects(const Ref<Scene>& _scene,
+	bool SceneSubsystem::DeserializeActors(const Ref<Scene>& _scene,
 	                                             const YAML::Node& _sceneNode)
 	{
-		// Load the scene objects
-		YAML::Node sceneObjectsNode = _sceneNode["m_SceneObjects"];
+		// Load the scene actors
+		YAML::Node actorsNode = _sceneNode["m_Actors"];
 
-		if(!sceneObjectsNode.IsDefined())
+		if(!actorsNode.IsDefined())
 		{
 			DE_LOG(LogScene, Error, "Failed to load scene asset")
 			return false;
 		}
 		
-		for (const auto& objNode : sceneObjectsNode)
+		for (const auto& actorNode : actorsNode)
 		{
 			// Create an actor placeholder. 
 			Ref<Actor> newActor;
 
 			// Initialize the actor base object with class type
-			if(const YAML::Node& objClassNode = objNode["m_Object"]["m_ClassName"]; objClassNode.IsDefined())
-				newActor = ReflectionSubsystem::Create<Actor>(objClassNode.as<std::string>());
+			if(const YAML::Node& objNode = actorNode["m_Object"]["m_ClassName"]; objNode.IsDefined())
+				newActor = ReflectionSubsystem::Create<Actor>(objNode.as<std::string>());
 
 			// If reflection failed to find the class, create the actor with the default class
 			if(!newActor)
@@ -371,8 +363,8 @@ namespace Denix
 				DE_LOG(LogScene, Error, "Failed to create actor with custom class. Using default class")
 			}
 			
-			// Deserialize the game object
-			newActor->Deserialize(objNode);
+			// Deserialize the actor
+			newActor->Deserialize(actorNode);
 			_scene->SpawnActor(newActor);
 		}
 		

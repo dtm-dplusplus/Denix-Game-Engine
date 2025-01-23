@@ -69,6 +69,7 @@ include_directories(${PROJECT_NAME}
         ${ENGINE_CONTRIB_DIR}/yaml-cpp/include
         ${ENGINE_CONTRIB_DIR}/OpenAL/include
         ${ENGINE_CONTRIB_DIR}/physx/include
+        ${ENGINE_CONTRIB_DIR}/freetype/include
 )
 
 # Set the C++ flags to enable multi-processor compilation
@@ -105,6 +106,8 @@ target_link_directories(${PROJECT_NAME}
         PUBLIC ${ENGINE_CONTRIB_DIR}/OpenAL/libs/Win64
         PUBLIC  $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/physx/bin/debug>
                  $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/physx/bin/release>
+        PUBLIC  $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/freetype/bin/Debug>
+                 $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/freetype/bin/Release>
 )
 
 # Define linker libs
@@ -121,6 +124,9 @@ target_link_libraries(${PROJECT_NAME}
         
         PUBLIC  $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/yaml-cpp/bin/Debug/yaml-cppd.lib>
                 $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/yaml-cpp/bin/Release/yaml-cpp.lib>
+
+        PUBLIC  $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/freetype/bin/Debug/freetype.lib>
+                $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/freetype/bin/Release/freetype.lib>
 
         PUBLIC PhysX_64
         PUBLIC PhysXCommon_64
@@ -167,6 +173,10 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${ENGINE_CONTRIB_DIR}/OpenAL/bin/Win64 $<TARGET_FILE_DIR:${PROJECT_NAME}>
+
+        COMMAND ${CMAKE_COMMAND} -E copy
+        $<$<CONFIG:Debug>:${ENGINE_CONTRIB_DIR}/freetype/bin/Debug/freetype.dll>
+        $<$<CONFIG:Release>:${ENGINE_CONTRIB_DIR}/freetype/bin/Release/freetype.dll> $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
         #COMMAND ${CMAKE_COMMAND} -E echo "Launching Nvidia PVD3"
         #COMMAND ${CMAKE_COMMAND} -E start ${ENGINE_CONTRIB_DIR}/physx/PVD3/PVD3.exe

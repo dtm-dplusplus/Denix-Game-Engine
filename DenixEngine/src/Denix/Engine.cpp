@@ -6,23 +6,23 @@
 
 #include "yaml-cpp/yaml.h"
 
-#include "Audio/AudioComponent.h"
-#include "Denix/System/SubSystem.h"
-#include "Denix/Thread/JobSubsystem.h"
-#include "Denix/Reflection/ReflectionSubsystem.h"
-#include "Denix/Video/Window/WindowSubsystem.h"
+#include "Denix/Scene/Component/AudioComponent.h"
+#include "Denix/Core/Subsystem.h"
+#include "Denix/Core/Thread/JobSubsystem.h"
+#include "Denix/Core/Reflection/ReflectionSubsystem.h"
+#include "Denix/Video/WindowSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
-#include "Denix/Video/Renderer/RendererSubsystem.h"
+#include "Denix/Video/RendererSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Asset/AssetSubsystem.h"
-#include "Denix/Core/FileSubsystem.h"
-#include "Denix/Core/TimerSubsystem.h"
+#include "Denix/Core/File/FileSubsystem.h"
+#include "Denix/Core/Time/TimerSubsystem.h"
 #include "Denix/Audio/AudioSubsystem.h"
 #include "Profile/ProfileSubsystem.h"
-#include "Scene/Object/Shapes/Shapes.h"
+#include "Scene/Actor/Shapes.h"
 
 
 namespace Denix
@@ -188,15 +188,7 @@ namespace Denix
 			
 			// Clear the offscreen frame buffer
 			Ref<Counter> clearCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJobInline("Clear Frame Buffer", Priority::NORMAL, clearCounter, [this]
-			{
-				DE_PROFILE(Clear Frame Buffer)
-				m_UISubsystem->NewFrame();
-				m_WindowSubsystem->m_Window->ClearBuffer();
-				m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->m_FrameBuffer->Bind();
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				DE_PROFILE_END(Clear Frame Buffer)
-			});
+			m_JobSubsystem->AddJobInline("Clear Frame Buffer", Priority::NORMAL, clearCounter, &WindowSubsystem::NewFrame, m_WindowSubsystem);
 			//DE_LOG(LogEngine, Trace, "Clear Frame Buffer")
 			
 			// Update the physics system. Collision detection and resolution will be here
@@ -245,16 +237,7 @@ namespace Denix
 			
 			// Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
 			Ref<Counter> drawCounter = MakeRef<Counter>();
-			m_JobSubsystem->AddJobInline("Draw Viewport", Priority::NORMAL, drawCounter, [this]()
-			{
-				DE_PROFILE(Draw Viewport)
-				FrameBuffer::Unbind();
-				m_SceneSubsystem->m_ActiveScene->m_ActiveCamera->m_Viewport->DrawViewport();
-				m_UISubsystem->RenderUI(); // Swap buffers and render UI
-				m_WindowSubsystem->m_Window->SwapBuffers();
-				m_UISubsystem->ViewportUpdate();
-				DE_PROFILE_END(Draw Viewport)
-			});
+			m_JobSubsystem->AddJobInline("Draw Viewport", Priority::NORMAL, drawCounter, &WindowSubsystem::PresentFrame, m_WindowSubsystem);
 			//DE_LOG(LogEngine, Trace, "Draw Viewport")
 			
 			// Run the garbage collector
