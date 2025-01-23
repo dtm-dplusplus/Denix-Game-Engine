@@ -135,7 +135,7 @@ namespace Denix
 			}
 		}
 
-		if (Ref<Asset> startSceneAsset = GetSceneAsset(Engine::GetInstance()->m_Config.StartupScenePath))
+		if (Ref<Asset> startSceneAsset = GetSceneAsset(FileSubsystem::FormatPath(Engine::GetInstance()->m_Config.StartupScenePath)))
 		{
 			m_StartupScene = startSceneAsset;
 			DE_LOG(LogEngine, Info, "Loaded Engine Config: Startup Scene: {0}", startSceneAsset->GetAssetName())

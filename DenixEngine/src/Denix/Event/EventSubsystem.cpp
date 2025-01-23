@@ -42,9 +42,16 @@ namespace Denix
         input->m_MouseData.SDL_RelativeState = SDL_GetRelativeMouseState(&input->m_MouseData.RelX, &input->m_MouseData.RelY);
         input->m_MouseData.SDL_State = SDL_GetMouseState(&input->m_MouseData.X, &input->m_MouseData.Y);
 
-        input->m_KeysDown.clear();
-        input->m_KeysUp.clear();
+        // Check if key is still down
+        /*for (const auto& key : input->m_Keyboard.keyDown | std::views::keys)
+        {
+            if (!input->m_Keyboard.keyStates[static_cast<SDL_Scancode>(key)]) input->m_Keyboard.keyDown.erase(key);
+        }*/
+       // input->m_KeysDown.clear();
+        input->m_Keyboard->KeyUp.clear();
 
+      // input->m_Keyboard.lastKeyStates = *input->m_Keyboard.keyStates;
+        
         const auto window = m_WindowRef.lock();
 
         while (SDL_PollEvent(&event))

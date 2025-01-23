@@ -9,15 +9,18 @@ namespace Denix
 {
     void InputSubsystem::Initialize()
     {
-        Subsystem::Initialize();
         DE_LOG(LogInput, Warn, "Input Subsystem Initializing");
+        Subsystem::Initialize();
         m_WindowRef = WindowSubsystem::GetWindow();
         DE_ASSERT(m_WindowRef.lock(), "Input: Window reference is invalid");
-        
-        m_KeyboardLogging = false;
+
+        Keyboard::m_KeyboardLogging = false;
         m_MouseLogging = false;
         GetDevices();
 
+        m_Keyboard = MakeRef<Keyboard>();
+        DE_ASSERT(m_Keyboard, "Input: Keyboard reference is invalid");
+        
         DE_LOG(LogInput, Info, "Input Subsystem Initialized");
     }
 
@@ -37,12 +40,13 @@ namespace Denix
 
     bool InputSubsystem::IsKeyDown(const KeyCode _key)
     {
-        return s_Instance->m_KeysDown.contains(_key);
+        return s_Instance->m_Keyboard->IsKeyDown(_key);	
+
     }
 
     bool InputSubsystem::IsKeyUp(const KeyCode _key)
     {
-        return s_Instance->m_KeysUp.contains(_key);
+        return s_Instance->m_Keyboard->IsKeyUp(_key);
     }
 
     void InputSubsystem::GetDevices()
@@ -127,14 +131,12 @@ namespace Denix
         /* Keyboard events */
         case SDL_EVENT_KEY_DOWN:
             {
-                m_KeysDown.insert(static_cast<KeyCode>(_event.key.key));
+                m_Keyboard->ProcessKeyEvent(_event);
             }
             break; /**< Key pressed */
         case SDL_EVENT_KEY_UP:
             {
-                m_KeysUp.insert(static_cast<KeyCode>(_event.key.key));
-                if (m_KeyboardLogging)
-                    DE_LOG(LogInput, Trace, "Key Up Event. Key: {}", SDL_GetKeyName(_event.key.key))
+                m_Keyboard->ProcessKeyEvent(_event);
             }
             break; /**< Key released */
         case SDL_EVENT_TEXT_EDITING: break; /**< Keyboard text editing (composition) */

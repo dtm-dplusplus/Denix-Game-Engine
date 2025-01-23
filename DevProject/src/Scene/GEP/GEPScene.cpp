@@ -21,7 +21,6 @@ void GEPScene::BeginScene()
 void GEPScene::Update(float _deltaTime)
 {
     Scene::Update(_deltaTime);
-
     glm::vec3 movement(0.0f);
     glm::vec3 fwd = m_Character->GetTransformComponent()->GetForward();
     glm::vec3 right = m_Character->GetTransformComponent()->GetRight();
@@ -52,7 +51,7 @@ if (InputSubsystem::IsKeyDown(KeyCode::DEK_D))
         DE_LOG(LogDevProject, Trace, "Movement: {} {} {}", movement.x, movement.y, movement.z);
         m_Character->GetPhysicsComponent()->AddImpulse({movement.x, 0.0f, movement.z});
     }
-
+   
 }
 
 void GEPScene::DebugUI(float _deltaTime)
@@ -105,7 +104,7 @@ void GEPScene::DebugUI(float _deltaTime)
         
         bool ishit = m_PxScene->raycast({position.x, position.y, position.z}, {direction.x, direction.y, direction.z}, maxDistance, hit, physx::PxHitFlag::eDEFAULT, filterData);
         if (ishit) m_Character->GetPhysicsComponent()->AddImpulse({0.0f, m_Character->m_JumpForce, 0.0f});
-        DE_LOG(LogDevProject, Trace, "Raycast hit: {}", ishit);
+       // DE_LOG(LogDevProject, Trace, "Raycast hit: {}", ishit);
     }
     ImGui::End();
 }

@@ -2,7 +2,6 @@
 #include "Denix/Core/Subsystem.h"
 #include <SDL3/SDL_events.h>
 #include "Denix/Core.h"
-#include <unordered_set>
 #include "InputPrimitive.h"
 #include "InputHelper.h"
 
@@ -27,7 +26,7 @@ namespace Denix
 		static MouseData& GetMouseData() { return s_Instance->m_MouseData; }
 
 		static void GetDevices();
-		bool m_KeyboardLogging;
+		
 		bool m_MouseLogging;
 	private:
 		void ProcessInputEvent(const SDL_Event& _event);
@@ -41,11 +40,10 @@ namespace Denix
 		//SDL_Event m_Event;
 		WRef<SDL_GLWindow> m_WindowRef;
 
-		std::unordered_set<KeyCode> m_KeysDown;
-		std::unordered_set<KeyCode> m_KeysUp;
-		
 		// Mouse Properties
 		MouseData m_MouseData;
+
+		Ref<Keyboard> m_Keyboard;
 		
 		friend class Engine;
 		friend class EventSubsystem;
