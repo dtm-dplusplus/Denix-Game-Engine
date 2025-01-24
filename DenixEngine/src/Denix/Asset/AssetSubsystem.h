@@ -31,8 +31,8 @@ namespace Denix
         static std::vector<Ref<Asset>>  GetSceneStore() { return s_Instance->m_SceneStore; }
         static Ref<Asset> GetSceneAsset(const std::string& _path);
         static Ref<Asset> GetStartupScene() { return s_Instance->m_StartupScene; }
-        static void SetStartupScene(const Ref<Asset>& _ref) { s_Instance->m_StartupScene = _ref; }
-        
+        static void SetStartupScene(const Ref<Asset>& _ref);
+
         // Shaders
         static std::unordered_map<std::string, Ref<Shader>> GetShaderStore() 
         {

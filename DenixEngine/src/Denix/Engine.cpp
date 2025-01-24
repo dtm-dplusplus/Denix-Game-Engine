@@ -309,25 +309,21 @@ namespace Denix
 
     void Engine::SaveConfig()
     {
-        /*try
+        try
         {
             YAML::Emitter cfgEmitter;
-            cfgEmitter << YAML::Comment("DENIX ENGINE CONFIGURATION");
             cfgEmitter << YAML::BeginMap;
-            cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << (m_StartupScene
-                                                                              ? m_StartupScene->GetAssetPath()
-                                                                              : "");
+            cfgEmitter << YAML::Key << "Project Name" << YAML::Value << m_Config.ProjectName;
+            if (auto scene = m_AssetSubsystem->GetStartupScene())
+                cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << m_FileSubsystem->FormatRelativePath(scene->GetAssetPath());
             cfgEmitter << YAML::EndMap;
-
-            if (FileSubsystem::WriteFile(m_EngineConfigPath, cfgEmitter.c_str()))
+            
+            if (FileSubsystem::WriteFile(m_FileSubsystem->m_ProjectFile, cfgEmitter.c_str()))
                 DE_LOG(LogEngine, Info, "Saved Engine Config")
         }
         catch (const std::exception& e)
         {
             DE_LOG(LogEngine, Error, "Failed to Save Engine Config: {0}", e.what())
-
-            // Do some error handling
-            assert(false, "Failed to Save Engine Config");
-        }*/
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿#include "UIScene.h"
 
 #include "imgui.h"
+#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 
@@ -56,11 +57,13 @@ draw_bitmap(FT_Bitmap* bitmap,
 
 
 
+
 void Denix::UIScene::BeginScene()
 {
     Scene::BeginScene();
-
-    CreateTextBox("", Position, {WIDTH, HEIGHT}, {1.0f, 1.0f, 1.0f});
+    canvas = MakeRef<Canvas>();
+    m_ActiveCamera->GetTransformComponent()->GetTransform().Position = {0.0f, 0.0f, 0.0f};
+   // CreateTextBox("", Position, {WIDTH, HEIGHT}, {1.0f, 1.0f, 1.0f});
 }
 
 void Denix::UIScene::Update(float _deltaTime)
@@ -68,26 +71,32 @@ void Denix::UIScene::Update(float _deltaTime)
     Scene::Update(_deltaTime);
 
     ImGui::Begin("Font Rendering");
-    for (int i = 0; i < 2; i++)
+    /*for (int i = 0; i < 2; i++)
     {
         if (textureID[i]) ImGui::Image((void*)(intptr_t)textureID[i], ImVec2(WIDTH, HEIGHT));
+    }*/
+
+    if (ImGui::Button("Create Button"))
+    {
+        Ref<Button> btn = SpawnActor<Button>();
+        btn->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
+        canvas->m_Buttons.push_back(btn);
+    }
+    if (ImGui::Button("Sort Buttons"))
+    {
+        canvas->Sort();
+    }
+    if (ImGui::Button("Print Button"))
+    {
+       for (int i = 0; i < canvas->m_Buttons.size(); i++) 
+       {
+           DE_LOG(LogRender, Info, "{}: {}", canvas->m_Buttons[i]->GetName(),
+               canvas->m_Buttons[i]->GetTransformComponent()->GetTransform().Position.y);
+       }
     }
     ImGui::End();
 
-    if (InputSubsystem::IsKeyDown(KeyCode::DEK_W))
-    {
-        DE_LOG(LogDevProject, Trace, "W key is pressed");
-    }
-
-    if (InputSubsystem::IsKeyDown(KeyCode::DEK_A))
-    {
-        DE_LOG(LogDevProject, Trace, "A key is pressed");
-    }
-    
-    if (InputSubsystem::IsKeyUp(KeyCode::DEK_S))
-    {
-        DE_LOG(LogDevProject, Trace, "Backward key is pressed");
-    }
+    canvas->Update();
 }
 
 unsigned int Denix::UIScene::CreateTextBox(std::string _text, glm::vec2 _position, glm::vec2 _size, glm::vec3 _color)

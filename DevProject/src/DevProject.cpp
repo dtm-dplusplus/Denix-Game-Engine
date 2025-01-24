@@ -26,6 +26,7 @@ public:
 		ReflectionSubsystem::Register<GEPScene>();
 		ReflectionSubsystem::Register<AudioScene>();
 		ReflectionSubsystem::Register<GACPActor>();
+		ReflectionSubsystem::Register<Button>();
 		DE_LOG(LogReflection, Info, "Registered DevProject Classes")
 	}
 	

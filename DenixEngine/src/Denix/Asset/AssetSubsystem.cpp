@@ -190,6 +190,18 @@ namespace Denix
 		return nullptr;
 	}
 
+	void AssetSubsystem::SetStartupScene(const Ref<Asset>& _ref)
+	{
+		if (!_ref)
+		{
+			DE_LOG(LogAsset, Error, "Invalid Scene Asset")
+			return;
+		}
+
+		s_Instance->m_StartupScene = _ref;
+		Engine::GetInstance()->m_Config.StartupScenePath = FileSubsystem::FormatRelativePath(s_Instance->m_StartupScene->GetAssetPath());
+	}
+
 	////////////////////////  SHADERS ///////////////////////////////
 	Ref<Shader> AssetSubsystem::LoadShader(std::vector<ShaderSource>& _shaders, const std::string& _path)
 	{
@@ -228,40 +240,16 @@ namespace Denix
 
 	bool AssetSubsystem::ReloadShader(const Ref<Shader>& _shader)
 	{
-		// Create a new shader to check if it compiles
-		/*const Ref<Shader> testShader = MakeRef<Shader>();
-		
-		if (!testShader->GetGL_ID()) return false;
-
-		testShader->m_ShaderSources = _shader->GetShaderSources();
-
-		// Compile the new shader
-		if (!testShader->CompileProgram())
+		if (!_shader)
 		{
-			DE_LOG(LogAsset, Error, "Shader Recompile failed: {}", _shader->GetDirectoryName())
+			DE_LOG(LogAsset, Error, "Invalid Shader")
 			return false;
 		}
-
-		// Save the shader sources to disk
-		for(const auto& shader : testShader->GetShaderSources())
-		{
-			if(!FileSubsystem::WriteFile(shader.Path, shader.Source))
-			{
-				DE_LOG(LogAsset, Error, "Failed to write shader source to disk: {}", shader.Path)
-				return false;
-			}
-		}
-
-		// Reassign the new shader ID to the old shader
-		_shader->m_GL_ID = testShader->m_GL_ID;*/
-
-		if (_shader->RecompileProgram())
-		{
-			DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetDirectoryName())
-			return true;
-		}
 		
-		return false;
+		if (_shader->RecompileProgram()) return false;
+		
+		DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetDirectoryName())
+		return true;
 	}
 
 	Ref<Shader> AssetSubsystem::GetShader(const std::string& _name)

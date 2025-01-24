@@ -97,15 +97,10 @@ namespace Denix
   glm::vec3 m_Up;
   
   glm::mat4 m_Model;
-  glm::mat3 m_RotationMatrix;
   int m_Moveability = static_cast<int>(Moveability::Static);
 
   // Will be a flag in future
   bool m_MoveabilityChanged = false;
-
-  bool m_PhysicsRotationOverride = false;
-
-  
 
   friend class Actor;
   friend class Scene;

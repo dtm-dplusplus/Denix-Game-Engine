@@ -50,7 +50,9 @@ namespace Denix
 		bool& AffectsLighting() { return m_AffectsLighting; }
 		void SetAffectsLighting(const bool _affectsLighting) { m_AffectsLighting = _affectsLighting; }
 
-	public:
+		bool m_IsUI = false;		
+
+	private:
 		void BeginScene() override;
 
 		void EndScene() override;
@@ -58,8 +60,6 @@ namespace Denix
 		void RegisterComponent() override;
 		void UnregisterComponent() override;
 		
-
-	private:
 		bool m_IsVisible = true;
 		bool m_AffectsLighting = true;
 
