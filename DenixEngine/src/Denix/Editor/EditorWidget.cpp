@@ -1,10 +1,11 @@
 ﻿#include "EditorWidget.h"
 
 
-float Denix::EditorWidget::m_DragSensitivity = 10.0f;
-float Denix::EditorWidget::m_DragSpeed = 0.1f;
-
-Denix::EditorWidget::EditorWidget(const ObjectInit& _objInit): Object(_objInit)
+Denix::EditorWidget::EditorWidget(const ObjectInit& _objInit): Object(_objInit), m_IsOpen(true), m_IsFocus(false) 
 {
-    
+}
+
+void Denix::EditorWidget::Update(float _deltaTime)
+{
+    if (!m_IsOpen) MarkRubbish();
 }

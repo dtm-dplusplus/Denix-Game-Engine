@@ -26,7 +26,7 @@ namespace Denix
 		RendererSubsystem& operator=(RendererSubsystem&& _other) noexcept = delete;
 
 		static int& GetViewportMode() { return s_Instance->m_ViewportMode; }
-
+		Ref<Shader> m_UIShader;
 	private:
 		void Initialize() override;
 

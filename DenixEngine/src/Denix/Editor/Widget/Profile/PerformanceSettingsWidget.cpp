@@ -13,7 +13,7 @@ void Denix::PerformanceSettingsWidget::Update(float _deltaTime)
 {
     EditorWidget::Update(_deltaTime);
 
-    ImGui::Begin(GetName().c_str());
+    ImGui::Begin(GetName().c_str(), &m_IsOpen);
     ImGui::SeparatorText("Engine Metrics");
     Show();
     ImGui::End();

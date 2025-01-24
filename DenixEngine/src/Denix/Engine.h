@@ -117,21 +117,17 @@ namespace Denix
     template <typename T, typename ... Args>
     Ref<T> Engine::InitalizeSubsystem(Args&&... _args)
     {
-        try
+        static_assert(IsBase<SubsystemBase, T>(), "Class must be derived from Subsystem");
+
+        // Check if T is derived from Actor
+        if (Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...))
         {
-            // Check if T is derived from Actor
-            Ref<T> subsystem = MakeRef<T>(std::forward<Args>(_args)...);
-            static_assert(IsBase<SubsystemBase, T>(), "T must be derived from Subsystem");
             subsystem->Initialize();
             return subsystem;
         }
-        catch (const std::exception& e)
-        {
-            // Assert and terminate
-            DE_LOG(LogEngine, Critical, "Failed to Initialize Subsystem: {0}", e.what())
-            assert(false, e.what());
-        }
-            
+
+        DE_LOG(LogEngine, Error, "Failed to initialize subsystem: {0}", typeid(T).name());
+        
         return nullptr;
     }
 

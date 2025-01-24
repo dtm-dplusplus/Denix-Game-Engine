@@ -8,7 +8,6 @@
 #include "Denix/Editor/EditorSubsystem.h"
 #include "Denix/Scene/Camera.h"
 #include "Denix/Scene/Actor.h"
-#include "Denix/Editor/Widget/ShaderEditor.h"
 
 Denix::AssetBrowserWidget::AssetBrowserWidget(): EditorWidget({"AssetBrowser"})
 {
@@ -19,8 +18,7 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime)
     EditorWidget::Update(_deltaTime);
 
     ImGui::SetNextWindowDockID(EditorSubsystem::GetDockDownID(), ImGuiCond_Appearing);
-    bool open = !IsRubbish();
-    ImGui::Begin("Asset Browser", &open);
+    ImGui::Begin("Asset Browser", &m_IsOpen);
   
 			
     if (ImGui::TreeNode("Materials"))

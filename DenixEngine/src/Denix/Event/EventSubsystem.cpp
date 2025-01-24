@@ -104,6 +104,7 @@ namespace Denix
         case SDL_EVENT_QUIT:
             {
                 DE_LOG(LogInput, Trace, "Quit Event")
+                if (window) window->RequestClose();
             }
             break;
 

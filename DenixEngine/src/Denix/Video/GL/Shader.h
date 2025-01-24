@@ -25,21 +25,36 @@ namespace Denix
 	const std::string g_SHADER_KEYWORD{ "DE_SHADER" };
 	const int g_SHADER_KEYWORD_OFFSET = 1 + g_SHADER_KEYWORD.length();
 
-	const std::tuple<std::string, GLenum> g_SHADER_TYPES[] =
+	constexpr std::array<std::pair<const char*, GLenum>, 6> g_SHADER_TYPES = {{
+		{"vertex", GL_VERTEX_SHADER},
+		{"fragment", GL_FRAGMENT_SHADER},
+		{"geometry", GL_GEOMETRY_SHADER},
+		{"tess_control", GL_TESS_CONTROL_SHADER},
+		{"tess_evaluation", GL_TESS_EVALUATION_SHADER},
+		{"compute", GL_COMPUTE_SHADER}
+	}};
+
+	constexpr std::string GetShaderTypeToString(const GLenum _type)
 	{
-		{ "vertex", GL_VERTEX_SHADER },
-		{ "fragment", GL_FRAGMENT_SHADER },
-		{ "geometry", GL_GEOMETRY_SHADER },
-		{ "tess_control", GL_TESS_CONTROL_SHADER },
-		{ "tess_evaluation", GL_TESS_EVALUATION_SHADER },
-		{ "compute", GL_COMPUTE_SHADER }
-	};
+		for (const auto& [stringType, enumType] : g_SHADER_TYPES) {
+			if (_type == enumType) return stringType;
+		}
+		
+		return "";
+	}
 
-
+	constexpr GLenum GetShaderTypeFromString(const std::string& _type) {
+		for (const auto& [stringType, enumType] : g_SHADER_TYPES) {
+			if (_type == stringType)  return enumType;
+		}
+		
+		return GL_FALSE;
+	}
+	
 	class Shader: public Asset
 	{
 	public:
-		Shader(): m_GL_ID(0)
+		Shader()
 		{
 			CreateProgram();
 		}
@@ -47,7 +62,7 @@ namespace Denix
 
 		~Shader() override
 		{
-			DeleteProgram();
+			if (m_DeleteOnDestroy) DeleteProgram();
 		}
 
 		void Bind() const { glUseProgram(m_GL_ID); }
@@ -59,6 +74,8 @@ namespace Denix
 
 		std::vector<ShaderSource>& GetShaderSources() { return m_ShaderSources; }
 
+		
+		
 	private:
 		GLuint CreateProgram();
 
@@ -66,18 +83,19 @@ namespace Denix
 
 		bool LinkProgram() const;
 
-		// Compile Shader
-		// set sourceFromPath to false if you want to receive the source from the ShaderSource object
 		bool CompileShader(ShaderSource& _sourceObj) const;
 
 		GLenum GetShaderType(const std::string& _source) const;
 
 		bool CompileProgram();
-
+		bool RecompileProgram();
 		GLint GetUniform(const std::string& _uniform);
 
 		GLuint m_GL_ID;
 
+		/** If true, the shader will be deleted on destruction. Useful for Recompilation where we transfer GL ID */
+		bool m_DeleteOnDestroy;
+		
 		std::vector<ShaderSource> m_ShaderSources;
 		std::unordered_map<std::string, GLint> m_ShaderUniforms;
 		

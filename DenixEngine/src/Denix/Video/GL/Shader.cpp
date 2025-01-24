@@ -83,8 +83,7 @@ GLenum Denix::Shader::GetShaderType(const std::string& _source) const
         }
 
         // Return the type if we find it
-        for (const auto& [StringType, EnumType] : g_SHADER_TYPES)
-            if (type == StringType) return EnumType;
+        return GetShaderTypeFromString(type);
 
     }
 
@@ -120,6 +119,40 @@ bool Denix::Shader::CompileProgram()
         DeleteProgram();
         return false;
     }
+    return true;
+}
+
+bool Denix::Shader::RecompileProgram()
+{
+    // Create a new shader to check if it compiles
+    const Ref<Shader> testShader = MakeRef<Shader>();
+		
+    if (!testShader->GetGL_ID()) return false;
+
+    testShader->m_ShaderSources = m_ShaderSources;
+
+    // Compile the new shader
+    if (!testShader->CompileProgram())
+    {
+        DE_LOG(LogAsset, Error, "Shader Recompile failed: {}", GetAssetFileName())
+        return false;
+    }
+
+    // Save the shader sources to disk
+    for(const auto& shader : testShader->GetShaderSources())
+    {
+        if(!FileSubsystem::WriteFile(shader.Path, shader.Source))
+        {
+            DE_LOG(LogAsset, Error, "Failed to write shader source to disk: {}", shader.Path)
+            return false;
+        }
+    }
+
+    // Reassign the new shader ID to the old shader
+    DeleteProgram();
+    testShader->m_DeleteOnDestroy = false; // Don't delete the GL shader on destruction
+    m_GL_ID = testShader->m_GL_ID;
+    
     return true;
 }
 

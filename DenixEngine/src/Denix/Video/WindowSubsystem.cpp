@@ -29,7 +29,7 @@ namespace Denix
         SceneSubsystem::GetActiveScene()->GetActiveCamera()->GetCameraComponent()->GetViewport()->DrawViewport();
         EditorSubsystem::RenderUI(); // Swap buffers and render UI
         m_Window->SwapBuffers();
-        EditorSubsystem::ViewportUpdate();
+        EditorSubsystem::PresentFrame();
         DE_PROFILE_END(Draw Viewport)
     }
 

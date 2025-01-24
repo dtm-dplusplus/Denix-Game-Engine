@@ -23,5 +23,3 @@
 
 #include "Denix/Core/Time/TimerSubsystem.h"
 #include "Denix/Profile/ProfileSubsystem.h"
-
-#include "Denix/Editor/Widget/ShaderEditor.h"

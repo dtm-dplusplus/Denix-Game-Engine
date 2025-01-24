@@ -229,7 +229,7 @@ namespace Denix
 	bool AssetSubsystem::ReloadShader(const Ref<Shader>& _shader)
 	{
 		// Create a new shader to check if it compiles
-		const Ref<Shader> testShader = MakeRef<Shader>();
+		/*const Ref<Shader> testShader = MakeRef<Shader>();
 		
 		if (!testShader->GetGL_ID()) return false;
 
@@ -253,10 +253,15 @@ namespace Denix
 		}
 
 		// Reassign the new shader ID to the old shader
-		_shader->m_GL_ID = testShader->m_GL_ID;
-		DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetDirectoryName())
+		_shader->m_GL_ID = testShader->m_GL_ID;*/
+
+		if (_shader->RecompileProgram())
+		{
+			DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetDirectoryName())
+			return true;
+		}
 		
-		return true;
+		return false;
 	}
 
 	Ref<Shader> AssetSubsystem::GetShader(const std::string& _name)

@@ -10,11 +10,13 @@ namespace Denix
         EditorWidget(const ObjectInit& _objInit);
         ~EditorWidget() override = default;
 
-        virtual void Begin() {}
-        virtual void Update(float _deltaTime) {}
-        virtual void End() {}
+        virtual void Update(float _deltaTime);
 
-        static float m_DragSensitivity;
-        static float m_DragSpeed;
+        inline static float m_DragSensitivity = 10.0f;
+        inline static float m_DragSpeed = 0.1f;
+
+        bool m_IsOpen;
+        bool m_IsFocus;
+       // bool m_RequestClose;
     };
 }

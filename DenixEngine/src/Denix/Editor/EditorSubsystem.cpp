@@ -20,8 +20,9 @@ namespace Denix
 {
 	void EditorSubsystem::Initialize()
 	{
-		Subsystem::Initialize();
 		DE_LOG(LogEditor, Warn, "Initializing Editor Subsystem")
+		Subsystem::Initialize();
+
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -40,20 +41,16 @@ namespace Denix
 
 		// Setup SDL3 Platform/Renderer backends
 		m_WindowRef = WindowSubsystem::GetWindow();
+		DE_ASSERT(m_WindowRef.lock(), "Window Reference is null")
 		
-		if(!ImGui_ImplSDL3_InitForOpenGL(m_WindowRef.lock()->GetSDLWindow(),
-				SDL_GL_GetCurrentContext()))
-		{
-			throw std::runtime_error("ImGui_ImplSDL3_InitForOpenGL failed");
-		}
+		DE_ASSERT(ImGui_ImplSDL3_InitForOpenGL(m_WindowRef.lock()->GetSDLWindow(),
+				SDL_GL_GetCurrentContext()),"ImGui_ImplSDL3_InitForOpenGL failed")
 
-		if(!ImGui_ImplOpenGL3_Init(m_WindowRef.lock()->GetGLSLVersion().c_str()))
-		{
-			throw std::runtime_error("ImGui_ImplOpenGL3_Init failed");
-		}
-		
+		DE_ASSERT(ImGui_ImplOpenGL3_Init(m_WindowRef.lock()->GetGLSLVersion().c_str()),"ImGui_ImplOpenGL3_Init failed")
+	
 		m_ActiveScene = SceneSubsystem::GetActiveScene();
-
+		DE_ASSERT(m_ActiveScene.lock(), "Scene ref is null")
+		
 		// Init Editor Widgets
 		m_SceneOrganizerWidget = MakeRef<SceneOrganizerWidget>(m_ActiveScene);
 		m_ActorDetailsWidget = MakeRef<ActorDetailsWidget>();
@@ -92,7 +89,7 @@ namespace Denix
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
-	void EditorSubsystem::ViewportUpdate()
+	void EditorSubsystem::PresentFrame()
 	{
 		const auto& window = s_Instance->m_WindowRef.lock();
 		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -103,75 +100,19 @@ namespace Denix
 			SDL_GL_MakeCurrent(window->GetSDLWindow(), window->GetSDL_GLContext());
 		}
 	}
-	
+
 	void EditorSubsystem::Update(float _deltaTime)
 	{
-		
-
 		if(!m_Enabled) return;
 		if (!m_ActiveScene.lock()) return;
 
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-		ImGuiViewport* imguiViewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(imguiViewport->Pos);
-		ImGui::SetNextWindowSize(imguiViewport->Size);
-		ImGui::SetNextWindowViewport(imguiViewport->ID);
-		ImGui::SetNextWindowBgAlpha(0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace", nullptr, window_flags);
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar(2);
-
-		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
-		ImGuiIO& io = ImGui::GetIO();
-		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-		{
-			ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-
-			static auto first_time = true;
-			if (first_time)
-			{
-				first_time = false;
-
-				ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
-				ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
-				ImGui::DockBuilderSetNodeSize(dockspace_id, imguiViewport->Size);
-
-				// split the dockspace into 2 nodes -- DockBuilderSplitNode takes in the following args in the following order
-				//   window ID to split, direction, fraction (between 0 and 1), the final two setting let's us choose which id we want (which ever one we DON'T set as NULL, will be returned by the function)
-				//                                                              out_id_at_dir is the id of the node in the direction we specified earlier, out_id_at_opposite_dir is in the opposite direction
-				DockLeftID = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
-				DockRightID = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.2f, nullptr, &dockspace_id);
-				DockDownID = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockspace_id);
-
-				// we now dock our windows into the docking node we made above
-				ImGui::DockBuilderDockWindow("Right", DockRightID);
-				ImGui::DockBuilderDockWindow("Left", DockLeftID);
-				ImGui::DockBuilderDockWindow("Down", DockDownID);
-
-				ImGui::DockBuilderFinish(dockspace_id);
-			}
-		}
-		ImGui::End();
+		DE_PROFILE(Editor Update)
+		ViewportUpdate();
 		
 		EditorWidget::m_DragSpeed = EditorWidget::m_DragSensitivity * _deltaTime;
 		m_DragSpeed = EditorWidget::m_DragSpeed;
 
 		MainMenuBar();
-
-		// Asset Browser
-		if(m_AssetBrowserWidget)
-		{
-			m_AssetBrowserWidget->Update(_deltaTime);
-			// TEMP - Remove when AssetBrowser is set to close
-			if(m_AssetBrowserWidget->IsRubbish()) m_AssetBrowserWidget.reset();
-		}
 
 		// Scene Widgets
 		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->Update(0.0f);
@@ -181,10 +122,16 @@ namespace Denix
 			m_ActorDetailsWidget->Update(0.0f);
 		}
 		
-		if(m_PerformanceSettingsWidget) m_PerformanceSettingsWidget->Update(_deltaTime);
-		if(m_InputDebuggerWidget) m_InputDebuggerWidget->Update(_deltaTime);
-		if (m_EngineProfilerWidget) m_EngineProfilerWidget->Update(_deltaTime);
+		for (const auto& widget : m_EditorWidgets)
+		{
+			if (widget)
+			{
+				widget->Update(_deltaTime);
+				if (widget->IsRubbish()) RemoveEditorWidget(widget);
+			}
+		}
 
+		DE_PROFILE_END(Editor Update)
 	}
 	
 	void EditorSubsystem::MainMenuBar()
@@ -258,31 +205,24 @@ namespace Denix
 			if (ImGui::BeginMenu("Window"))
 			{
 				if(ImGui::MenuItem("AssetBrowser", nullptr))
-				{
-					if(!m_AssetBrowserWidget) m_AssetBrowserWidget = MakeRef<AssetBrowserWidget>();
-				}
+					AddEditorWidget<AssetBrowserWidget>();
+				
 				if(ImGui::MenuItem("Performance Settings", nullptr))
-				{
-					if(!m_PerformanceSettingsWidget) m_PerformanceSettingsWidget = MakeRef<PerformanceSettingsWidget>();
-				}
+					AddEditorWidget<PerformanceSettingsWidget>();
 				
 				if (ImGui::MenuItem("Profiler", nullptr))
-				{
-					if(!m_EngineProfilerWidget) m_EngineProfilerWidget = MakeRef<EngineProfilerWidget>();
-				}
+					AddEditorWidget<EngineProfilerWidget>();
+				
 				if (ImGui::MenuItem("Input Debugger", nullptr))
-				{
-					if (!m_InputDebuggerWidget) m_InputDebuggerWidget = MakeRef<InputDebuggerWidget>();
-				}
+					AddEditorWidget<InputDebuggerWidget>();
+				
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("View"))
 			{
 				if (ImGui::MenuItem("Toggle Fullscreen", "F11"))
-				{
 					WindowSubsystem::ToggleFullscreen();
-				}
 
 				ImGui::EndMenu();
 			}
@@ -367,5 +307,57 @@ namespace Denix
 		m_ActiveScene = _scene;
 		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->SceneChangedEvent(_scene);
 		if (m_ActorDetailsWidget) m_ActorDetailsWidget->m_ActorRef.reset();
+	}
+
+		void EditorSubsystem::ViewportUpdate()
+	{
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+		ImGuiViewport* imguiViewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(imguiViewport->Pos);
+		ImGui::SetNextWindowSize(imguiViewport->Size);
+		ImGui::SetNextWindowViewport(imguiViewport->ID);
+		ImGui::SetNextWindowBgAlpha(0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+		ImGui::Begin("DockSpace", nullptr, window_flags);
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar(2);
+
+		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+		ImGuiIO& io = ImGui::GetIO();
+		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+		{
+			ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+
+			static auto first_time = true;
+			if (first_time)
+			{
+				first_time = false;
+
+				ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
+				ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+				ImGui::DockBuilderSetNodeSize(dockspace_id, imguiViewport->Size);
+
+				// split the dockspace into 2 nodes -- DockBuilderSplitNode takes in the following args in the following order
+				//   window ID to split, direction, fraction (between 0 and 1), the final two setting let's us choose which id we want (which ever one we DON'T set as NULL, will be returned by the function)
+				//                                                              out_id_at_dir is the id of the node in the direction we specified earlier, out_id_at_opposite_dir is in the opposite direction
+				DockLeftID = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
+				DockRightID = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.2f, nullptr, &dockspace_id);
+				DockDownID = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockspace_id);
+
+				// we now dock our windows into the docking node we made above
+				ImGui::DockBuilderDockWindow("Right", DockRightID);
+				ImGui::DockBuilderDockWindow("Left", DockLeftID);
+				ImGui::DockBuilderDockWindow("Down", DockDownID);
+
+				ImGui::DockBuilderFinish(dockspace_id);
+			}
+		}
+		ImGui::End();
 	}
 }

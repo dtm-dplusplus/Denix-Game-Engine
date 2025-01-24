@@ -25,7 +25,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
     const std::vector<Ref<ProfileSession>>& profileSessions = ProfileSubsystem::GetProfileSessions();
 
     ImGui::SetNextWindowSize({600, 800}, ImGuiCond_FirstUseEver);
-    ImGui::Begin("Profiler Widget");
+    ImGui::Begin("Profiler Widget", &m_IsOpen);
     ImGui::SeparatorText("Profiler");
     if (!ProfileSubsystem::GetActiveProfileSession())
     {

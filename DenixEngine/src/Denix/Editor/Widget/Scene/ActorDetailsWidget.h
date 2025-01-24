@@ -8,7 +8,6 @@ namespace Denix
     class RenderComponent;
     class Actor;
     class Material;
-    class ShaderEditor;
     
     class ActorDetailsWidget: public EditorWidget
     {
@@ -16,8 +15,6 @@ namespace Denix
         ActorDetailsWidget();
 
         void Update(float _deltaTime) override;
-        //void Begin() override;
-        //void End() override;
 
         void PhysicsWidget(const Ref<Actor>& _selectedObject) const;
         void CollisionWidget(const Ref<Actor>& _selectedObject) const;
@@ -32,7 +29,6 @@ namespace Denix
         static void CameraWidget(const Ref<Actor>& _camera);
 
         WRef<Actor> m_ActorRef;
-        Ref<ShaderEditor> m_ShaderEditor;
     };
 }
 

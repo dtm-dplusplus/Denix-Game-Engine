@@ -305,19 +305,26 @@ void Denix::ActorDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject
         ImGui::Separator();
         if (Ref<Shader> shader = mat->GetShader())
         {
-            ImGui::Text("Shader: %s", shader->GetDirectoryName().c_str());
+            ImGui::Text("Shader: %s", shader->GetAssetName().c_str());
+            ImGui::Text("Shader Directory: %s", shader->GetDirectoryName().c_str());
+            ImGui::Text("Shader ID: %d", shader->GetGL_ID());
+            ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
+            if (ImGui::TreeNode("Shader Sources"))
+            {
+               for (const auto& source : shader->GetShaderSources())
+               {
+                   ImGui::TextWrapped("File: %s", source.FileName.c_str());
+                   ImGui::TextWrapped("Type: %s", GetShaderTypeToString(source.Type).c_str());
+               }
+                ImGui::TreePop();
+            }
             if (ImGui::Button("Edit Shader"))
             {
-                m_ShaderEditor = MakeRef<ShaderEditor>(shader);
-                ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Appearing);
+                EditorSubsystem::AddEditorWidget<ShaderEditor>(shader);
             }
-            if (m_ShaderEditor) m_ShaderEditor->Update();
         }
-        else
-        {
-            ImGui::Text("No Shader Selected");
-        }
-        if (m_ShaderEditor) m_ShaderEditor->Update();
+
+       // if (m_ShaderEditor) m_ShaderEditor->Update();
 
         //	// Texture Info
         //	ImGui::SeparatorText("Texture Info");

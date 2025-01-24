@@ -35,6 +35,30 @@ namespace Denix
 		static ImGuiID GetDockLeftID()  { return s_Instance->DockLeftID; }
 		static ImGuiID GetDockRightID()  { return s_Instance->DockRightID; }
 		static ImGuiID GetDockDownID()  { return s_Instance->DockDownID; }
+
+		template <typename T, typename ... Args>
+		static Ref<T> AddEditorWidget(Args&&... _args)
+		{
+			static_assert(IsBase<EditorWidget, T>(), "Class must be derived from EditorWidget");
+				
+			// Check if T is derived from Actor
+			if (Ref<T> widget = MakeRef<T>(std::forward<Args>(_args)...))
+			{
+				s_Instance->m_EditorWidgets.emplace_back(widget);
+				return CastRef<T>(s_Instance->m_EditorWidgets.back());
+			}
+
+			DE_LOG(LogEditor, Error, "Failed to add Editor Widget: {0}", typeid(T).name());
+			return nullptr;
+		}
+		
+		static void RemoveEditorWidget(const Ref<EditorWidget>& _widget)
+		{
+			if (!_widget) return;
+
+			std::erase(s_Instance->m_EditorWidgets, _widget);
+
+		}
 	private:
 		void MainMenuBar();
 
@@ -44,14 +68,17 @@ namespace Denix
 
 		static void NewFrame();
 		static void RenderUI();
-		static void ViewportUpdate();
+		static void PresentFrame();
+		void ViewportUpdate();
+		
 
 		ImGuiID DockLeftID;
 		ImGuiID DockRightID;
 		ImGuiID DockDownID;
 
 		WRef<SDL_GLWindow> m_WindowRef;
-		
+
+		std::vector<Ref<EditorWidget>> m_EditorWidgets;
 		bool ShowDemoWindow = false;
 		bool ShowPlotDemoWindow = false;
 

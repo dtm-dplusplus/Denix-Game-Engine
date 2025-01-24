@@ -39,7 +39,7 @@ namespace Denix
             return s_Instance->m_ShaderStore;
         }
 
-        Ref<Shader> LoadShader(std::vector<ShaderSource>& _shaders, const std::string& _path);
+        static Ref<Shader> LoadShader(std::vector<ShaderSource>& _shaders, const std::string& _path);
 
         static bool ReloadShader(const Ref<Shader>& _shader);
 

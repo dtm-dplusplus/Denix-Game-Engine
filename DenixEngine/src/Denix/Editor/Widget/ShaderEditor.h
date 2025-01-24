@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Denix/Core.h"
+#include "Denix/Editor/EditorWidget.h"
 
 
 namespace Denix
@@ -8,14 +8,13 @@ namespace Denix
     class Shader;
 
     
-    class ShaderEditor
+    class ShaderEditor: public EditorWidget
     {
     public:
         ShaderEditor(const Ref<Shader>& _shader);
-        ~ShaderEditor() = default;
-        Ref<Shader> ShaderObject;
+        ~ShaderEditor() override = default;
+        WRef<Shader> m_ShaderRef;
         
-        bool IsOpen;
-        void Update();
+        void Update(float _deltaTime)  override;
     };
 }

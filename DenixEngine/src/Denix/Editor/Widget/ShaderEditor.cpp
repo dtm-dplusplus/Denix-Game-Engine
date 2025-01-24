@@ -7,35 +7,40 @@
 
 namespace Denix
 {
-    ShaderEditor::ShaderEditor(const Ref<Shader>& _shader): ShaderObject(_shader), IsOpen(true)
+    ShaderEditor::ShaderEditor(const Ref<Shader>& _shader): EditorWidget({"Shader Editor" + _shader->GetAssetName()}),  m_ShaderRef(_shader)
     {
         
     }
 
-    void ShaderEditor::Update()
+    void ShaderEditor::Update(float _deltaTime)
     {
-        ImGui::Begin("Shader Editor", &IsOpen);
-        ImGui::BeginTabBar("Shader Editor Tabs");
-        if (ShaderObject)
+        EditorWidget::Update(_deltaTime);
+        ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Appearing);
+        if (ImGui::Begin("Shader Editor", &m_IsOpen))
         {
-            for (auto& shaderSource : ShaderObject->GetShaderSources())
+            ImGui::BeginTabBar("Shader Editor Tabs");
+
+            if (const auto shader = m_ShaderRef.lock())
             {
-                if (ImGui::BeginTabItem(shaderSource.FileName.c_str()))
+                for (auto& shaderSource : shader->GetShaderSources())
                 {
-                    static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput |
-                        ImGuiInputTextFlags_CtrlEnterForNewLine ;
-                    if(ImGui::Button("Recompile Shader"))
+                    if (ImGui::BeginTabItem(shaderSource.FileName.c_str()))
                     {
-                        AssetSubsystem::ReloadShader(ShaderObject);
+                        static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput |
+                            ImGuiInputTextFlags_CtrlEnterForNewLine ;
+                        if(ImGui::Button("Recompile Shader"))
+                        {
+                            AssetSubsystem::ReloadShader(shader);
+                        }
+                        ImGui::BeginChild(shaderSource.FileName.c_str());
+                        ImGui::InputTextMultiline("##source", &shaderSource.Source, ImGui::GetWindowSize(), flags);
+                        ImGui::EndChild();
+                        ImGui::EndTabItem();
                     }
-                    ImGui::BeginChild(shaderSource.FileName.c_str());
-                    ImGui::InputTextMultiline("##source", &shaderSource.Source, ImGui::GetWindowSize(), flags);
-                    ImGui::EndChild();
-                    ImGui::EndTabItem();
                 }
             }
+            ImGui::EndTabBar();
+            ImGui::End();
         }
-        ImGui::EndTabBar();
-        ImGui::End();
     }
 }

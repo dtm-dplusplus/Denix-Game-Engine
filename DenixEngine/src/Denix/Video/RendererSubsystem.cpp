@@ -13,6 +13,14 @@ namespace Denix
         DE_LOG(LogRender, Warn, "Initializing RendererSubsystem")
         Subsystem::Initialize();
         m_DefaultShader = AssetSubsystem::GetDefaultShader();
+
+        /*std::vector<ShaderSource> defaultShaders;
+        defaultShaders.emplace_back(R"(Content/Engine/shaders/UI/UIVertex.glsl)");
+        defaultShaders.emplace_back(R"(Content/Engine/shaders/UI/UIFragment.glsl)");
+		
+       m_UIShader= AssetSubsystem::LoadShader(defaultShaders, "UIShader");*/
+        //DE_ASSERT(m_UIShader, "UI Shader not loaded")
+        
         DE_LOG(LogRender, Info, "RendererSubsystem Initialized")
     }
 
@@ -28,6 +36,20 @@ namespace Denix
         
         DE_PROFILE(Render Scene)
         RenderDefaultViewport();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        //m_UIShader->Bind();
+        // Draw Call
+        /*for (unsigned int i = 0; i < actor->m_MeshComponent->m_Model->m_Meshes.size(); i++)
+        {
+            if (actor->m_MeshComponent->m_Model->m_Meshes[i]->m_VAO && actor->m_MeshComponent->m_Model->m_Meshes[i]
+                ->m_IBO)
+            {
+                actor->m_MeshComponent->m_Model->m_Meshes[i]->m_VAO->Bind();
+                actor->m_MeshComponent->m_Model->m_Meshes[i]->m_IBO->Bind();
+                glDrawElements(GL_TRIANGLES, actor->m_MeshComponent->m_Model->m_Meshes[i]->m_IBO->m_IndexCount,
+                               GL_UNSIGNED_INT, 0);
+            }
+        }*/
         DE_PROFILE_END(Render Scene)
     }
 

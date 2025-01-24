@@ -16,7 +16,7 @@ void Denix::InputDebuggerWidget::Update(float _deltaTime)
     
     ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Appearing);
     
-    ImGui::Begin(GetName().c_str());
+    ImGui::Begin(GetName().c_str(), &m_IsOpen);
 
     ImGui::BeginDisabled();
     ImGui::SeparatorText("Mouse Motion");
