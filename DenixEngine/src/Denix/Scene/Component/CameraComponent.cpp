@@ -40,15 +40,16 @@ void Denix::CameraComponent::Update(float _deltaTime)
 
 	// Prepare Aspect
 	m_Aspect = WindowSubsystem::GetWindowSize();
+	m_AspectRatio = m_Aspect.x / m_Aspect.y;
 	
     // m_Projection matrix
     if (m_IsPerspective)
     {
-        m_Projection = glm::perspective(glm::radians(m_Fov), m_Aspect.x / m_Aspect.y, m_NearPlane, m_FarPlane);
+        m_Projection = glm::perspective(glm::radians(m_Fov), m_AspectRatio, m_NearPlane, m_FarPlane);
     }
     else
     {
-        m_Projection = glm::ortho(0.0f, m_Aspect.x, m_Aspect.y, 0.0f, m_NearPlane, m_FarPlane);
+        m_Projection = glm::ortho(-1.6f, 1.6f, -0.9f, 0.9f, m_NearPlane, m_FarPlane);
     }
 		
     // Calculate the view matrix

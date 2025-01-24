@@ -487,10 +487,24 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
         {
             ImGui::Checkbox("Perspective Projection", &camComp->m_IsPerspective);
 
-            ImGui::DragFloat("Fov", &camComp->m_Fov, m_DragSpeed, 1.f, 170.f);
-            ImGui::SameLine();
-            if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) camComp->m_Fov = 45.f;
-            ImGui::SetItemTooltip("Reset");
+            if (camComp->m_IsPerspective)
+            {
+                ImGui::DragFloat("Fov", &camComp->m_Fov, m_DragSpeed, 1.f, 170.f);
+                ImGui::SameLine();
+                if (ImGui::ArrowButton("##ResetFov", ImGuiDir_Left)) camComp->m_Fov = 45.f;
+                ImGui::SetItemTooltip("Reset");
+
+                ImGui::DragFloat("Near Plane", &camComp->m_NearPlane, m_DragSpeed);
+                ImGui::SameLine();
+                if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) camComp->m_NearPlane = 0.1f;
+                ImGui::SetItemTooltip("Reset");
+
+                ImGui::DragFloat("Far Plane", &camComp->m_FarPlane, m_DragSpeed);
+                ImGui::SameLine();
+                if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) camComp->m_FarPlane = 1000.f;
+                ImGui::SetItemTooltip("Reset");
+            }
+           
 
             ImGui::DragFloat("Rotation Factor", &camComp->m_RotationFactor, m_DragSpeed);
             ImGui::SameLine();
@@ -506,15 +520,7 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
             if (ImGui::ArrowButton("##ResetYawRotationRate", ImGuiDir_Left)) camComp->m_YawRotationRate = 0.1f;
             ImGui::SetItemTooltip("Reset");
 
-            ImGui::DragFloat("Near Plane", &camComp->m_NearPlane, m_DragSpeed);
-            ImGui::SameLine();
-            if (ImGui::ArrowButton("##ResetNear Plane", ImGuiDir_Left)) camComp->m_NearPlane = 0.1f;
-            ImGui::SetItemTooltip("Reset");
-
-            ImGui::DragFloat("Far Plane", &camComp->m_FarPlane, m_DragSpeed);
-            ImGui::SameLine();
-            if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) camComp->m_FarPlane = 100.f;
-            ImGui::SetItemTooltip("Reset");
+           
 
             if (ImGui::TreeNode("Advance Camera Settings"))
             {
@@ -526,6 +532,15 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
                 ImGui::DragFloat3("Right", &right[0], m_DragSpeed);
                 ImGui::DragFloat3("Up", &up[0], m_DragSpeed);
 
+                ImGui::Checkbox("Othro Override", &camComp->m_OrthoOverride);
+                if (camComp->m_OrthoOverride)
+                {
+                    ImGui::DragFloat("Ortho Bottom", &camComp->m_OrthoBottom, m_DragSpeed);
+                    ImGui::DragFloat("Ortho Top", &camComp->m_OrthoTop, m_DragSpeed);
+                    ImGui::DragFloat("Ortho Left", &camComp->m_OrthoLeft, m_DragSpeed);
+                    ImGui::DragFloat("Ortho Right", &camComp->m_OrthoRight, m_DragSpeed);
+                }
+                
                 ImGui::DragFloat3("Camera Position", &position[0], m_DragSpeed);
 
                 ImGui::SameLine();
@@ -534,7 +549,6 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
 
                 ImGui::DragFloat3("Viewport Rotation", &rotation[0], m_DragSpeed);
 
-
                 ImGui::SameLine();
                 if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) rotation = glm::vec3(0.f);
                 ImGui::SetItemTooltip("Reset");
@@ -542,9 +556,8 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
                 ImGui::DragFloat("m_MoveSpeed", &camComp->m_MoveSpeed, m_DragSpeed, 1.f,
                                  10.f);
                 ImGui::SameLine();
-                if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left))
-                    camComp->
-                        m_MoveSpeed;
+                if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) camComp->m_MoveSpeed;
+                         
                 ImGui::SetItemTooltip("Reset");
 
                 ImGui::DragFloat("Scoll Wheel Speed", &camComp->m_MouseScrollSpeed,

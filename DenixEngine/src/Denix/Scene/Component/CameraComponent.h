@@ -18,9 +18,7 @@ namespace Denix
         CameraComponent();
         ~CameraComponent() override = default;
 
-        void BeginScene() override;
-
-        void Update(float _deltaTime) override;
+       
 
         void ProcessKeyboardInput(float _deltaTime);
         void ProccessMouseMovement(float _deltaTime);
@@ -38,12 +36,18 @@ namespace Denix
         bool m_ExternalControl = false;
 
         // Camera Properties
-    public:
         bool m_IsPerspective = true;
         float m_Fov = 45.f;
+
         float m_NearPlane = 0.1f;
         float m_FarPlane = 10000.f;
 
+        bool m_OrthoOverride = false;
+        float m_OrthoBottom = -1.0f;
+        float m_OrthoTop = 1.0f;
+        float m_OrthoLeft = -1.0f;
+        float m_OrthoRight = 1.0f;
+        
         // Factor used to represent the speed of the rotation within respectable limits
         bool m_EnableRotation = true;
         float m_RotationFactor = 100.0f;
@@ -53,9 +57,13 @@ namespace Denix
         float m_MouseScrollSpeed = 0.5f;
 
     private:
-        bool m_IsGameCamera = false;
-        glm::vec2 m_Aspect = glm::vec2(800.f, 600.f);
+        void BeginScene() override;
 
+        void Update(float _deltaTime) override;
+        
+        bool m_IsGameCamera = false;
+        glm::vec2 m_Aspect;
+        float m_AspectRatio;
         // Viewport
         Ref<Viewport> m_Viewport;
         WRef<TransformComponent> m_TransformComponent;
