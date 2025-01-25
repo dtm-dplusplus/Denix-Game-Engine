@@ -23,9 +23,6 @@ namespace Denix
 	{
 	public:
 		RenderComponent();
-
-		RenderComponent(Ref<RenderComponent> _other);
-
 		~RenderComponent() override = default;
 
 		Ref<Texture> GetTexture() const { return m_Texture; }
@@ -46,22 +43,10 @@ namespace Denix
 		bool& IsVisible() { return m_IsVisible; }
 		void SetIsVisible(const bool _visible) { m_IsVisible = _visible; }
 
-		bool AffectsLighting() const { return m_AffectsLighting; }
-		bool& AffectsLighting() { return m_AffectsLighting; }
-		void SetAffectsLighting(const bool _affectsLighting) { m_AffectsLighting = _affectsLighting; }
-
 		bool m_IsUI = false;		
 
 	private:
-		void BeginScene() override;
-
-		void EndScene() override;
-
-		void RegisterComponent() override;
-		void UnregisterComponent() override;
-		
 		bool m_IsVisible = true;
-		bool m_AffectsLighting = true;
 
 		Ref<Shader> m_Shader;
 		Ref<Texture> m_Texture;

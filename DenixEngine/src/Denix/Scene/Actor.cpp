@@ -33,7 +33,6 @@ namespace Denix
         _out << YAML::Key << "m_RenderComponent" << YAML::BeginMap;
         {
             _out << YAML::Key << "m_IsVisible" << YAML::Value << m_RenderComponent->IsVisible();
-            _out << YAML::Key << "m_AffectsLighting" << YAML::Value << m_RenderComponent->AffectsLighting();
 
             // Texture Settings
             _out << YAML::Newline << YAML::Comment("Texture Settings");
@@ -107,7 +106,6 @@ namespace Denix
         if(const YAML::Node& renderCompNode = _in["m_RenderComponent"]; renderCompNode)
         {
             m_RenderComponent->SetIsVisible(renderCompNode["m_IsVisible"].as<bool>());
-            m_RenderComponent->SetAffectsLighting(renderCompNode["m_AffectsLighting"].as<bool>());
 
             // Texture Settings
             if (const YAML::Node& texSettings = renderCompNode["m_TextureSettings"]; texSettings)

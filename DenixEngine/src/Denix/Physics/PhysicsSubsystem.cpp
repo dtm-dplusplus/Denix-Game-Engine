@@ -64,12 +64,62 @@ namespace Denix
             return;
         }
 
-        if (!_comp->m_PxActor)
+        // Setup Physics Component
+         auto parent = _comp->m_Parent.lock();
+        const auto transform = parent->m_TransformComponent->m_Transform;
+        const auto scaleHalf = transform.Scale * 0.5f;
+
+        // Set Material
+        _comp->m_PxMaterial = m_PxPhysics->createMaterial(_comp->m_StaticFriction, _comp->m_DynamicFriction, _comp->m_Elasticity);
+        DE_ASSERT(_comp->m_PxMaterial, "Failed to create PhysX Material")
+        
+        switch (_comp->m_ColliderType)
         {
-            DE_LOG(LogPhysics, Error, "Invalid PxActor")
-            return;
+        case ColliderType::Plane:
+        {
+            _comp->m_PxShape = m_PxPhysics->createShape(physx::PxBoxGeometry(transform.Scale.x, 0.01f, transform.Scale.z), *_comp->m_PxMaterial);
+        } break;
+            
+        case ColliderType::Cube:
+            {
+                _comp->m_PxShape = m_PxPhysics->createShape(physx::PxBoxGeometry(scaleHalf.x, scaleHalf.y, scaleHalf.z), *_comp->m_PxMaterial);
+            } break;
+
+        case ColliderType::Sphere:
+            {
+                _comp->m_PxShape = m_PxPhysics->createShape(physx::PxSphereGeometry(scaleHalf.x), *_comp->m_PxMaterial);
+            } break;
         }
         
+        switch (parent->m_TransformComponent->m_Moveability)
+        {
+        case 0:
+            {
+                _comp->m_PxActor = m_PxPhysics->createRigidStatic(physx::PxTransform(transform.Position.x, transform.Position.y, transform.Position.z));
+            } break;
+
+        case 1:
+            {
+                if (physx::PxRigidDynamic* pxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(transform.Position.x, transform.Position.y, transform.Position.z)))
+                {
+                    pxActor->setLinearDamping(_comp->m_LinearDrag);
+                    pxActor->setAngularDamping(_comp->m_AngularDrag);
+                    pxActor->setLinearVelocity({_comp->m_Velocity.x, _comp->m_Velocity.y, _comp->m_Velocity.z});
+                    pxActor->setAngularVelocity({_comp->m_AngularVelocity.x, _comp->m_AngularVelocity.y, _comp->m_AngularVelocity.z});
+                    pxActor->setContactSlopCoefficient(_comp->m_PxSlopCoefficient);
+                    _comp->m_PxActor = pxActor;
+                    pxActor->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, false);
+                    _comp->SetInertia();
+                }
+            } break;
+        }
+
+        // Set the actor's shape & user data
+        _comp->m_PxActor->userData = parent.get();
+        _comp->m_PxActor->attachShape(*_comp->m_PxShape);
+
+        DE_ASSERT(_comp->m_PxActor, "Failed to create PhysX Actor")
+
         auto scene = s_Instance->m_ActiveScene.lock();
         if (scene->m_PxScene)
         {

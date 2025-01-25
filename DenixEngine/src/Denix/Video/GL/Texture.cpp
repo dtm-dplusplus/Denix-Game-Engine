@@ -1,29 +1,24 @@
 #include "Texture.h"
 
-#include <filesystem>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 namespace Denix
 {
-	Texture::Texture(const std::string& _path, bool _load)
+	Texture::Texture(): Asset(), m_TextureID(0),  m_Width(0), m_Height(0), m_BitDepth(0)
 	{
-		std::filesystem::path path = _path;
-		m_TextureID = 0;
-		m_TextureName = path.filename().string();
-		m_Width = 0;
-		m_Height = 0;
-		m_BitDepth = 0;
-		m_FilePath = _path;
-		if(_load) LoadTexture();
+	}
+
+	Texture::Texture(const std::string& _path): Asset(_path), m_TextureID(0), m_Width(0), m_Height(0), m_BitDepth(0)
+	{
 	}
 
     bool Texture::LoadTexture()
 	{
-		unsigned char* texData = stbi_load(m_FilePath.c_str(), &m_Width, &m_Height, &m_BitDepth, 0);
+		unsigned char* texData = stbi_load(GetAbsolutePath().c_str(), &m_Width, &m_Height, &m_BitDepth, 0);
 		if (!texData)
 		{
-			DE_LOG(LogRender, Error, "Failed to find: {}", m_FilePath)
+			DE_LOG(LogRender, Error, "Failed to find: {}", GetAbsolutePath())
 			return false;
 		}
 

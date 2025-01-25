@@ -33,7 +33,7 @@ namespace Denix
 		_out << YAML::Comment("DE_ASSET_MATERIAL");
 		_out << YAML::Key << "m_Material" << YAML::BeginMap;
 		_out << YAML::Key << "m_Asset" << YAML::Value << (m_Asset? m_Asset->GetRelativePath() : "");
-		_out << YAML::Key << "m_BaseTexture" << YAML::Value << (m_BaseTexture? m_BaseTexture->GetFileLocation() : "");
+		_out << YAML::Key << "m_BaseTexture" << YAML::Value << (m_BaseTexture? m_BaseTexture->GetRelativePath() : "");
 		_out << YAML::Key << "m_BaseColor" << YAML::Value << EmitVec3(m_BaseColor);
 		_out << YAML::Key << "m_Shader" << YAML::Value << (m_Shader? m_Shader->GetDirectoryName() : "");
 		_out << YAML::Key << "m_SpecularIntensity" << YAML::Value << m_SpecularIntensity;

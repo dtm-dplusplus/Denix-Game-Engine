@@ -108,8 +108,15 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         if (ImGui::DragFloat("Angular Drag", &comp->m_AngularDrag, m_DragSpeed, 0.0f, FLT_MAX)) comp->m_AttributeFlags |= PHYSICS_ANGULAR_DRAG;
 
         // Elasticity
-        if (ImGui::DragFloat("Elasticity", &comp->m_Elasticity, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_ELASTICITY;
+        if (ImGui::DragFloat("Elasticity", &comp->m_Elasticity, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_MATERIAL;
 
+        // Static Friction
+        if (ImGui::DragFloat("Static Friction", &comp->m_StaticFriction, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_MATERIAL;
+
+
+        // Dynamic Friction
+        if (ImGui::DragFloat("Dynamic Friction", &comp->m_DynamicFriction, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_MATERIAL;
+        
         if (ImGui::TreeNode("Advanced Settings"))
         {
             // Impulse Response
@@ -349,7 +356,7 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
     // Texture Preview
     if (texture)
     {
-        preview = texture->GetTextureName();
+        preview = texture->GetAssetFileName();
         if (unsigned int id = texture->GetTextureID())
         {
             ImGui::Image((void*)(intptr_t)id, ImVec2(100, 100));
@@ -360,12 +367,12 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
     // Texture Selection
     if (ImGui::BeginCombo("##TextureSelection", preview.c_str(), ImGuiComboFlags_WidthFitPreview))
     {
-        for (auto& [fst, snd] : AssetSubsystem::GetTextureStore())
+        for (auto& snd : AssetSubsystem::GetTextureStore() | std::views::values)
         {
-            ImGui::PushID(snd->GetTextureName().c_str());
+            ImGui::PushID(snd->GetAssetFileName().c_str());
             ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100));
             ImGui::SameLine();
-            if (ImGui::Selectable(snd->GetTextureName().c_str(), false,
+            if (ImGui::Selectable(snd->GetAssetFileName().c_str(), false,
                                   ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
                                   ImVec2(250, 100)))
             {

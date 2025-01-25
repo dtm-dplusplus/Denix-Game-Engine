@@ -5,6 +5,8 @@
 #include <string>
 #include <GL/glew.h>
 
+#include "Denix/Asset/Asset.h"
+
 
 namespace Denix
 {
@@ -17,20 +19,12 @@ namespace Denix
 		int FilterValue = 1; // ImGui Combo Index
 	};
 
-	class Texture
+	class Texture: public Asset
 	{
 	public:
-		Texture()
-		{
-			m_TextureID = 0;
-			m_TextureName = "";
-			m_Width = 0;
-			m_Height = 0;
-			m_BitDepth = 0;
-			m_FilePath = "";
-		}
+		Texture();
 
-		Texture(const std::string& _path, bool _load = false);
+		Texture(const std::string& _path);
 
 		bool LoadTexture();
 
@@ -52,33 +46,25 @@ namespace Denix
 			m_Width = 0;
 			m_Height = 0;
 			m_BitDepth = 0;
-			m_FilePath = "";
 		}
 
 		GLuint GetTextureID() const { return m_TextureID; }
 		GLenum GetTarget() const { return m_Target; }
-
-		std::string GetTextureName() const { return m_TextureName; }
 
 		TextureSettings GetSettings() const { return m_Settings; }
 		int GetWidth() const { return m_Width; }
 		int GetHeight() const { return m_Height; }
 		glm::vec2 GetSize() const { return { m_Width, m_Height }; }
 
-		std::string GetFileLocation() const { return m_FilePath; }
-
 		glm::vec4 m_BaseColor = glm::vec4(1.f, 1.f, 1.f, 1.f);
 
 	private:
 		GLuint m_TextureID;
-		std::string m_TextureName;
 
 		GLenum m_Target = GL_TEXTURE_2D;
 		int m_Width, m_Height, m_BitDepth;
 
 		TextureSettings m_Settings;
-
-		std::string m_FilePath;
 
 		friend class RenderComponent;
 		friend class RendererSubsystem;

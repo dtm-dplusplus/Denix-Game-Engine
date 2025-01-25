@@ -43,10 +43,6 @@ namespace Denix
 		PhysicsComponent();
 
 		~PhysicsComponent() override = default;
-		
-
-		
-
 
 		void AddForce(const glm::vec3& _force) const;
 
@@ -59,14 +55,13 @@ namespace Denix
 		bool m_RotationEnabled = true;
 		
 
-		void SetupPhysX();
-		void UpdatePxDynamicActor(physx::PxRigidDynamic* _actor);
 		void SetInertia();
 
 		float m_PxSlopCoefficient = 0.1f;
 		physx::PxRigidBodyFlags m_PxRigidBodyFlags;
 		physx::PxShape* m_PxShape = nullptr;
 		physx::PxRigidActor* m_PxActor = nullptr;
+		physx::PxMaterial* m_PxMaterial = nullptr;
 		PhysicsAttributeFlags m_AttributeFlags;
 		
 		//physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
@@ -86,7 +81,9 @@ namespace Denix
 		float m_AngularDrag = 0.5f;
 		
 		/** Elasticity used for impulse response (Bounciness) */
-		float m_Elasticity = 0.0f;
+		float m_Elasticity = 0.2f;
+		float m_StaticFriction = 0.1f;
+		float m_DynamicFriction = 0.1f;
 		
 	private:
 		/* Physics Component Settings */
@@ -135,9 +132,6 @@ namespace Denix
 		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 		void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 		
-		void BeginPlay() override;
-		void EndPlay() override;
-
 		void BeginScene() override;
 		void EndScene() override;
 		
