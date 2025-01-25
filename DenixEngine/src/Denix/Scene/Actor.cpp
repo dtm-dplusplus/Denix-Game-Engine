@@ -78,13 +78,12 @@ namespace Denix
             
             _out << YAML::Key << "m_Collider" << YAML::Value <<  "Cube"; // Temp until asset scraper built
             
-            _out << YAML::Key << "m_CollisionDetectionEnabled" << YAML::Value << m_PhysicsComponent->CollisionDetectionEnabled();
-            _out << YAML::Key << "m_CollisonDimesionOverride" << YAML::Value << m_PhysicsComponent->CollisionDimensionOverride();
+            _out << YAML::Key << "m_CollisionDetectionEnabled" << YAML::Value << m_PhysicsComponent->m_CollisionDetectionEnabled;
             _out << YAML::Key << "m_ImpulseEnabled" << YAML::Value << m_PhysicsComponent->GetImpulseEnabled();
-            _out << YAML::Key << "m_Mass" << YAML::Value << m_PhysicsComponent->GetMass();
-            _out << YAML::Key << "m_LinearDrag" << YAML::Value << m_PhysicsComponent->GetLinearDrag();
-            _out << YAML::Key << "m_Elasticity" << YAML::Value << m_PhysicsComponent->GetElasticity();
-            _out << YAML::Key << "m_AngularDrag" << YAML::Value << m_PhysicsComponent->GetAngularDrag();
+            _out << YAML::Key << "m_Mass" << YAML::Value << m_PhysicsComponent->m_Mass;
+            _out << YAML::Key << "m_LinearDrag" << YAML::Value << m_PhysicsComponent->m_LinearDrag;
+            _out << YAML::Key << "m_Elasticity" << YAML::Value << m_PhysicsComponent->m_Elasticity;
+            _out << YAML::Key << "m_AngularDrag" << YAML::Value << m_PhysicsComponent->m_AngularDrag;
         }
         _out << YAML::EndMap;
         // End Physics Component
@@ -145,13 +144,12 @@ namespace Denix
         {
             m_PhysicsComponent->SetSimulatePhysics(physicsComp["m_SimulatePhysics"].as<bool>());
             m_PhysicsComponent->m_Collider = MakeRef<CubeCollider>();
-            m_PhysicsComponent->SetCollisionDetectionEnabled(physicsComp["m_CollisionDetectionEnabled"].as<bool>());
-            m_PhysicsComponent->CollisionDimensionOverride() = physicsComp["m_CollisonDimesionOverride"].as<bool>();
+            m_PhysicsComponent->m_CollisionDetectionEnabled = physicsComp["m_CollisionDetectionEnabled"].as<bool>();
             m_PhysicsComponent->SetImpulseEnabled(physicsComp["m_ImpulseEnabled"].as<bool>());
-            m_PhysicsComponent->GetMass() = physicsComp["m_Mass"].as<float>();
-            m_PhysicsComponent->GetLinearDrag() = physicsComp["m_LinearDrag"].as<float>();
-            m_PhysicsComponent->SetElasticity(physicsComp["m_Elasticity"].as<float>());
-            m_PhysicsComponent->GetAngularDrag() = physicsComp["m_AngularDrag"].as<float>();
+            m_PhysicsComponent->m_Mass = physicsComp["m_Mass"].as<float>();
+            m_PhysicsComponent->m_LinearDrag = physicsComp["m_LinearDrag"].as<float>();
+            m_PhysicsComponent->m_Elasticity =physicsComp["m_Elasticity"].as<float>();
+            m_PhysicsComponent->m_AngularDrag = physicsComp["m_AngularDrag"].as<float>();
         }
 
         // Mesh Component

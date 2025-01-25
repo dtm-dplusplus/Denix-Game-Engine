@@ -99,16 +99,16 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         if (ImGui::Checkbox("Simulate Collision", &comp->CollisionDetectionEnabled())) comp->m_AttributeFlags |= PHYSICS_COLLISION;
         
         // Mass
-        ImGui::DragFloat("Mass", &comp->GetMass(), m_DragSpeed, FLT_MIN, FLT_MAX);
+        if (ImGui::DragFloat("Mass", &comp->m_Mass, m_DragSpeed, 0.0f, FLT_MAX)) comp->m_AttributeFlags |= PHYSICS_MASS;
 
         // Linear Drag
-        ImGui::DragFloat("Linear Drag", &comp->GetLinearDrag(), m_DragSpeed);
+        if (ImGui::DragFloat("Linear Drag", &comp->m_LinearDrag, m_DragSpeed, 0.0f, FLT_MAX)) comp->m_AttributeFlags |= PHYSICS_LINEAR_DRAG;
 
         // Angular Drag
-        ImGui::DragFloat("Angular Drag", &comp->GetAngularDrag(), m_DragSpeed);
+        if (ImGui::DragFloat("Angular Drag", &comp->m_AngularDrag, m_DragSpeed, 0.0f, FLT_MAX)) comp->m_AttributeFlags |= PHYSICS_ANGULAR_DRAG;
 
         // Elasticity
-        ImGui::DragFloat("Elasticity", &comp->GetElasticity(), m_DragSpeed, 0.0f, 1.0f);
+        if (ImGui::DragFloat("Elasticity", &comp->m_Elasticity, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_ELASTICITY;
 
         if (ImGui::TreeNode("Advanced Settings"))
         {

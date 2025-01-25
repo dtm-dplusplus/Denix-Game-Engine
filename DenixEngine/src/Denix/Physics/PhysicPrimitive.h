@@ -5,10 +5,12 @@
 // Define bit flags for physics attributes
 enum PhysicsAttributeFlags
 {
-    PHYSICS_SIMULATE     = (1 << 0),    // 0001 - Position modified
-    PHYSICS_COLLISION     = (1 << 1)     // 0010 - Velocity modified
-   //PHYSICS_ROTATION     = 1 << 2,     // 0100 - Rotation modified
-   //PHYSICS_SCALE        = 1 << 3,     // 1000 - Scale modified
+    PHYSICS_SIMULATE     = (1 << 0),    // Simulate modified
+    PHYSICS_COLLISION     = (1 << 1),     // Collision modified
+    PHYSICS_MASS    = (1 << 2),     // Mass modified
+    PHYSICS_LINEAR_DRAG    = (1 << 3),     // Linear Drag modified
+    PHYSICS_ANGULAR_DRAG = (1 << 4),     // Angular Drag modified
+    PHYSICS_ELASTICITY = (1 << 5),     // Elasticity modified
    //PHYSICS_FORCE        = 1 << 4,     // 10000 - Force applied
    //PHYSICS_COLLISION    = 1 << 5,     // 100000 - Collision state changed
    //PHYSICS_CONSTRAINT   = 1 << 6,     // 1000000 - Constraints modified

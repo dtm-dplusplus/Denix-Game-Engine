@@ -26,8 +26,5 @@ void Denix::SceneSettingsWidget::Update(float _deltaTime, const Ref<Counter>& _w
 		
     ImGui::SeparatorText("Physics");
     ImGui::DragFloat("Gravity", &m_SceneRef.lock()->m_Gravity);
-    ImGui::Checkbox("Collision Detection", &PhysicsSubsystem::CollisionDetectionEnabledRef());
-    ImGui::Checkbox("Collision Response", &PhysicsSubsystem::CollisionResponseEnabledRef());
-
     ImGui::End();
 }

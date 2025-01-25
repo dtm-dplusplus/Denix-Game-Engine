@@ -10,7 +10,7 @@ Denix::GACPActor::GACPActor()
     // m_ClassName = "CPGActor";
     m_PhysicsComponent->SimulatePhysics() = true;
     m_PhysicsComponent->m_RotationEnabled = false;
-    m_PhysicsComponent->GetMass() = Math::RandF(10.0f, 10000.0f);
+    m_PhysicsComponent->m_Mass = Math::RandF(10.0f, 10000.0f);
     
     // Create a copy of the material
     m_RenderComponent->GetMaterial() = MakeRef<Material>(m_RenderComponent->GetMaterial());

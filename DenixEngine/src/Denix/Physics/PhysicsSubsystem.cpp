@@ -142,63 +142,8 @@ namespace Denix
         Subsystem::PostUpdate(_deltaTime, _waitCounter);
     
             DE_PROFILE(Physics Post)
-            for (const auto& physcComp : m_PhysicsComponents)
-            {
-              // Check for modified attributes
-                    if (physcComp->m_PxActor)
-                    {
-                        if (physcComp->m_AttributeFlags & PHYSICS_SIMULATE)
-                        {
-                            if (physcComp->SimulatePhysics())
-                            {
-                                physcComp->m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, false);
-                                DE_LOG(LogPhysics, Trace, "Simulating Physics for {}", physcComp->GetParent()->GetName())
-                            }
-                            else
-                            {
-                                physcComp->m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
-                                DE_LOG(LogPhysics, Trace, "Stopping Physics Simulation for {}", physcComp->GetParent()->GetName())
-                            }
-                            physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_SIMULATE;
-                        }
-
-                        if (physcComp->m_AttributeFlags & PHYSICS_COLLISION)
-                        {
-                            if (physcComp->CollisionDetectionEnabled())
-                            {
-                                if (physcComp->m_PxShape)
-                                {
-                                    physx::PxShape* shape; // Adjust if needed
-                                    physcComp->m_PxActor->getShapes(&shape, 1);
-                                   physcComp->m_PxActor->attachShape(*physcComp->m_PxShape);
-                                }
-                              
-                                    
-                                DE_LOG(LogPhysics, Trace, "Collision Detection Enabled for {}", physcComp->GetParent()->GetName())
-                            }
-                            else
-                            {
-                                physx::PxShape* shape; // Adjust if needed
-                                physcComp->m_PxActor->getShapes(&shape, 1);
-                                physcComp->m_PxActor->detachShape(*shape);
-                                DE_LOG(LogPhysics, Trace, "Collision Detection Disabled for {}", physcComp->GetParent()->GetName())
-                            }
-
-                            physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_COLLISION;
-                        }
-                    }
-
-                    if (physcComp->SimulatePhysics())
-                    {
-                        if (!physcComp->m_PxActor) continue;
-                        
-                        if (physx::PxRigidDynamic* pxActor = physcComp->m_PxActor->is<physx::PxRigidDynamic>())
-                        {
-                            const glm::vec3& pos = physcComp->GetParent()->GetTransformComponent()->GetPosition();
-                            pxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
-                        }
-                    }
-            }
+            for (const auto& physcComp : m_PhysicsComponents) physcComp->PostUpdate(_deltaTime, _waitCounter);
+            
             DE_PROFILE_END(Physics Post)
     }
 }

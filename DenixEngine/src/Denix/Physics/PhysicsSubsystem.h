@@ -14,10 +14,7 @@ namespace Denix
 	class PhysicsSubsystem : public Subsystem<PhysicsSubsystem>
 	{
 	public:
-		PhysicsSubsystem()
-		{
-		}
-
+		PhysicsSubsystem() = default;
 		~PhysicsSubsystem() override = default;
 
 		PhysicsSubsystem(const PhysicsSubsystem& _other) = delete;
@@ -25,17 +22,12 @@ namespace Denix
 		PhysicsSubsystem& operator=(const PhysicsSubsystem& _other) = delete;
 		PhysicsSubsystem& operator=(PhysicsSubsystem&& _other) noexcept = delete;
 		
-		static bool CollisionDetectionEnabled() { return s_Instance->m_CollisionDetectionEnabled; }
-		static bool& CollisionDetectionEnabledRef() { return s_Instance->m_CollisionDetectionEnabled; }
-
-		static bool CollisionResponseEnabled() { return s_Instance->m_CollisionResponseEnabled; }
-		static bool& CollisionResponseEnabledRef() { return s_Instance->m_CollisionResponseEnabled; }
-
 		static void RegisterComponent(const Ref<PhysicsComponent>& _comp);
 		static void UnregisterComponent(const Ref<PhysicsComponent>& _comp);
 
 		static bool RayCast(const glm::vec3& _origin, const glm::vec3& _direction, float _distance, physx::PxRaycastBuffer& _hit);
-		
+
+		// @TODO This all needs to be private
 		inline static physx::PxDefaultAllocator		m_PxAllocator;
 		inline static physx::PxDefaultErrorCallback	m_PxErrorCallback;
 		inline static physx::PxFoundation*			m_PxFoundation = NULL;
@@ -51,15 +43,12 @@ namespace Denix
 		void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 		
 		void Initialize() override;
-
 		void Deinitialize() override;
 
 		static void SetActiveScene(const Ref<Scene>& _scene) { s_Instance->m_ActiveScene = _scene; }
 
 		WRef<Scene> m_ActiveScene;
 		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
-		bool m_CollisionDetectionEnabled = true;
-		bool m_CollisionResponseEnabled = true;
 
 		friend class PhysicsComponent;
 		friend class SceneSubsystem;

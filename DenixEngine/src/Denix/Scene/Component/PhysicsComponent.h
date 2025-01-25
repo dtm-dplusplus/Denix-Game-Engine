@@ -45,9 +45,7 @@ namespace Denix
 		~PhysicsComponent() override = default;
 		
 
-		void BeginScene() override;
 		
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
 
 		void AddForce(const glm::vec3& _force) const;
@@ -59,7 +57,7 @@ namespace Denix
 		void AddTorque(const glm::vec3& _torque) const;
 
 		bool m_RotationEnabled = true;
-		glm::vec3 m_InertiaTensor;
+		
 
 		void SetupPhysX();
 		void UpdatePxDynamicActor(physx::PxRigidDynamic* _actor);
@@ -73,6 +71,22 @@ namespace Denix
 		
 		//physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
 		ColliderType m_ColliderType = ColliderType::Cube;
+
+		/////////////////////* Linear Properties *///////////////////////
+		/** Mass of the object */
+		float m_Mass = 1.0f;
+
+		/** Mass Moment of inertia of the object */
+		glm::vec3 m_InertiaTensor = glm::vec3(1.0f);
+
+		/** Linear Drag force acting on the object */
+		float m_LinearDrag = 0.5f;
+
+		/** Angular Drag force acting on the object */
+		float m_AngularDrag = 0.5f;
+		
+		/** Elasticity used for impulse response (Bounciness) */
+		float m_Elasticity = 0.0f;
 		
 	private:
 		/* Physics Component Settings */
@@ -82,46 +96,13 @@ namespace Denix
 		/** Set to decide if the physics component should perform collision detection */
 		bool m_CollisionDetectionEnabled = true;
 
-		bool m_CollisonDimesionOverride = false;
-
-		/** Set to decide if the physics component should override collision tolereance used by collision system */
-		bool m_CustomCollisonTolerance = false;
-
-		/** Custom collision tolerance value which overrides the value used by the collision system */
-		float m_CollisionTolerance = 0.5f;
-
-		/** Set to decide if the physics component should be a trigger collider 
-		 * If true, the physics component will not respond to collisions, but will still trigger events
-		*/
-		bool m_IsTrigger = false;
-
 		bool m_ImpulseEnabled = true;
 
 		/** Collision used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
 
 	private:
-		/////////////////////* Linear Properties *///////////////////////
-		/** Mass of the object */
-		float m_Mass = 1.0f;
-
-		/** Velocity of the object */
-		glm::vec3 m_Velocity = glm::vec3(0.f);
-
-		/** Acceleration of the object */
-		glm::vec3 m_Acceleration = glm::vec3(0.f);
-
-		/** Force acting on the object */
-		glm::vec3 m_Force = glm::vec3(0.f);
-
-		/** Mass Moment of inertia of the object */
-		/*glm::vec3 m_InertiaTensor = glm::vec3(0.f);*/
-
-		/** Linear Drag force acting on the object */
-		float m_LinearDrag = 0.5f;
-
-		/** Elasticity used for impulse response (Bounciness) */
-		float m_Elasticity = 0.0f;
+		
 
 		/////////////////////* Angular Properties *///////////////////////
 		/** Angular velocity of the object */
@@ -130,23 +111,38 @@ namespace Denix
 		/** Angular Momentum */
 		glm::vec3 m_AngularMomentum = glm::vec3(0.f);
 
+		
+
+
+		/////////////////////* Read Only Properties *///////////////////////
+		/** Velocity of the object */
+		glm::vec3 m_Velocity = glm::vec3(0.f);
+
+		/** Acceleration of the object */
+		glm::vec3 m_Acceleration = glm::vec3(0.f);
+
+		/** Force acting on the object */
+		glm::vec3 m_Force = glm::vec3(0.f);
+		
 		// Net Torque
 		glm::vec3 m_Torque = glm::vec3(0.f);
-
-		/** Angular Drag force acting on the object */
-		float m_AngularDrag = 0.5f;
-
+		
 	private:
 		void RegisterComponent() override;
 		void UnregisterComponent() override;
+
+		
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+		void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 		
 		void BeginPlay() override;
 		void EndPlay() override;
+
+		void BeginScene() override;
 		void EndScene() override;
 		
 		/* Stateful members below. These dictacte engine behaviour, e.g. IsCollidig determines collider render color */
 		bool m_IsColliding = false;
-		glm::vec3 m_PreviousPosition = glm::vec3(0.f);
 
 		
 		friend class EditorSubsystem;
@@ -167,55 +163,14 @@ namespace Denix
 
 		bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
 		bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }
-		void SetCollisionDetectionEnabled(const bool _collisionDetectionEnabled)
-		{
-			m_CollisionDetectionEnabled = _collisionDetectionEnabled;
-
-			if (m_CollisionDetectionEnabled)
-			{
-				//DE_LOG(LogPhysics, Trace, "Collision detection enabled")
-			}
-			else
-			{
-				//DE_LOG(LogPhysics, Trace, "Collision detection disabled")
-			}
-		}
 
 		bool IsColliding() const { return m_IsColliding; }
 
-		bool CollisionDimensionOverride() const { return m_CollisonDimesionOverride; }
-		bool& CollisionDimensionOverride() { return m_CollisonDimesionOverride; }
-
 		glm::vec3 GetVelocity() const { return m_Velocity; }
-		glm::vec3& GetVelocity() { return m_Velocity; }
-
-		/*float GetMinimumVelocity() const { return m_MinimumVelocity; }
-		float& GetMinimumVelocity() { return m_MinimumVelocity; }*/
-
 		glm::vec3 GetAngularVelocity() const { return m_AngularVelocity; }
-		glm::vec3& GetAngularVelocity() { return m_AngularVelocity; }
-
 		glm::vec3 GetAcceleration() const { return m_Acceleration; }
-		glm::vec3& GetAcceleration() { return m_Acceleration; }
-
 		glm::vec3 GetForce() const { return m_Force; }
-		glm::vec3& GetForce() { return m_Force; }
-
 		float GetMass() const { return m_Mass; }
-		float& GetMass() { return m_Mass; }
-
-		float GetElasticity() const { return m_Elasticity; }
-		float& GetElasticity() { return m_Elasticity; }
-		void SetElasticity(const float _elasticity)
-		{
-			m_Elasticity = _elasticity;
-		}
-
-		float GetLinearDrag() const { return m_LinearDrag; }
-		float& GetLinearDrag() { return m_LinearDrag; }
-
-		float GetAngularDrag() const { return m_AngularDrag; }
-		float& GetAngularDrag() { return m_AngularDrag; }
 
 		bool GetImpulseEnabled() const { return m_ImpulseEnabled; }
 		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }

@@ -27,9 +27,11 @@ namespace Denix
         // Called each frame if the game is playing
         virtual void BeginPlay() {}
         virtual void EndPlay() {}
-        
-        virtual void Update(float _deltaTime, const Ref<Counter>& _waitCounter) {}
 
+        virtual void PreUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) {}
+        virtual void Update(float _deltaTime, const Ref<Counter>& _waitCounter) {}
+        virtual void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) {}
+        
         // Called when the scene is set as active
         virtual void BeginScene() {}
         virtual void EndScene() {}

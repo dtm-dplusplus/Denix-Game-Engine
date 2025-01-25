@@ -78,6 +78,72 @@ namespace Denix
         }
     }
 
+    void PhysicsComponent::PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
+    {
+        Component::PostUpdate(_deltaTime, _waitCounter);
+
+        if (!m_PxActor) return;
+                
+        // Update physx gravity - This only disables gravity, collisions are still detected
+        if (m_AttributeFlags & PHYSICS_SIMULATE)
+        {
+            if (SimulatePhysics())
+            {
+                m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, false);
+                DE_LOG(LogPhysics, Trace, "Simulating Physics for {}", GetParent()->GetName())
+            }
+            else
+            {
+                m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+                DE_LOG(LogPhysics, Trace, "Stopping Physics Simulation for {}", GetParent()->GetName())
+            }
+            m_AttributeFlags &= ~PHYSICS_SIMULATE;
+        }
+
+        // Update physx collision detection
+        if (m_AttributeFlags & PHYSICS_COLLISION)
+        {
+            if (CollisionDetectionEnabled())
+            {
+                if (m_PxShape)
+                {
+                    physx::PxShape* shape; // Adjust if needed
+                    m_PxActor->getShapes(&shape, 1);
+                   m_PxActor->attachShape(*m_PxShape);
+                }
+              
+                    
+                DE_LOG(LogPhysics, Trace, "Collision Detection Enabled for {}", GetParent()->GetName())
+            }
+            else
+            {
+                physx::PxShape* shape; // Adjust if needed
+                m_PxActor->getShapes(&shape, 1);
+                m_PxActor->detachShape(*shape);
+                DE_LOG(LogPhysics, Trace, "Collision Detection Disabled for {}", GetParent()->GetName())
+            }
+
+            m_AttributeFlags &= ~PHYSICS_COLLISION;
+        }
+
+    // Update physx mass
+    if (m_AttributeFlags & PHYSICS_MASS)
+    {
+        SetInertia();
+        DE_LOG(LogPhysics, Trace, "Mass set to {} for {}", GetMass(), GetParent()->GetName())
+        m_AttributeFlags &= ~PHYSICS_MASS;
+    }
+    
+    if (SimulatePhysics())
+    {
+        if (physx::PxRigidDynamic* pxActor = m_PxActor->is<physx::PxRigidDynamic>())
+        {
+            const glm::vec3& pos = GetParent()->GetTransformComponent()->GetPosition();
+            pxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
+        }
+    }
+    }
+
     void PhysicsComponent::AddImpulse(const glm::vec3& _impulse) const
     {
         if (!m_PxActor) return;
@@ -197,7 +263,7 @@ namespace Denix
         
         
         // Get geometry type
-        physx::PxGeometryType::Enum type;// = m_PxShape->getGeometryType();
+        physx::PxType type = m_PxShape->getConcreteType();
         physx::PxVec3 inertiaTensor;
 
         if (type == physx::PxGeometryType::eBOX) {
