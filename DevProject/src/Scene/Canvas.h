@@ -3,11 +3,16 @@
 
 namespace Denix
 {
+    class AudioClip;
+}
+
+namespace Denix
+{
     class Canvas
     {
     public:
         std::vector<Ref<Button>> m_Buttons;
-        int Selected = -1;
+        Ref<Button> m_SelectedButton;
         
         void Sort()
         {
@@ -17,6 +22,8 @@ namespace Denix
                 b->GetTransformComponent()->GetTransform().Position.y; });
         }
 
-        //void Update();
+        void Update();
+
+        WRef<AudioClip> m_NavigateAudioClip;
     };
 }

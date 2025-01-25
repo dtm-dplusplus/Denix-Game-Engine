@@ -62,7 +62,17 @@ void Denix::UIScene::BeginScene()
 {
     Scene::BeginScene();
     canvas = MakeRef<Canvas>();
-    m_ActiveCamera->GetTransformComponent()->GetTransform().Position = {0.0f, 0.0f, 0.0f};
+    canvas->m_Buttons.push_back(SpawnActor<Button>());
+    canvas->m_Buttons.back()->GetTransformComponent()->GetPosition().y = -1.0f;
+    canvas->m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
+    canvas->m_Buttons.push_back(SpawnActor<Button>());
+    canvas->m_Buttons.back()->GetTransformComponent()->GetPosition().y = -2.0f;
+    canvas->m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
+    canvas->m_Buttons.push_back(SpawnActor<Button>());
+    canvas->m_Buttons.back()->GetTransformComponent()->GetPosition().y = -3.0f;
+    canvas->m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
+    
+    m_ActiveCamera->GetTransformComponent()->GetTransform().Position = {0.0f, 0.0f, 5.0f};
    // CreateTextBox("", Position, {WIDTH, HEIGHT}, {1.0f, 1.0f, 1.0f});
 }
 
@@ -76,6 +86,7 @@ void Denix::UIScene::Update(float _deltaTime)
         if (textureID[i]) ImGui::Image((void*)(intptr_t)textureID[i], ImVec2(WIDTH, HEIGHT));
     }*/
 
+    ImGui::Text("Selected Button: %s", (canvas->m_SelectedButton? canvas->m_SelectedButton->GetName().c_str() : "None"));
     if (ImGui::Button("Create Button"))
     {
         Ref<Button> btn = SpawnActor<Button>();

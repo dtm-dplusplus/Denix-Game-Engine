@@ -56,9 +56,9 @@ namespace Denix
                                    m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime);
             WaitForCounter(physicsCounter);
 
-            // Update the scene. The majority of the client game logic will be here. Do this in parallel with the rendering
+            // Update the scene. The majority of the client game logic will be here. 
             Ref<Counter> sceneCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJob("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update,
+            m_JobSubsystem->AddJobInline("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update,
                                    m_SceneSubsystem, m_TimerSubsystem->m_DeltaTime, sceneCounter);
             WaitForCounter(sceneCounter);
             DE_PROFILE_END(Scene Update)

@@ -6,7 +6,7 @@
 
 namespace Denix
 {
-	Material::Material(const ObjectInit& _objInit) : BaseObject({_objInit}), AO(0), Metallic(0), Roughness(0)
+	Material::	Material(const ObjectInit& _objInit) : BaseObject({_objInit}), AO(0), Metallic(0), Roughness(0)
 	{
 		m_Shader = AssetSubsystem::GetShader("DefaultShader");
 	}

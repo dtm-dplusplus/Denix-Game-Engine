@@ -44,14 +44,47 @@ void Denix::AudioSubsystem::Initialize()
     AudioSource::s_MaxStereoSources = stereoSources;
     DE_LOG(LogAudio, Info, "Mono Sources: {}, Stereo Sources: {}", monoSources, stereoSources)
     DE_LOG(LogAudio, Info, "Max Sources: {}", monoSources + stereoSources)
-    
+
     DE_LOG(LogAudio, Info, "Audio Subsystem Initialized")
+}
+
+void Denix::AudioSubsystem::PlayAudioClip(const Ref<AudioClip>& _audioClip)
+{
+    if (!_audioClip)
+    {
+        DE_LOG(LogAudio, Error, "Audio Clip is null")
+        return;
+    }
+
+    static Ref<AudioSource> audioSource = MakeRef<AudioSource>();
+   {
+       audioSource->SetAudioClip(_audioClip);
+       audioSource->Play();
+   }
+}
+
+Denix::Ref<Denix::AudioSource> Denix::AudioSubsystem::CreateNewAudioSource()
+{
+    if (AudioSource::s_MonoSources + 1 >= AudioSource::s_MaxMonoSources)
+    {
+        DE_LOG(LogAudio, Error, "Failed to create audio source. No available sources")
+        return nullptr;
+    }
+
+    if (Ref<AudioSource> audioSource = MakeRef<AudioSource>())
+    {
+        AudioSource::s_MonoSources++;
+        return audioSource;
+    }
+
+    DE_LOG(LogAudio, Error, "Failed to create audio source")
+    
+    return nullptr;
 }
 
 void Denix::AudioSubsystem::Deinitialize()
 {
     DE_LOG(LogAudio, Trace, "Audio Subsystem Deinitializing")
-    m_AudioSources.clear();
     alcMakeContextCurrent(nullptr);
     alcDestroyContext(m_Context);
     alcCloseDevice(m_Device);

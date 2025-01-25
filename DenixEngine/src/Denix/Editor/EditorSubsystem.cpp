@@ -197,7 +197,7 @@ namespace Denix
 			{
 				if(ImGui::MenuItem("Set as Startup Scene"))
 				{
-					Engine::GetInstance()->m_Config.StartupScenePath = m_ActiveScene.lock()->m_SceneAsset->GetAssetPath();
+					AssetSubsystem::SetStartupScene(m_ActiveScene.lock()->m_SceneAsset->GetAssetPath());
 				}
 				ImGui::EndMenu();
 			}

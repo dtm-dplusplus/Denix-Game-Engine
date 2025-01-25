@@ -57,6 +57,39 @@ namespace Denix
 		Subsystem::Deinitialize();
 	}
 
+	void SceneSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
+	{
+		// Validate Scene
+		DE_ASSERT(m_ActiveScene,"No active scene found")
+
+		// End Profile is called after wait counter as the scene is updated in parallel
+		DE_PROFILE(Scene Update)
+
+		// Open Scene Request
+		if (m_RequestOpenSceneAsset) OpenScene(m_RequestOpenSceneAsset);
+		
+		
+		// Scene update implementation
+		if(m_BatchUpdateActors)
+		{
+			// Submit jobs for each actor
+			DE_PROFILE(AddJobBatch)
+			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
+		}
+		else
+		{
+			JobSubsystem::AddJobInline("Actor Update", Priority::NORMAL, _waitCounter, [this, _deltaTime]()
+			{
+				for (const auto actor: m_ActiveScene->m_Actors) actor->Update(_deltaTime);
+			});
+		}
+
+		// Client Scene Update
+		m_ActiveScene->Update(_deltaTime);
+		m_ActiveScene->DebugUI(_deltaTime);
+	}
+
+	
 	Ref<Camera> SceneSubsystem::GetActiveCamera()
 	{
 		if (s_Instance->m_ActiveScene)
@@ -135,6 +168,17 @@ namespace Denix
 		m_SceneState = SceneState::Stopped;
 		DE_LOG(LogScene, Info, "Activated Scene: {}",
 			s_Instance->m_ActiveScene->GetName())
+	}
+
+	void SceneSubsystem::RequestOpenScene(const Ref<Asset>& _sceneAsset)
+	{
+		if (!AssetSubsystem::GetSceneAsset(_sceneAsset->GetAssetPath()))
+		{
+			DE_LOG(LogScene, Error, "Request Open Scene Failed")
+			return;
+		}
+		
+		s_Instance->m_RequestOpenSceneAsset = _sceneAsset;
 	}
 
 	void SceneSubsystem::PlayScene()
@@ -219,33 +263,6 @@ namespace Denix
 		DE_PROFILE_END(Clean Rubbish)
 	}
 
-	void SceneSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
-	{
-		// Validate Scene
-		DE_ASSERT(m_ActiveScene,"No active scene found")
-
-		// End Profile is called after wait counter as the scene is updated in parallel
-		DE_PROFILE(Scene Update)
-		
-		// Scene update implementation
-		if(m_BatchUpdateActors)
-		{
-			// Submit jobs for each actor
-			DE_PROFILE(AddJobBatch)
-			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
-		}
-		else
-		{
-			JobSubsystem::AddJobInline("Actor Update", Priority::NORMAL, _waitCounter, [this, _deltaTime]()
-			{
-				for (const auto actor: m_ActiveScene->m_Actors) actor->Update(_deltaTime);
-			});
-		}
-
-		// Client Scene Update
-		m_ActiveScene->Update(_deltaTime);
-		m_ActiveScene->DebugUI(_deltaTime);
-	}
 
 	void SceneSubsystem::SerializeScene()
 	{

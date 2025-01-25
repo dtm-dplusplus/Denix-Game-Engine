@@ -13,51 +13,7 @@
 
 namespace Denix
 {
-	Ref<Asset> AssetSubsystem::GetAsset(const std::string& _path)
-	{
-		for (const auto& asset : s_Instance->m_AssetStore)
-		{
-			if (asset->GetAssetPath() == _path)
-			{
-				return asset;
-			}
-		}
-
-		return nullptr;
-	}
-
-	Ref<AudioClip> AssetSubsystem::LoadAudioClip(const Ref<Asset>& _audioClipAsset)
-	{
-		if (s_Instance->m_AudioClipStore.contains(_audioClipAsset->GetAssetPath()))
-		{
-			DE_LOG(LogAsset, Error, "Load AudioClip: An audio clip name: {} is already loaded", _audioClipAsset->m_AssetName)
-			return s_Instance->m_AudioClipStore[_audioClipAsset->GetAssetPath()];
-		}
-
-		if (Ref<AudioClip> audioClip = MakeRef<AudioClip>(AssetInit(_audioClipAsset->GetAssetPath())))
-		{
-			if (!audioClip->Load()) return nullptr;
-			
-			s_Instance->m_AudioClipStore[_audioClipAsset->GetAssetPath()] = audioClip;
-			DE_LOG(LogAsset, Trace, "Audio Clip Loaded: {}", _audioClipAsset->m_AssetName)
-			return audioClip;
-		}
-
-		return nullptr;
-	}
-
-	Ref<AudioClip> AssetSubsystem::GetAudioClip(const std::string& _path)
-	{
-		if (s_Instance->m_AudioClipStore.contains(_path))
-		{
-			return s_Instance->m_AudioClipStore[_path];
-		}
-
-		DE_LOG(LogAsset, Error, "Audio Clip not found: {}", _path)
-		
-		return nullptr;
-	}
-
+	
 	void AssetSubsystem::Initialize()
 	{
 		DE_LOG(LogAsset, Warn, "Asset Subsystem Initializing")
@@ -173,13 +129,9 @@ namespace Denix
 		DE_LOG(LogAsset, Trace, "AssetSubsystem Deinitialized")
 	}
 	
-
-	Ref<Asset> AssetSubsystem::GetSceneAsset(const std::string& _path)
+	Ref<Asset> AssetSubsystem::GetAsset(const std::string& _path)
 	{
-		// We Should validate the path first
-
-		// Check registered assets
-		for (const auto& asset : s_Instance->m_SceneStore)
+		for (const auto& asset : s_Instance->m_AssetStore)
 		{
 			if (asset->GetAssetPath() == _path)
 			{
@@ -190,16 +142,74 @@ namespace Denix
 		return nullptr;
 	}
 
-	void AssetSubsystem::SetStartupScene(const Ref<Asset>& _ref)
+	Ref<AudioClip> AssetSubsystem::LoadAudioClip(const Ref<Asset>& _audioClipAsset)
 	{
-		if (!_ref)
+		if (s_Instance->m_AudioClipStore.contains(_audioClipAsset->GetAssetPath()))
+		{
+			DE_LOG(LogAsset, Error, "Load AudioClip: An audio clip name: {} is already loaded", _audioClipAsset->m_AssetName)
+			return s_Instance->m_AudioClipStore[_audioClipAsset->GetAssetPath()];
+		}
+
+		if (Ref<AudioClip> audioClip = MakeRef<AudioClip>(AssetInit(_audioClipAsset->GetAssetPath())))
+		{
+			if (!audioClip->Load()) return nullptr;
+			
+			s_Instance->m_AudioClipStore[_audioClipAsset->GetAssetPath()] = audioClip;
+			DE_LOG(LogAsset, Trace, "Audio Clip Loaded: {}", _audioClipAsset->m_AssetName)
+			return audioClip;
+		}
+
+		return nullptr;
+	}
+
+	Ref<AudioClip> AssetSubsystem::GetAudioClip(const std::string& _path)
+	{
+		std::string path = FileSubsystem::FormatPath(_path);
+		DE_LOG(LogAsset, Trace, "Pathhh Audio Clip: {}", path)
+		if (!s_Instance->m_AudioClipStore.contains(path))
+		{
+			DE_LOG(LogAsset, Error, "Audio Clip not found: {}", path)
+			return nullptr;
+		}
+
+		return s_Instance->m_AudioClipStore[path];
+	}
+
+	
+
+	Ref<Asset> AssetSubsystem::GetSceneAsset(const std::string& _path)
+	{
+		// We Should validate the path first
+        std::string path = FileSubsystem::FormatRelativePath(_path);
+		std::ranges::transform(path, path.begin(), ::tolower);
+		
+		// Check registered assets
+		for (const auto& asset : s_Instance->m_SceneStore)
+		{
+			std::string assetPath = FileSubsystem::FormatRelativePath(asset->GetAssetPath());
+			std::ranges::transform(assetPath, assetPath.begin(), ::tolower);
+			DE_LOG(LogAsset, Trace, "1. Pathhh Scene: {}", path)
+			DE_LOG(LogAsset, Trace, "2. Pathhh Scene: {}", asset->GetAssetPath())
+			DE_LOG(LogAsset, Trace, assetPath == path)
+			if (assetPath == path)
+			{
+				return asset;
+			}
+		}
+
+		return nullptr;
+	}
+
+	void AssetSubsystem::SetStartupScene(const std::string& _scenePath)
+	{
+		if (!GetSceneAsset(_scenePath))
 		{
 			DE_LOG(LogAsset, Error, "Invalid Scene Asset")
 			return;
 		}
 
-		s_Instance->m_StartupScene = _ref;
-		Engine::GetInstance()->m_Config.StartupScenePath = FileSubsystem::FormatRelativePath(s_Instance->m_StartupScene->GetAssetPath());
+		s_Instance->m_StartupScene = MakeRef<Asset>(FileSubsystem::FormatRelativePath(_scenePath));
+		Engine::GetInstance()->m_Config.StartupScenePath = s_Instance->m_StartupScene->GetAssetPath();
 	}
 
 	////////////////////////  SHADERS ///////////////////////////////
