@@ -28,10 +28,11 @@ namespace Denix
 
         m_Mouse = MakeRef<Mouse>();
         DE_ASSERT(m_Mouse, "Input: Mouse reference is invalid");
-        DE_LOG(LogInput, Info, "Keyboard Logging: {}", Keyboard::m_KeyboardLogging);
-        DE_LOG(LogInput, Info, "Mouse Button Logging: {}", Mouse::m_MouseButtonLogging);
-        DE_LOG(LogInput, Info, "Mouse Motion Logging: {}", Mouse::m_MouseMotionLogging);
-        DE_LOG(LogInput, Info, "Input Subsystem Initialized");
+        
+        DE_LOG(LogInput, Trace, "Keyboard Logging: {}", Keyboard::m_KeyboardLogging);
+        DE_LOG(LogInput, Trace, "Mouse Button Logging: {}", Mouse::m_MouseButtonLogging);
+        DE_LOG(LogInput, Trace, "Mouse Motion Logging: {}", Mouse::m_MouseMotionLogging);
+        DE_LOG(LogInput, Trace, "Input Subsystem Initialized");
     }
 
     void InputSubsystem::Deinitialize()

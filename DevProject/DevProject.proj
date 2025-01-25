@@ -1,2 +1,7 @@
+# Engine Configuration
 Project Name: DevProject
-Startup Scene: Content/Scene/UIScene.asset
+Startup Scene: Content\Scene\UIScene.asset
+# Input
+MouseMotionLogging: false
+MouseButtonLogging: false
+KeyboardLogging: false

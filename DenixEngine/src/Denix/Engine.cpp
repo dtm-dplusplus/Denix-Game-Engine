@@ -63,22 +63,7 @@ namespace Denix
             WaitForCounter(sceneCounter);
             DE_PROFILE_END(Scene Update)
 
-            // Update Physics Components
-            DE_PROFILE(Physics Post)
-            for (const auto& actor : m_SceneSubsystem->m_ActiveScene->m_Actors)
-            {
-                if (const Ref<PhysicsComponent> physcComp = actor->GetPhysicsComponent())
-                {
-                    if (!physcComp->m_PxActor) continue;
 
-                    if (physx::PxRigidDynamic* pxActor = physcComp->m_PxActor->is<physx::PxRigidDynamic>())
-                    {
-                        const glm::vec3& pos = actor->GetTransformComponent()->GetPosition();
-                        pxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
-                    }
-                }
-            }
-            DE_PROFILE_END(Physics Post)
 
             // Update the UI & Editor for any changes
             Ref<Counter> uiCounter = MakeRef<Counter>();
@@ -93,6 +78,23 @@ namespace Denix
                                          m_EditorSubsystem, m_TimerSubsystem->m_DeltaTime);
             //DE_LOG(LogEngine, Trace, "Update Editor")
 
+            // Update PxActor from Actor Transform after scene update
+            DE_PROFILE(Physics Post)
+            for (const auto& actor : m_SceneSubsystem->m_ActiveScene->m_Actors)
+            {
+                if (const Ref<PhysicsComponent> physcComp = actor->GetPhysicsComponent(); physcComp->SimulatePhysics())
+                {
+                    if (!physcComp->m_PxActor) continue;
+
+                    if (physx::PxRigidDynamic* pxActor = physcComp->m_PxActor->is<physx::PxRigidDynamic>())
+                    {
+                        const glm::vec3& pos = actor->GetTransformComponent()->GetPosition();
+                        pxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
+                    }
+                }
+            }
+            DE_PROFILE_END(Physics Post)
+            
             // Render the scene. This runs on the main thread as it requires the opengl context
             Ref<Counter> renderCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter,

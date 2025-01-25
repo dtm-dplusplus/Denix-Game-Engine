@@ -54,7 +54,7 @@ namespace Denix
     {
         Component::Update(_deltaTime);
 
-        if (m_PxActor && SceneSubsystem::GetSceneState() == SceneState::Playing)
+        if (m_PxActor && m_SimulatePhysics && SceneSubsystem::GetSceneState() == SceneState::Playing)
         {
             physx::PxTransform tform = m_PxActor->getGlobalPose();
             
@@ -63,8 +63,6 @@ namespace Denix
             parent->m_TransformComponent->m_Transform.Rotation = Math::Degrees(glm::eulerAngles(glm::quat(tform.q.w, tform.q.x, tform.q.y, tform.q.z)));
         }
     }
-
-    
 
     void PhysicsComponent::AddImpulse(const glm::vec3& _impulse) const
     {

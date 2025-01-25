@@ -84,7 +84,6 @@ namespace Denix
             _out << YAML::Key << "m_CollisonDimesionOverride" << YAML::Value << m_PhysicsComponent->CollisionDimensionOverride();
             _out << YAML::Key << "m_IsTrigger" << YAML::Value << m_PhysicsComponent->IsTrigger();
             _out << YAML::Key << "m_ImpulseEnabled" << YAML::Value << m_PhysicsComponent->GetImpulseEnabled();
-            _out << YAML::Key << "m_StepMethod" << YAML::Value << static_cast<int>(m_PhysicsComponent->GetStepMethod());
             _out << YAML::Key << "m_Mass" << YAML::Value << m_PhysicsComponent->GetMass();
             _out << YAML::Key << "m_LinearDrag" << YAML::Value << m_PhysicsComponent->GetLinearDrag();
             _out << YAML::Key << "m_Elasticity" << YAML::Value << m_PhysicsComponent->GetElasticity();
@@ -155,7 +154,6 @@ namespace Denix
             m_PhysicsComponent->CollisionDimensionOverride() = physicsComp["m_CollisonDimesionOverride"].as<bool>();
             m_PhysicsComponent->IsTrigger() = physicsComp["m_IsTrigger"].as<bool>();
             m_PhysicsComponent->SetImpulseEnabled(physicsComp["m_ImpulseEnabled"].as<bool>());
-            m_PhysicsComponent->SetStepMethod(static_cast<StepMethod>(physicsComp["m_StepMethod"].as<int>()));
             m_PhysicsComponent->GetMass() = physicsComp["m_Mass"].as<float>();
             m_PhysicsComponent->GetLinearDrag() = physicsComp["m_LinearDrag"].as<float>();
             m_PhysicsComponent->SetElasticity(physicsComp["m_Elasticity"].as<float>());

@@ -36,22 +36,6 @@ namespace Denix
 		float Penetration;
 	};
 
-	enum class TriggerState
-	{
-		Null,
-		Enter,
-		Exit,
-		Stay
-	};
-
-	enum class StepMethod
-	{
-		Euler,
-		RK2,
-		RK4,
-		Verlet
-	};
-
 	class PhysicsComponent : public Component, public std::enable_shared_from_this<PhysicsComponent>
 	{
 	public:
@@ -114,12 +98,6 @@ namespace Denix
 		bool m_IsTrigger = false;
 
 		bool m_ImpulseEnabled = true;
-
-		
-		/** Method used to step the physics simulation */
-		StepMethod m_StepMethod = StepMethod::RK2;
-
-		TriggerState m_TriggerState = TriggerState::Null;
 
 		/** Collision used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
@@ -287,17 +265,6 @@ namespace Denix
 		bool CollisionDimensionOverride() const { return m_CollisonDimesionOverride; }
 		bool& CollisionDimensionOverride() { return m_CollisonDimesionOverride; }
 
-		void SetStepMethod(const StepMethod _method)
-		{
-			m_StepMethod = _method;
-			//DE_LOG(LogPhysics, Trace, "Physics step method set to: {}", GetStepMethod(_method))
-		}
-		StepMethod GetStepMethod() const { return m_StepMethod; }
-		std::string GetStepMethod(StepMethod _method) const
-		{
-			const static std::string s[]{ "Euler", "k2", "k4", "Verlet" };
-			return s[static_cast<int>(m_StepMethod)];
-		}
 
 		bool IsTrigger() const { return m_IsTrigger; }
 		bool& IsTrigger() { return m_IsTrigger; }
@@ -313,19 +280,6 @@ namespace Denix
 			{
 				DE_LOG(LogPhysics, Trace, "Physics component set to collision collider")
 			}
-		}
-
-		TriggerState GetTriggerState() const { return m_TriggerState; }
-		TriggerState& GetTriggerState() { return m_TriggerState; }
-
-		std::string GetTriggerStateS()
-		{
-			const static std::string s[]{ "Null", "Enter", "Exit", "Stay" };
-			return s[static_cast<int>(m_TriggerState)];
-		}
-		void SetTriggerState(const TriggerState _triggerState)
-		{
-			m_TriggerState = _triggerState;
 		}
 
 		glm::vec3 GetVelocity() const { return m_Velocity; }

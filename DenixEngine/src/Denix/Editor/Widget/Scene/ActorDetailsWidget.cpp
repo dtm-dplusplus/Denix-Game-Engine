@@ -123,30 +123,6 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         {
             // Impulse Response
             ImGui::Checkbox("Impulse Resonses", &comp->GetImpulseEnabled());
-
-            // Step Simulation Method
-            static const char* stepMethods[] = {"Euler", "k2"};
-            static int itemCurrent = 0; // Here we store our selection data as an index.
-            const char* comboPreview = stepMethods[itemCurrent];
-            // Pass in the previewMatName value visible before opening the combo
-            if (ImGui::BeginCombo("Step Method", comboPreview))
-            {
-                for (int n = 0; n < IM_ARRAYSIZE(stepMethods); n++)
-                {
-                    const bool is_selected = (itemCurrent == n);
-                    if (ImGui::Selectable(stepMethods[n], is_selected))
-                    {
-                        itemCurrent = n;
-                        comp->SetStepMethod(static_cast<StepMethod>(n));
-                    }
-
-                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
-
             ImGui::TreePop();
         }
 
