@@ -11,6 +11,7 @@ namespace Denix
     class Canvas
     {
     public:
+        Canvas();
         std::vector<Ref<Button>> m_Buttons;
         Ref<Button> m_SelectedButton;
         

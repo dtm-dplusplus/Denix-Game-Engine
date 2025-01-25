@@ -26,7 +26,7 @@ namespace Denix
         AudioSubsystem& operator=(const AudioSubsystem& _other) = delete;
         AudioSubsystem& operator=(AudioSubsystem&& _other) noexcept = delete;
 
-        static void PlayAudioClip(const Ref<AudioClip>& _audioClip);
+        static void PlayAudioClipSingle(const Ref<AudioClip>& _audioClip);
 
         static Ref<AudioSource> CreateNewAudioSource();
         
@@ -39,7 +39,7 @@ namespace Denix
         ALCcontext* m_Context;
 
         //std::vector<Ref<AudioSource>> m_AudioSources;
-        //Ref<AudioSource> m_GlobalAudioSource;
+        Ref<AudioSource> m_GlobalAudioSource;
         
         friend class Engine;
         friend class AudioSource;

@@ -44,11 +44,11 @@ void Denix::AudioSubsystem::Initialize()
     AudioSource::s_MaxStereoSources = stereoSources;
     DE_LOG(LogAudio, Info, "Mono Sources: {}, Stereo Sources: {}", monoSources, stereoSources)
     DE_LOG(LogAudio, Info, "Max Sources: {}", monoSources + stereoSources)
-
+    m_GlobalAudioSource = MakeRef<AudioSource>();
     DE_LOG(LogAudio, Info, "Audio Subsystem Initialized")
 }
 
-void Denix::AudioSubsystem::PlayAudioClip(const Ref<AudioClip>& _audioClip)
+void Denix::AudioSubsystem::PlayAudioClipSingle(const Ref<AudioClip>& _audioClip)
 {
     if (!_audioClip)
     {
@@ -56,11 +56,9 @@ void Denix::AudioSubsystem::PlayAudioClip(const Ref<AudioClip>& _audioClip)
         return;
     }
 
-    static Ref<AudioSource> audioSource = MakeRef<AudioSource>();
-   {
-       audioSource->SetAudioClip(_audioClip);
-       audioSource->Play();
-   }
+    s_Instance->m_GlobalAudioSource->SetAudioClip(_audioClip);
+    s_Instance->m_GlobalAudioSource->Play();
+    DE_LOG(LogAudio, Info, "Playing Audio Clip: {}", _audioClip->GetAssetName())
 }
 
 Denix::Ref<Denix::AudioSource> Denix::AudioSubsystem::CreateNewAudioSource()

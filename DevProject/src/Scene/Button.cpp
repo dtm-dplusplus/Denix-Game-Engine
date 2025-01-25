@@ -6,7 +6,8 @@
 
 Denix::Button::Button()
 {
-    m_SelectAudioClip = AssetSubsystem::GetAudioClip("Content\\Engine\\audio\\UI_Select.wav");
+   m_SelectAudioClip = AssetSubsystem::GetAudioClip("Content\\Engine\\audio\\UI_Select.wav");
+    //m_SelectAudioClip = AssetSubsystem::GetAudioClip("Content\\Audio\\music.wav");
     m_RenderComponent->m_IsUI = true;
     Ref<Material> mat = MakeRef<Material>();
     mat->GetBaseColor() = { 1.0f,1.0f,1.0f };   
@@ -22,8 +23,9 @@ void Denix::Button::OnSelect()
 {
     if (m_SelectAudioClip)
     {
+        AudioSubsystem::PlayAudioClipSingle(m_SelectAudioClip);
         DE_LOG(LogUI, Info, "Button Selected: {0}", GetName())
     }
 
-    SceneSubsystem::RequestOpenScene(MakeRef<Asset>(AssetInit("Content\\Scene\\AudioScene.asset")));
+    //SceneSubsystem::RequestOpenScene(MakeRef<Asset>(AssetInit("Content\\Scene\\AudioScene.asset")));
 }

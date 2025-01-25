@@ -1,7 +1,14 @@
 ﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
 #include "Canvas.h"
 
+#include "Denix/Asset/AssetSubsystem.h"
+#include "Denix/Audio/AudioSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
+
+Denix::Canvas::Canvas()
+{
+    m_NavigateAudioClip = AssetSubsystem::GetAudioClip("Content\\Engine\\audio\\UI_Navigate.wav");
+}
 
 void Denix::Canvas::Update()
 {
@@ -24,6 +31,7 @@ void Denix::Canvas::Update()
                 m_SelectedButton->GetRenderComponent()->GetMaterial()->GetBaseColor() = Button::defaultColor;
                 m_SelectedButton = m_Buttons[i + 1];
                 m_SelectedButton->GetRenderComponent()->GetMaterial()->GetBaseColor() = Button::selectedColor;
+                AudioSubsystem::PlayAudioClipSingle(m_NavigateAudioClip.lock());
                 break;
             }
         }
@@ -37,6 +45,7 @@ void Denix::Canvas::Update()
                 m_SelectedButton->GetRenderComponent()->GetMaterial()->GetBaseColor() = Button::defaultColor;
                 m_SelectedButton = m_Buttons[i - 1];
                 m_SelectedButton->GetRenderComponent()->GetMaterial()->GetBaseColor() = Button::selectedColor;
+                AudioSubsystem::PlayAudioClipSingle(m_NavigateAudioClip.lock());
                 break;
             }
         }
