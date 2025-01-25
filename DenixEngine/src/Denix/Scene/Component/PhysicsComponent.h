@@ -9,6 +9,7 @@
 #include "Denix/Scene/Component.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Physics/Collider.h"
+#include "Denix/Physics/PhysicPrimitive.h"
 #include "Denix/Scene/Actor.h"
 
 namespace physx
@@ -58,14 +59,17 @@ namespace Denix
 		void AddTorque(const glm::vec3& _torque) const;
 
 		bool m_RotationEnabled = true;
+		glm::vec3 m_InertiaTensor;
 
 		void SetupPhysX();
 		void UpdatePxDynamicActor(physx::PxRigidDynamic* _actor);
+		void SetInertia();
 
 		float m_PxSlopCoefficient = 0.1f;
 		physx::PxRigidBodyFlags m_PxRigidBodyFlags;
 		physx::PxShape* m_PxShape = nullptr;
 		physx::PxRigidActor* m_PxActor = nullptr;
+		PhysicsAttributeFlags m_AttributeFlags;
 		
 		//physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
 		ColliderType m_ColliderType = ColliderType::Cube;
@@ -74,12 +78,6 @@ namespace Denix
 		/* Physics Component Settings */
 		/** Set to decide if the physics component should update simulation */
 		bool m_SimulatePhysics = false;
-
-		/** Apply gravitaional force to this object */
-		bool m_SimulateGravity = true;
-
-		/** Set to decide if the attached collider should be rendered in default/unlit viewport - Null effect in collision viewport */
-		bool m_IsColliderVisible = false;
 
 		/** Set to decide if the physics component should perform collision detection */
 		bool m_CollisionDetectionEnabled = true;
@@ -116,11 +114,8 @@ namespace Denix
 		/** Force acting on the object */
 		glm::vec3 m_Force = glm::vec3(0.f);
 
-		/** Center of mass of the object */
-		glm::vec3 m_CenterOfMass = glm::vec3(0.f);
-
 		/** Mass Moment of inertia of the object */
-		/*glm::vec3 m_MomentOfInertia = glm::vec3(0.f);*/
+		/*glm::vec3 m_InertiaTensor = glm::vec3(0.f);*/
 
 		/** Linear Drag force acting on the object */
 		float m_LinearDrag = 0.5f;
@@ -141,104 +136,33 @@ namespace Denix
 		/** Angular Drag force acting on the object */
 		float m_AngularDrag = 0.5f;
 
-		/** Moment of inertia of the object */
-		float m_MomentOfInertia = 0.0f;
-
-		// Object Inertia Tensor
-		glm::mat3 m_ObjectInteriaTensor = glm::mat3(1.0f);
-
-		// Object Inverse Intertia Tensor
-		glm::mat3 m_ObjectInteriaTensorInverse = glm::mat3(1.0f);
-
-		// Body Inertia Tensor
-		glm::mat3 m_BodyInteriaTensor = glm::mat3(1.0f);
-
-		// Body Inertia Tensor Inverse
-		glm::mat3 m_BodyInteriaTensorInverse = glm::mat3(1.0f);
-
-		private:
-			void BeginPlay() override;
-			void EndPlay() override;
-			void EndScene() override;
-
 	private:
+		void RegisterComponent() override;
+		void UnregisterComponent() override;
+		
+		void BeginPlay() override;
+		void EndPlay() override;
+		void EndScene() override;
+		
 		/* Stateful members below. These dictacte engine behaviour, e.g. IsCollidig determines collider render color */
-		bool m_SteppedThisFrame = false;
-		bool m_SteppedNextFrame = false;
 		bool m_IsColliding = false;
 		glm::vec3 m_PreviousPosition = glm::vec3(0.f);
 
-	
+		
 		friend class EditorSubsystem;
 		friend class SceneSubsystem;
 		friend class PhysicsSubsystem;
 		friend class CollisionDetection;
 		friend class Actor;
+		friend class Engine;
 
 	public:
-		void ToggleSimulation()
-		{
-			if (m_SimulatePhysics)
-			{
-				DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
-			}
-			else
-			{
-				DE_LOG(LogPhysics, Trace, "Physics simulation disabled")
-			}
-		}
-
-		void ToggleGravity()
-		{
-			if (m_SimulateGravity)
-			{
-				DE_LOG(LogPhysics, Trace, "Custom Gravity enabled")
-			}
-			else
-			{
-				DE_LOG(LogPhysics, Trace, "Custom Gravity disabled")
-			}
-		}
-
-		void ToggleTrigger()
-		{
-			if (m_IsTrigger)
-			{
-				DE_LOG(LogPhysics, Trace, "Physics component set to trigger collider")
-			}
-			else
-			{
-				DE_LOG(LogPhysics, Trace, "Physics component set to collision collider")
-			}
-		}
-
-		void ToggleCollisionDetection()
-		{
-			/*if (m_CollisionDetectionEnabled)
-			{
-				DE_LOG(LogPhysics, Trace, "Collision detection enabled")
-			}
-			else
-			{
-				DE_LOG(LogPhysics, Trace, "Collision detection disabled")
-			}*/
-		}
-
 		// Getters
 		bool SimulatePhysics() const { return m_SimulatePhysics; }
 		bool& SimulatePhysics() { return m_SimulatePhysics; }
 		void SetSimulatePhysics(const bool _simulatePhysics)
 		{
 			m_SimulatePhysics = _simulatePhysics;
-
-			/*if (m_SimulatePhysics)
-			{
-				DE_LOG(LogPhysics, Trace, "Physics simulation enabled")
-			}
-			else
-			{
-				DE_LOG(LogPhysics, Trace, "Physics simulation disabled")
-			}*/
 		}
 
 		bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
@@ -259,28 +183,8 @@ namespace Denix
 
 		bool IsColliding() const { return m_IsColliding; }
 
-		bool IsColliderVisible() const { return m_IsColliderVisible; }
-		bool& IsColliderVisible() { return m_IsColliderVisible; }
-
 		bool CollisionDimensionOverride() const { return m_CollisonDimesionOverride; }
 		bool& CollisionDimensionOverride() { return m_CollisonDimesionOverride; }
-
-
-		bool IsTrigger() const { return m_IsTrigger; }
-		bool& IsTrigger() { return m_IsTrigger; }
-		void SetTrigger(const bool _isTrigger)
-		{
-			m_IsTrigger = _isTrigger;
-
-			if (m_IsTrigger)
-			{
-				DE_LOG(LogPhysics, Trace, "Physics component set to trigger collider")
-			}
-			else
-			{
-				DE_LOG(LogPhysics, Trace, "Physics component set to collision collider")
-			}
-		}
 
 		glm::vec3 GetVelocity() const { return m_Velocity; }
 		glm::vec3& GetVelocity() { return m_Velocity; }
@@ -307,21 +211,11 @@ namespace Denix
 			m_Elasticity = _elasticity;
 		}
 
-		glm::vec3 GetCenterOfMass() const { return m_CenterOfMass; }
-		glm::vec3& GetCenterOfMass() { return m_CenterOfMass; }
-
-		/*glm::vec3 GetMomentOfInertia() const { return m_MomentOfInertia; }
-		glm::vec3& GetMomentOfInertia() { return m_MomentOfInertia; }*/
-
 		float GetLinearDrag() const { return m_LinearDrag; }
 		float& GetLinearDrag() { return m_LinearDrag; }
 
 		float GetAngularDrag() const { return m_AngularDrag; }
 		float& GetAngularDrag() { return m_AngularDrag; }
-
-		bool GetSimulateGravity() const { return m_SimulateGravity; }
-		bool& GetSimulateGravity() { return m_SimulateGravity; }
-		void SetSimulateGravity(const bool _simulateGravity) { m_SimulateGravity = _simulateGravity; }
 
 		bool GetImpulseEnabled() const { return m_ImpulseEnabled; }
 		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }

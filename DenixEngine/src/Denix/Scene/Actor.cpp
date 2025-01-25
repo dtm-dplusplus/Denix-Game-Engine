@@ -75,14 +75,11 @@ namespace Denix
         _out << YAML::Key << "m_PhysicsComponent" << YAML::BeginMap;
         {
             _out << YAML::Key << "m_SimulatePhysics" << YAML::Value << m_PhysicsComponent->SimulatePhysics();
-            _out << YAML::Key << "m_SimulateGravity" << YAML::Value << m_PhysicsComponent->GetSimulateGravity();
             
             _out << YAML::Key << "m_Collider" << YAML::Value <<  "Cube"; // Temp until asset scraper built
             
-            _out << YAML::Key << "m_ColliderVisible" << YAML::Value << m_PhysicsComponent->IsColliderVisible();
             _out << YAML::Key << "m_CollisionDetectionEnabled" << YAML::Value << m_PhysicsComponent->CollisionDetectionEnabled();
             _out << YAML::Key << "m_CollisonDimesionOverride" << YAML::Value << m_PhysicsComponent->CollisionDimensionOverride();
-            _out << YAML::Key << "m_IsTrigger" << YAML::Value << m_PhysicsComponent->IsTrigger();
             _out << YAML::Key << "m_ImpulseEnabled" << YAML::Value << m_PhysicsComponent->GetImpulseEnabled();
             _out << YAML::Key << "m_Mass" << YAML::Value << m_PhysicsComponent->GetMass();
             _out << YAML::Key << "m_LinearDrag" << YAML::Value << m_PhysicsComponent->GetLinearDrag();
@@ -147,12 +144,9 @@ namespace Denix
         if (const YAML::Node physicsComp = _in["m_PhysicsComponent"]; physicsComp)
         {
             m_PhysicsComponent->SetSimulatePhysics(physicsComp["m_SimulatePhysics"].as<bool>());
-            m_PhysicsComponent->SetSimulateGravity(physicsComp["m_SimulateGravity"].as<bool>());
             m_PhysicsComponent->m_Collider = MakeRef<CubeCollider>();
-            m_PhysicsComponent->IsColliderVisible() = physicsComp["m_ColliderVisible"].as<bool>();
             m_PhysicsComponent->SetCollisionDetectionEnabled(physicsComp["m_CollisionDetectionEnabled"].as<bool>());
             m_PhysicsComponent->CollisionDimensionOverride() = physicsComp["m_CollisonDimesionOverride"].as<bool>();
-            m_PhysicsComponent->IsTrigger() = physicsComp["m_IsTrigger"].as<bool>();
             m_PhysicsComponent->SetImpulseEnabled(physicsComp["m_ImpulseEnabled"].as<bool>());
             m_PhysicsComponent->GetMass() = physicsComp["m_Mass"].as<float>();
             m_PhysicsComponent->GetLinearDrag() = physicsComp["m_LinearDrag"].as<float>();

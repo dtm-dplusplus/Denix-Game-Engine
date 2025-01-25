@@ -29,7 +29,21 @@ namespace Denix
         SetupPhysX();
 
         // Register the physics component with the physics subsystem
-        if (m_SimulatePhysics) PhysicsSubsystem::RegisterComponent(shared_from_this());
+        if (m_SimulatePhysics) RegisterComponent();
+    }
+
+    void PhysicsComponent::RegisterComponent()
+    {
+        Component::RegisterComponent();
+
+        PhysicsSubsystem::RegisterComponent(shared_from_this());
+    }
+
+    void PhysicsComponent::UnregisterComponent()
+    {
+        Component::UnregisterComponent();
+
+        PhysicsSubsystem::UnregisterComponent(shared_from_this());
     }
 
     void PhysicsComponent::BeginPlay()
@@ -153,6 +167,8 @@ namespace Denix
                 UpdatePxDynamicActor(m_PxActor->is<physx::PxRigidDynamic>());
             } break;
         }
+
+        // Set the actor's shape & user data
         m_PxActor->userData = parent.get();
         m_PxActor->attachShape(*m_PxShape);
     }
@@ -170,11 +186,57 @@ namespace Denix
 
         _actor->setContactSlopCoefficient(m_PxSlopCoefficient);
 
-        _actor->setMassSpaceInertiaTensor({m_MomentOfInertia, m_MomentOfInertia, m_MomentOfInertia});
-        physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidBody&>(*m_PxActor), m_Mass);
+        // Needs Fixing
+        SetInertia();
         _actor->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, false);
     }
 
-  
+    void PhysicsComponent::SetInertia()
+    {
+        if (!m_PxShape || m_PxActor) return;
+        
+        
+        // Get geometry type
+        physx::PxGeometryType::Enum type;// = m_PxShape->getGeometryType();
+        physx::PxVec3 inertiaTensor;
+
+        if (type == physx::PxGeometryType::eBOX) {
+            physx::PxBoxGeometry box;
+            //m_PxShape->getBoxGeometry(box);
+
+            // Compute inertia tensor for a solid box
+            float width = box.halfExtents.x * 2.0f;
+            float height = box.halfExtents.y * 2.0f;
+            float depth = box.halfExtents.z * 2.0f;
+
+            inertiaTensor = physx::PxVec3(
+                (1.0f / 12.0f) * m_Mass * (height * height + depth * depth),
+                (1.0f / 12.0f) * m_Mass * (width * width + depth * depth),
+                (1.0f / 12.0f) * m_Mass * (width * width + height * height)
+            );
+        }
+        else if (type == physx::PxGeometryType::eSPHERE) {
+            physx::PxSphereGeometry sphere;
+          //  m_PxShape->getSphereGeometry(sphere);
+
+            // Compute inertia tensor for a solid sphere
+            float radius = sphere.radius;
+            float I = (2.0f / 5.0f) * m_Mass * (radius * radius);
+            inertiaTensor = physx::PxVec3(I, I, I);
+        }
+        else {
+            // Default to a uniform tensor for unknown shapes
+            inertiaTensor = physx::PxVec3(1.0f, 1.0f, 1.0f) * m_Mass;
+        }
+
+        // Apply m_Mass and inertia tensor
+        if (physx::PxRigidDynamic* actor =  m_PxActor->is<physx::PxRigidDynamic>())
+        {
+            actor->setMass(m_Mass);
+            actor->setMassSpaceInertiaTensor(inertiaTensor);
+        }
+        //physx::PxRigidBodyExt::updateMassAndInertia(static_cast<physx::PxRigidBody&>(*m_PxActor), m_Mass);
+    }
+
 
 }

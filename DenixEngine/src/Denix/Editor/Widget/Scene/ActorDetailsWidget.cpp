@@ -94,18 +94,10 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         const Ref<PhysicsComponent> comp = _selectedObject->GetPhysicsComponent();
 
         // Physics Simulation
-        if (ImGui::Checkbox("Simulate Physics", &comp->SimulatePhysics())) comp->ToggleSimulation();
-
-        // Simulate Gravity
-        if (ImGui::Checkbox("Simulate Gravity", &comp->GetSimulateGravity())) comp->ToggleGravity();
-
-        // Collision Detection
-        if (ImGui::Checkbox("Collision Detection", &comp->CollisionDetectionEnabled()))
-            comp->
-                ToggleCollisionDetection();
-        ImGui::SameLine();
-        const std::string state = comp->IsColliding() ? "Colliding" : "Not Colliding";
-        ImGui::Text(" State: %s", state.c_str());
+        if (ImGui::Checkbox("Simulate Physics", &comp->SimulatePhysics()))
+        {
+            comp->m_AttributeFlags |= PHYSICS_SIMULATE;
+        }
 
         // Mass
         ImGui::DragFloat("Mass", &comp->GetMass(), m_DragSpeed, FLT_MIN, FLT_MAX);
@@ -188,15 +180,11 @@ void Denix::ActorDetailsWidget::CollisionWidget(const Ref<Actor>& _selectedObjec
                 ImGui::EndCombo();
             }
 
-            if (ImGui::Checkbox("Is Trigger", &pComp->IsTrigger())) pComp->ToggleTrigger();
-            ImGui::SameLine();
-            ImGui::Text(" State: %s", pComp->GetTriggerStateS().c_str());
-
             // Collider Visualiser
-            ImGui::Checkbox("Show Collider", &pComp->IsColliderVisible());
+            /*ImGui::Checkbox("Show Collider", &pComp->IsColliderVisible());*/
 
             // Collider settings
-            if (pComp->GetCollider())
+            /*if (pComp->GetCollider())
             {
                 switch (pComp->GetCollider()->GetColliderType())
                 {
@@ -233,7 +221,7 @@ void Denix::ActorDetailsWidget::CollisionWidget(const Ref<Actor>& _selectedObjec
                     }
                     break;
                 }
-            }
+            }*/
         }
     }
 }

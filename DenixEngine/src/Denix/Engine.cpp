@@ -82,14 +82,33 @@ namespace Denix
             DE_PROFILE(Physics Post)
             for (const auto& actor : m_SceneSubsystem->m_ActiveScene->m_Actors)
             {
-                if (const Ref<PhysicsComponent> physcComp = actor->GetPhysicsComponent(); physcComp->SimulatePhysics())
+                if (const Ref<PhysicsComponent> physcComp = actor->GetPhysicsComponent())
                 {
-                    if (!physcComp->m_PxActor) continue;
-
-                    if (physx::PxRigidDynamic* pxActor = physcComp->m_PxActor->is<physx::PxRigidDynamic>())
+                    // Check for modified attributes
+                    if (physcComp->m_AttributeFlags & PHYSICS_SIMULATE)
                     {
-                        const glm::vec3& pos = actor->GetTransformComponent()->GetPosition();
-                        pxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
+                        if (physcComp->SimulatePhysics())
+                        {
+                            physcComp->RegisterComponent();
+                            DE_LOG(LogPhysics, Trace, "Simulating Physics for {}", actor->GetName())
+                        }
+                        else
+                        {
+                            physcComp->UnregisterComponent();
+                            DE_LOG(LogPhysics, Trace, "Stopping Physics Simulation for {}", actor->GetName())
+                        }
+                        physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_SIMULATE;
+                    }
+
+                    if (physcComp->SimulatePhysics())
+                    {
+                        if (!physcComp->m_PxActor) continue;
+                        
+                        if (physx::PxRigidDynamic* pxActor = physcComp->m_PxActor->is<physx::PxRigidDynamic>())
+                        {
+                            const glm::vec3& pos = actor->GetTransformComponent()->GetPosition();
+                            pxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
+                        }
                     }
                 }
             }

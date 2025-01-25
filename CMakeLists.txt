@@ -46,7 +46,6 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/${ENGINE_NAME})
 # Copy Project & Engine files to the runtime directory
 file(COPY ${PROJECT_CONTENT_DIR}/ DESTINATION ${PROJECT_CONTENT_DIR_OUT})
 file(COPY ${PROJECT_FILE} DESTINATION ${PROJECT_DIR_OUT})
-file(COPY ${PROJECT_DIR}/Config/ DESTINATION ${PROJECT_DIR_OUT}/Config)
 file(COPY ${ENGINE_CONTENT_DIR}/ DESTINATION ${ENGINE_CONTENT_DIR_OUT})
 
 # Get Game project source files
