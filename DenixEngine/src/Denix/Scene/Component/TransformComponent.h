@@ -46,7 +46,7 @@ namespace Denix
   void BeginScene() override;
   void EndScene() override;
 
-  void Update(float _deltaTime) override;
+  void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
   void UpdateRotationVectorFromMatrix();
   Moveability GetMoveability() const { return static_cast<Moveability>(m_Moveability); }

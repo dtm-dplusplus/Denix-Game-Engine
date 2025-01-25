@@ -26,9 +26,9 @@ void JobTableWidget::JobTableSort(std::vector<Ref<JobProfile>>& jobProfiles)
         }
 }
 
-void JobTableWidget::Update(float _deltaTime)
+void JobTableWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    EditorWidget::Update(_deltaTime);
+    EditorWidget::Update(_deltaTime, _waitCounter);
 
     if (!m_ProfileSession) return;
 

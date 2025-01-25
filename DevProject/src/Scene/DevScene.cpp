@@ -16,15 +16,15 @@ void DevScene::BeginScene()
 	SpawnActor<Plane>()->GetTransformComponent()->GetScale() = { 10.0f, 0.01f, 10.0f };
 }
 
-void DevScene::Update(float _deltaTime)
+void DevScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-	Scene::Update(_deltaTime);
+	Scene::Update(_deltaTime, _waitCounter);
 
 }
 
-void DevScene::DebugUI(float _deltaTime)
+void DevScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-	Scene::DebugUI(_deltaTime);
+	Scene::DebugUI(_deltaTime, _waitCounter);
 
 	ImGui::Begin(GetName().c_str());
 	if(ImGui::Button("Spawn Cube"))

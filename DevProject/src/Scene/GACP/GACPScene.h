@@ -29,13 +29,13 @@ namespace Denix
          * \brief Updates the scene.
          * \param _deltaTime Time elapsed since the last update.
          */
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         /**
          * \brief Displays the debug UI for the scene.
          * \param _deltaTime Time elapsed since the last update.
          */
-        void DebugUI(float _deltaTime) override;
+        void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         /**
          * \brief Begins the benchmarking process.

@@ -17,19 +17,19 @@ void Denix::CameraComponent::BeginScene()
     m_TransformComponent = m_Parent.lock()->GetComponent<TransformComponent>();
 }
 
-void Denix::CameraComponent::Update(float _deltaTime)
+void Denix::CameraComponent::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Component::Update(_deltaTime);
+    Component::Update(_deltaTime, _waitCounter);
 
 
     // Camera Movement
     if (!m_ExternalControl)
     {
-        ProcessKeyboardInput(_deltaTime);
+        ProcessKeyboardInput(_deltaTime, _waitCounter);
 
-        ProccessMouseMovement(_deltaTime);
+        ProccessMouseMovement(_deltaTime, _waitCounter);
 
-    	m_TransformComponent.lock()->Update(_deltaTime); // Updating x2 for correct view - not ideal
+    	m_TransformComponent.lock()->Update(_deltaTime, _waitCounter); // Updating x2 for correct view - not ideal
     }
 
 	auto transform = m_TransformComponent.lock();
@@ -56,7 +56,7 @@ void Denix::CameraComponent::Update(float _deltaTime)
     m_View = glm::lookAt(pos, pos + fwd, up);
 }
 
-void Denix::CameraComponent::ProcessKeyboardInput(float _deltaTime)
+void Denix::CameraComponent::ProcessKeyboardInput(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
 	const auto& transform = m_TransformComponent.lock();
 	glm::vec3& pos = transform->GetPosition();
@@ -82,7 +82,7 @@ void Denix::CameraComponent::ProcessKeyboardInput(float _deltaTime)
 	}
 }
 
-	void Denix::CameraComponent::ProccessMouseMovement(float _deltaTime)
+	void Denix::CameraComponent::ProccessMouseMovement(float _deltaTime, const Ref<Counter>& _waitCounter)
 	{
 		const MouseData& mouseData = InputSubsystem::GetMouseData();
 

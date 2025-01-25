@@ -13,7 +13,7 @@ namespace Denix
         void BeginScene() override;
         void EndScene() override;
 
-        void DebugUI(float _deltaTime) override;
+        void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter) override;
         WRef<AudioClip> Clip;
         Ref<AudioSource> Source;
     };

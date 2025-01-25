@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Denix/Core.h"
-#include "Denix/Core/Thread/ThreadPrimitive.h"
+#include "Denix/Core/Thread/Counter.h"
 
 namespace Denix
 {
@@ -20,12 +20,9 @@ namespace Denix
 		virtual void Deinitialize() = 0;
 	
 		virtual void Update(float _deltaTime, const Ref<Counter>& _waitCounter) {}
-		virtual void Update(float _deltaTime) {}
 	
-		virtual void PreUpdate(float _deltaTime) {}
-		virtual void PostUpdate(float _deltaTime) {}
-
-		virtual void RegisterUpdate() {}
+		virtual void PreUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) {}
+		virtual void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) {}
 
 		virtual bool IsEnabled() const { return m_Enabled; }
 		virtual bool& IsEnabled() { return m_Enabled; }
@@ -60,13 +57,10 @@ namespace Denix
 		}
 		
 		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override {}
-		void Update(float _deltaTime) override {}
 
-		void PreUpdate(float _deltaTime) override {}
-		void PostUpdate(float _deltaTime) override {}
+		void PreUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override {}
+		void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override {}
 
-		void RegisterUpdate() override {}
-		
 		bool IsEnabled() const override { return m_Enabled; }
 		bool& IsEnabled() override { return m_Enabled; }
 		void SetEnabled(const bool _enabled) override { m_Enabled = _enabled; }

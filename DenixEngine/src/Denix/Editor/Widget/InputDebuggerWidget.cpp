@@ -10,7 +10,7 @@ Denix::InputDebuggerWidget::InputDebuggerWidget(): EditorWidget({"Input Debugger
     
 }
 
-void Denix::InputDebuggerWidget::Update(float _deltaTime)
+void Denix::InputDebuggerWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     MouseData mouseData = InputSubsystem::GetMouseData();
     

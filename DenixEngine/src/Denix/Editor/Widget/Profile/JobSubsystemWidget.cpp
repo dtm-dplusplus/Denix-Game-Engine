@@ -7,9 +7,9 @@
 
 namespace Denix
 {
-    void JobSubsystemWidget::Update(float _deltaTime)
+    void JobSubsystemWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        EditorWidget::Update(_deltaTime);
+        EditorWidget::Update(_deltaTime, _waitCounter);
 
         static Ref<JobSubsystem> jobSubsystem = JobSubsystem::GetInstance();
 

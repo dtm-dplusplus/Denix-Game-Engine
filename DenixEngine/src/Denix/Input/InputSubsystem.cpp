@@ -44,10 +44,10 @@ namespace Denix
         DE_LOG(LogInput, Trace, "Input Subsystem Deinitialized");
     }
 
-    void InputSubsystem::Update(float _deltaTime)
+    void InputSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
         DE_PROFILE(Input Update)
-        Subsystem::Update(_deltaTime);
+        Subsystem::Update(_deltaTime, _waitCounter);
         DE_PROFILE_END(Input Update)
     }
 

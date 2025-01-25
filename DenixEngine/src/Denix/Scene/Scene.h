@@ -30,9 +30,9 @@ namespace Denix
 
 		void EndPlay() override;
 
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
-		virtual void DebugUI(float _deltaTime) {}
+		virtual void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter) {}
 
 		bool IsPlaying() const;
 

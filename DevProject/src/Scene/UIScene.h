@@ -19,7 +19,7 @@ namespace Denix
         UIScene() = default;
 
         void BeginScene() override;
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
        // Ref<Button> button;
         Ref<Canvas> canvas;

@@ -7,13 +7,13 @@
 #include "Denix/Scene/Actor.h"
 #include "Denix/Scene/Actor/Shapes.h"
 
-Denix::AddActorWidget::AddActorWidget(const WRef<Scene>& _scene)
+Denix::AddActorWidget::AddActorWidget(const WRef<Scene>& _scene): EditorWidget({"AddActor"})
 {
 	m_SceneRef = _scene;
 	m_CreatedActor = false;
 }
 
-void Denix::AddActorWidget::Update(float _deltaTime)
+void Denix::AddActorWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     ImGui::BeginChild("AddObject", ImVec2(100, 25));
 		bool m_CreatedActor = false;

@@ -12,9 +12,9 @@ Denix::SceneSettingsWidget::SceneSettingsWidget(const WRef<Scene>& _scene): Scen
 {
 }
 
-void Denix::SceneSettingsWidget::Update(float _deltaTime)
+void Denix::SceneSettingsWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    SceneEditorWidget::Update(_deltaTime);
+    SceneEditorWidget::Update(_deltaTime, _waitCounter);
 
     ImGui::SetNextWindowDockID(EditorSubsystem::GetDockLeftID(), ImGuiCond_Appearing);
     ImGui::Begin(GetName().c_str());

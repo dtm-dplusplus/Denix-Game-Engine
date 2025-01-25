@@ -12,9 +12,9 @@ namespace Denix
         
     }
 
-    void ShaderEditor::Update(float _deltaTime)
+    void ShaderEditor::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        EditorWidget::Update(_deltaTime);
+        EditorWidget::Update(_deltaTime, _waitCounter);
         ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Appearing);
         if (ImGui::Begin("Shader Editor", &m_IsOpen))
         {

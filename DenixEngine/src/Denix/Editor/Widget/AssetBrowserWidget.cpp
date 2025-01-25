@@ -13,9 +13,9 @@ Denix::AssetBrowserWidget::AssetBrowserWidget(): EditorWidget({"AssetBrowser"})
 {
 }
 
-void Denix::AssetBrowserWidget::Update(float _deltaTime)
+void Denix::AssetBrowserWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    EditorWidget::Update(_deltaTime);
+    EditorWidget::Update(_deltaTime, _waitCounter);
 
     ImGui::SetNextWindowDockID(EditorSubsystem::GetDockDownID(), ImGuiCond_Appearing);
     ImGui::Begin("Asset Browser", &m_IsOpen);

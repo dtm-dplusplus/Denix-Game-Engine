@@ -47,7 +47,8 @@ namespace Denix
 		static physx::PxScene* CreatePxScene(const physx::PxSceneDesc* _sceneDesc);
 
 	private:
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+		void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 		
 		void Initialize() override;
 

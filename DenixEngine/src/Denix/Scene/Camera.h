@@ -15,7 +15,7 @@ namespace Denix
 
 		~Camera() override = default;
 
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
 		Ref<CameraComponent> GetCameraComponent() const { return m_CameraComponent; }
 	

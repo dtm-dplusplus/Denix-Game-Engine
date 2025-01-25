@@ -20,8 +20,8 @@ namespace Denix
 
        
 
-        void ProcessKeyboardInput(float _deltaTime);
-        void ProccessMouseMovement(float _deltaTime);
+        void ProcessKeyboardInput(float _deltaTime, const Ref<Counter>& _waitCounter);
+        void ProccessMouseMovement(float _deltaTime, const Ref<Counter>& _waitCounter);
 
         glm::mat4 GetProjectionMatrix() const { return m_Projection; }
 
@@ -59,7 +59,7 @@ namespace Denix
     private:
         void BeginScene() override;
 
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
         
         bool m_IsGameCamera = false;
         glm::vec2 m_Aspect;

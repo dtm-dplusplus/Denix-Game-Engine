@@ -17,9 +17,9 @@ Denix::EngineProfilerWidget::EngineProfilerWidget(): EditorWidget({"Engine Profi
     m_JobTableWidget = MakeRef<JobTableWidget>();
 }
 
-void Denix::EngineProfilerWidget::Update(float _deltaTime)
+void Denix::EngineProfilerWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    EditorWidget::Update(_deltaTime);
+    EditorWidget::Update(_deltaTime, _waitCounter);
 
     const float elaspedTime = Timer::GetProgramElaspedTime();
     const std::vector<Ref<ProfileSession>>& profileSessions = ProfileSubsystem::GetProfileSessions();
@@ -99,7 +99,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime)
             if (ImGui::TreeNode("Job Profiles"))
             {
                 m_JobTableWidget->m_ProfileSession = session;
-                m_JobTableWidget->Update(_deltaTime);
+                m_JobTableWidget->Update(_deltaTime, _waitCounter);
                 ImGui::TreePop();
             }
 

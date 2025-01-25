@@ -17,9 +17,9 @@ Denix::GACPActor::GACPActor()
     RandomModel();
 }
 
-void Denix::GACPActor::Update(float _deltaTime)
+void Denix::GACPActor::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Cube::Update(_deltaTime);
+    Cube::Update(_deltaTime, _waitCounter);
 
     // Reset the cube if it falls below the ground
     glm::vec3& pos = m_TransformComponent->GetPosition();

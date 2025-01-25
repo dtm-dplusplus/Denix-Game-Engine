@@ -44,8 +44,8 @@ namespace Denix
 		Subsystem::Deinitialize();
 		DE_LOG(LogUI, Trace, "UI Subsystem Deinitialized")
 	}
-	void UISubsystem::Update(float _deltaTime)
+	void UISubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 	{
-		Subsystem::Update(_deltaTime);
+		Subsystem::Update(_deltaTime, _waitCounter);
 	}
 }

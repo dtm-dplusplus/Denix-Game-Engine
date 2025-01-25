@@ -19,7 +19,7 @@ namespace Denix
          * \brief Updates the performance settings widget.
          * \param _deltaTime Time elapsed since the last update.
          */
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         /**
          * \brief Displays the performance settings widget.

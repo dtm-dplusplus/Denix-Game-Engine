@@ -19,9 +19,9 @@ Denix::ActorDetailsWidget::ActorDetailsWidget(): EditorWidget({"ActorDetails"})
 {
 }
 
-void Denix::ActorDetailsWidget::Update(float _deltaTime)
+void Denix::ActorDetailsWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    EditorWidget::Update(_deltaTime);
+    EditorWidget::Update(_deltaTime, _waitCounter);
 
     //ImGui::SetNextWindowSize(ImVec2((ImGui::GetWindowWidth() / 5), ImGui::GetWindowHeight()), ImGuiCond_Appearing);
     //ImGui::SetNextWindowPos(ImVec2((WinX / 6), MenuBarHeight), ImGuiCond_Appearing);
@@ -94,11 +94,10 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         const Ref<PhysicsComponent> comp = _selectedObject->GetPhysicsComponent();
 
         // Physics Simulation
-        if (ImGui::Checkbox("Simulate Physics", &comp->SimulatePhysics()))
-        {
-            comp->m_AttributeFlags |= PHYSICS_SIMULATE;
-        }
+        if (ImGui::Checkbox("Simulate Physics", &comp->SimulatePhysics()))  comp->m_AttributeFlags |= PHYSICS_SIMULATE;
 
+        if (ImGui::Checkbox("Simulate Collision", &comp->CollisionDetectionEnabled())) comp->m_AttributeFlags |= PHYSICS_COLLISION;
+        
         // Mass
         ImGui::DragFloat("Mass", &comp->GetMass(), m_DragSpeed, FLT_MIN, FLT_MAX);
 

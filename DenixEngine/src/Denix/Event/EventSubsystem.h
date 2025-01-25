@@ -36,7 +36,7 @@ namespace Denix
 		
 		void Initialize() override;
 		void Deinitialize() override;
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
 		//SDL_Event m_Event;
 		WRef<SDL_GLWindow> m_WindowRef;

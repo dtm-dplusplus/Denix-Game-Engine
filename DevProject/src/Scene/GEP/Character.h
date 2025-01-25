@@ -14,7 +14,7 @@ public:
     Character();
 
     void BeginPlay() override;
-    void Update(float _deltaTime) override;
+    void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
     bool IsOnGround();
     Ref<Camera> m_Camera;

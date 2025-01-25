@@ -62,7 +62,7 @@ namespace Denix
 	private:
 		void MainMenuBar();
 
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 		void Initialize() override;
 		void Deinitialize() override;
 

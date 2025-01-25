@@ -41,7 +41,7 @@ namespace Denix
             // Poll input & Events. Events will be dispatched to the appropriate subsystems
             Ref<Counter> eventCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, eventCounter, &EventSubsystem::Update,
-                                         m_EventSubsystem, m_TimerSubsystem->m_DeltaTime);
+                                         m_EventSubsystem, m_TimerSubsystem->m_DeltaTime, eventCounter);
             //DE_LOG(LogEngine, Trace, "Input Poll")
 
             // Clear the offscreen frame buffer
@@ -53,7 +53,7 @@ namespace Denix
             // Update the physics system. Collision detection and resolution will be here
             Ref<Counter> physicsCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, physicsCounter, &PhysicsSubsystem::Update,
-                                   m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime);
+                                   m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime, physicsCounter);
             WaitForCounter(physicsCounter);
 
             // Update the scene. The majority of the client game logic will be here. 
@@ -68,14 +68,14 @@ namespace Denix
             // Update the UI & Editor for any changes
             Ref<Counter> uiCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem,
-                                   m_TimerSubsystem->m_DeltaTime);
+                                   m_TimerSubsystem->m_DeltaTime, uiCounter);
             WaitForCounter(uiCounter);
             //DE_LOG(LogEngine, Trace, "UI Update")
 
             // Run on main due to opengl context when initializing the scene
             Ref<Counter> editorCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, editorCounter, &EditorSubsystem::Update,
-                                         m_EditorSubsystem, m_TimerSubsystem->m_DeltaTime);
+                                         m_EditorSubsystem, m_TimerSubsystem->m_DeltaTime, editorCounter);
             //DE_LOG(LogEngine, Trace, "Update Editor")
 
             // Update PxActor from Actor Transform after scene update
@@ -85,19 +85,49 @@ namespace Denix
                 if (const Ref<PhysicsComponent> physcComp = actor->GetPhysicsComponent())
                 {
                     // Check for modified attributes
-                    if (physcComp->m_AttributeFlags & PHYSICS_SIMULATE)
+                    if (physcComp->m_PxActor)
                     {
-                        if (physcComp->SimulatePhysics())
+                        if (physcComp->m_AttributeFlags & PHYSICS_SIMULATE)
                         {
-                            physcComp->RegisterComponent();
-                            DE_LOG(LogPhysics, Trace, "Simulating Physics for {}", actor->GetName())
+                            if (physcComp->SimulatePhysics())
+                            {
+                                physcComp->m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, false);
+                               // physcComp->RegisterComponent();
+                                DE_LOG(LogPhysics, Trace, "Simulating Physics for {}", actor->GetName())
+                            }
+                            else
+                            {
+                                //physcComp->UnregisterComponent();
+                                physcComp->m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+                                DE_LOG(LogPhysics, Trace, "Stopping Physics Simulation for {}", actor->GetName())
+                            }
+                            physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_SIMULATE;
                         }
-                        else
+
+                        if (physcComp->m_AttributeFlags & PHYSICS_COLLISION)
                         {
-                            physcComp->UnregisterComponent();
-                            DE_LOG(LogPhysics, Trace, "Stopping Physics Simulation for {}", actor->GetName())
+                            if (physcComp->CollisionDetectionEnabled())
+                            {
+                                if (physcComp->m_PxShape)
+                                {
+                                    physx::PxShape* shape; // Adjust if needed
+                                    physcComp->m_PxActor->getShapes(&shape, 1);
+                                   physcComp->m_PxActor->attachShape(*physcComp->m_PxShape);
+                                }
+                              
+                                    
+                                DE_LOG(LogPhysics, Trace, "Collision Detection Enabled for {}", actor->GetName())
+                            }
+                            else
+                            {
+                                physx::PxShape* shape; // Adjust if needed
+                                physcComp->m_PxActor->getShapes(&shape, 1);
+                                physcComp->m_PxActor->detachShape(*shape);
+                                DE_LOG(LogPhysics, Trace, "Collision Detection Disabled for {}", actor->GetName())
+                            }
+
+                            physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_COLLISION;
                         }
-                        physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_SIMULATE;
                     }
 
                     if (physcComp->SimulatePhysics())

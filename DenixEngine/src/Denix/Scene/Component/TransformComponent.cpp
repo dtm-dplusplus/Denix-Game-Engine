@@ -21,7 +21,7 @@ namespace Denix
         Component::EndScene();
     }
 
-    void TransformComponent::Update(float _deltaTime)
+    void TransformComponent::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
         glm::vec3 fwd;
         fwd.x = cos(glm::radians(m_Transform.Rotation.y)) * cos(glm::radians(m_Transform.Rotation.x));

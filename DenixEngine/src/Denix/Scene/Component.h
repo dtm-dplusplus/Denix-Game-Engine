@@ -36,9 +36,9 @@ namespace Denix
 		{
 			BaseObject::EndPlay();
 		}
-		void Update(float _deltaTime) override
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override
 		{
-			BaseObject::Update(_deltaTime);
+			BaseObject::Update(_deltaTime, _waitCounter);
 		}
 
 	protected:

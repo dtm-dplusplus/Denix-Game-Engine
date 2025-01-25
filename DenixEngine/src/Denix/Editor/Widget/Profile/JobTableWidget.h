@@ -60,7 +60,7 @@ namespace Denix
          * Updates the job table widget.
          * @param _deltaTime Time elapsed since the last update.
          */
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         /**
          * Reference to the active profile session.

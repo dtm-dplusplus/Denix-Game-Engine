@@ -20,9 +20,9 @@ namespace Denix
         m_SceneSettingsWidget = MakeRef<SceneSettingsWidget>(_scene);
     }
 
-    void SceneOrganizerWidget::Update(float _deltaTime)
+    void SceneOrganizerWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        EditorWidget::Update(_deltaTime);
+        EditorWidget::Update(_deltaTime, _waitCounter);
 
         if(!m_SceneRef.lock()) return;
 
@@ -43,7 +43,7 @@ namespace Denix
         ActorDetailsWidget::CameraWidget(m_SceneRef.lock()->GetViewportCamera());
 
         // Update AddActorWidget. Set the selected object to the last object created
-        m_AddActorWidget->Update(_deltaTime);
+        m_AddActorWidget->Update(_deltaTime, _waitCounter);
         if (m_AddActorWidget->m_CreatedActor)
         {
             m_AddActorWidget->m_CreatedActor = false;
@@ -80,7 +80,7 @@ namespace Denix
         ImGui::End();
 
         // Scene Settings
-        //m_SceneSettingsWidget->Update(_deltaTime);
+        //m_SceneSettingsWidget->Update(_deltaTime, _waitCounter);
     }
 
     void SceneOrganizerWidget::SceneChangedEvent(const WRef<Scene>& _scene)

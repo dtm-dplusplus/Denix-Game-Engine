@@ -101,7 +101,7 @@ namespace Denix
 		}
 	}
 
-	void EditorSubsystem::Update(float _deltaTime)
+	void EditorSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 	{
 		if(!m_Enabled) return;
 		if (!m_ActiveScene.lock()) return;
@@ -115,18 +115,18 @@ namespace Denix
 		MainMenuBar();
 
 		// Scene Widgets
-		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->Update(0.0f);
+		if(m_SceneOrganizerWidget) m_SceneOrganizerWidget->Update(0.0f, _waitCounter);
 		if (m_ActorDetailsWidget)
 		{
 			m_ActorDetailsWidget->m_ActorRef = m_SceneOrganizerWidget->GetSelectedObject();
-			m_ActorDetailsWidget->Update(0.0f);
+			m_ActorDetailsWidget->Update(0.0f, _waitCounter);
 		}
 		
 		for (const auto& widget : m_EditorWidgets)
 		{
 			if (widget)
 			{
-				widget->Update(_deltaTime);
+				widget->Update(_deltaTime, _waitCounter);
 				if (widget->IsRubbish()) RemoveEditorWidget(widget);
 			}
 		}

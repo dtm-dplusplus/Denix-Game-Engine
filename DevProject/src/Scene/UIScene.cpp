@@ -76,9 +76,9 @@ void Denix::UIScene::BeginScene()
    // CreateTextBox("", Position, {WIDTH, HEIGHT}, {1.0f, 1.0f, 1.0f});
 }
 
-void Denix::UIScene::Update(float _deltaTime)
+void Denix::UIScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Scene::Update(_deltaTime);
+    Scene::Update(_deltaTime, _waitCounter);
 
     ImGui::Begin("Font Rendering");
     /*for (int i = 0; i < 2; i++)

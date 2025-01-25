@@ -105,10 +105,17 @@ namespace Denix
             { _direction.x, _direction.y, _direction.z }, _distance, _hit);
     }
 
-    void PhysicsSubsystem::Update(float _deltaTime)
+    physx::PxScene* PhysicsSubsystem::CreatePxScene(const physx::PxSceneDesc* _sceneDesc)
+    {
+        return s_Instance->m_PxPhysics->createScene(*_sceneDesc);
+    }
+
+    void PhysicsSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
         DE_PROFILE(Physics Update)
-        auto activeScene = s_Instance->m_ActiveScene.lock();
+        Subsystem::Update(_deltaTime, _waitCounter);
+
+       auto activeScene = s_Instance->m_ActiveScene.lock();
         
         if (!m_Enabled || !activeScene->IsPlaying() ||
             SceneSubsystem::GetSceneState() == SceneState::Paused)
@@ -126,8 +133,10 @@ namespace Denix
         DE_PROFILE_END(Physics Update)
     }
 
-    physx::PxScene* PhysicsSubsystem::CreatePxScene(const physx::PxSceneDesc* _sceneDesc)
+    void PhysicsSubsystem::PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        return s_Instance->m_PxPhysics->createScene(*_sceneDesc);
+        Subsystem<PhysicsSubsystem>::PostUpdate(_deltaTime, _waitCounter);
+
+        
     }
 }

@@ -10,7 +10,7 @@
 
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Core/Thread/JobSubsystem.h"
-#include "Denix/Core/Thread/ThreadPrimitive.h"
+#include "Denix/Core/Thread/Counter.h"
 
 #include  "yaml-cpp/yaml.h"
 
@@ -78,19 +78,19 @@ namespace Denix
 		{
 			// Submit jobs for each actor
 			DE_PROFILE(AddJobBatch)
-			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime);
+			JobSubsystem::AddJobBatch("Actor Update", Priority::NORMAL, _waitCounter, m_ActiveScene->m_Actors, &Actor::Update, _deltaTime, _waitCounter);
 		}
 		else
 		{
-			JobSubsystem::AddJobInline("Actor Update", Priority::NORMAL, _waitCounter, [this, _deltaTime]()
+			JobSubsystem::AddJobInline("Actor Update", Priority::NORMAL, _waitCounter, [this, _deltaTime, _waitCounter]()
 			{
-				for (const auto actor: m_ActiveScene->m_Actors) actor->Update(_deltaTime);
+				for (const auto actor: m_ActiveScene->m_Actors) actor->Update(_deltaTime, _waitCounter);
 			});
 		}
 
 		// Client Scene Update
-		m_ActiveScene->Update(_deltaTime);
-		m_ActiveScene->DebugUI(_deltaTime);
+		m_ActiveScene->Update(_deltaTime, _waitCounter);
+		m_ActiveScene->DebugUI(_deltaTime, _waitCounter);
 	}
 
 	

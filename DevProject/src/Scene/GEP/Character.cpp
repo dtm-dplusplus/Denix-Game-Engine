@@ -32,9 +32,9 @@ void Character::BeginPlay()
     }
 }
 
-void Character::Update(float _deltaTime)
+void Character::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Actor::Update(_deltaTime);
+    Actor::Update(_deltaTime, _waitCounter);
 
     const glm::vec3& fwd = GetTransformComponent()->GetForward();
     const glm::vec3& right = GetTransformComponent()->GetRight();

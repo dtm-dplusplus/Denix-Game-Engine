@@ -14,7 +14,7 @@ namespace Denix
     public:
         ActorDetailsWidget();
 
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         void PhysicsWidget(const Ref<Actor>& _selectedObject) const;
         void CollisionWidget(const Ref<Actor>& _selectedObject) const;

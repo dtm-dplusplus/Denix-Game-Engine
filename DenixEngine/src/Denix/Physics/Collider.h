@@ -70,14 +70,14 @@ namespace Denix
 		glm::vec3 GetMax() const { return m_Max; }
 
 
-		void Update(float _deltaTime) override
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override
 		{
 			m_Min = m_TransformComponent->GetPosition() - m_Dimensions;
 			m_Max = m_TransformComponent->GetPosition() + m_Dimensions;
 			m_TransformComponent->SetScale(m_Dimensions);
 
-			m_TransformComponent->Update(_deltaTime);
-			m_MeshComponent->Update(_deltaTime);
+			m_TransformComponent->Update(_deltaTime, _waitCounter);
+			m_MeshComponent->Update(_deltaTime, _waitCounter);
 		}
 
 	private:

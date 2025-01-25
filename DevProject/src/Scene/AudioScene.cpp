@@ -30,9 +30,9 @@ void AudioScene::EndScene()
     Clip.reset();
 }
 
-void AudioScene::DebugUI(float _deltaTime)
+void AudioScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Scene::DebugUI(_deltaTime);
+    Scene::DebugUI(_deltaTime, _waitCounter);
 
     ImGui::Begin("Audio Scene");
 

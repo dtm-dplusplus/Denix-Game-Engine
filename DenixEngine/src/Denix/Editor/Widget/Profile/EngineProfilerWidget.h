@@ -16,7 +16,7 @@ namespace Denix
     public:
         EngineProfilerWidget();
 
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         Ref<JobTableWidget> m_JobTableWidget;
     };

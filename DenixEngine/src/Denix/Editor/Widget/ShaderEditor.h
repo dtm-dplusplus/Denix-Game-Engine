@@ -15,6 +15,6 @@ namespace Denix
         ~ShaderEditor() override = default;
         WRef<Shader> m_ShaderRef;
         
-        void Update(float _deltaTime)  override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     };
 }

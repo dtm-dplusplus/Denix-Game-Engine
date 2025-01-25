@@ -10,6 +10,6 @@ namespace Denix
     public:
         SceneSettingsWidget(const WRef<Scene>& _scene);
 
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     };
 }

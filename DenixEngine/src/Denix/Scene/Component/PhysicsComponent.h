@@ -47,7 +47,7 @@ namespace Denix
 
 		void BeginScene() override;
 		
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
 
 		void AddForce(const glm::vec3& _force) const;

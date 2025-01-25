@@ -9,9 +9,9 @@ Denix::PerformanceSettingsWidget::PerformanceSettingsWidget(): EditorWidget({"Pe
 {
 }
 
-void Denix::PerformanceSettingsWidget::Update(float _deltaTime)
+void Denix::PerformanceSettingsWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    EditorWidget::Update(_deltaTime);
+    EditorWidget::Update(_deltaTime, _waitCounter);
 
     ImGui::Begin(GetName().c_str(), &m_IsOpen);
     ImGui::SeparatorText("Engine Metrics");

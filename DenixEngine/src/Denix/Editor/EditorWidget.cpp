@@ -5,7 +5,7 @@ Denix::EditorWidget::EditorWidget(const ObjectInit& _objInit): Object(_objInit),
 {
 }
 
-void Denix::EditorWidget::Update(float _deltaTime)
+void Denix::EditorWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     if (!m_IsOpen) MarkRubbish();
 }

@@ -11,7 +11,7 @@ namespace Denix
     public:
         GACPActor();
 
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
         void RandomModel() const;
     };
 }

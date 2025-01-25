@@ -82,7 +82,7 @@ namespace Denix
 		void BeginPlay() override;
 		void EndPlay() override;
 
-		void Update(float _deltaTime) override;
+		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
 	protected:
 		std::unordered_map<std::string, Ref<Component>> m_ComponentMap;

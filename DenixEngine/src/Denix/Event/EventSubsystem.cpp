@@ -29,10 +29,10 @@ namespace Denix
         DE_LOG(LogEvent, Trace, "Event Subsystem Deinitialized");
     }
 
-    void EventSubsystem::Update(float _deltaTime)
+    void EventSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
         DE_PROFILE(Event Update)
-        Subsystem::Update(_deltaTime);
+        Subsystem::Update(_deltaTime, _waitCounter);
 
         SDL_Event event;
 

@@ -9,6 +9,6 @@ namespace Denix
     public:
         InputDebuggerWidget();
 
-        void Update(float _deltaTime) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     };
 }

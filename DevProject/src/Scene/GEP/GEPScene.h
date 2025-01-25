@@ -12,8 +12,8 @@ public:
     GEPScene();
 
     void BeginScene() override;
-    void Update(float _deltaTime) override;
-    void DebugUI(float _deltaTime) override;
+    void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+    void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     Ref<Character> m_Character;
     Ref<Camera> m_CharacterCamera;
 };

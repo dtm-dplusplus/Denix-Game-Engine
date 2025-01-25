@@ -101,14 +101,14 @@ namespace Denix
         BaseObject::EndPlay();
     }
 
-    void Scene::Update(float _deltaTime)
+    void Scene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        BaseObject::Update(_deltaTime);
+        BaseObject::Update(_deltaTime, _waitCounter);
 
         // Update Camera - This works regardless of the camer type (viewport/GameCamera)
         if (m_ActiveCamera)
         {
-           m_ActiveCamera->Update(_deltaTime);
+           m_ActiveCamera->Update(_deltaTime, _waitCounter);
         }
     }
 

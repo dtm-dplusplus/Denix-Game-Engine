@@ -29,9 +29,9 @@ void GACPScene::BeginPlay()
     if (m_BenchmarkOnPlay) BeginBenchmark();
 }
 
-void GACPScene::Update(float _deltaTime)
+void GACPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Scene::Update(_deltaTime);
+    Scene::Update(_deltaTime, _waitCounter);
 
     if (m_IsBenchmarking && IsPlaying())
     {
@@ -57,9 +57,9 @@ void GACPScene::Update(float _deltaTime)
     }
 }
 
-void GACPScene::DebugUI(float _deltaTime)
+void GACPScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Scene::DebugUI(_deltaTime);
+    Scene::DebugUI(_deltaTime, _waitCounter);
 
     ImGui::SetNextItemWidth(500);
     ImGui::Begin(GetName().c_str());
@@ -86,7 +86,7 @@ void GACPScene::DebugUI(float _deltaTime)
         ImGui::DragInt("Grid Size", &m_GridSpawner.GridSize, 1.0f, 1, m_SpawnCountMax);
 
         ImGui::SeparatorText("Job Subsystem");
-        m_JobSubsystemWidget->Update(_deltaTime);
+        m_JobSubsystemWidget->Update(_deltaTime, _waitCounter);
     }
 
     ImGui::End();

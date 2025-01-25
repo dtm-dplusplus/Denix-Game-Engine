@@ -18,9 +18,9 @@ void GEPScene::BeginScene()
     SpawnActor<Plane>(glm::vec3(0.0f), glm::vec3(0.0f), {100.0f, 0.01f, 100.0f});
 }
 
-void GEPScene::Update(float _deltaTime)
+void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Scene::Update(_deltaTime);
+    Scene::Update(_deltaTime, _waitCounter);
     glm::vec3 movement(0.0f);
     glm::vec3 fwd = m_Character->GetTransformComponent()->GetForward();
     glm::vec3 right = m_Character->GetTransformComponent()->GetRight();
@@ -54,9 +54,9 @@ if (InputSubsystem::IsKeyDown(KeyCode::DEK_D))
    
 }
 
-void GEPScene::DebugUI(float _deltaTime)
+void GEPScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Scene::DebugUI(_deltaTime);
+    Scene::DebugUI(_deltaTime, _waitCounter);
 
     ImGui::Begin("GEP Scene");
     ImGui::SeparatorText("Camera");

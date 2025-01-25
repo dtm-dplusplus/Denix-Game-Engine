@@ -29,7 +29,7 @@ namespace Denix
         SetupPhysX();
 
         // Register the physics component with the physics subsystem
-        if (m_SimulatePhysics) RegisterComponent();
+        RegisterComponent();
     }
 
     void PhysicsComponent::RegisterComponent()
@@ -64,9 +64,9 @@ namespace Denix
         Component::EndScene();
     }
 
-    void PhysicsComponent::Update(float _deltaTime)
+    void PhysicsComponent::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        Component::Update(_deltaTime);
+        Component::Update(_deltaTime, _waitCounter);
 
         if (m_PxActor && m_SimulatePhysics && SceneSubsystem::GetSceneState() == SceneState::Playing)
         {

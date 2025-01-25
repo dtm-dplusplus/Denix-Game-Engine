@@ -12,9 +12,9 @@ namespace Denix
 		m_RenderComponent->SetIsVisible(false);
 	}
 
-	void Camera::Update(float _deltaTime)
+	void Camera::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 	{
-		Actor::Update(_deltaTime);
+		Actor::Update(_deltaTime, _waitCounter);
 		
 	}
 }
