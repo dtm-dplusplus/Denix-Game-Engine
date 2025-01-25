@@ -79,70 +79,9 @@ namespace Denix
             //DE_LOG(LogEngine, Trace, "Update Editor")
 
             // Update PxActor from Actor Transform after scene update
-            DE_PROFILE(Physics Post)
-            for (const auto& actor : m_SceneSubsystem->m_ActiveScene->m_Actors)
-            {
-                if (const Ref<PhysicsComponent> physcComp = actor->GetPhysicsComponent())
-                {
-                    // Check for modified attributes
-                    if (physcComp->m_PxActor)
-                    {
-                        if (physcComp->m_AttributeFlags & PHYSICS_SIMULATE)
-                        {
-                            if (physcComp->SimulatePhysics())
-                            {
-                                physcComp->m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, false);
-                               // physcComp->RegisterComponent();
-                                DE_LOG(LogPhysics, Trace, "Simulating Physics for {}", actor->GetName())
-                            }
-                            else
-                            {
-                                //physcComp->UnregisterComponent();
-                                physcComp->m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
-                                DE_LOG(LogPhysics, Trace, "Stopping Physics Simulation for {}", actor->GetName())
-                            }
-                            physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_SIMULATE;
-                        }
-
-                        if (physcComp->m_AttributeFlags & PHYSICS_COLLISION)
-                        {
-                            if (physcComp->CollisionDetectionEnabled())
-                            {
-                                if (physcComp->m_PxShape)
-                                {
-                                    physx::PxShape* shape; // Adjust if needed
-                                    physcComp->m_PxActor->getShapes(&shape, 1);
-                                   physcComp->m_PxActor->attachShape(*physcComp->m_PxShape);
-                                }
-                              
-                                    
-                                DE_LOG(LogPhysics, Trace, "Collision Detection Enabled for {}", actor->GetName())
-                            }
-                            else
-                            {
-                                physx::PxShape* shape; // Adjust if needed
-                                physcComp->m_PxActor->getShapes(&shape, 1);
-                                physcComp->m_PxActor->detachShape(*shape);
-                                DE_LOG(LogPhysics, Trace, "Collision Detection Disabled for {}", actor->GetName())
-                            }
-
-                            physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_COLLISION;
-                        }
-                    }
-
-                    if (physcComp->SimulatePhysics())
-                    {
-                        if (!physcComp->m_PxActor) continue;
-                        
-                        if (physx::PxRigidDynamic* pxActor = physcComp->m_PxActor->is<physx::PxRigidDynamic>())
-                        {
-                            const glm::vec3& pos = actor->GetTransformComponent()->GetPosition();
-                            pxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
-                        }
-                    }
-                }
-            }
-            DE_PROFILE_END(Physics Post)
+            Ref<Counter> physicsPostCounter = MakeRef<Counter>();
+            m_JobSubsystem->AddJob("Physics Post Update", Priority::NORMAL, physicsPostCounter,
+                                   &PhysicsSubsystem::PostUpdate, m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime, physicsPostCounter);
             
             // Render the scene. This runs on the main thread as it requires the opengl context
             Ref<Counter> renderCounter = MakeRef<Counter>();

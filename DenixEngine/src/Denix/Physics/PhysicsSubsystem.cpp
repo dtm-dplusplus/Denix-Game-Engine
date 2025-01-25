@@ -71,10 +71,12 @@ namespace Denix
         }
         
         auto scene = s_Instance->m_ActiveScene.lock();
-         if (scene->m_PxScene)
-         {
-             scene->m_PxScene->addActor(*_comp->m_PxActor);
-         }
+        if (scene->m_PxScene)
+        {
+            scene->m_PxScene->addActor(*_comp->m_PxActor);
+        }
+
+        s_Instance->m_PhysicsComponents.push_back(_comp);
     }
 
     void PhysicsSubsystem::UnregisterComponent(const Ref<PhysicsComponent>& _comp)
@@ -88,8 +90,10 @@ namespace Denix
         auto scene = s_Instance->m_ActiveScene.lock();
         if (scene->m_PxScene)
         {
-          scene->m_PxScene->removeActor(*_comp->m_PxActor->is<physx::PxActor>());
+            scene->m_PxScene->removeActor(*_comp->m_PxActor->is<physx::PxActor>());
         }
+
+        std::erase(s_Instance->m_PhysicsComponents, _comp);        
     }
 
     bool PhysicsSubsystem::RayCast(const glm::vec3& _origin, const glm::vec3& _direction, float _distance,
@@ -135,8 +139,66 @@ namespace Denix
 
     void PhysicsSubsystem::PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        Subsystem<PhysicsSubsystem>::PostUpdate(_deltaTime, _waitCounter);
+        Subsystem::PostUpdate(_deltaTime, _waitCounter);
+    
+            DE_PROFILE(Physics Post)
+            for (const auto& physcComp : m_PhysicsComponents)
+            {
+              // Check for modified attributes
+                    if (physcComp->m_PxActor)
+                    {
+                        if (physcComp->m_AttributeFlags & PHYSICS_SIMULATE)
+                        {
+                            if (physcComp->SimulatePhysics())
+                            {
+                                physcComp->m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, false);
+                                DE_LOG(LogPhysics, Trace, "Simulating Physics for {}", physcComp->GetParent()->GetName())
+                            }
+                            else
+                            {
+                                physcComp->m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+                                DE_LOG(LogPhysics, Trace, "Stopping Physics Simulation for {}", physcComp->GetParent()->GetName())
+                            }
+                            physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_SIMULATE;
+                        }
 
-        
+                        if (physcComp->m_AttributeFlags & PHYSICS_COLLISION)
+                        {
+                            if (physcComp->CollisionDetectionEnabled())
+                            {
+                                if (physcComp->m_PxShape)
+                                {
+                                    physx::PxShape* shape; // Adjust if needed
+                                    physcComp->m_PxActor->getShapes(&shape, 1);
+                                   physcComp->m_PxActor->attachShape(*physcComp->m_PxShape);
+                                }
+                              
+                                    
+                                DE_LOG(LogPhysics, Trace, "Collision Detection Enabled for {}", physcComp->GetParent()->GetName())
+                            }
+                            else
+                            {
+                                physx::PxShape* shape; // Adjust if needed
+                                physcComp->m_PxActor->getShapes(&shape, 1);
+                                physcComp->m_PxActor->detachShape(*shape);
+                                DE_LOG(LogPhysics, Trace, "Collision Detection Disabled for {}", physcComp->GetParent()->GetName())
+                            }
+
+                            physcComp->m_AttributeFlags &= ~PhysicsAttributeFlags::PHYSICS_COLLISION;
+                        }
+                    }
+
+                    if (physcComp->SimulatePhysics())
+                    {
+                        if (!physcComp->m_PxActor) continue;
+                        
+                        if (physx::PxRigidDynamic* pxActor = physcComp->m_PxActor->is<physx::PxRigidDynamic>())
+                        {
+                            const glm::vec3& pos = physcComp->GetParent()->GetTransformComponent()->GetPosition();
+                            pxActor->setGlobalPose(physx::PxTransform(pos.x, pos.y, pos.z));
+                        }
+                    }
+            }
+            DE_PROFILE_END(Physics Post)
     }
 }

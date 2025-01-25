@@ -57,10 +57,9 @@ namespace Denix
 		static void SetActiveScene(const Ref<Scene>& _scene) { s_Instance->m_ActiveScene = _scene; }
 
 		WRef<Scene> m_ActiveScene;
-		
+		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
 		bool m_CollisionDetectionEnabled = true;
 		bool m_CollisionResponseEnabled = true;
-
 
 		friend class PhysicsComponent;
 		friend class SceneSubsystem;

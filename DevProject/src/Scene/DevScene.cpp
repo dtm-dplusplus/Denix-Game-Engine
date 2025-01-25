@@ -30,6 +30,7 @@ void DevScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
 	if(ImGui::Button("Spawn Cube"))
 	{
 		m_DyActor = SpawnActor<Cube>();
+		m_DyActor->GetPhysicsComponent()->SimulatePhysics() = true;
 	}
 	if (ImGui::Button("Reset Cube"))
 	{
