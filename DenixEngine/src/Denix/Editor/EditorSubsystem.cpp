@@ -167,7 +167,7 @@ namespace Denix
 						mat.second->Serialize(matAsssetEmitter);
 						matAsssetEmitter << YAML::EndMap;
 
-						FileSubsystem::WriteFile(mat.second->GetAsset()->GetAssetPath(), matAsssetEmitter.c_str());
+						FileSubsystem::WriteFile(mat.second->GetAsset()->GetRelativePath(), matAsssetEmitter.c_str());
 						DE_LOG(LogScene, Info, "Serialized Material");
 					}
 				}
@@ -197,7 +197,7 @@ namespace Denix
 			{
 				if(ImGui::MenuItem("Set as Startup Scene"))
 				{
-					AssetSubsystem::SetStartupScene(m_ActiveScene.lock()->m_SceneAsset->GetAssetPath());
+					AssetSubsystem::SetStartupScene(m_ActiveScene.lock()->m_SceneAsset->GetRelativePath());
 				}
 				ImGui::EndMenu();
 			}

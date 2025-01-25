@@ -55,8 +55,6 @@ namespace Denix
     {
         // Call EndScene on all actors
         for (const auto& actor : m_Actors) actor->EndScene();
-        m_ViewportCamera->EndScene();
-        
         m_ViewportCamera.reset();
         m_ActiveCamera.reset();
         ClearScene();

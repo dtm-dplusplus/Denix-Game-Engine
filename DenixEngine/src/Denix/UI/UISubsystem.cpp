@@ -20,7 +20,7 @@ namespace Denix
 			DE_LOG(LogRender, Error, "Failed to initialize FreeType Library")
 		}
 
-		std::string fontFile = FileSubsystem::FormatPath("Content/Engine/fonts/arial.ttf");
+		std::string fontFile = FileSubsystem::FormatPath("Content\\Engine\\fonts\\arial.ttf");
 
 		error = FT_New_Face(UISubsystem::m_FtLibrary, fontFile.c_str(), 0, &m_Face); /* create face object */
 		if (error == FT_Err_Unknown_File_Format)

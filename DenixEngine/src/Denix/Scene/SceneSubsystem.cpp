@@ -66,7 +66,11 @@ namespace Denix
 		DE_PROFILE(Scene Update)
 
 		// Open Scene Request
-		if (m_RequestOpenSceneAsset) OpenScene(m_RequestOpenSceneAsset);
+		if (m_RequestOpenSceneAsset)
+		{
+			OpenScene(m_RequestOpenSceneAsset);
+			m_RequestOpenSceneAsset.reset();
+		}
 		
 		
 		// Scene update implementation
@@ -113,8 +117,7 @@ namespace Denix
 		// Load the scene data
 		DeserializeScene(_scene);
 		
-		if(_scene->m_SceneAsset) DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->m_SceneAsset->GetAssetName())
-		else DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->GetName())
+		DE_LOG(LogScene, Info, "Loaded Scene: {}", _scene->GetName())
 		
 		return true;
 	}
@@ -172,7 +175,7 @@ namespace Denix
 
 	void SceneSubsystem::RequestOpenScene(const Ref<Asset>& _sceneAsset)
 	{
-		if (!AssetSubsystem::GetSceneAsset(_sceneAsset->GetAssetPath()))
+		if (!AssetSubsystem::GetSceneAsset(_sceneAsset->GetRelativePath()))
 		{
 			DE_LOG(LogScene, Error, "Request Open Scene Failed")
 			return;
@@ -280,7 +283,7 @@ namespace Denix
 
 		// Check if there is an asset associated with the scene
 		// We need the path from the asset to write the scene data
-		if(!_scene->m_SceneAsset || _scene->m_SceneAsset->GetAssetPath().empty())
+		if(!_scene->m_SceneAsset || _scene->m_SceneAsset->GetRelativePath().empty())
 		{
 			DE_LOG(LogScene, Error, "Scene {} has no asset associated with it", _scene->GetName())
 			return false;
@@ -310,7 +313,7 @@ namespace Denix
 			SceneEmitter << YAML::EndMap;
 
 			// Write emitter data to yaml file
-			FileSubsystem::WriteFile(sceneAsset->GetAssetPath(), SceneEmitter.c_str());
+			FileSubsystem::WriteFile(sceneAsset->GetRelativePath(), SceneEmitter.c_str());
 			DE_LOG(LogScene, Info, "Serialized scene: {}", _scene->GetName())
 
 			return true;
@@ -335,12 +338,12 @@ namespace Denix
 		_scene->ClearScene();
 		
 		// Load the scene data from the asset file
-		YAML::Node sceneNode = YAML::LoadFile(_scene->m_SceneAsset->GetAssetPath());
+		YAML::Node sceneNode = YAML::LoadFile(_scene->m_SceneAsset->GetAbsolutePath());
 
 		// Check if the scene data is valid
 		if (!sceneNode.IsDefined())
 		{
-			DE_LOG(LogScene, Error, "Failed to load scene asset: {}", _scene->m_SceneAsset->GetAssetPath())
+			DE_LOG(LogScene, Error, "Failed to load scene asset: {}", _scene->m_SceneAsset->GetAbsolutePath())
 			return;
 		}
         	

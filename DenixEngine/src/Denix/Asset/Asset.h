@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <string>
-#include <filesystem>
 #include "Denix/Core/Log/Logger.h"
 
 namespace Denix
@@ -21,16 +20,8 @@ public:
     Asset() = default;
     virtual ~Asset() = default;
     
-   explicit Asset(const AssetInit& _assetInit)
-        : m_AssetPath(_assetInit.AssetPath),
-          m_AssetName(m_AssetPath.stem().string()),
-          m_AssetFileName(m_AssetPath.filename().string()),
-          m_AssetExtension(m_AssetPath.extension().string()),
-          m_AssetDirectory(m_AssetPath.parent_path().string() + "\\"),
-        m_DirectoryName(m_AssetPath.parent_path().filename().string())
-    {
-    }
-   
+   Asset(const AssetInit& _assetInit);
+
     bool RenameAsset(const std::string& _newName)
     {
         // Add check for invalid characters
@@ -81,11 +72,17 @@ public:
      * 
      * @return Asset file path 
      */
-    std::string GetAssetPath() const
+    std::string GetRelativePath() const
     {
-        return m_AssetPath.string();
+        return m_AssetRelativePath;
     }
 
+
+    std::string GetAbsolutePath() const
+    {
+        return m_AssetAbsolutePath;
+    }
+    
     /**
      * 
      * @return Asset file extension
@@ -95,7 +92,6 @@ public:
         return m_AssetExtension;
     }
 
-    
     /**
      * 
      * @return Asset directory
@@ -111,8 +107,10 @@ public:
     }
     
 private:
-    // Filesystem Path
-    std::filesystem::path m_AssetPath;
+    // Relative Path
+    std::string m_AssetRelativePath;
+
+    std::string m_AssetAbsolutePath;
     
     // Asset name without extension
     std::string m_AssetName;

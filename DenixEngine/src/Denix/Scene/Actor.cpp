@@ -52,7 +52,7 @@ namespace Denix
             if (const Ref<Material> mat = m_RenderComponent->GetMaterial())
             {
                 _out << YAML::Newline << YAML::Comment("Material");
-                _out << YAML::Key << "m_Material" << YAML::Value << (mat->GetAsset() ? mat->GetAsset()->GetAssetPath() : "");
+                _out << YAML::Key << "m_Material" << YAML::Value << (mat->GetAsset() ? mat->GetAsset()->GetRelativePath() : "");
             }
         }
         _out << YAML::EndMap;

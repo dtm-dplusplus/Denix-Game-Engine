@@ -21,19 +21,19 @@ namespace Denix
 
 		// Iniatlize Default Assets
 		std::vector<ShaderSource> defaultShaders;
-		defaultShaders.emplace_back(R"(Content/Engine/shaders/Default/Vertex.glsl)");
-		defaultShaders.emplace_back(R"(Content/Engine/shaders/Default/Fragment.glsl)");
+		defaultShaders.emplace_back(R"(Content\Engine\shaders\Default\Vertex.glsl)");
+		defaultShaders.emplace_back(R"(Content\Engine\shaders\Default\Fragment.glsl)");
 		
 		if (Ref<Shader> defShader = LoadShader(defaultShaders, "DefaultShader")) m_DefaultShader = defShader;
 		DE_ASSERT(m_DefaultShader, "Default Shader not loaded")
 		
 		std::vector<ShaderSource> fbShaders;
-		fbShaders.emplace_back(R"(Content/Engine/shaders/FB/FBVertex.glsl)");
-		fbShaders.emplace_back(R"(Content/Engine/shaders/FB/FBFragment.glsl)");
+		fbShaders.emplace_back(R"(Content\Engine\shaders\FB\FBVertex.glsl)");
+		fbShaders.emplace_back(R"(Content\Engine\shaders\FB\FBFragment.glsl)");
 		if (Ref<Shader> fbShader = LoadShader(fbShaders, "FBShader")) m_FramebufferShader = fbShader;
 		DE_ASSERT(m_FramebufferShader, "Framebuffer Shader not loaded")
 
-		if (Ref<Material> defMat = LoadMaterial(MakeRef<Asset>(FileSubsystem::FormatPath(R"(Content/Engine/materials/MAT_Default.asset)")))) m_DefaultMaterial = defMat;
+		if (Ref<Material> defMat = LoadMaterial(MakeRef<Asset>(AssetInit(R"(Content\Engine\materials\MAT_Default.asset)")))) m_DefaultMaterial = defMat;
 		DE_ASSERT(m_DefaultMaterial, "Default Material not loaded")
 
 		// Search Project directory for assets
@@ -132,29 +132,24 @@ namespace Denix
 	Ref<Asset> AssetSubsystem::GetAsset(const std::string& _path)
 	{
 		for (const auto& asset : s_Instance->m_AssetStore)
-		{
-			if (asset->GetAssetPath() == _path)
-			{
-				return asset;
-			}
-		}
+			if (asset->GetRelativePath() == _path) return asset;
 
 		return nullptr;
 	}
 
 	Ref<AudioClip> AssetSubsystem::LoadAudioClip(const Ref<Asset>& _audioClipAsset)
 	{
-		if (s_Instance->m_AudioClipStore.contains(_audioClipAsset->GetAssetPath()))
+		if (s_Instance->m_AudioClipStore.contains(_audioClipAsset->GetRelativePath()))
 		{
 			DE_LOG(LogAsset, Error, "Load AudioClip: An audio clip name: {} is already loaded", _audioClipAsset->m_AssetName)
-			return s_Instance->m_AudioClipStore[_audioClipAsset->GetAssetPath()];
+			return s_Instance->m_AudioClipStore[_audioClipAsset->GetRelativePath()];
 		}
 
-		if (Ref<AudioClip> audioClip = MakeRef<AudioClip>(AssetInit(_audioClipAsset->GetAssetPath())))
+		if (Ref<AudioClip> audioClip = MakeRef<AudioClip>(AssetInit(_audioClipAsset->GetRelativePath())))
 		{
 			if (!audioClip->Load()) return nullptr;
 			
-			s_Instance->m_AudioClipStore[_audioClipAsset->GetAssetPath()] = audioClip;
+			s_Instance->m_AudioClipStore[_audioClipAsset->GetRelativePath()] = audioClip;
 			DE_LOG(LogAsset, Trace, "Audio Clip Loaded: {}", _audioClipAsset->m_AssetName)
 			return audioClip;
 		}
@@ -164,7 +159,8 @@ namespace Denix
 
 	Ref<AudioClip> AssetSubsystem::GetAudioClip(const std::string& _path)
 	{
-		std::string path = FileSubsystem::FormatPath(_path);
+		std::string path = FileSubsystem::FormatRelativePath(_path);
+		
 		DE_LOG(LogAsset, Trace, "Pathhh Audio Clip: {}", path)
 		if (!s_Instance->m_AudioClipStore.contains(path))
 		{
@@ -181,21 +177,10 @@ namespace Denix
 	{
 		// We Should validate the path first
         std::string path = FileSubsystem::FormatRelativePath(_path);
-		std::ranges::transform(path, path.begin(), ::tolower);
 		
 		// Check registered assets
 		for (const auto& asset : s_Instance->m_SceneStore)
-		{
-			std::string assetPath = FileSubsystem::FormatRelativePath(asset->GetAssetPath());
-			std::ranges::transform(assetPath, assetPath.begin(), ::tolower);
-			DE_LOG(LogAsset, Trace, "1. Pathhh Scene: {}", path)
-			DE_LOG(LogAsset, Trace, "2. Pathhh Scene: {}", asset->GetAssetPath())
-			DE_LOG(LogAsset, Trace, assetPath == path)
-			if (assetPath == path)
-			{
-				return asset;
-			}
-		}
+			if (asset->GetRelativePath() == path) return asset;
 
 		return nullptr;
 	}
@@ -209,7 +194,7 @@ namespace Denix
 		}
 
 		s_Instance->m_StartupScene = MakeRef<Asset>(FileSubsystem::FormatRelativePath(_scenePath));
-		Engine::GetInstance()->m_Config.StartupScenePath = s_Instance->m_StartupScene->GetAssetPath();
+		Engine::GetInstance()->m_Config.StartupScenePath = s_Instance->m_StartupScene->GetRelativePath();
 	}
 
 	////////////////////////  SHADERS ///////////////////////////////
@@ -331,7 +316,7 @@ namespace Denix
 	{
 		for (const auto& material : s_Instance->m_MaterialStore)
 		{
-			if (material.second->GetAsset()->GetAssetPath() == _path)
+			if (material.second->GetAsset()->GetRelativePath() == _path)
 			{
 				return material.second;
 			}

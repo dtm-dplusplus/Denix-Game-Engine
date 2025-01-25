@@ -17,9 +17,9 @@ bool Denix::AudioClip::Load()
 {
     uint8_t* audioBuffer;
 
-    if (!SDL_LoadWAV( GetAssetPath().c_str(), &m_ClipSpec, &audioBuffer, &m_WavLength)) {
+    if (!SDL_LoadWAV( GetAbsolutePath().c_str(), &m_ClipSpec, &audioBuffer, &m_WavLength)) {
         SDL_free(audioBuffer);
-        DE_LOG(LogAudio, Error, "Failed to load WAV File: {}", GetAssetName())
+        DE_LOG(LogAudio, Error, "Failed to load WAV File: {}", GetAbsolutePath())
         return false;
     }
 

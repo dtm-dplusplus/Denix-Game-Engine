@@ -315,7 +315,8 @@ namespace Denix
             cfgEmitter << YAML::BeginMap;
             cfgEmitter << YAML::Key << "Project Name" << YAML::Value << m_Config.ProjectName;
             if (auto scene = m_AssetSubsystem->GetStartupScene())
-                cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << m_FileSubsystem->FormatRelativePath(scene->GetAssetPath());
+                cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << scene->GetRelativePath();
+            
             cfgEmitter << YAML::EndMap;
             
             if (FileSubsystem::WriteFile(m_FileSubsystem->m_ProjectFile, cfgEmitter.c_str()))

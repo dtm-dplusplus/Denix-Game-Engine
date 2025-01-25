@@ -17,7 +17,7 @@ m_SceneObjects:
         FilterMode: 9729
         FilterValue: 1
 # Material
-      m_Material: C:\Users\Denis\Documents\Programming Projects\Denix-Game-Engine\Build\DevProject\Content\Engine\Material\MAT_Default.asset
+      m_Material: Content\Engine\Material\MAT_Default.asset
 # Transform Component
     m_TransformComponent:
       m_Position:

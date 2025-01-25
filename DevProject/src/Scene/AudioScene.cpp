@@ -14,7 +14,7 @@ void AudioScene::BeginScene()
 {
     Scene::BeginScene();
 
-    if (Ref<AudioClip> clip = AssetSubsystem::GetAudioClip("Content/Audio/music.wav"))
+    if (Ref<AudioClip> clip = AssetSubsystem::GetAudioClip("Content\\Audio\\music.wav"))
     {
         Clip = clip;
         Source = MakeRef<AudioSource>();

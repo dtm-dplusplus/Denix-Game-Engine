@@ -8,7 +8,7 @@ namespace Denix
     Plane::Plane() : Actor({ "Plane" })
     {
     	m_ClassName = "Plane";
-        m_MeshComponent->SetModel(AssetSubsystem::GetModel("Content/Engine/models/SM_Plane.obj"));
+        m_MeshComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Plane.obj"));
         m_TransformComponent->GetScale().y = 0.01f;
 
     	m_PhysicsComponent->m_ColliderType = ColliderType::Plane;
@@ -17,7 +17,7 @@ namespace Denix
     Cube::Cube() : Actor({ "Cube" })
     {
     	m_ClassName = "Cube";
-		m_MeshComponent->SetModel(AssetSubsystem::GetModel("Content/Engine/models/SM_Cube.obj"));
+		m_MeshComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Cube.obj"));
 
     	m_PhysicsComponent->m_ColliderType = ColliderType::Cube;
     	m_TransformComponent->SetMoveability(Moveability::Dynamic);
@@ -26,7 +26,7 @@ namespace Denix
 	Sphere::Sphere() : Actor({ "Sphere" })
 	{
     	m_ClassName = "Sphere";
-		m_MeshComponent->SetModel(AssetSubsystem::GetModel("Content/Engine/models/SM_Sphere.obj"));
+		m_MeshComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Sphere.obj"));
     	m_PhysicsComponent->m_ColliderType = ColliderType::Sphere;
 	}
 }

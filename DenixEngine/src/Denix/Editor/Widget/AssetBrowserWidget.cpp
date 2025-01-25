@@ -36,7 +36,7 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime)
         for (const auto& scene : AssetSubsystem::GetSceneStore())
         {
             ImGui::Text(scene->GetAssetName().c_str());
-            ImGui::Text("Asset Path: %s", scene->GetAssetPath().c_str());
+            ImGui::Text("Asset Path: %s", scene->GetRelativePath().c_str());
         }
         ImGui::TreePop();
     }

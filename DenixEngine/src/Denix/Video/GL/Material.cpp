@@ -32,7 +32,7 @@ namespace Denix
 	{
 		_out << YAML::Comment("DE_ASSET_MATERIAL");
 		_out << YAML::Key << "m_Material" << YAML::BeginMap;
-		_out << YAML::Key << "m_Asset" << YAML::Value << (m_Asset? m_Asset->GetAssetPath() : "");
+		_out << YAML::Key << "m_Asset" << YAML::Value << (m_Asset? m_Asset->GetRelativePath() : "");
 		_out << YAML::Key << "m_BaseTexture" << YAML::Value << (m_BaseTexture? m_BaseTexture->GetFileLocation() : "");
 		_out << YAML::Key << "m_BaseColor" << YAML::Value << EmitVec3(m_BaseColor);
 		_out << YAML::Key << "m_Shader" << YAML::Value << (m_Shader? m_Shader->GetDirectoryName() : "");
@@ -76,7 +76,7 @@ namespace Denix
 
 	YAML::Node Material::Deserialize(const Ref<Asset>& _asset)
 	{
-		YAML::Node matNode = YAML::LoadFile(FileSubsystem::FormatPath(_asset->GetAssetPath()));
+		YAML::Node matNode = YAML::LoadFile(FileSubsystem::FormatPath(_asset->GetRelativePath()));
 
 		if(matNode["m_Material"])
 		{
