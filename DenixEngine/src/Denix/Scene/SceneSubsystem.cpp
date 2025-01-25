@@ -195,14 +195,6 @@ namespace Denix
 		s_Instance->m_ActiveScene->m_IsPlaying = true;
 		m_SceneState = SceneState::Playing;
 		
-		// Check for Game Camera
-		if(const Ref<Camera> camera = s_Instance->m_ActiveScene->FindGameCamera())
-		{
-			// Set the camera as the active camera
-			s_Instance->m_ActiveScene->m_ActiveCamera = camera;
-			
-		}
-
 		DE_LOG(LogScene, Trace, "Started Playing Scene: {}", s_Instance->m_ActiveScene->GetName())
 	}
 

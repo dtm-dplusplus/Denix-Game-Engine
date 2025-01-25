@@ -43,9 +43,9 @@ namespace Denix
 
 		Ref<Camera> GetViewportCamera();
 
-		Ref<Camera> GetActiveCamera();
+		Ref<Actor> GetActiveCamera();
 
-		Ref<Camera> FindGameCamera() const;
+		Ref<Actor> FindGameCamera() const;
 
 		std::vector<Ref<Actor>> GetSceneActors() const;
 		std::vector<Ref<Actor>>& GetSceneActors();
@@ -83,7 +83,7 @@ namespace Denix
 		
 		Ref<Camera> m_ViewportCamera;
 
-		Ref<Camera> m_ActiveCamera;
+		Ref<Actor> m_ActiveCamera;
 
 	private:
 		/** List of Objects in the scene */

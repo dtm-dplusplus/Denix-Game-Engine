@@ -66,7 +66,7 @@ namespace Denix
         BaseObject::BeginPlay();
 
         
-        if (Ref<Camera> cam = FindGameCamera())
+        if (Ref<Actor> cam = FindGameCamera())
         {
             m_ActiveCamera = cam;
             DE_LOG(LogScene, Info, "Game Camera Found: {}", m_ActiveCamera->GetName())
@@ -119,7 +119,7 @@ namespace Denix
     Ref<Camera> Scene::GetViewportCamera()
     { return m_ViewportCamera; }
 
-    Ref<Camera> Scene::GetActiveCamera()
+    Ref<Actor> Scene::GetActiveCamera()
     { return m_ActiveCamera; }
 
     std::vector<Ref<Actor>> Scene::GetSceneActors() const
@@ -156,18 +156,13 @@ namespace Denix
         if (m_IsPlaying)
             _actor->BeginPlay();
 
-        m_Actors.push_back(std::move(_actor));
+        m_Actors.push_back(_actor);
     }
 
-    Ref<Camera> Scene::FindGameCamera() const
+    Ref<Actor> Scene::FindGameCamera() const
     {
         for (const auto& actor : m_Actors)
-        {
-            if (typeid(Camera) == typeid(*actor))
-            {
-                return std::static_pointer_cast<Camera>(actor);
-            }
-        }
+            if (actor->GetComponent<CameraComponent>()) return actor;
 
         return nullptr;
     }
