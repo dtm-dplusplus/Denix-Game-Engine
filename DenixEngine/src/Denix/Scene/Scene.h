@@ -34,16 +34,12 @@ namespace Denix
 
 		virtual void DebugUI(float _deltaTime) {}
 
-		bool IsOpen() const;
 		bool IsPlaying() const;
 
 		template <class T = Actor, typename... Args>
 		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 		
 		void SpawnActor(const Ref<Actor>& _actor);
-
-		float GetGravity() const;
-		float& GetGravity();
 
 		Ref<Camera> GetViewportCamera();
 
@@ -70,8 +66,11 @@ namespace Denix
 		physx::PxScene*	m_PxScene;
 		physx::PxSceneDesc*		m_PxSceneDesc;
 		physx::PxControllerManager*	m_PxControllerManager;
-	protected:
 
+		/** Gravity of the scene */
+		float m_Gravity = 9.81f;
+		
+	protected:
 		/** Name of the scene. Must be uniqiue */
 		Ref<Asset> m_SceneAsset;
 		
@@ -80,18 +79,11 @@ namespace Denix
 		 */
 		bool m_IsPlaying = false;
 
-		bool m_IsOpen = false;
-
-		/** Gravity of the scene */
-		float m_Gravity = 9.81f;
-
 		Ref<Actor> m_GameCamera;
 		
 		Ref<Camera> m_ViewportCamera;
 
 		Ref<Camera> m_ActiveCamera;
-
-		
 
 	private:
 		/** List of Objects in the scene */

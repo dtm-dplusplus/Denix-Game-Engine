@@ -272,9 +272,9 @@ namespace Denix
 			// Scene Properties
 			if (ImGui::BeginMenu("Tools"))
 			{
-				ImGui::Checkbox("Keyboard Logging", &Keyboard::m_KeyboardLogging);
-				ImGui::Checkbox("Mouse Input Logging", &Mouse::m_MouseInputLogging);
-				ImGui::Checkbox("Mouse Motion Logging", &Mouse::m_MouseMotionLogging);
+				if(ImGui::Checkbox("Keyboard Logging", &Keyboard::m_KeyboardLogging)) Engine::GetConfig().KeyboardLogging = Keyboard::m_KeyboardLogging;
+				if (ImGui::Checkbox("Mouse Button Logging", &Mouse::m_MouseButtonLogging)) Engine::GetConfig().MouseButtonLogging = Mouse::m_MouseButtonLogging;
+				if (ImGui::Checkbox("Mouse Motion Logging", &Mouse::m_MouseMotionLogging)) Engine::GetConfig().MouseMotionLogging = Mouse::m_MouseMotionLogging;
 				ImGui::Checkbox("Scene Threaded", &SceneSubsystem::GetInstance()->m_BatchUpdateActors);
 				ImGui::Checkbox("Renderer Enabled", &RendererSubsystem::GetInstance()->IsEnabled());
 				if(ImGui::BeginMenu("Reflection"))

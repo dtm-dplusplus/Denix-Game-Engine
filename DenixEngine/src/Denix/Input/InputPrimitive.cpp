@@ -43,7 +43,7 @@ void Mouse::ProcessMouseEvent(const SDL_Event& _event)
         if (_event.button.button == SDL_BUTTON_MIDDLE) m_MouseData.Middle = true;
         if (_event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = true;
         if (_event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = true;
-        if (m_MouseInputLogging) DE_LOG(LogInput, Trace, "Mouse Button Down Event. Button: {}", _event.button.button)
+        if (m_MouseButtonLogging) DE_LOG(LogInput, Trace, "Mouse Button Down Event. Button: {}", _event.button.button)
     }
 
     /**< Mouse button released */
@@ -54,7 +54,7 @@ void Mouse::ProcessMouseEvent(const SDL_Event& _event)
             if (_event.button.button == SDL_BUTTON_MIDDLE) m_MouseData.Middle = false;
             if (_event.button.button == SDL_BUTTON_X1) m_MouseData.Side1 = false;
             if (_event.button.button == SDL_BUTTON_X2) m_MouseData.Side2 = false;
-        if (m_MouseInputLogging) DE_LOG(LogInput, Trace, "Mouse Button Up Event. Button: {}", _event.button.button)
+        if (m_MouseButtonLogging) DE_LOG(LogInput, Trace, "Mouse Button Up Event. Button: {}", _event.button.button)
         }
 
     /**< Mouse wheel motion */ 

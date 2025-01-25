@@ -27,12 +27,13 @@ namespace Denix
         Component::BeginScene();
 
         SetupPhysX();
-        PhysicsSubsystem::RegisterComponent(shared_from_this());
+
+        // Register the physics component with the physics subsystem
+        if (m_SimulatePhysics) PhysicsSubsystem::RegisterComponent(shared_from_this());
     }
 
     void PhysicsComponent::BeginPlay()
     {
-        // Register the physics component with the physics subsystem
         Component::BeginPlay();
     }
 

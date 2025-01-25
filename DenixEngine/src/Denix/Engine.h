@@ -3,6 +3,8 @@
 #include "Denix/Core.h"
 #include <vector>
 
+#include "EngineConfig.h"
+
 int main(int argc, char** argv);
 
 namespace Denix
@@ -46,13 +48,7 @@ namespace Denix
 
         static Ref<Engine> GetInstance() { return s_Engine; }
 
-        std::string GetProjectName() const { return m_Config.ProjectName; }
-
-        struct EngineConfig
-        {
-            std::string ProjectName;
-            std::string StartupScenePath;
-        } m_Config;
+        static EngineConfig& GetConfig() { return s_Engine->m_Config; }
         
     protected:
         
@@ -75,6 +71,8 @@ namespace Denix
          */
         inline static Ref<Engine> s_Engine;
 
+        EngineConfig m_Config;
+        
         size_t m_FrameCount;
         
         Ref<JobSubsystem> m_JobSubsystem;

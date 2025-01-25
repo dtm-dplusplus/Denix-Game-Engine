@@ -113,17 +113,8 @@ namespace Denix
     }
 
 
-    bool Scene::IsOpen() const
-    { return m_IsOpen; }
-
     bool Scene::IsPlaying() const
     { return m_IsPlaying; }
-
-    float Scene::GetGravity() const
-    { return m_Gravity; }
-
-    float& Scene::GetGravity()
-    { return m_Gravity; }
 
     Ref<Camera> Scene::GetViewportCamera()
     { return m_ViewportCamera; }

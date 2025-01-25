@@ -30,7 +30,7 @@ namespace Denix
 			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(startupScene->GetAssetName())))
 			{
 				scene->m_Name = startupScene->GetAssetName();
-				scene->m_SceneAsset =m_StartupScene;
+				scene->m_SceneAsset = startupScene;
 				OpenScene(scene);
 			}
 			else
@@ -148,8 +148,12 @@ namespace Denix
 			return;
 		}
 
-		// Close the current scene if it's open
-		if (s_Instance->m_ActiveScene && s_Instance->m_ActiveScene->m_IsOpen) s_Instance->CloseScene();
+		// Close the current scene
+		if (s_Instance->m_ActiveScene)
+		{
+			s_Instance->CloseScene();
+			s_Instance->m_ActiveScene.reset();
+		}
 		
 		// Load the scene
 		LoadScene(_scene);
@@ -163,7 +167,6 @@ namespace Denix
 		if(EditorSubsystem::GetInstance()) EditorSubsystem::GetInstance()->SetActiveScene(s_Instance->m_ActiveScene);
 
 		// Begin new scene
-		s_Instance->m_ActiveScene->m_IsOpen = true;
 		s_Instance->m_ActiveScene->BeginScene();
 
 
@@ -239,7 +242,6 @@ namespace Denix
 		{
 			if (m_ActiveScene->m_IsPlaying) m_ActiveScene->EndPlay();
 			m_ActiveScene->EndScene();
-			m_ActiveScene->m_IsOpen = false;
 			//m_ActiveScene.reset();
 		}
 	}

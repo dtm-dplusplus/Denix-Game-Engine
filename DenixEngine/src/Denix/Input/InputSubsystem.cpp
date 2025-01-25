@@ -1,6 +1,8 @@
 #include "InputSubsystem.h"
 
 #include "backends/imgui_impl_sdl3.h"
+#include "Denix/Engine.h"
+#include "Denix/EngineConfig.h"
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Video/WindowSubsystem.h"
@@ -15,9 +17,10 @@ namespace Denix
         m_WindowRef = WindowSubsystem::GetWindow();
         DE_ASSERT(m_WindowRef.lock(), "Input: Window reference is invalid");
 
-        Keyboard::m_KeyboardLogging = true;
-        Mouse::m_MouseInputLogging = true;
-        Mouse::m_MouseMotionLogging = false;
+        EngineConfig& config = Engine::GetConfig();
+        Keyboard::m_KeyboardLogging = config.KeyboardLogging;
+        Mouse::m_MouseButtonLogging = config.MouseButtonLogging;
+        Mouse::m_MouseMotionLogging = config.MouseMotionLogging;
         GetDevices();
 
         m_Keyboard = MakeRef<Keyboard>();
@@ -25,7 +28,9 @@ namespace Denix
 
         m_Mouse = MakeRef<Mouse>();
         DE_ASSERT(m_Mouse, "Input: Mouse reference is invalid");
-        
+        DE_LOG(LogInput, Info, "Keyboard Logging: {}", Keyboard::m_KeyboardLogging);
+        DE_LOG(LogInput, Info, "Mouse Button Logging: {}", Mouse::m_MouseButtonLogging);
+        DE_LOG(LogInput, Info, "Mouse Motion Logging: {}", Mouse::m_MouseMotionLogging);
         DE_LOG(LogInput, Info, "Input Subsystem Initialized");
     }
 

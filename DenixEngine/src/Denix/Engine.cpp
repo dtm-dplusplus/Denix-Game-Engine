@@ -284,17 +284,32 @@ namespace Denix
                 return;
             }
 
-            // Project Name
-            if (const YAML::Node& projectNameNode = cfg["Project Name"])
+            // Engine
             {
-                m_Config.ProjectName = projectNameNode.as<std::string>();
-                DE_LOG(LogEngine, Info, "Loaded Engine Config: Project Name: {0}", m_Config.ProjectName)
-            }
+                // Project Name
+                if (const YAML::Node& projectNameNode = cfg["Project Name"])
+                {
+                    m_Config.ProjectName = projectNameNode.as<std::string>();
+                    DE_LOG(LogEngine, Info, "Loaded Engine Config: Project Name: {0}", m_Config.ProjectName)
+                }
             
-            // Startup scene
-            if (const YAML::Node& startSceneNode = cfg["Startup Scene"])
+                // Startup scene
+                if (const YAML::Node& startSceneNode = cfg["Startup Scene"])
+                {
+                    m_Config.StartupScenePath = startSceneNode.as<std::string>();
+                }
+            }
+
+            // Input
             {
-               m_Config.StartupScenePath = startSceneNode.as<std::string>();
+                if (const YAML::Node& mouseMotionNode = cfg["MouseMotionLogging"])
+                    m_Config.MouseMotionLogging = mouseMotionNode.as<bool>();
+                if (const YAML::Node& mouseButtonNode = cfg["MouseButtonLogging"])
+                    m_Config.MouseButtonLogging = mouseButtonNode.as<bool>();
+                if (const YAML::Node& keyboardNode = cfg["KeyboardLogging"])
+                    m_Config.KeyboardLogging = keyboardNode.as<bool>();
+                if (const YAML::Node& gamepadNode = cfg["GamepadLogging"])
+                    m_Config.GamepadLogging = gamepadNode.as<bool>();
             }
         }
         catch (const std::exception& e)
@@ -313,10 +328,15 @@ namespace Denix
         {
             YAML::Emitter cfgEmitter;
             cfgEmitter << YAML::BeginMap;
+            cfgEmitter << YAML::Comment("Engine Configuration") << YAML::Newline;
             cfgEmitter << YAML::Key << "Project Name" << YAML::Value << m_Config.ProjectName;
             if (auto scene = m_AssetSubsystem->GetStartupScene())
                 cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << scene->GetRelativePath();
-            
+        
+            cfgEmitter << YAML::Newline << YAML::Comment("Input") << YAML::Newline;
+            cfgEmitter << YAML::Key << "MouseMotionLogging" << YAML::Value << m_Config.MouseMotionLogging;
+            cfgEmitter << YAML::Key << "MouseButtonLogging" << YAML::Value << m_Config.MouseButtonLogging;
+            cfgEmitter  << YAML::Key << "KeyboardLogging" << YAML::Value << m_Config.KeyboardLogging;
             cfgEmitter << YAML::EndMap;
             
             if (FileSubsystem::WriteFile(m_FileSubsystem->m_ProjectFile, cfgEmitter.c_str()))

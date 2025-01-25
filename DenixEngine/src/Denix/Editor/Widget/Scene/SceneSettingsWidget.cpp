@@ -25,7 +25,7 @@ void Denix::SceneSettingsWidget::Update(float _deltaTime)
     //ImGui::Combo("Viewport Mode", &RendererSubsystem::GetViewportMode(), "Default\0Unlit\0Wireframe\0Collision\0\0");
 		
     ImGui::SeparatorText("Physics");
-    ImGui::DragFloat("Gravity", &m_SceneRef.lock()->GetGravity());
+    ImGui::DragFloat("Gravity", &m_SceneRef.lock()->m_Gravity);
     ImGui::Checkbox("Collision Detection", &PhysicsSubsystem::CollisionDetectionEnabledRef());
     ImGui::Checkbox("Collision Response", &PhysicsSubsystem::CollisionResponseEnabledRef());
 

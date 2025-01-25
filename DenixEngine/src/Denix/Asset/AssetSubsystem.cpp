@@ -91,7 +91,7 @@ namespace Denix
 			}
 		}
 
-		if (Ref<Asset> startSceneAsset = GetSceneAsset(FileSubsystem::FormatPath(Engine::GetInstance()->m_Config.StartupScenePath)))
+		if (Ref<Asset> startSceneAsset = GetSceneAsset(FileSubsystem::FormatPath(Engine::GetInstance()->GetConfig().StartupScenePath)))
 		{
 			m_StartupScene = startSceneAsset;
 			DE_LOG(LogEngine, Info, "Loaded Engine Config: Startup Scene: {0}", startSceneAsset->GetAssetName())
@@ -194,7 +194,7 @@ namespace Denix
 		}
 
 		s_Instance->m_StartupScene = MakeRef<Asset>(FileSubsystem::FormatRelativePath(_scenePath));
-		Engine::GetInstance()->m_Config.StartupScenePath = s_Instance->m_StartupScene->GetRelativePath();
+		Engine::GetInstance()->GetConfig().StartupScenePath = s_Instance->m_StartupScene->GetRelativePath();
 	}
 
 	////////////////////////  SHADERS ///////////////////////////////

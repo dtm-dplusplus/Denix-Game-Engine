@@ -40,7 +40,7 @@ namespace Denix
         bool IsKeyUp(KeyCode key) const;
         bool IsKeyHold(KeyCode key) const;
 
-        inline static bool m_KeyboardLogging;
+        inline static bool m_KeyboardLogging = false;
         
     private:
         void ProcessKeyEvent(const SDL_Event& event);
@@ -62,8 +62,8 @@ namespace Denix
 
         MouseData m_MouseData;
 
-        inline static bool m_MouseInputLogging;
-        inline static bool m_MouseMotionLogging;
+        inline static bool m_MouseButtonLogging = false;
+        inline static bool m_MouseMotionLogging = false;
     private:
         void ProcessMouseEvent(const SDL_Event& _event);
 
