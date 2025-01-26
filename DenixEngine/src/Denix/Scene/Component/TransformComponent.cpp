@@ -1,5 +1,6 @@
 #include "TransformComponent.h"
 #include "Denix/Scene/SceneSubsystem.h"
+#include "Denix/Core/Reflection/YAMLHelper.h"
 
 namespace Denix
 {
@@ -8,17 +9,6 @@ namespace Denix
                                               m_Up({0.0f, 1.0f, 0.0f})
     
     {
-    }
-
-    void TransformComponent::BeginScene()
-    {
-        Component::BeginScene();
-
-    }
-
-    void TransformComponent::EndScene()
-    {
-        Component::EndScene();
     }
 
     void TransformComponent::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
@@ -48,5 +38,37 @@ namespace Denix
         m_Transform.Rotation.x = fmod(m_Transform.Rotation.x, 360.f);
         m_Transform.Rotation.y = fmod(m_Transform.Rotation.y, 360.f);
         m_Transform.Rotation.z = fmod(m_Transform.Rotation.z, 360.f);
+    }
+
+    void TransformComponent::Serialize(YAML::Emitter& _out)
+    {
+        Component::Serialize(_out);
+
+        _out << YAML::Key << "TransformComponent" << YAML::BeginMap;
+        _out << YAML::Key << "m_Position" << YAML::BeginMap;
+        Vec3ToYAML(_out, m_Transform.Position);
+        _out << YAML::EndMap;
+            
+        _out << YAML::Key << "m_Rotation" << YAML::BeginMap;
+        Vec3ToYAML(_out, m_Transform.Rotation);
+        _out << YAML::EndMap;
+
+        _out << YAML::Key << "m_Scale" << YAML::BeginMap;
+        Vec3ToYAML(_out, m_Transform.Scale);
+        _out << YAML::EndMap;
+            
+        _out << YAML::Key << "m_Moveability" << YAML::Value << m_Moveability;
+        _out << YAML::EndMap;
+    }
+
+    void TransformComponent::Deserialize(const YAML::Node& _in)
+    {
+        Component::Deserialize(_in);
+
+        // Transform Component
+        if (const YAML::Node& pos = _in["m_Position"]; pos.IsDefined()) m_Transform.Position = YAMLtoVec3(pos);
+        if (const YAML::Node& rot = _in["m_Rotation"]; rot.IsDefined()) m_Transform.Rotation = YAMLtoVec3(rot);
+        if (const YAML::Node& scale = _in["m_Scale"]; scale.IsDefined()) m_Transform.Scale = YAMLtoVec3(scale);
+        if (const YAML::Node& move = _in["m_Moveability"]; move.IsDefined()) m_Moveability = move.as<int>();
     }
 }

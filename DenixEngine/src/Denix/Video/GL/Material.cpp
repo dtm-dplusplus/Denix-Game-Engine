@@ -53,7 +53,7 @@ namespace Denix
 			SetShader(shader); // Temp until asset scraper built
 		}
 
-		SetBaseColor(_in["m_BaseColor"].as<glm::vec3>());
+		//SetBaseColor(_in["m_BaseColor"].as<glm::vec3>());
 
 		// Check texture
 		if(std::string texPath = _in["m_BaseTexture"].as<std::string>(); !texPath.empty())

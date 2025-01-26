@@ -27,13 +27,11 @@ namespace Denix
 		// Load Startup scene if it exists
 		if(Ref<Asset> startupScene = AssetSubsystem::GetStartupScene())
 		{
-			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(startupScene->GetAssetName())))
+			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create("DevScene")))//startupScene->GetAssetName())))
 			{
 				scene->m_Name = startupScene->GetAssetName();
 				scene->m_SceneAsset = startupScene;
-//				OpenScene(scene);
-				OpenScene(MakeRef<Scene>());
-
+				OpenScene(scene);
 			}
 			else
 			{
@@ -377,7 +375,10 @@ namespace Denix
 			
 			// Deserialize the actor
 			newActor->Deserialize(actorNode);
-			_scene->SpawnActor(newActor);
+
+			// Manually Push - We don't want to run BeginScene & BeginPlay here
+			_scene->m_Actors.push_back(newActor);
+			_scene->m_ActorNames.insert(newActor->GetName());
 		}
 		
 		return true;

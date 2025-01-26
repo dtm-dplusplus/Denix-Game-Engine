@@ -43,9 +43,6 @@ namespace Denix
   // Destructors
   ~TransformComponent() override = default;
 
-  void BeginScene() override;
-  void EndScene() override;
-
   void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
   void UpdateRotationVectorFromMatrix();
@@ -90,6 +87,9 @@ namespace Denix
 
 
  private:
+  void Serialize(YAML::Emitter& _out) override;
+  void Deserialize(const YAML::Node& _in) override;
+  
   Transform m_Transform;
 
   glm::vec3 m_Forward;
