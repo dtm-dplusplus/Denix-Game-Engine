@@ -130,6 +130,8 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC PhysX_64
         PUBLIC PhysXCommon_64
         PUBLIC PhysXFoundation_64
+        PUBLIC PhysXTask_static_64
+        PUBLIC SimulationController_static_64
         PUBLIC PhysXExtensions_static_64
         PUBLIC PhysXPvdSDK_static_64
         PUBLIC SceneQuery_static_64

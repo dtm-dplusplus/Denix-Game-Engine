@@ -115,9 +115,9 @@ namespace Denix
         }
 
         // Set the actor's shape & user data
-        _comp->m_PxActor->userData = parent.get();
+        _comp->m_PxActor->userData = _comp.get();
         _comp->m_PxActor->attachShape(*_comp->m_PxShape);
-
+       // _comp->m_PxActor->setActorFlag(, true);
         DE_ASSERT(_comp->m_PxActor, "Failed to create PhysX Actor")
 
         auto scene = s_Instance->m_ActiveScene.lock();

@@ -83,6 +83,7 @@ Denix::Ref<Denix::AudioSource> Denix::AudioSubsystem::CreateNewAudioSource()
 void Denix::AudioSubsystem::Deinitialize()
 {
     DE_LOG(LogAudio, Trace, "Audio Subsystem Deinitializing")
+    m_GlobalAudioSource.reset();
     alcMakeContextCurrent(nullptr);
     alcDestroyContext(m_Context);
     alcCloseDevice(m_Device);

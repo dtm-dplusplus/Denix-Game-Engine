@@ -9,8 +9,10 @@
 #include "Denix/Scene/Component.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Physics/Collider.h"
+#include "Denix/Physics/CollisionPair.h"
 #include "Denix/Physics/PhysicPrimitive.h"
 #include "Denix/Scene/Actor.h"
+
 
 namespace physx
 {
@@ -30,13 +32,6 @@ namespace physx
 
 namespace Denix
 {
-	struct CollisionData
-	{
-		glm::vec3 Normal;
-		glm::vec3 ContactPoint;
-		float Penetration;
-	};
-
 	class PhysicsComponent : public Component, public std::enable_shared_from_this<PhysicsComponent>
 	{
 	public:
@@ -63,6 +58,8 @@ namespace Denix
 		physx::PxRigidActor* m_PxActor = nullptr;
 		physx::PxMaterial* m_PxMaterial = nullptr;
 		PhysicsAttributeFlags m_AttributeFlags;
+
+		std::vector<CollisionPair> m_CollisionData;
 		
 		//physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
 		ColliderType m_ColliderType = ColliderType::Cube;

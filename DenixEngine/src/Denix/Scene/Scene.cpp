@@ -1,17 +1,34 @@
 ﻿#include "Denix/Scene/Scene.h"
 
 #include "Denix/Asset/Asset.h"
+#include "Denix/Physics/CollisionCallback.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 
 namespace Denix
 {
-   
+    static physx::PxFilterFlags PhysicsFilterShader(
+ physx::PxFilterObjectAttributes attributes0,
+ physx::PxFilterData filterData0,
+ physx::PxFilterObjectAttributes attributes1,
+ physx::PxFilterData filterData1,
+ physx::PxPairFlags& pairFlags,
+ const void* constantBlock,
+ physx::PxU32 constantBlockSize)
+    {
+        pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
 
-    Scene::Scene(): BaseObject({"Scene"}), m_PxScene(nullptr), m_PxSceneDesc(nullptr),
+        // Report when there is any contact between the two objects
+        pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_LOST;
+        return physx::PxFilterFlag::eNOTIFY;
+
+      //  return physx::PxFilterFlag::eDEFAULT;
+    }
+
+    Scene::Scene(): BaseObject({"Scene"}), m_PxScene(nullptr), m_PxSceneDesc(nullptr), m_PxControllerManager(nullptr),
+                    m_CollisionCallback(nullptr),
                     m_ViewportCamera{MakeRef<Camera>()},
                     m_ActiveCamera{m_ViewportCamera}
     {
-        
     }
 
     Scene::~Scene()
@@ -26,10 +43,15 @@ namespace Denix
        BaseObject::BeginScene();
 
         m_PxSceneDesc = new physx::PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
-        m_PxSceneDesc->gravity = physx::PxVec3(0.0f, -m_Gravity, 0.0f);
-        m_PxSceneDesc->cpuDispatcher	= PhysicsSubsystem::m_PxDispatcher;
-        m_PxSceneDesc->filterShader = physx::PxDefaultSimulationFilterShader;
-
+        //m_PxSceneDesc->flags
+        m_PxSceneDesc->gravity =  physx::PxVec3(0.0f, -m_Gravity, 0.0f);
+        m_PxSceneDesc->cpuDispatcher = PhysicsSubsystem::m_PxDispatcher;
+        m_PxSceneDesc->filterShader =  PhysicsFilterShader; //physx::PxDefaultSimulationFilterShader;
+        m_CollisionCallback = new CollisionCallback;
+        m_PxSceneDesc->simulationEventCallback = m_CollisionCallback;
+        //m_PxSceneDesc->filterCallback
+        
+                
         m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(*m_PxSceneDesc);
         DE_ASSERT(m_PxScene, "Failed to create PhysX Scene");
 

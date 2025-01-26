@@ -164,6 +164,7 @@ namespace Denix
     Ref<Collider> Actor::GetCollider() const
     { return m_PhysicsComponent->GetCollider(); }
 
+
     void Actor::Destroy()
     {
         // Add more clean up code here
@@ -207,5 +208,24 @@ namespace Denix
         BaseObject::Update(_deltaTime, _waitCounter);
 
         for(const auto& component : m_Components) component->Update(_deltaTime, _waitCounter);
+
+        // Physics Callback Events
+        if (m_PhysicsComponent->CollisionDetectionEnabled())
+        {
+            for (const auto& col : m_PhysicsComponent->m_CollisionData)
+            {
+                if (col.m_Actors[0] && col.m_Actors[1])
+                {
+                    int otherIndex = 0;
+                    
+                    if (col.m_Actors[0] == m_PhysicsComponent.get()) otherIndex = 1;
+
+                    if (col.CollisionEnter) OnCollisionEnter(col.m_Actors[otherIndex]->GetParent(), col.Normal, col.Point);
+                    else OnCollisionExit(col.m_Actors[otherIndex]->GetParent(), col.Normal, col.Point);
+                }
+            }
+        }
+
+        m_PhysicsComponent->m_CollisionData.clear();
     }
 }

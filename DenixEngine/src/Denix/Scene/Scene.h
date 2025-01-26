@@ -13,6 +13,7 @@ namespace physx
 namespace Denix
 {
 	class Asset;
+	class CollisionCallback;
 
 	// Basic Scene class
 	class Scene: public BaseObject, public std::enable_shared_from_this<Scene>
@@ -66,7 +67,7 @@ namespace Denix
 		physx::PxScene*	m_PxScene;
 		physx::PxSceneDesc*		m_PxSceneDesc;
 		physx::PxControllerManager*	m_PxControllerManager;
-
+		CollisionCallback* m_CollisionCallback;
 		/** Gravity of the scene */
 		float m_Gravity = 9.81f;
 		

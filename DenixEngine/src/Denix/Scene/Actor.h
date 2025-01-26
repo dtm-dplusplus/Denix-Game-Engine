@@ -57,8 +57,11 @@ namespace Denix
 		std::vector<Ref<Component>> &GetComponents()  { return m_Components; }
 		std::unordered_map<std::string, Ref<Component>>& GetComponentMap() { return m_ComponentMap; }
 
+		
 		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
-
+		Transform& GetTransform() { return m_TransformComponent->GetTransform(); }
+		Transform GetTransform() const { return m_TransformComponent->GetTransform(); }
+		
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
 		Ref<Collider> GetCollider() const;
 
@@ -67,7 +70,8 @@ namespace Denix
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 		// Physics Component
-		//virtual void OnCollision(Ref<Actor>& _other, CollisionData& _collision) {} //const Ref<Actor>& _other
+		virtual void OnCollisionEnter(const Ref<Actor>& _other, const glm::vec3& _normal, const glm::vec3& _point){}
+		virtual void OnCollisionExit(const Ref<Actor>& _other, const glm::vec3& _normal, const glm::vec3& _point){}
 
 		virtual void OnTriggerEnter(Ref<Actor> _other){}
 		virtual void OnTriggerStay(Ref<Actor> _other){}
