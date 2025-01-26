@@ -36,6 +36,10 @@ namespace Denix
         virtual void BeginScene() {}
         virtual void EndScene() {}
 
+        virtual void Destroy()
+        {
+            MarkRubbish();
+        }
         
         virtual void Serialize(YAML::Emitter& _out);
         virtual void Deserialize(const YAML::Node& _in);

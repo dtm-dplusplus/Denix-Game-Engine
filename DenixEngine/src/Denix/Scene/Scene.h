@@ -108,22 +108,10 @@ namespace Denix
 	Ref<T> Scene::SpawnActor(Args&&... _args, const glm::vec3& _position, const glm::vec3& _rotation, const glm::vec3& _scale)
 {
 	// Check if T is derived from Actor
-	static_assert(IsBase<Actor, T>(), "T must be derived from Actor");
+	DE_STATIC_ASSERT(IsBase<Actor, T>(), "Class must be derived from Actor")
 
 	if (Ref<Actor> actor = MakeRef<T>(std::forward<Args>(_args)...))
 	{
-		// Perform type checks to cache engine actor types
-		if (Ref<CameraComponent> camComp = actor->GetComponent<CameraComponent>())
-        {
-            if (m_GameCamera)
-            {
-                DE_LOG(LogScene, Error, "Scene already has a game camera")
-                return nullptr;
-            }
-	
-			m_GameCamera = actor;
-        }
-		
 		// Validate Name. We cannont have two objects with the same name
 		if (m_ActorNames.contains(actor->GetName()))
 		{
@@ -133,6 +121,9 @@ namespace Denix
 		}
 		m_ActorNames.insert(actor->m_Name);
 
+		// Pass the scene reference to the actor
+		actor->m_SceneRef = shared_from_this();
+		
 		// Set Transform Component
 		actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);
 		

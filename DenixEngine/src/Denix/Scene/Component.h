@@ -17,36 +17,20 @@ namespace Denix
 		~Component() override = default;
 		
 		Ref<Actor> GetParent() const { return m_Parent.lock(); }
-		
-		void BeginScene() override
-		{
-			BaseObject::BeginScene();
-		}
 
-		void EndScene() override
-		{
-			BaseObject::EndScene();
-		}
+		bool IsRemoveable() const { return m_IsRemovable; }
 		
-		void BeginPlay() override
-		{
-			BaseObject::BeginPlay();
-		}
-		void EndPlay() override
-		{
-			BaseObject::EndPlay();
-		}
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override
-		{
-			BaseObject::Update(_deltaTime, _waitCounter);
-		}
-
 	protected:
 		virtual void RegisterComponent() {}
 		virtual void UnregisterComponent() {}
+
+		virtual void OnComponentAdded() {}
+		virtual void OnComponentRemoved() {}
+		
+		bool m_IsRemovable = false;
 		
 		WRef<Actor> m_Parent;
-
+	
 		friend class Actor;
 		friend class BaseObject;
 	};

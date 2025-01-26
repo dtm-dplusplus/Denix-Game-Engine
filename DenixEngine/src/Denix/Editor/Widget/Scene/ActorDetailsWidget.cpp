@@ -385,7 +385,7 @@ void Denix::ActorDetailsWidget::MeshWidget(const Ref<Actor>& _selectedObject)
     {
         ImGui::SeparatorText("Mesh Settings");
 
-        const Ref<ModelComponent> meshComp = _selectedObject->GetMeshComponent();
+        const Ref<ModelComponent> meshComp = _selectedObject->GetModelComponent();
         std::string preview = "Empty";
         if (const Ref<Model> model = meshComp->GetModel()) preview = model->GetAssetName();
 

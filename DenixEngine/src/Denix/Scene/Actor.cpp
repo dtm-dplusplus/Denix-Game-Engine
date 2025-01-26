@@ -1,10 +1,8 @@
 #include "Actor.h"
 
+#include "Denix/Scene/Scene.h"
 #include "Denix/Asset/AssetSubsystem.h"
-
-#include "yaml-cpp/yaml.h"
 #include "Denix/Core/Reflection/YAMLHelper.h"
-#include "Denix/Asset/Asset.h"
 #include "Denix/Core/Reflection/ReflectionSubsystem.h"
 
 namespace Denix
@@ -77,19 +75,25 @@ namespace Denix
             }
         }
     }
-    
-    void Actor::BeginPlay()
-    {
-        BaseObject::BeginPlay();
 
-        for (const auto& component : m_Components) component->BeginPlay();
+    void Actor::AddComponent(const Ref<Component>& _comp)
+    {
+        if (!_comp) return;
+
+        // Peform BeginPlay Checks
+        // If we have a scene refrence its safe to assume we are not calling this from constructor
+        if (Ref<Scene> scene = m_SceneRef.lock())
+        {
+            _comp->BeginScene();
+            if (scene->IsPlaying()) _comp->BeginPlay();
+        }
+        m_Components.push_back(_comp);
+        m_ComponentMap[_comp->GetClassNameDE()] = _comp;
     }
 
-    void Actor::EndPlay()
+    void Actor::Destroy()
     {
-        for (const auto& component : m_Components) component->EndPlay();
-
-        BaseObject::EndPlay();
+        BaseObject::Destroy();
     }
 
     void Actor::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
@@ -116,5 +120,37 @@ namespace Denix
         }
 
         m_PhysicsComponent->m_CollisionData.clear();
+    }
+
+    void Actor::BeginScene()
+    {
+        BaseObject::BeginScene();
+
+        for (const auto& component : m_Components)
+        {
+            component->m_Parent = shared_from_this();
+            component->BeginScene();
+        }
+    }
+
+    void Actor::EndScene()
+    {
+        for (const auto& component : m_Components) component->EndScene();
+
+        BaseObject::EndScene();
+    }
+
+    void Actor::BeginPlay()
+    {
+        BaseObject::BeginPlay();
+
+        for (const auto& component : m_Components) component->BeginPlay();
+    }
+
+    void Actor::EndPlay()
+    {
+        for (const auto& component : m_Components) component->EndPlay();
+
+        BaseObject::EndPlay();
     }
 }
