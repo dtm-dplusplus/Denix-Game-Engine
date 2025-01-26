@@ -9,6 +9,7 @@ namespace Denix
 {
     PhysicsComponent::PhysicsComponent(): Component(ObjectInit("Physics Component")), m_Collider(nullptr)
     {
+        m_ClassName = "PhysicsComponent";
     }
 
 
@@ -49,7 +50,6 @@ namespace Denix
     {
         Component::Serialize(_out);
 
-        _out << YAML::Key << "PhysicsComponent" << YAML::BeginMap;
         _out << YAML::Key << "m_SimulatePhysics" << YAML::Value << m_SimulatePhysics;
         _out << YAML::Key << "m_CollisionDetectionEnabled" << YAML::Value << m_CollisionDetectionEnabled;
         _out << YAML::Key << "m_ImpulseEnabled" << YAML::Value << m_ImpulseEnabled;
@@ -59,7 +59,6 @@ namespace Denix
         _out << YAML::Key << "m_Elasticity" << YAML::Value << m_Elasticity;
         _out << YAML::Key << "m_StaticFriction" << YAML::Value << m_StaticFriction;
         _out << YAML::Key << "m_DynamicFriction" << YAML::Value << m_DynamicFriction;
-        _out << YAML::EndMap;
     }
 
     void PhysicsComponent::Deserialize(const YAML::Node& _in)

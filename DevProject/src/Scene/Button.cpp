@@ -7,11 +7,8 @@
 Denix::Button::Button()
 {
    m_SelectAudioClip = AssetSubsystem::GetAudioClip("Content\\Engine\\audio\\UI_Select.wav");
-    //m_SelectAudioClip = AssetSubsystem::GetAudioClip("Content\\Audio\\music.wav");
     m_RenderComponent->m_IsUI = true;
-    Ref<Material> mat = MakeRef<Material>();
-    mat->GetBaseColor() = { 1.0f,1.0f,1.0f };   
-    m_RenderComponent->SetMaterial(mat);
+    m_RenderComponent->GetMaterial()->m_BaseColor = Button::defaultColor;
 }
 
 Denix::Button::~Button()

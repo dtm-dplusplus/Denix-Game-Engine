@@ -8,33 +8,25 @@
 
 namespace Denix
 {
-	class Asset;
-
-	
 	class Material: public BaseObject
 	{
 	public:
 		Material(const ObjectInit& _objInit = { "Material" });
 		Material(const Ref<Material>& _other);
-		Material(const Ref<Asset>& _asset);
 		
 		// Serialization
 		void Serialize(YAML::Emitter& _out) override;
 		void Deserialize(const YAML::Node& _in) override;
-		YAML::Node Deserialize(const Ref<Asset>& _asset);
-		// Getters and Setters 
+
 		Ref<Shader> GetShader() const { return m_Shader; }
 		void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
 
 		// Albedo color or texture
-		void SetBaseColor(const glm::vec3& _color) { m_BaseColor = _color; m_IsBaseTexture = false;}
+		void SetBaseColor(const glm::vec3& _color) { m_BaseColor = _color;}
 		void SetBaseTexture(const Ref<Texture>& _texture);
 		Ref<Texture> GetBaseTexture() const { return m_BaseTexture; }
 		Ref<Texture>& GetBaseTexture() { return m_BaseTexture; }
-		glm::vec3 GetBaseColor() const { return m_BaseColor; }
-		glm::vec3& GetBaseColor() { return m_BaseColor; }
 
-		
 		bool CheckBaseType() { m_IsBaseTexture = IsValid(m_BaseTexture); return m_IsBaseTexture;}
 
 		/**
@@ -43,48 +35,18 @@ namespace Denix
 		 */
 		bool IsBaseATexture() const { return m_IsBaseTexture; }
 
-		float GetSpecularPower() const { return m_SpecularPower; }
-		float& GetSpecularPower() { return m_SpecularPower; }
-		void SetSpecularPower(const float _power) { m_SpecularPower = _power; }
-
-		float GetSpecularIntensity() const { return m_SpecularIntensity; }
-		float& GetSpecularIntensity() { return m_SpecularIntensity; }
-		void SetSpecularIntensity(const float _intensity) { m_SpecularIntensity = _intensity; }
-
-		float GetAO() const { return AO; }
-		float& GetAO() { return AO; }
-		void SetAO(const float _ao) { AO = _ao; }
-
-		float GetMetallic() const { return Metallic; }
-		float& GetMetallic() { return Metallic; }
-		void SetMetallic(const float _metallic) { Metallic = _metallic; }
-
-		float GetRoughness() const { return Roughness; }
-		float& GetRoughness() { return Roughness; }
-		void SetRoughness(const float _roughness) { Roughness = _roughness; }
-
-		Ref<Asset> GetAsset() const { return m_Asset; }
-		Ref<Asset>& GetAsset() { return m_Asset; }
-		void SetAsset(const Ref<Asset>& _asset) { m_Asset = _asset; }
 		void ClearBaseTexture() { m_BaseTexture = nullptr; m_IsBaseTexture = false; }
 
+		glm::vec3 m_BaseColor = glm::vec3(0.0f);
+		TextureSettings m_TextureSettings;
 	private:
 		// Base color or texture
-		glm::vec3 m_BaseColor = glm::vec3(0.0f);
-		Ref<Texture> m_BaseTexture;
 		bool m_IsBaseTexture = false;
+		Ref<Texture> m_BaseTexture;
 		
 		Ref<Shader> m_Shader;
-		Ref<Asset> m_Asset;
 
-	private:
-		float m_SpecularIntensity = 0.5f;
-		float m_SpecularPower = 4.0f;
-
-		float AO;
-		float Metallic;
-		float Roughness;
-		
+		friend class RenderComponent;
 		friend class RendererSubsystem;
 	};
 

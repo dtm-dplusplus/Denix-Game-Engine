@@ -36,7 +36,7 @@ namespace Denix
 		 */
 		std::string GetName() const { return m_Name; }
 
-    	std::string GetClassName() const { return m_ClassName; }
+    	std::string GetClassNameDE() const { return m_ClassName; }
 
 		/**
 		 * Global Unique Identifier 

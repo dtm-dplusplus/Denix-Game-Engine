@@ -8,6 +8,7 @@
 
 Denix::CameraComponent::CameraComponent(): Component({"CameraComponent"}), m_Viewport(MakeRef<Viewport>())
 {
+	m_ClassName = "CameraComponent";
 }
 
 void Denix::CameraComponent::BeginScene()

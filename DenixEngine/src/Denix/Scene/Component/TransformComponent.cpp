@@ -9,6 +9,7 @@ namespace Denix
                                               m_Up({0.0f, 1.0f, 0.0f})
     
     {
+        m_ClassName = "TransformComponent";
     }
 
     void TransformComponent::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
@@ -44,7 +45,6 @@ namespace Denix
     {
         Component::Serialize(_out);
 
-        _out << YAML::Key << "TransformComponent" << YAML::BeginMap;
         _out << YAML::Key << "m_Position" << YAML::BeginMap;
         Vec3ToYAML(_out, m_Transform.Position);
         _out << YAML::EndMap;
@@ -58,7 +58,6 @@ namespace Denix
         _out << YAML::EndMap;
             
         _out << YAML::Key << "m_Moveability" << YAML::Value << m_Moveability;
-        _out << YAML::EndMap;
     }
 
     void TransformComponent::Deserialize(const YAML::Node& _in)

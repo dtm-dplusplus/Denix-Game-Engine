@@ -29,14 +29,21 @@ namespace Denix
 		void Serialize(YAML::Emitter& _out) override;
 		void Deserialize(const YAML::Node& _in) override;
 
+		void AddComponent(const Ref<Component>& _comp)
+		{
+			if (!_comp) return;
+
+			m_Components.push_back(_comp);
+			m_ComponentMap[_comp->GetClassNameDE()] = _comp;
+		}
+		
 		template<class T, typename ... Args>
 		Ref<T> AddComponent(Args&& ... _args)
 		{
-			if(Ref<T> component = MakeRef<T>(std::forward<Args>(_args)...))
+			if(Ref<T> comp = MakeRef<T>(std::forward<Args>(_args)...))
 			{
-				m_Components.push_back(component);
-				m_ComponentMap[ReflectionHelper::GetClassNameDE<T>()] = component;
-				return component;
+				AddComponent(comp);
+				return comp;
 			}
 
 			return nullptr;
@@ -54,6 +61,7 @@ namespace Denix
 			return nullptr;
 		}
 
+		// Use with caution
 		std::vector<Ref<Component>> &GetComponents()  { return m_Components; }
 		std::unordered_map<std::string, Ref<Component>>& GetComponentMap() { return m_ComponentMap; }
 
@@ -63,10 +71,7 @@ namespace Denix
 		Transform GetTransform() const { return m_TransformComponent->GetTransform(); }
 		
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
-		Ref<Collider> GetCollider() const;
-
 		Ref<ModelComponent> GetMeshComponent() { return m_ModelComponent; }
-
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
 		// Physics Component
@@ -77,18 +82,36 @@ namespace Denix
 		virtual void OnTriggerStay(Ref<Actor> _other){}
 		virtual void OnTriggerExit(Ref<Actor> _other){}
 
-		void Destroy();
+		virtual void Destroy()
+		{
+			// Add more clean up code here
+			MarkRubbish();
+		}
 
-	public:
-		void BeginScene() override;
-		void EndScene() override;
+	protected:
+		void BeginScene() override
+		{
+			BaseObject::BeginScene();
+
+			for (const auto& component : m_Components)
+			{
+				component->m_Parent = shared_from_this();
+				component->BeginScene();
+			}
+		}
+		
+		void EndScene() override
+		{
+			for (const auto& component : m_Components) component->EndScene();
+
+			BaseObject::EndScene();
+		}
 
 		void BeginPlay() override;
 		void EndPlay() override;
 
 		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-
-	protected:
+		
 		std::unordered_map<std::string, Ref<Component>> m_ComponentMap;
 		std::vector<Ref<Component>> m_Components;
 

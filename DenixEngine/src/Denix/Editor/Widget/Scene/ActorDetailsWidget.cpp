@@ -238,7 +238,7 @@ void Denix::ActorDetailsWidget::RenderWidget(const Ref<Actor>& _selectedObject)
     {
         const Ref<RenderComponent> render = _selectedObject->GetRenderComponent();
 
-        ImGui::Checkbox("Visible", &render->IsVisible());
+        ImGui::Checkbox("Visible", &render->m_IsVisible);
         MaterialWidget(_selectedObject);
     }
 }
@@ -250,27 +250,19 @@ void Denix::ActorDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject
     ImGui::SeparatorText("Material");
 
     // Material Settings
-    if (Ref<Material>& mat = rendComp->GetMaterial())
+    if (Ref<Material> mat = rendComp->GetMaterial())
     {
-        MaterialSelectionWidget(rendComp);
-
         // Material Properties
-        ImGui::DragFloat("AO", &mat->GetAO(), m_DragSpeed, 0.0f, 1.0f);
-        ImGui::DragFloat("Metallic", &mat->GetMetallic(), m_DragSpeed, 0.0f, 1.0f);
-        ImGui::DragFloat("Roughness", &mat->GetRoughness(), m_DragSpeed, 0.0f, 1.0f);
         // Color or Texture selectable
         {
             ImGui::Text("Base Color");
-            ImGui::ColorEdit3("Base Color", &mat->GetBaseColor()[0]);
+            ImGui::ColorEdit3("Base Color", &mat->m_BaseColor[0]);
             TextureSelectionWidget(mat);
             if (ImGui::Button("Clear Texture"))
             {
                 mat->ClearBaseTexture();
             }
         }
-
-        ImGui::DragFloat("Specular Intensity", &mat->GetSpecularIntensity());
-        ImGui::DragFloat("Specular Power", &mat->GetSpecularPower());
 
         ImGui::Separator();
         if (Ref<Shader> shader = mat->GetShader())
@@ -294,57 +286,7 @@ void Denix::ActorDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject
             }
         }
 
-       // if (m_ShaderEditor) m_ShaderEditor->Update();
-
-        //	// Texture Info
-        //	ImGui::SeparatorText("Texture Info");
-        //	ImGui::Text("Texture ID: %d", texture->GetTextureID());
-        //	ImGui::TextWrapped("File Path : % s", texture->GetFileLocation().c_str());
-        //	ImGui::Text("Size = %d x %d", texture->GetWidth(), texture->GetHeight());
-        //	ImGui::Separator();
-
-        //	// Texture Settings
-        //	TextureSettings& texSettings = render->GetTextureSettings();
-        //	if (ImGui::Combo("Wrap Mode", &texSettings.WrapValue, "GL_REPEAT\0GL_MIRRORED_REPEAT\0GL_CLAMP_TO_EDGE\0GL_CLAMP_TO_BORDER\0\0"))
-        //	{
-        //		if (texSettings.WrapValue == 0) texSettings.WrapMode = GL_REPEAT;
-        //		else if (texSettings.WrapValue == 1) texSettings.WrapMode = GL_MIRRORED_REPEAT;
-        //		else if (texSettings.WrapValue == 2) texSettings.WrapMode = GL_CLAMP_TO_EDGE;
-        //		else if (texSettings.WrapValue == 3) texSettings.WrapMode = GL_CLAMP_TO_BORDER;
-        //	}
-
-        //	// Texture Filter
-        //	if (ImGui::Combo("Filter", &texSettings.FilterValue, "GL_NEAREST\0GL_LINEAR\0GL_NEAREST_MIPMAP_NEAREST\0GL_LINEAR_MIPMAP_NEAREST\0GL_NEAREST_MIPMAP_LINEAR\0GL_LINEAR_MIPMAP_LINEAR\0\0"))
-        //	{
-        //		if (texSettings.FilterValue == 0) texSettings.FilterMode = GL_NEAREST;
-        //		else if (texSettings.FilterValue == 1) texSettings.FilterMode = GL_LINEAR;
-        //		else if (texSettings.FilterValue == 2) texSettings.FilterMode = GL_NEAREST_MIPMAP_NEAREST;
-        //		else if (texSettings.FilterValue == 3) texSettings.FilterMode = GL_LINEAR_MIPMAP_NEAREST;
-        //		else if (texSettings.FilterValue == 4) texSettings.FilterMode = GL_NEAREST_MIPMAP_LINEAR;
-        //		else if (texSettings.FilterValue == 5) texSettings.FilterMode = GL_LINEAR_MIPMAP_LINEAR;
-        //	}
-
-        //}
-    }
-}
-
-void Denix::ActorDetailsWidget::MaterialSelectionWidget(Ref<RenderComponent>& _rendComp)
-{
-    if (ImGui::BeginCombo("##MaterialName", _rendComp->GetMaterial()->GetName().c_str(),
-                          ImGuiComboFlags_WidthFitPreview))
-    {
-        for (auto& [fst, snd] : AssetSubsystem::GetMaterialStore())
-        {
-            ImGui::PushID(fst.c_str());
-            if (ImGui::Selectable(fst.c_str(), false,
-                                  ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
-                                  ImVec2(250, 100)))
-            {
-                _rendComp->SetMaterial(snd);
-            }
-            ImGui::PopID();
-        }
-        ImGui::EndCombo();
+       
     }
 }
 
@@ -362,6 +304,35 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
             ImGui::Image((void*)(intptr_t)id, ImVec2(100, 100));
             ImGui::SameLine();
         }
+
+        //	// Texture Info
+        ImGui::SeparatorText("Texture Info");
+        ImGui::Text("Texture ID: %d", texture->GetTextureID());
+        ImGui::TextWrapped("File Path : % s", texture->GetRelativePath().c_str());
+        ImGui::Text("Size = %d x %d", texture->GetWidth(), texture->GetHeight());
+        ImGui::Separator();
+
+        //	// Texture Settings
+        TextureSettings& texSettings = _material->m_TextureSettings;
+        if (ImGui::Combo("Wrap Mode", &texSettings.WrapValue, "GL_REPEAT\0GL_MIRRORED_REPEAT\0GL_CLAMP_TO_EDGE\0GL_CLAMP_TO_BORDER\0\0"))
+        {
+            if (texSettings.WrapValue == 0) texSettings.WrapMode = GL_REPEAT;
+            else if (texSettings.WrapValue == 1) texSettings.WrapMode = GL_MIRRORED_REPEAT;
+            else if (texSettings.WrapValue == 2) texSettings.WrapMode = GL_CLAMP_TO_EDGE;
+            else if (texSettings.WrapValue == 3) texSettings.WrapMode = GL_CLAMP_TO_BORDER;
+        }
+
+        // Texture Filter
+        if (ImGui::Combo("Filter", &texSettings.FilterValue, "GL_NEAREST\0GL_LINEAR\0GL_NEAREST_MIPMAP_NEAREST\0GL_LINEAR_MIPMAP_NEAREST\0GL_NEAREST_MIPMAP_LINEAR\0GL_LINEAR_MIPMAP_LINEAR\0\0"))
+        {
+            if (texSettings.FilterValue == 0) texSettings.FilterMode = GL_NEAREST;
+            else if (texSettings.FilterValue == 1) texSettings.FilterMode = GL_LINEAR;
+            else if (texSettings.FilterValue == 2) texSettings.FilterMode = GL_NEAREST_MIPMAP_NEAREST;
+            else if (texSettings.FilterValue == 3) texSettings.FilterMode = GL_LINEAR_MIPMAP_NEAREST;
+            else if (texSettings.FilterValue == 4) texSettings.FilterMode = GL_NEAREST_MIPMAP_LINEAR;
+            else if (texSettings.FilterValue == 5) texSettings.FilterMode = GL_LINEAR_MIPMAP_LINEAR;
+        }
+        
     }
 
     // Texture Selection
@@ -377,6 +348,7 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
                                   ImVec2(250, 100)))
             {
                 _material->SetBaseTexture(snd);
+                _material->CheckBaseType();
             }
             ImGui::PopID();
         }

@@ -21,18 +21,8 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime, const Ref<Counter>& _wa
     ImGui::Begin("Asset Browser", &m_IsOpen);
   
 			
-    if (ImGui::TreeNode("Materials"))
-    {
-        for (const auto& mat : AssetSubsystem::GetMaterialStore())
-        {
-            ImGui::Text(mat.second->GetAsset()->GetAssetName().c_str());
-        }
-        ImGui::TreePop();
-    }
-
     if (ImGui::TreeNode("Scenes"))
     {
-                
         for (const auto& scene : AssetSubsystem::GetSceneStore())
         {
             ImGui::Text(scene->GetAssetName().c_str());
@@ -41,7 +31,5 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime, const Ref<Counter>& _wa
         ImGui::TreePop();
     }
     ImGui::End();
-
-    if(!open) MarkRubbish();
 }
 

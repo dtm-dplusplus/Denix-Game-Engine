@@ -156,20 +156,6 @@ namespace Denix
 				if (ImGui::Button("Save Scene"))
 				{
 					SceneSubsystem::SerializeScene();
-
-					// Temp method to save any changes to materials
-					for (const auto& mat : AssetSubsystem::GetMaterialStore())
-					{
-						// Save Changes to asset - This should be done in the editor
-						YAML::Emitter matAsssetEmitter;
-						matAsssetEmitter << YAML::Comment("DE_ASSET: Material");
-						matAsssetEmitter << YAML::BeginMap;
-						mat.second->Serialize(matAsssetEmitter);
-						matAsssetEmitter << YAML::EndMap;
-
-						FileSubsystem::WriteFile(mat.second->GetAsset()->GetRelativePath(), matAsssetEmitter.c_str());
-						DE_LOG(LogScene, Info, "Serialized Material");
-					}
 				}
 				
 				if (ImGui::MenuItem("Quit", "Alt+F4")) 

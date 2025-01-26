@@ -56,16 +56,16 @@ namespace Denix
     void RendererSubsystem::RenderDefaultViewport() const
     {
         Ref<Scene> activeScene = m_ActiveScene.lock();
-        if (!activeScene->m_ActiveCamera || !activeScene->m_ActiveCamera)
-        {
-            DE_LOG(LogRender, Error, "No Active Camera in Scene")
-            return;
-        }
+        DE_ASSERT(activeScene, "No Active Scene")
+        DE_ASSERT(activeScene->m_ActiveCamera, "No Active Camera in Scene")
+        
+        auto defaultShader = m_DefaultShader.lock();
+        DE_ASSERT(defaultShader, "No Default Shader")
+
+        
+        defaultShader->Bind();
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-        auto defaultShader = m_DefaultShader.lock();
-        defaultShader->Bind();
 
         // Upload the camera matrices relative to Object
         if (Ref<CameraComponent> camComp = activeScene->m_ActiveCamera->GetComponent<CameraComponent>())
@@ -80,7 +80,7 @@ namespace Denix
         // Render all actors in the scene
         for (const Ref<Actor>& actor : activeScene->m_Actors)
         {
-            if (!actor->m_RenderComponent->IsVisible() || !actor->m_RenderComponent->m_Material || !actor->
+            if (!actor->m_RenderComponent->m_IsVisible || !actor->m_RenderComponent->m_Material || !actor->
                 m_ModelComponent->m_Model) continue;
 
             // Base color/texture specific settings
@@ -91,12 +91,11 @@ namespace Denix
             {
                 actor->m_RenderComponent->m_Material->m_BaseTexture->Bind();
 
-                // Texture Settings need to move to the material/texture
                 GLenum target = actor->m_RenderComponent->m_Material->m_BaseTexture->m_Target;
-                glTexParameteri(target, GL_TEXTURE_WRAP_S, actor->m_RenderComponent->m_TextureSettings.WrapMode);
-                glTexParameteri(target, GL_TEXTURE_WRAP_T, actor->m_RenderComponent->m_TextureSettings.WrapMode);
-                glTexParameteri(target, GL_TEXTURE_MIN_FILTER, actor->m_RenderComponent->m_TextureSettings.FilterMode);
-                glTexParameteri(target, GL_TEXTURE_MAG_FILTER, actor->m_RenderComponent->m_TextureSettings.FilterMode);
+                glTexParameteri(target, GL_TEXTURE_WRAP_S, actor->m_RenderComponent->m_Material->m_TextureSettings.WrapMode);
+                glTexParameteri(target, GL_TEXTURE_WRAP_T, actor->m_RenderComponent->m_Material->m_TextureSettings.WrapMode);
+                glTexParameteri(target, GL_TEXTURE_MIN_FILTER, actor->m_RenderComponent->m_Material->m_TextureSettings.FilterMode);
+                glTexParameteri(target, GL_TEXTURE_MAG_FILTER,actor->m_RenderComponent->m_Material->m_TextureSettings.FilterMode);
             }
             else
             {

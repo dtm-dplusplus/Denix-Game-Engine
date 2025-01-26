@@ -21,7 +21,6 @@ namespace Denix
 
         void RenderWidget(const Ref<Actor>& _selectedObject);
         void MaterialWidget(const Ref<Actor>& _selectedObject);
-        void MaterialSelectionWidget(Ref<RenderComponent>& _rendComp);
         void TextureSelectionWidget(const Ref<Material>& _material);
         void ShaderSelectionWidget(Ref<Material>& _material);
         void MeshWidget(const Ref<Actor>& _selectedObject);

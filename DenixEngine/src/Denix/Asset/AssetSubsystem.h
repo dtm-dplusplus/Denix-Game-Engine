@@ -12,7 +12,6 @@ namespace Denix
     class Model;
     struct ShaderSource;
 	class Shader;
-	class Material;
 	class Texture;
     class Scene;
 
@@ -34,10 +33,7 @@ namespace Denix
         static void SetStartupScene(const std::string& _scenePath);
 
         // Shaders
-        static std::unordered_map<std::string, Ref<Shader>> GetShaderStore() 
-        {
-            return s_Instance->m_ShaderStore;
-        }
+        static std::unordered_map<std::string, Ref<Shader>> GetShaderStore() {return s_Instance->m_ShaderStore;}
 
         static Ref<Shader> LoadShader(std::vector<ShaderSource>& _shaders, const std::string& _path);
 
@@ -49,14 +45,6 @@ namespace Denix
         static Ref<Shader> GetFrameBufferShader() { return s_Instance->m_FramebufferShader; }
        
         
-        // Materials
-        static Ref<Material> LoadMaterial(const Ref<Asset>& _matAsset);
-
-        static Ref<Material> GetMaterial(const std::string& _path);
-        static Ref<Material> GetDefaultMaterial() { return s_Instance->m_DefaultMaterial; }
-        
-        static std::unordered_map<std::string, Ref<Material>>& GetMaterialStore() { return s_Instance->m_MaterialStore; }
-
         // Textures
         static Ref<Texture> LoadTexture(const std::string& _path);
         static Ref<Texture> GetTexture(const std::string& _path);
@@ -87,9 +75,6 @@ namespace Denix
         Ref<Shader> m_DefaultShader;
         Ref<Shader> m_FramebufferShader;
         
-        std::unordered_map<std::string, Ref<Material>> m_MaterialStore;
-        Ref<Material> m_DefaultMaterial;
-
 		std::unordered_map<std::string, Ref<Model>> m_ModelStore;
 
         std::unordered_map<std::string, Ref<Texture>> m_TextureStore;

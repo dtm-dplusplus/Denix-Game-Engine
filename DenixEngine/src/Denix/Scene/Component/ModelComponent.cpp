@@ -5,17 +5,17 @@
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Core/Reflection/YAMLHelper.h"
 
-Denix::ModelComponent::ModelComponent(): Component(ObjectInit("Mesh Component")),
+Denix::ModelComponent::ModelComponent(): Component(ObjectInit("Model Component")),
                                        m_Model{ nullptr }
-{}
+{
+    m_ClassName = "ModelComponent";
+}
 
 void Denix::ModelComponent::Serialize(YAML::Emitter& _out)
 {
     Component::Serialize(_out);
 
-    _out << YAML::Key << "ModelComponent" << YAML::BeginMap;
     _out << YAML::Key << "m_Model" << YAML::Value << (m_Model ? m_Model->GetRelativePath() : "");
-    _out << YAML::EndMap;
 }
 
 void Denix::ModelComponent::Deserialize(const YAML::Node& _in)

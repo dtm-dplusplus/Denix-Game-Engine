@@ -40,7 +40,6 @@ namespace Denix
 		template <class T = Actor, typename... Args>
 		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 		
-		void SpawnActor(const Ref<Actor>& _actor);
 
 		Ref<Camera> GetViewportCamera();
 
@@ -87,6 +86,8 @@ namespace Denix
 		Ref<Actor> m_ActiveCamera;
 
 	private:
+		void SpawnActor(const Ref<Actor>& _actor);
+
 		/** List of Objects in the scene */
 		std::vector<Ref<Actor>> m_Actors;
 

@@ -15,7 +15,7 @@ void Denix::Canvas::Update()
     if (!m_Buttons.empty() && !m_SelectedButton)
     {
         m_SelectedButton = m_Buttons[0];
-        m_SelectedButton->GetRenderComponent()->GetMaterial()->GetBaseColor() = Button::selectedColor;
+        m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = Button::selectedColor;
     }
     
     if (InputSubsystem::IsKeyUp(KeyCode::DEK_SPACE))
@@ -28,9 +28,9 @@ void Denix::Canvas::Update()
         {
             if (m_Buttons[i] == m_SelectedButton && (i + 1) < m_Buttons.size())
             {
-                m_SelectedButton->GetRenderComponent()->GetMaterial()->GetBaseColor() = Button::defaultColor;
+                m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = Button::defaultColor;
                 m_SelectedButton = m_Buttons[i + 1];
-                m_SelectedButton->GetRenderComponent()->GetMaterial()->GetBaseColor() = Button::selectedColor;
+                m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = Button::selectedColor;
                 AudioSubsystem::PlayAudioClipSingle(m_NavigateAudioClip.lock());
                 break;
             }
@@ -42,9 +42,9 @@ void Denix::Canvas::Update()
         {
             if (m_Buttons[i] == m_SelectedButton && i > 0)
             {
-                m_SelectedButton->GetRenderComponent()->GetMaterial()->GetBaseColor() = Button::defaultColor;
+                m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = Button::defaultColor;
                 m_SelectedButton = m_Buttons[i - 1];
-                m_SelectedButton->GetRenderComponent()->GetMaterial()->GetBaseColor() = Button::selectedColor;
+                m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = Button::selectedColor;
                 AudioSubsystem::PlayAudioClipSingle(m_NavigateAudioClip.lock());
                 break;
             }

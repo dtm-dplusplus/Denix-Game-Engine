@@ -5,6 +5,7 @@
 #include "yaml-cpp/yaml.h"
 #include "Denix/Core/Reflection/YAMLHelper.h"
 #include "Denix/Asset/Asset.h"
+#include "Denix/Core/Reflection/ReflectionSubsystem.h"
 
 namespace Denix
 {
@@ -27,37 +28,16 @@ namespace Denix
     void Actor::Serialize(YAML::Emitter& _out)
     {
         BaseObject::Serialize(_out);
-        
-        // Render Component
-        _out << YAML::Newline << YAML::Comment("Render Component");
-        _out << YAML::Key << "m_RenderComponent" << YAML::BeginMap;
+
+        _out << YAML::Key << "m_Components" << YAML::BeginMap;
+        int i = 0;
+        for (const auto& comp: m_Components)
         {
-            _out << YAML::Key << "m_IsVisible" << YAML::Value << m_RenderComponent->IsVisible();
-
-            // Texture Settings
-            _out << YAML::Newline << YAML::Comment("Texture Settings");
-            _out << YAML::Key << "m_TextureSettings" << YAML::BeginMap;
-            {
-                TextureSettings texSet = m_RenderComponent->GetTextureSettings();
-                _out << YAML::Key << "WrapMode" << YAML::Value << texSet.WrapMode;
-                _out << YAML::Key << "WrapValue" << YAML::Value << texSet.WrapValue;
-                _out << YAML::Key << "FilterMode" << YAML::Value << texSet.FilterMode;
-                _out << YAML::Key << "FilterValue" << YAML::Value << texSet.FilterValue;
-            }
+            _out << YAML::Key << comp->GetClassNameDE() << YAML::BeginMap;
+            comp->Serialize(_out);
             _out << YAML::EndMap;
-            // End Texture Settings
-
-            // Material
-            if (const Ref<Material> mat = m_RenderComponent->GetMaterial())
-            {
-                _out << YAML::Newline << YAML::Comment("Material");
-                _out << YAML::Key << "m_Material" << YAML::Value << (mat->GetAsset() ? mat->GetAsset()->GetRelativePath() : "");
-            }
         }
         _out << YAML::EndMap;
-        m_TransformComponent->Serialize(_out);
-        m_PhysicsComponent->Serialize(_out);
-        m_ModelComponent->Serialize(_out);
     }
 
     void Actor::Deserialize(const YAML::Node& _in)
@@ -65,62 +45,39 @@ namespace Denix
         // Object instantiation is done in the SceneSubsystem so we don't need to do it here
         BaseObject::Deserialize(_in);
 
-        // Render Component
-        if(const YAML::Node& renderCompNode = _in["m_RenderComponent"]; renderCompNode)
+        m_Components.clear();
+        m_ComponentMap.clear();
+        m_ModelComponent.reset();
+        m_TransformComponent.reset();
+        m_RenderComponent.reset();
+        m_PhysicsComponent.reset();
+        
+        // Desirialize the components
+        if (const YAML::Node& compMap = _in["m_Components"]; compMap.IsDefined())
         {
-            m_RenderComponent->SetIsVisible(renderCompNode["m_IsVisible"].as<bool>());
-
-            // Texture Settings
-            if (const YAML::Node& texSettings = renderCompNode["m_TextureSettings"]; texSettings)
+            for (const auto& compNode: compMap)
             {
-                TextureSettings texSet;
-                texSet.WrapMode = texSettings["WrapMode"].as<int>();
-                texSet.WrapValue = texSettings["WrapValue"].as<int>();
-                texSet.FilterMode = texSettings["FilterMode"].as<int>();
-                texSet.FilterValue = texSettings["FilterValue"].as<int>();
-                m_RenderComponent->SetTextureSettings(texSet);
-            }
+                // Validate Node
+                if (!compNode.first.IsDefined()) continue;
+                if (!compNode.second.IsDefined()) continue;
+                
+               // Create the component
+               if (Ref<Component> comp = ReflectionSubsystem::Create<Component>(compNode.first.as<std::string>()))
+               {
+                   comp->Deserialize(compNode.second);
 
-            // Material
-            if (const YAML::Node matNode = renderCompNode["m_Material"]; !matNode.IsDefined())
-            {
-                m_RenderComponent->SetMaterial(AssetSubsystem::GetMaterial(matNode["m_Material"].as<std::string>()));
+                   // Cache for common components
+                   if (comp->GetClassNameDE() == "TransformComponent") m_TransformComponent = CastRef<TransformComponent>(comp);
+                   else if (comp->GetClassNameDE() == "ModelComponent") m_ModelComponent = CastRef<ModelComponent>(comp);
+                    else if (comp->GetClassNameDE() == "RenderComponent") m_RenderComponent = CastRef<RenderComponent>(comp);
+                   else if (comp->GetClassNameDE() == "PhysicsComponent") m_PhysicsComponent = CastRef<PhysicsComponent>(comp);
+
+                   AddComponent(comp);
+               }
             }
         }
-
-        if (_in["TransformComponent"].IsDefined()) m_TransformComponent->Deserialize(_in["TransformComponent"]);
-        if (_in["PhysicsComponent"].IsDefined()) m_PhysicsComponent->Deserialize(_in["PhysicsComponent"]);
-        if (_in["ModelComponent"].IsDefined())  m_ModelComponent->Deserialize(_in["ModelComponent"]);  
     }
-
-    Ref<Collider> Actor::GetCollider() const
-    { return m_PhysicsComponent->GetCollider(); }
-
-
-    void Actor::Destroy()
-    {
-        // Add more clean up code here
-        MarkRubbish();
-    }
-
-    void Actor::BeginScene()
-    {
-        BaseObject::BeginScene();
-
-        for (const auto& component : m_Components)
-        {
-            component->m_Parent = shared_from_this();
-            component->BeginScene();
-        }
-    }
-
-    void Actor::EndScene()
-    {
-        for (const auto& component : m_Components) component->EndScene();
-
-        BaseObject::EndScene();
-    }
-
+    
     void Actor::BeginPlay()
     {
         BaseObject::BeginPlay();

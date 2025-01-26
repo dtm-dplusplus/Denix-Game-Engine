@@ -33,9 +33,6 @@ namespace Denix
 		if (Ref<Shader> fbShader = LoadShader(fbShaders, "FBShader")) m_FramebufferShader = fbShader;
 		DE_ASSERT(m_FramebufferShader, "Framebuffer Shader not loaded")
 
-		if (Ref<Material> defMat = LoadMaterial(MakeRef<Asset>(AssetInit(R"(Content\Engine\materials\MAT_Default.asset)")))) m_DefaultMaterial = defMat;
-		DE_ASSERT(m_DefaultMaterial, "Default Material not loaded")
-
 		// Search Project directory for assets
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(FileSubsystem::GetContentRoot()))
 		{
@@ -54,12 +51,6 @@ namespace Denix
 					{
 						// We don't need to load the scene asset here
 						m_SceneStore.push_back(asset);
-					}
-
-					// Material Asset
-					else if (assetData.find("DE_ASSET_MATERIAL") != std::string::npos)
-					{
-						m_MaterialStore[asset->GetAssetName()] = MakeRef<Material>(asset);
 					}
 				}
 
@@ -118,9 +109,6 @@ namespace Denix
 
 		m_DefaultShader.reset();
 		m_FramebufferShader.reset();
-
-		m_MaterialStore.clear();
-		m_DefaultMaterial.reset();
 
 		m_AudioClipStore.clear();
 		
@@ -287,39 +275,6 @@ namespace Denix
 		if (const std::string path = FileSubsystem::FormatRelativePath(_path); s_Instance->m_TextureStore.contains(path))
 		{
 			return s_Instance->m_TextureStore[path];
-		}
-
-		return nullptr;
-	}
-
-	////////////////////////  MATERIALS ///////////////////////////////
-	Ref<Material> AssetSubsystem::LoadMaterial(const Ref<Asset>& _matAsset)
-	{
-		if (s_Instance->m_MaterialStore.contains(_matAsset->m_AssetName))
-		{
-			DE_LOG(LogAsset, Error, "Load Material: A material name: {} is already loaded", _matAsset->m_AssetName)
-			return s_Instance->m_MaterialStore[_matAsset->m_AssetName];
-		}
-
-		if (Ref<Material> material = MakeRef<Material>(_matAsset))
-		{
-			s_Instance->m_MaterialStore[_matAsset->m_AssetName] = material;
-			DE_LOG(LogAsset, Trace, "Material Loaded: {}", _matAsset->m_AssetName)
-			return material;
-		}
-		
-		DE_LOG(LogAsset, Error, "Failed to load material: {}", _matAsset->m_AssetName)
-		return nullptr;
-	}
-
-	Ref<Material> AssetSubsystem::GetMaterial(const std::string& _path)
-	{
-		for (const auto& material : s_Instance->m_MaterialStore)
-		{
-			if (material.second->GetAsset()->GetRelativePath() == _path)
-			{
-				return material.second;
-			}
 		}
 
 		return nullptr;
