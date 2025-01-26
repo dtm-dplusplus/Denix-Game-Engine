@@ -110,17 +110,9 @@ namespace Denix
 
     void Engine::Run()
     {
-        try
-        {
-            PreInitialize();
-            Initialize();
-            EngineLoop();
-        }
-        catch (const std::exception& e)
-        {
-            DE_LOG(LogEngine, Critical, "Unhandled exception: {0}", e.what());
-        }
-        
+        PreInitialize();
+        Initialize();
+        EngineLoop();
         Deinitialize();
     }
     

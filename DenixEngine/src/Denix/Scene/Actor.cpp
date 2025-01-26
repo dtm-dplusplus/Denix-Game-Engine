@@ -61,9 +61,22 @@ namespace Denix
         _out << YAML::Newline << YAML::Comment("Transform Component");
         _out << YAML::Key << "m_TransformComponent" << YAML::BeginMap;
         {
-            _out << YAML::Key << "m_Position" << YAML::Value << EmitVec3(m_TransformComponent->GetPosition());
-            _out << YAML::Key << "m_Rotation" << YAML::Value << EmitVec3(m_TransformComponent->GetRotation());
-            _out << YAML::Key << "m_Scale" << YAML::Value <<EmitVec3(m_TransformComponent->GetScale());
+            const glm::vec3& pos = m_TransformComponent->GetPosition();
+            const glm::vec3& rot = m_TransformComponent->GetRotation();
+            const glm::vec3& scale = m_TransformComponent->GetScale();
+            
+            _out << YAML::Key << "m_Position" << YAML::BeginMap;
+            Vec3ToYAML(_out, pos);
+            _out << YAML::EndMap;
+            
+            _out << YAML::Key << "m_Rotation" << YAML::BeginMap;
+            Vec3ToYAML(_out, rot);
+            _out << YAML::EndMap;
+
+            _out << YAML::Key << "m_Scale" << YAML::BeginMap;
+            Vec3ToYAML(_out, scale);
+            _out << YAML::EndMap;
+            
             _out << YAML::Key << "m_Moveability" << YAML::Value << static_cast<int>(m_TransformComponent->GetMoveability());
         }
         _out << YAML::EndMap;
@@ -128,17 +141,17 @@ namespace Denix
         
         
         // Transform Component
-        if (const YAML::Node transformComp = _in["m_TransformComponent"]; transformComp)
+        if (const YAML::Node transformComp = _in["m_TransformComponent"]; transformComp.IsDefined())
         {
-            m_TransformComponent->SetPosition(transformComp["m_Position"].as<glm::vec3>());
-            m_TransformComponent->SetRotation(transformComp["m_Rotation"].as<glm::vec3>());
-            m_TransformComponent->SetScale(transformComp["m_Scale"].as<glm::vec3>());
+            m_TransformComponent->SetPosition(YAMLtoVec3(transformComp["m_Position"]));
+            m_TransformComponent->SetRotation(YAMLtoVec3(transformComp["m_Rotation"]));
+            m_TransformComponent->SetScale(YAMLtoVec3(transformComp["m_Scale"]));
             m_TransformComponent->SetMoveability(static_cast<Moveability>(transformComp["m_Moveability"].as<int>()));
         }
         
 
         // Physics Component
-        if (const YAML::Node physicsComp = _in["m_PhysicsComponent"]; physicsComp)
+        if (const YAML::Node physicsComp = _in["m_PhysicsComponent"]; physicsComp.IsDefined())
         {
             m_PhysicsComponent->SetSimulatePhysics(physicsComp["m_SimulatePhysics"].as<bool>());
             m_PhysicsComponent->m_Collider = MakeRef<CubeCollider>();

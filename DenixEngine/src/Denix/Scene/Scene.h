@@ -33,7 +33,7 @@ namespace Denix
 
 		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
-		virtual void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter) {}
+		virtual void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter);
 
 		bool IsPlaying() const;
 

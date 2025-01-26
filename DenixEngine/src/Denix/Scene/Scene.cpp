@@ -1,9 +1,11 @@
 ﻿#include "Denix/Scene/Scene.h"
 
+#include "imgui.h"
 #include "Denix/Asset/Asset.h"
+#include "Denix/Core/File/FileSubsystem.h"
 #include "Denix/Physics/CollisionCallback.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
-
+#include "Denix/Core/Reflection/YAMLHelper.h"
 namespace Denix
 {
     static physx::PxFilterFlags PhysicsFilterShader(
@@ -132,6 +134,28 @@ namespace Denix
         {
            m_ActiveCamera->Update(_deltaTime, _waitCounter);
         }
+    }
+
+    void Scene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
+    {
+        ImGui::Begin("Serial Fix");
+        static glm::vec3 vec = {0.0f, 0.0f, 1.0f};
+        ImGui::DragFloat3("Vec", glm::value_ptr(vec), 0.1f);
+        if (ImGui::Button("Write"))
+        {
+           YAML::Emitter out;
+            out << YAML::BeginMap;
+            out << YAML::Key << "Position" << YAML::BeginMap;
+            Vec3ToYAML(out, vec);
+            out << YAML::EndMap;
+           FileSubsystem::WriteFile("Content/test.yaml", out.c_str());
+        }
+        if (ImGui::Button("DeWrite"))
+        {
+            YAML::Node n = YAML::LoadFile(FileSubsystem::FormatPath("Content/test.yaml"));
+            vec = YAMLtoVec3(n["Position"]);
+        }
+        ImGui::End();
     }
 
 

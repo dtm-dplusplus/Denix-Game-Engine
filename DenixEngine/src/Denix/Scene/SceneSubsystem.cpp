@@ -31,7 +31,9 @@ namespace Denix
 			{
 				scene->m_Name = startupScene->GetAssetName();
 				scene->m_SceneAsset = startupScene;
-				OpenScene(scene);
+//				OpenScene(scene);
+				OpenScene(MakeRef<Scene>());
+
 			}
 			else
 			{
