@@ -2,7 +2,7 @@
 
 #include "Denix/Core.h"
 #include "Denix/Core/Object.h"
-#include "Denix/Scene/Component/MeshComponent.h"
+#include "Denix/Scene/Component/ModelComponent.h"
 #include <Denix/Scene/Component/TransformComponent.h>
 
 namespace Denix
@@ -22,7 +22,7 @@ namespace Denix
 		Collider() : Object({ "Collider" }) 
 		{
 			m_TransformComponent = MakeRef<TransformComponent>();
-		    m_MeshComponent = MakeRef<MeshComponent>();
+		    m_MeshComponent = MakeRef<ModelComponent>();
 		}
 
 		~Collider() override = default;
@@ -32,11 +32,11 @@ namespace Denix
 		void SetColliderType(ColliderType _type) { m_ColliderType = (int)_type; }
 
 		Ref<TransformComponent> GetTransformComponent() { return m_TransformComponent; }
-		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
+		Ref<ModelComponent> GetMeshComponent() { return m_MeshComponent; }
 	protected:
 		int m_ColliderType;
 
-		Ref<MeshComponent> m_MeshComponent;
+		Ref<ModelComponent> m_MeshComponent;
 
 		Ref<TransformComponent> m_TransformComponent;
 
@@ -77,7 +77,7 @@ namespace Denix
 			m_TransformComponent->SetScale(m_Dimensions);
 
 			m_TransformComponent->Update(_deltaTime, _waitCounter);
-			m_MeshComponent->Update(_deltaTime, _waitCounter);
+			m_ModelComponent->Update(_deltaTime, _waitCounter);
 		}
 
 	private:

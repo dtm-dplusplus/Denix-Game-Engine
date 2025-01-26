@@ -71,7 +71,7 @@ namespace Denix
 
 		const float* m_Vertices;
 
-		friend class MeshComponent;
+		friend class ModelComponent;
 		friend class Mesh;
 	};
 
@@ -133,7 +133,7 @@ namespace Denix
 		// Size of data stored in buffer
 		GLsizei m_Size;
 
-		friend class MeshComponent;
+		friend class ModelComponent;
 		friend class Mesh;
 		friend class RendererSubsystem;
 	};

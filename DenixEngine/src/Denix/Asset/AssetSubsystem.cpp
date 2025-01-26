@@ -263,30 +263,30 @@ namespace Denix
 	////////////////////////  TEXTURES ///////////////////////////////
 	Ref<Texture> AssetSubsystem::LoadTexture(const std::string& _path)
 	{
-		std::string path =FileSubsystem::FormatPath(_path);
+		Ref<Texture> texture = MakeRef<Texture>(_path);
 		
 		// Check it isn't already loaded
-		if (s_Instance->m_TextureStore.contains(path))
+		if (s_Instance->m_TextureStore.contains(texture->GetRelativePath()))
 		{
-			DE_LOG(LogAsset, Warn, "Load Texture: A texture name: {} is already loaded", path)
-				return s_Instance->m_TextureStore[path];
+			DE_LOG(LogAsset, Warn, "Load Texture: A texture name: {} is already loaded", texture->GetRelativePath())
+				return s_Instance->m_TextureStore[texture->GetRelativePath()];
 		}
 
-		Ref<Texture> texture = MakeRef<Texture>(path);
+		
 
 		if (!texture->LoadTexture()) return nullptr;
 
-		s_Instance->m_TextureStore[path] = texture;
-		DE_LOG(LogAsset, Trace, "Texture loaded: {}", path)
+		s_Instance->m_TextureStore[texture->GetRelativePath()] = texture;
+		DE_LOG(LogAsset, Trace, "Texture loaded: {}", texture->GetRelativePath())
 
 		return texture;
 	}
 	
 	Ref<Texture> AssetSubsystem::GetTexture(const std::string& _path)
 	{
-		if (s_Instance->m_TextureStore.contains(_path))
+		if (const std::string path = FileSubsystem::FormatRelativePath(_path); s_Instance->m_TextureStore.contains(path))
 		{
-			return s_Instance->m_TextureStore[_path];
+			return s_Instance->m_TextureStore[path];
 		}
 
 		return nullptr;
@@ -328,39 +328,29 @@ namespace Denix
 	////////////////////////  MODEL ///////////////////////////////
 	bool AssetSubsystem::LoadModel(const std::string& _path)
 	{
-		if (s_Instance->m_ModelStore.contains(_path))
+		const Ref<Model> model = MakeRef<Model>(_path);
+
+		if (s_Instance->m_ModelStore.contains(model->GetRelativePath()))
 		{
-			DE_LOG(LogAsset, Error, "Load Model: A Model name: {} is already loaded", _path)
+			DE_LOG(LogAsset, Error, "Load Model: A Model name: {} is already loaded", model->GetRelativePath())
 				return false;
 		}
-
-		const Ref<Model> model = MakeRef<Model>(_path);
+		
 		if (!model->LoadModel())
 		{
-			DE_LOG(LogAsset, Error, "Failed to load model: {}", _path)
+			DE_LOG(LogAsset, Error, "Failed to load model: {}", model->GetRelativePath())
 			return false;
 		}
-
-		for (auto texture : model->m_Textures)
-		{
-			if (texture)
-			{
-				if (!texture->GetTextureID())
-				{
-					texture = GetTexture("DefaultTexture");
-				}
-			}
-		}
-
+		
+		s_Instance->m_ModelStore[model->GetRelativePath()] = model;
 		DE_LOG(LogAsset, Trace, "Model Loaded: {}", model->GetAssetName())
-			s_Instance->m_ModelStore[_path] = model;
 
 		return true;
 	}
 
-	Ref<Model> AssetSubsystem::GetModel(const std::string& _name)
+	Ref<Model> AssetSubsystem::GetModel(const std::string& _path)
 	{
-		if (const std::string path = FileSubsystem::FormatPath(_name); s_Instance->m_ModelStore.contains(path))
+		if (const std::string path = FileSubsystem::FormatRelativePath(_path); s_Instance->m_ModelStore.contains(path))
 			return s_Instance->m_ModelStore[path];
 
 		return nullptr;

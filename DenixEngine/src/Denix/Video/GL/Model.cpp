@@ -6,6 +6,16 @@
 #include "Denix/Core/Math/Math.h"
 
 
+Denix::Model::Model(const AssetInit& _assetInit): Asset(_assetInit)
+{}
+
+Denix::Model::~Model()
+{
+	m_Meshes.clear();
+	m_Textures.clear();
+	m_MeshToTex.clear();
+}
+
 bool Denix::Model::LoadModel()
 {
 	Assimp::Importer importer;

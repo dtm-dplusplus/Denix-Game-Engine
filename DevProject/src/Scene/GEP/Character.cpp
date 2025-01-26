@@ -13,7 +13,7 @@ using namespace Denix;
 
 Character::Character(): Actor({"Character"}), m_JumpForce(0.5f), m_MoveSpeed(0.1f)
 {
-    m_MeshComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Cube.obj"));
+    m_ModelComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Cube.obj"));
     m_RenderComponent->SetMaterial(MakeRef<Material>());
     m_RenderComponent->GetMaterial()->SetBaseColor({0.0f, 1.0f, 0.0f});
     m_TransformComponent->SetMoveability(Moveability::Dynamic);

@@ -39,14 +39,14 @@ namespace Denix
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         //m_UIShader->Bind();
         // Draw Call
-        /*for (unsigned int i = 0; i < actor->m_MeshComponent->m_Model->m_Meshes.size(); i++)
+        /*for (unsigned int i = 0; i < actor->m_ModelComponent->m_Model->m_Meshes.size(); i++)
         {
-            if (actor->m_MeshComponent->m_Model->m_Meshes[i]->m_VAO && actor->m_MeshComponent->m_Model->m_Meshes[i]
+            if (actor->m_ModelComponent->m_Model->m_Meshes[i]->m_VAO && actor->m_ModelComponent->m_Model->m_Meshes[i]
                 ->m_IBO)
             {
-                actor->m_MeshComponent->m_Model->m_Meshes[i]->m_VAO->Bind();
-                actor->m_MeshComponent->m_Model->m_Meshes[i]->m_IBO->Bind();
-                glDrawElements(GL_TRIANGLES, actor->m_MeshComponent->m_Model->m_Meshes[i]->m_IBO->m_IndexCount,
+                actor->m_ModelComponent->m_Model->m_Meshes[i]->m_VAO->Bind();
+                actor->m_ModelComponent->m_Model->m_Meshes[i]->m_IBO->Bind();
+                glDrawElements(GL_TRIANGLES, actor->m_ModelComponent->m_Model->m_Meshes[i]->m_IBO->m_IndexCount,
                                GL_UNSIGNED_INT, 0);
             }
         }*/
@@ -81,7 +81,7 @@ namespace Denix
         for (const Ref<Actor>& actor : activeScene->m_Actors)
         {
             if (!actor->m_RenderComponent->IsVisible() || !actor->m_RenderComponent->m_Material || !actor->
-                m_MeshComponent->m_Model) continue;
+                m_ModelComponent->m_Model) continue;
 
             // Base color/texture specific settings
             glUniform1i(actor->m_RenderComponent->m_Shader->GetUniform("u_Material.IsBaseTexture"),
@@ -112,14 +112,14 @@ namespace Denix
                                GL_FALSE, glm::value_ptr(actor->m_TransformComponent->m_Model));
 
             // Draw Call
-            for (unsigned int i = 0; i < actor->m_MeshComponent->m_Model->m_Meshes.size(); i++)
+            for (unsigned int i = 0; i < actor->m_ModelComponent->m_Model->m_Meshes.size(); i++)
             {
-                if (actor->m_MeshComponent->m_Model->m_Meshes[i]->m_VAO && actor->m_MeshComponent->m_Model->m_Meshes[i]
+                if (actor->m_ModelComponent->m_Model->m_Meshes[i]->m_VAO && actor->m_ModelComponent->m_Model->m_Meshes[i]
                     ->m_IBO)
                 {
-                    actor->m_MeshComponent->m_Model->m_Meshes[i]->m_VAO->Bind();
-                    actor->m_MeshComponent->m_Model->m_Meshes[i]->m_IBO->Bind();
-                    glDrawElements(GL_TRIANGLES, actor->m_MeshComponent->m_Model->m_Meshes[i]->m_IBO->m_IndexCount,
+                    actor->m_ModelComponent->m_Model->m_Meshes[i]->m_VAO->Bind();
+                    actor->m_ModelComponent->m_Model->m_Meshes[i]->m_IBO->Bind();
+                    glDrawElements(GL_TRIANGLES, actor->m_ModelComponent->m_Model->m_Meshes[i]->m_IBO->m_IndexCount,
                                    GL_UNSIGNED_INT, 0);
                 }
             }

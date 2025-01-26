@@ -66,7 +66,7 @@ namespace Denix
 
         // Models
         static bool LoadModel(const std::string& _path);
-        static Ref<Model> GetModel(const std::string& _name);
+        static Ref<Model> GetModel(const std::string& _path);
 		static std::unordered_map<std::string, Ref<Model>>& GetModelStore() { return s_Instance->m_ModelStore; }
 
         static std::vector<Ref<Asset>>& GetAssetStore() { return s_Instance->m_AssetStore; }

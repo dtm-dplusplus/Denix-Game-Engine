@@ -8,7 +8,7 @@
 namespace Denix
 {
 	class Scene;
-	class MeshComponent;
+	class ModelComponent;
 	class TransformComponent;
 	class Camera;
 

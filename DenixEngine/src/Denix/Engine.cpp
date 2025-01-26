@@ -165,7 +165,7 @@ namespace Denix
 
         ReflectionSubsystem::Register<TransformComponent>();
         ReflectionSubsystem::Register<RenderComponent>();
-        ReflectionSubsystem::Register<MeshComponent>();
+        ReflectionSubsystem::Register<ModelComponent>();
 
         ReflectionSubsystem::Register<PhysicsComponent>();
         ReflectionSubsystem::Register<Collider>();

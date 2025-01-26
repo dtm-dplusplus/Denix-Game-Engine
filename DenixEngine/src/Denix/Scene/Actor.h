@@ -8,7 +8,7 @@
 #include "Denix/Scene/Component/RenderComponent.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Scene/Component/PhysicsComponent.h"
-#include "Denix/Scene/Component/MeshComponent.h"
+#include "Denix/Scene/Component/ModelComponent.h"
 
 namespace Denix
 {
@@ -65,7 +65,7 @@ namespace Denix
 		Ref<PhysicsComponent> GetPhysicsComponent() { return m_PhysicsComponent; }
 		Ref<Collider> GetCollider() const;
 
-		Ref<MeshComponent> GetMeshComponent() { return m_MeshComponent; }
+		Ref<ModelComponent> GetMeshComponent() { return m_ModelComponent; }
 
 		Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
@@ -96,7 +96,7 @@ namespace Denix
 
 		Ref<PhysicsComponent> m_PhysicsComponent;
 
-		Ref<MeshComponent> m_MeshComponent;
+		Ref<ModelComponent> m_ModelComponent;
 
 		Ref<RenderComponent> m_RenderComponent;
 
@@ -106,7 +106,7 @@ namespace Denix
 		friend class PhysicsComponent;
 		friend class PhysicsSubsystem;
 		
-		friend class MeshComponent;
+		friend class ModelComponent;
 		friend class RenderComponent;
 		friend class TransformComponent;
 

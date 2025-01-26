@@ -50,7 +50,7 @@ void Denix::GACPActor::RandomModel() const
     {
         if (i++ == index)
         {
-            m_MeshComponent->SetModel(modelStore[model]);
+            m_ModelComponent->SetModel(modelStore[model]);
             break;
         }
     }

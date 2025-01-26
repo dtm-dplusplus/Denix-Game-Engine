@@ -7,6 +7,7 @@
 #include <assimp/postprocess.h>
 
 #include "Denix/Asset/Asset.h"
+#include "Denix/Video/GL/Mesh.h"
 
 namespace Denix
 {
@@ -16,14 +17,9 @@ namespace Denix
 	class Model : public Asset
 	{
 	public:
-		Model(const AssetInit& _assetInit): Asset(_assetInit) {}
+		Model(const AssetInit& _assetInit);
 
-		~Model()
-		{
-			m_Meshes.clear();
-			m_Textures.clear();
-			m_MeshToTex.clear();
-		}
+		~Model() override;
 
 		bool LoadModel();
 		void RenderModel();

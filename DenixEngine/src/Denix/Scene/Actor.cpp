@@ -11,7 +11,7 @@ namespace Denix
     Actor::Actor()
     {
         m_TransformComponent = AddComponent<TransformComponent>();
-        m_MeshComponent = AddComponent<MeshComponent>();
+        m_ModelComponent = AddComponent<ModelComponent>();
         m_RenderComponent = AddComponent<RenderComponent>();
         m_PhysicsComponent = AddComponent<PhysicsComponent>();
     }
@@ -19,7 +19,7 @@ namespace Denix
     Actor::Actor(const ObjectInit& _object_init) : BaseObject(_object_init)
     {
         m_TransformComponent = AddComponent<TransformComponent>();
-        m_MeshComponent = AddComponent<MeshComponent>();
+        m_ModelComponent = AddComponent<ModelComponent>();
         m_RenderComponent = AddComponent<RenderComponent>();
         m_PhysicsComponent = AddComponent<PhysicsComponent>();
     }
@@ -55,22 +55,9 @@ namespace Denix
             }
         }
         _out << YAML::EndMap;
-        // End Render Component
-        
-        // Transform Component
         m_TransformComponent->Serialize(_out);
-        
-        // Physics Component
         m_PhysicsComponent->Serialize(_out);
-        
-        // Mesh Component
-        _out << YAML::Newline << YAML::Comment("Mesh Component");
-        _out << YAML::Key << "m_MeshComponent" << YAML::BeginMap;
-        {
-            _out << YAML::Key << "m_Mesh" << YAML::Value << m_MeshComponent->GetModel()->GetAssetName(); // Temp until asset scraper built
-        }
-        _out << YAML::EndMap;
-        // End Mesh Component
+        m_ModelComponent->Serialize(_out);
     }
 
     void Actor::Deserialize(const YAML::Node& _in)
@@ -101,19 +88,9 @@ namespace Denix
             }
         }
 
-        // Transform Component
         if (_in["TransformComponent"].IsDefined()) m_TransformComponent->Deserialize(_in["TransformComponent"]);
         if (_in["PhysicsComponent"].IsDefined()) m_PhysicsComponent->Deserialize(_in["PhysicsComponent"]);
-
-        // Mesh Component
-        if (const YAML::Node meshComp = _in["m_MeshComponent"]; meshComp)
-        {
-            if (const Ref<Model> model = AssetSubsystem::GetModel(meshComp["m_Mesh"].as<std::string>()))
-            {
-                m_MeshComponent->SetModel(model); // Temp until asset scraper built
-            }
-            
-        }
+        if (_in["ModelComponent"].IsDefined())  m_ModelComponent->Deserialize(_in["ModelComponent"]);  
     }
 
     Ref<Collider> Actor::GetCollider() const
