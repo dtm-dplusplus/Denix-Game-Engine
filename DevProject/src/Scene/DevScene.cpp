@@ -14,7 +14,7 @@ void DevScene::BeginScene()
 {
 	Scene::BeginScene();
 
-	SpawnActor<Plane>()->GetTransformComponent()->GetScale() = { 10.0f, 0.01f, 10.0f };
+	//SpawnActor<Plane>()->GetTransformComponent()->GetScale() = { 10.0f, 0.01f, 10.0f };
 }
 
 void DevScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)

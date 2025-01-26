@@ -3,6 +3,7 @@
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Scene/Component/TransformComponent.h"
+#include "Denix/Core/Reflection/YAMLHelper.h"
 
 namespace Denix
 {
@@ -42,6 +43,55 @@ namespace Denix
         Component::UnregisterComponent();
 
         PhysicsSubsystem::UnregisterComponent(shared_from_this());
+    }
+
+    void PhysicsComponent::Serialize(YAML::Emitter& _out)
+    {
+        Component::Serialize(_out);
+
+        _out << YAML::Key << "PhysicsComponent" << YAML::BeginMap;
+        _out << YAML::Key << "m_SimulatePhysics" << YAML::Value << m_SimulatePhysics;
+        _out << YAML::Key << "m_CollisionDetectionEnabled" << YAML::Value << m_CollisionDetectionEnabled;
+        _out << YAML::Key << "m_ImpulseEnabled" << YAML::Value << m_ImpulseEnabled;
+        _out << YAML::Key << "m_Mass" << YAML::Value << m_Mass;
+        _out << YAML::Key << "m_LinearDrag" << YAML::Value << m_LinearDrag;
+        _out << YAML::Key << "m_AngularDrag" << YAML::Value << m_AngularDrag;
+        _out << YAML::Key << "m_Elasticity" << YAML::Value << m_Elasticity;
+        _out << YAML::Key << "m_StaticFriction" << YAML::Value << m_StaticFriction;
+        _out << YAML::Key << "m_DynamicFriction" << YAML::Value << m_DynamicFriction;
+        _out << YAML::EndMap;
+    }
+
+    void PhysicsComponent::Deserialize(const YAML::Node& _in)
+    {
+        Component::Deserialize(_in);
+
+        if (const YAML::Node& simulate = _in["m_SimulatePhysics"]; simulate.IsDefined())
+            SetSimulatePhysics(simulate.as<bool>());
+        
+        if (const YAML::Node& collision = _in["m_CollisionDetectionEnabled"];
+            collision.IsDefined()) m_CollisionDetectionEnabled =collision.as<bool>();
+
+        if (const YAML::Node& impulse = _in["m_ImpulseEnabled"]; impulse.IsDefined())
+            m_ImpulseEnabled = impulse.as<bool>();
+
+        if (const YAML::Node& mass = _in["m_Mass"]; mass.IsDefined())
+            m_Mass = mass.as<float>();
+
+        if (const YAML::Node& linearDrag = _in["m_LinearDrag"]; linearDrag.IsDefined())
+            m_LinearDrag = linearDrag.as<float>();
+
+        if (const YAML::Node& angularDrag = _in["m_AngularDrag"]; angularDrag.IsDefined())
+            m_AngularDrag = angularDrag.as<float>();
+        
+        if (const YAML::Node& elasticity = _in["m_Elasticity"]; elasticity.IsDefined())
+            m_Elasticity = elasticity.as<float>();
+
+        if (const YAML::Node& staticFriction = _in["m_StaticFriction"]; staticFriction.IsDefined())
+            m_StaticFriction = staticFriction.as<float>();
+
+        if (const YAML::Node& dynamicFriction = _in["m_DynamicFriction"]; dynamicFriction.IsDefined())
+            m_DynamicFriction = dynamicFriction.as<float>();
     }
 
     void PhysicsComponent::EndScene()

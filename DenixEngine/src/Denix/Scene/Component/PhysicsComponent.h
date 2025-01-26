@@ -95,17 +95,12 @@ namespace Denix
 		/** Collision used to compute collision responses. Belongs to the physics component */
 		Ref<Collider> m_Collider;
 
-	private:
-		
-
 		/////////////////////* Angular Properties *///////////////////////
 		/** Angular velocity of the object */
 		glm::vec3 m_AngularVelocity = glm::vec3(0.f);
 
 		/** Angular Momentum */
 		glm::vec3 m_AngularMomentum = glm::vec3(0.f);
-
-		
 
 
 		/////////////////////* Read Only Properties *///////////////////////
@@ -125,6 +120,8 @@ namespace Denix
 		void RegisterComponent() override;
 		void UnregisterComponent() override;
 
+		void Serialize(YAML::Emitter& _out) override;
+		void Deserialize(const YAML::Node& _in) override;
 		
 		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 		void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
