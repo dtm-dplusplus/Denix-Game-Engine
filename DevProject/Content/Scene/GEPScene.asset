@@ -1,3 +1,64 @@
 # DE_ASSET_SCENE
 # GEPScene Scene Data
-m_SceneObjects:
+m_Actors:
+  - m_Object:
+      m_GUID: 576472
+      m_Name: Plane
+      m_ClassName: Plane
+    m_Components:
+      TransformComponent:
+        m_Object:
+          m_GUID: 360152
+          m_Name: Transform Component
+          m_ClassName: TransformComponent
+        m_Position:
+          x: 0
+          y: 0
+          z: 0
+        m_Rotation:
+          x: 0
+          y: 0
+          z: 0
+        m_Scale:
+          x: 100
+          y: 0.00999999978
+          z: 100
+        m_Moveability: 0
+      ModelComponent:
+        m_Object:
+          m_GUID: 538411
+          m_Name: Model Component
+          m_ClassName: ModelComponent
+        m_Model: Content\Engine\models\SM_Plane.obj
+      RenderComponent:
+        m_Object:
+          m_GUID: 194847
+          m_Name: Render Component
+          m_ClassName: RenderComponent
+        m_IsVisible: true
+        m_IsUI: true
+        m_Material:
+          m_BaseColor:
+            x: 1
+            y: 1
+            z: 1
+          m_BaseTexture: ""
+          m_TextureSettings:
+            WrapMode: 10497
+            WrapValue: 0
+            FilterMode: 9729
+            FilterValue: 1
+      PhysicsComponent:
+        m_Object:
+          m_GUID: 889843
+          m_Name: Physics Component
+          m_ClassName: PhysicsComponent
+        m_SimulatePhysics: false
+        m_CollisionDetectionEnabled: true
+        m_ImpulseEnabled: true
+        m_Mass: 1
+        m_LinearDrag: 0.5
+        m_AngularDrag: 0.5
+        m_Elasticity: 0.200000003
+        m_StaticFriction: 0.100000001
+        m_DynamicFriction: 0.100000001

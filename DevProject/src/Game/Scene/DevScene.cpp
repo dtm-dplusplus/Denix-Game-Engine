@@ -6,7 +6,6 @@
 #include "Denix/Core/Time/TimerSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Scene/Actor/Shapes.h"
-#include "GEP/GEPActor.h"
 
 using namespace Denix;
 
@@ -30,7 +29,7 @@ void DevScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
 	ImGui::Begin(GetName().c_str());
 	if(ImGui::Button("Spawn Cube"))
 	{
-		m_DyActor = SpawnActor<GEPActor>({0.0f, 2.5f, 0.0f});
+		m_DyActor = SpawnActor<Cube>({0.0f, 2.5f, 0.0f});
 		m_DyActor->GetPhysicsComponent()->SimulatePhysics() = true;
 	}
 	if (ImGui::Button("Reset Cube"))

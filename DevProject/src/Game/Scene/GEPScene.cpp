@@ -1,6 +1,6 @@
 ﻿#include "GEPScene.h"
 
-#include "Character.h"
+#include "Game/Actor/Character.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Scene/Actor/Shapes.h"
 #include "Denix/Input/InputSubsystem.h"

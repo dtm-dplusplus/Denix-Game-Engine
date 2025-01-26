@@ -5,6 +5,9 @@
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 
+#include "Game/Button.h"
+#include "Game/Canvas.h"
+
 unsigned char image[HEIGHT][WIDTH];
 
 std::vector<std::string> text = { "Tex 1", "Tex 2" }; 

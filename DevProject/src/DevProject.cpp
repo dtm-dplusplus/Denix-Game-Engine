@@ -1,11 +1,13 @@
  #include "Denix.h"
+#include "Game/Canvas.h"
 
-#include "Scene/AudioScene.h"
-#include "Scene/GACP/GACPScene.h"
-#include "Scene/DevScene.h"
-#include "Scene/UIScene.h"
-#include "Scene/GACP/GACPActor.h"
-#include "Scene/GEP/GEPScene.h"
+#include "Game/Scene/DevScene.h"
+#include "Game/Scene/GEPScene.h"
+#include "Game/Scene/AudioScene.h"
+#include "Game/Scene/UIScene.h"
+#include "Game/Actor/Character.h"
+#include "Game/Actor/BallActor.h"
+#include "Game/Actor/TargetActor.h"
 
  class DevProject final: public Engine
 {
@@ -21,12 +23,16 @@ public:
 		// Register project specific classes - These are pre-registered for reflection
 		DE_LOG_CREATE(LogDevProject)
 		ReflectionSubsystem::Register<DevScene>();
-		ReflectionSubsystem::Register<GACPScene>();
 		ReflectionSubsystem::Register<UIScene>();
 		ReflectionSubsystem::Register<GEPScene>();
 		ReflectionSubsystem::Register<AudioScene>();
-		ReflectionSubsystem::Register<GACPActor>();
-		ReflectionSubsystem::Register<Button>();
+
+		//ReflectionSubsystem::Register<BallActor>();
+		//ReflectionSubsystem::Register<TargetActor>();
+		//ReflectionSubsystem::Register<Character>();
+
+		//ReflectionSubsystem::Register<Canvas>();
+		//ReflectionSubsystem::Register<Button>();
 		DE_LOG(LogReflection, Info, "Registered DevProject Classes")
 	}
 	

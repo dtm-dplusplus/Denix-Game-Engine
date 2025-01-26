@@ -1,6 +1,5 @@
 ﻿#pragma once
-#include "Button.h"
-#include "Canvas.h"
+
 #include "Denix/Scene/Scene.h"
 
 inline static int CharSize = 25;
@@ -13,6 +12,9 @@ inline static GLuint textureID[2] = { 0, 0 };
 
 namespace Denix
 {
+    class Button;
+    class Canvas;
+    
     class UIScene: public Scene
     {
     public:
