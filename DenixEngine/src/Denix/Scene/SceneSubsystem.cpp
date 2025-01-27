@@ -152,6 +152,10 @@ namespace Denix
 			return;
 		}
 
+		// Close Current Scene if still playing - occurs when the scene is changed while playing
+		if (s_Instance->m_ActiveScene && s_Instance->m_ActiveScene->m_IsPlaying) s_Instance->CloseScene();
+		
+		
 		// Load the scene
 		LoadScene(_scene);
 
@@ -165,9 +169,9 @@ namespace Denix
 		// Begin new scene
 		s_Instance->m_ActiveScene->BeginScene();
 
-
 		// Update scene state - For shipped games, playing is the default state
-		m_SceneState = SceneState::Stopped;
+		if (m_SceneState != SceneState::Stopped) PlayScene();
+		
 		DE_LOG(LogScene, Info, "Activated Scene: {}",s_Instance->m_ActiveScene->GetName())
 	}
 
@@ -210,7 +214,8 @@ namespace Denix
 		{
 			s_Instance->CloseScene();
 			m_SceneState = SceneState::Stopped;
-
+			s_Instance->m_ActiveScene->m_IsPlaying = false;
+			
 			// Need to establish a better way of handling scenes
 			s_Instance->OpenScene(s_Instance->m_ActiveScene->m_SceneAsset);
 			DE_LOG(LogScene, Trace, "Scene Stopped")

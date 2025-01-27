@@ -9,17 +9,19 @@ namespace Denix
     {
     public:
         Button();
+        Button(const ObjectInit& _objInit);
         ~Button() override = default;
         
-        void BeginScene() override;
-        
-        void EndScene() override;
-        
         virtual void OnSelect();
+        virtual void OnDeselect() {}
+
+        virtual void OnHoverBegin();
+        virtual void OnHoverEnd();
         
         glm::vec3 m_DefaultColor = glm::vec3(1.0f, 1.0f, 1.0f);
-        glm::vec3 m_SelectedColor = glm::vec3(0.0f, 0.0f, 1.0f);
+        glm::vec3 m_SelectedColor = glm::vec3(0.0f, 1.0f, 0.0f);
         
-        Ref<AudioClip> m_SelectAudioClip;
+        WRef<AudioClip> m_SelectAudioClip;
+        WRef<AudioClip> m_HoverAudioClip;
     };
 }

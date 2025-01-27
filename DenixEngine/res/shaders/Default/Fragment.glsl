@@ -10,6 +10,7 @@ out vec4 Color;
 struct Material
 {
 	vec3 BaseColor;
+	bool MultiplyBase;
 	bool IsBaseTexture;
 	float SpecularIntensity;
 	float SpecularPower;
@@ -21,8 +22,13 @@ uniform Material u_Material;
 
 void main()
 {
-	vec4 totalColor = u_Material.IsBaseTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.BaseColor, 1.0f);
+	if(u_Material.IsBaseTexture && u_Material.MultiplyBase)
+	{
+		vec4 totalColor = texture(u_Texture, TexCoord) * vec4(u_Material.BaseColor, 1.0f);
+		Color = totalColor;
+		return;
+	}
 
 	// Output Color
-	Color = totalColor;
+	Color = u_Material.IsBaseTexture ? texture(u_Texture, TexCoord) : vec4(u_Material.BaseColor, 1.0f);;
 }

@@ -9,11 +9,13 @@
 #include "Denix/Core/Subsystem.h"
 
 #include "UIWidget.h"
-#include "Denix/UI/Widget/Canvas.h"
-#include "Widget/Button.h"
+
 
 namespace Denix
 {
+	class Canvas;
+	class Button;
+	
 	class UISubsystem: public Subsystem<UISubsystem>
 	{
 	public:

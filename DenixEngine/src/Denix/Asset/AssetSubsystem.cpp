@@ -234,7 +234,11 @@ namespace Denix
 			return false;
 		}
 		
-		if (_shader->RecompileProgram()) return false;
+		if (!_shader->RecompileProgram())
+		{
+			DE_LOG(LogAsset, Error, "Failed to recompile shader: {}", _shader->GetDirectoryName())
+			return false;
+		}
 		
 		DE_LOG(LogAsset, Info, "Shader Recompiled successfully: {}", _shader->GetDirectoryName())
 		return true;

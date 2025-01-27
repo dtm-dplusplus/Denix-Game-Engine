@@ -1,11 +1,9 @@
 #include "UISubsystem.h"
 
-#include "backends/imgui_impl_sdl3.h"
 #include "Denix/Core/File/FileSubsystem.h"
 #include "Denix/Video/RendererSubsystem.h"
-
-#include "Denix/Video/Window/Window.h"
-#include "Denix/Video/WindowSubsystem.h"
+#include "Denix/UI/Widget/Canvas.h"
+#include "Widget/Button.h"
 
 namespace Denix
 {
@@ -61,18 +59,15 @@ namespace Denix
 
 	void UISubsystem::RenderUISubmission()
 	{
+		// @TODO These should be dynamicly adjusted in the future
+		m_Projection = glm::ortho(-1.6f, 1.6f, -0.9f, 0.9f, 0.01f, 100.0f);
+		m_View = glm::lookAt(glm::vec3(0.0f, 0.0f, 15.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		RendererSubsystem::SubmitCamera({m_Projection, m_View});
+		
 		for (const auto& widget : m_Widgets)
-		{
 			for (const auto& child : widget->m_Buttons)
-			{
-				// is visible
-				RendererSubsystem::GetInstance()->RenderObject(
-					{
-						child->m_Material,
-						child->m_Model,
-						child->m_ModelMatrix
-					});
-			}
-		}
+				if (child->m_IsDisplayed) RendererSubsystem::RenderObject({child->m_Material,	child->m_Model.lock(),child->m_ModelMatrix});
+					
 	}
 }

@@ -1,25 +1,38 @@
 ﻿#include "GEPScene.h"
 
+#include "imgui.h"
 #include "Game/Actor/Character.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
-#include "Denix/Scene/Actor/Shapes.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Game/Actor/BallActor.h"
-
-GEPScene::GEPScene()
-{
-}
+#include "Game/UI/GameOverCanvas.h"
 
 void GEPScene::BeginScene()
 {
     Scene::BeginScene();
-    //SpawnActor<Plane>(glm::vec3(0.0f), glm::vec3(0.0f), {100.0f, 0.01f, 100.0f});
+
+    m_GameOver = false;
+    m_GameOverCanvas = MakeRef<GameOverCanvas>();
+    m_GameOverCanvas->BeginScene();
+}
+
+void GEPScene::EndScene()
+{
+    Scene::EndScene();
+
+    m_GameOverCanvas->EndScene();
+    m_GameOverCanvas.reset();
 }
 
 void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     Scene::Update(_deltaTime, _waitCounter);
 
+    if (m_GameOver)
+    {
+        DE_LOG(LogDevProject, Info, "Game Over");
+        m_GameOverCanvas->Enable();
+    }
     if (InputSubsystem::IsKeyUp(KeyCode::DEK_SPACE))
     {
         Ref<BallActor> ball = SpawnActor<BallActor>(m_ActiveCamera->GetTransform().Position);
@@ -33,6 +46,7 @@ void GEPScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
 
     ImGui::Begin("GEP Scene");
     ImGui::SeparatorText("Game");
+    ImGui::Checkbox("Game Over", &m_GameOver);
     ImGui::DragFloat("Ball Mass", &BallActor::Mass, 0.1f, 0.1f, 30.0f);
     ImGui::DragFloat("Shoot Force", &ShootForce, 0.1f, 0.0f, 200.0f);
     ImGui::SeparatorText("Camera");
@@ -57,6 +71,20 @@ void GEPScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
         m_Character = SpawnActor<Character>(glm::vec3(2.0f, 2.5f, 0.0f));
     }
 
+    ImGui::Text("Canvas: %s", m_GameOverCanvas->GetName().c_str());
+    for (const auto& button : m_GameOverCanvas->m_Buttons)
+    {
+        //ImGui::Text("isactive: %d", m_Canvas->m_IsActive);
+        // ImGui::Text("isdisplayed: %d", m_Canvas->m_IsDisplayed);
+        ImGui::PushID(button->GetGUID());
+        ImGui::Text("Button: %s", button->GetName().c_str());
+        ImGui::DragFloat3("Position", &button->m_Transform.Position.x, 0.1f);
+        ImGui::DragFloat3("Scale", &button->m_Transform.Scale.x, 0.1f);
+        ImGui::DragFloat3("Selected Color", &button->m_SelectedColor.x, 0.1f);
+        ImGui::DragFloat3("Default Color", &button->m_DefaultColor.x, 0.1f);
+        ImGui::PopID();
+    }
+    
     
     ImGui::End();
 }

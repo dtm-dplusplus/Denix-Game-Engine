@@ -1,27 +1,34 @@
-﻿#include "MainMenuCanvas.h"
+﻿#include "GameOverCanvas.h"
 
 #include "Button/Buttons.h"
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Audio/AudioSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
-#include "Denix/Scene/SceneSubsystem.h"
+#include "Denix/Video/GL/Material.h"
 
 using namespace Denix;
 
-void MainMenuCanvas::BeginScene()
+void GameOverCanvas::BeginScene()
 {
     Canvas::BeginScene();
 
-    m_Buttons.push_back(MakeRef<PlayButton>());
-    m_Buttons.back()->m_Transform.Position.y = 0.3f;
+    m_Buttons.push_back(MakeRef<RestartButton>());
+    m_Buttons.back()->m_Transform.Position.y = 0.5f;
+
+
+    m_Buttons.push_back(MakeRef<MainMenuButton>());
+    m_Buttons.back()->m_Transform.Position.y = 0.0f;
     
     m_Buttons.push_back(MakeRef<QuitButton>());
-    m_Buttons.back()->m_Transform.Position.y = -0.3f;
+    m_Buttons.back()->m_Transform.Position.y = -0.5f;
+    
     Sort();
+
+    // Minimized on start
+   Disable();
 }
 
-
-void MainMenuCanvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
+void GameOverCanvas::Update(float _deltaTime, const Denix::Ref<Counter>& _waitCounter)
 {
     Canvas::Update(_deltaTime, _waitCounter);
 
@@ -64,4 +71,3 @@ void MainMenuCanvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
         }
     }
 }
-

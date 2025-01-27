@@ -1,21 +1,31 @@
 ﻿#pragma once
-#include "imgui.h"
 #include "Denix/Scene/Scene.h"
 
 class Character;
+class GameOverCanvas;
 
-using namespace Denix;
-
-class GEPScene: public Scene
+class GEPScene: public Denix::Scene
 {
 public:
-    GEPScene();
+    GEPScene() = default;
+    ~GEPScene() override = default;
 
     void BeginScene() override;
-    void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-    void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-    Ref<Character> m_Character;
-    Ref<Camera> m_CharacterCamera;
-    float ShootForce = 100.0f;
+    void EndScene() override;
+    void Update(float _deltaTime, const Denix::Ref<Counter>& _waitCounter) override;
+    
+    void DebugUI(float _deltaTime, const Denix::Ref<Counter>& _waitCounter) override;
+    
+    Denix::Ref<Character> m_Character;
+    
+    Denix::Ref<Denix::Camera> m_CharacterCamera;
+    
+    float ShootForce = 50.0f;
+    
+    int Health;
+    
+    bool m_GameOver;
+
+    Denix::Ref<GameOverCanvas> m_GameOverCanvas;
 };
 

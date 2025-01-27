@@ -41,7 +41,14 @@ namespace Denix
         glUniform1i(_submission.Mat->m_Shader->GetUniform("u_Material.IsBaseTexture"),
                     _submission.Mat->m_IsBaseTexture);
 
-        if (_submission.Mat->m_IsBaseTexture)
+        glUniform3f(_submission.Mat->m_Shader->GetUniform("u_Material.BaseColor"),
+                        _submission.Mat->m_BaseColor.r,
+                        _submission.Mat->m_BaseColor.g,
+                        _submission.Mat->m_BaseColor.b);
+        
+        glUniform1i(_submission.Mat->m_Shader->GetUniform("u_Material.MultiplyBase"), _submission.Mat->m_MultiplyBase);
+        
+        if (_submission.Mat->m_IsBaseTexture && _submission.Mat->m_BaseTexture)
         {
             _submission.Mat->m_BaseTexture->Bind();
 
@@ -53,10 +60,7 @@ namespace Denix
         }
         else
         {
-            glUniform3f(_submission.Mat->m_Shader->GetUniform("u_Material.BaseColor"),
-                        _submission.Mat->m_BaseColor.r,
-                        _submission.Mat->m_BaseColor.g,
-                        _submission.Mat->m_BaseColor.b);
+            _submission.Mat->CheckBaseType();
         }
 
         // Upload the model matrix

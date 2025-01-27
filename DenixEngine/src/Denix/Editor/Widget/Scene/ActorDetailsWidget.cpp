@@ -159,6 +159,7 @@ void Denix::ActorDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject
         {
             ImGui::Text("Base Color");
             ImGui::ColorEdit3("Base Color", &mat->m_BaseColor[0]);
+            ImGui::Checkbox("Multiply Base Color", &mat->m_MultiplyBase);
             TextureSelectionWidget(mat);
             if (ImGui::Button("Clear Texture"))
             {

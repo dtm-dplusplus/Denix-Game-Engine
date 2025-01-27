@@ -89,7 +89,7 @@ namespace Denix
 
 		bool m_RequestStopScene = false;
 		
-		inline static SceneState m_SceneState;
+		inline static SceneState m_SceneState = SceneState::Stopped;
 		
 		friend class Engine;
 		friend class EditorSubsystem;
