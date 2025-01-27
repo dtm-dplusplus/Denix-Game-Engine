@@ -55,7 +55,7 @@ namespace Denix
         m_ViewportCamera->BeginScene();
         for (const auto& actor : m_Actors)
         {
-            actor->m_SceneRef = CastRef<Scene>(GetRef<Scene>());
+            actor->m_SceneRef = GetRef<Scene>();
             actor->BeginScene();
         }
     }

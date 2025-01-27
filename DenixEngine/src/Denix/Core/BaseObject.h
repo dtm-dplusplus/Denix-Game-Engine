@@ -24,12 +24,10 @@ namespace Denix
         ~BaseObject() override = default;
 
         template<typename T>
-        Ref<BaseObject> GetRef()
+        Ref<T> GetRef()
         {
             if (Ref<BaseObject> ref = shared_from_this())
-            {
-                return ref;
-            }
+                if (Ref<T> castRef = std::dynamic_pointer_cast<T>(ref)) return castRef;
 
             DE_LOG(LogCore, Error, "Failed to cast object to type: {}", ReflectionHelper::GetClassNameDE<T>());
             return nullptr;

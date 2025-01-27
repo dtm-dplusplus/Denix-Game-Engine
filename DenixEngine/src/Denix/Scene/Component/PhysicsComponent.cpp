@@ -25,14 +25,14 @@ namespace Denix
     {
         Component::RegisterComponent();
 
-        PhysicsSubsystem::RegisterComponent(CastRef<PhysicsComponent>(GetRef<PhysicsComponent>()));
+        PhysicsSubsystem::RegisterComponent(GetRef<PhysicsComponent>());
     }
 
     void PhysicsComponent::UnregisterComponent()
     {
         Component::UnregisterComponent();
 
-        PhysicsSubsystem::UnregisterComponent(CastRef<PhysicsComponent>(GetRef<PhysicsComponent>()));
+        PhysicsSubsystem::UnregisterComponent(GetRef<PhysicsComponent>());
     }
 
     void PhysicsComponent::Serialize(YAML::Emitter& _out)
@@ -84,7 +84,7 @@ namespace Denix
 
     void PhysicsComponent::EndScene()
     {
-        PhysicsSubsystem::UnregisterComponent(CastRef<PhysicsComponent>(GetRef<PhysicsComponent>()));
+        PhysicsSubsystem::UnregisterComponent(GetRef<PhysicsComponent>());
 
         Component::EndScene();
     }

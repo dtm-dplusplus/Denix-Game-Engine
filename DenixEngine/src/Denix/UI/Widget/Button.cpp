@@ -12,22 +12,21 @@ Button::Button()
     m_RenderComponent->GetMaterial()->m_BaseColor = Button::defaultColor;
 }
 
-Button::~Button()
-{
-    m_SelectAudioClip.reset();
-}
+Button::~Button() = default;
+
 
 void Button::BeginScene()
 {
     Plane::BeginScene();
 
-    UISubsystem::GetInstance()->m_UIWidgets.push_back(CastRef<Button>(GetRef<Button>()));
+    UISubsystem::GetInstance()->m_UIWidgets.push_back(GetRef<Button>());
 }
 
 void Button::EndScene()
 {
-    std::erase(UISubsystem::GetInstance()->m_UIWidgets, CastRef<Button>(GetRef<Button>()));
-    
+    std::erase(UISubsystem::GetInstance()->m_UIWidgets, GetRef<Button>());
+    m_SelectAudioClip.reset();
+
     Plane::EndScene();
 }
 

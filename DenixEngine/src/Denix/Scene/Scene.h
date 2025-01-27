@@ -122,7 +122,7 @@ namespace Denix
 		m_ActorNames.insert(actor->m_Name);
 
 		// Pass the scene reference to the actor
-		actor->m_SceneRef = CastRef<Scene>(GetRef<Scene>());
+		actor->m_SceneRef = GetRef<Scene>();
 		
 		// Set Transform Component
 		actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);
