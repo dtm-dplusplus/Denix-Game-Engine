@@ -60,7 +60,12 @@ namespace Denix
            for (const auto& button : canvas->m_Buttons)
            {
 	           // is visible
-           	RendererSubsystem::GetInstance()->RenderActor(button);
+           	RendererSubsystem::GetInstance()->RenderObject(
+           		{
+		   			button->GetRenderComponent()->GetMaterial(),
+		   			button->GetModelComponent()->GetModel(),
+		   			button->GetTransformComponent()->GetModel()
+		   		});
            }
         }
 	}

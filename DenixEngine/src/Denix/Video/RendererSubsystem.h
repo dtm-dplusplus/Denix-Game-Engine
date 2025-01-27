@@ -1,7 +1,7 @@
 #pragma once
 
+#include "RenderSubmission.h"
 #include "Denix/Core/Subsystem.h"
-#include "Denix/Scene/Component/RenderComponent.h"
 
 namespace Denix
 {
@@ -15,7 +15,6 @@ namespace Denix
 	{
 	public:
 		RendererSubsystem() = default;
-
 		~RendererSubsystem() override = default;
 
 		RendererSubsystem(const RendererSubsystem& _other) = delete;
@@ -23,9 +22,8 @@ namespace Denix
 		RendererSubsystem& operator=(const RendererSubsystem& _other) = delete;
 		RendererSubsystem& operator=(RendererSubsystem&& _other) noexcept = delete;
 
-		void RenderActor(const Ref<Actor>& actor) const;
-
-		
+		static void RenderObject(const RenderSubmission& _submission);
+		static void SubmitCamera(const CameraSubmission& _submission);
 	private:
 		void Initialize() override;
 
@@ -34,6 +32,7 @@ namespace Denix
 		void RenderScene();
 		void RenderDefaultViewport() const;
 
+		CameraSubmission m_CameraSubmission;
 		static void SetActiveScene(const Ref<Scene>& _scene);
 
 		WRef<Shader> m_DefaultShader;
@@ -43,5 +42,3 @@ namespace Denix
 		friend class Engine;
 	};
 }
-
-#pragma once
