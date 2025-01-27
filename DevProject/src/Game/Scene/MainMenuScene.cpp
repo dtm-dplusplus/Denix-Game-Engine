@@ -1,9 +1,9 @@
-﻿#include "MainMenu.h"
+﻿#include "MainMenuScene.h"
 
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Game/UI/MainMenuCanvas.h"
 
-void MainMenu::BeginScene()
+void MainMenuScene::BeginScene()
 {
     Scene::BeginScene();
 
@@ -11,7 +11,7 @@ void MainMenu::BeginScene()
     m_Canvas->BeginScene();
 }
 
-void MainMenu::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
+void MainMenuScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     Scene::Update(_deltaTime, _waitCounter);
     m_Canvas->Update(_deltaTime, _waitCounter);

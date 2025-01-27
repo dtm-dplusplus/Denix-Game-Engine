@@ -4,9 +4,7 @@
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
-
-#include "Game/Button.h"
-#include "Game/Canvas.h"
+#include "Denix/UI/Widget/Canvas.h"
 
 unsigned char image[HEIGHT][WIDTH];
 

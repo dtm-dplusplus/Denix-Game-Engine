@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "Game/Canvas.h"
+#include "Denix/UI/Widget/Button.h"
+#include "Denix/UI/Widget/Canvas.h"
 
 using namespace Denix;
 

@@ -27,7 +27,7 @@ namespace Denix
 
 		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
-
+		
 		friend class Engine;
 		friend class EditorSubsystem;
 		friend class WindowSubsystem;

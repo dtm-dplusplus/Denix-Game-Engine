@@ -1,5 +1,4 @@
  #include "Denix.h"
-#include "Game/Canvas.h"
 
 #include "Game/Scene/DevScene.h"
 #include "Game/Scene/GEPScene.h"
@@ -8,7 +7,7 @@
 #include "Game/Actor/Character.h"
 #include "Game/Actor/BallActor.h"
 #include "Game/Actor/TargetActor.h"
-#include "Game/Scene/MainMenu.h"
+#include "Game/Scene/MainMenuScene.h"
 
  class DevProject final: public Engine
 {
@@ -27,7 +26,7 @@ public:
 		ReflectionSubsystem::Register<UIScene>();
 		ReflectionSubsystem::Register<GEPScene>();
 		ReflectionSubsystem::Register<AudioScene>();
-		ReflectionSubsystem::Register<MainMenu>();
+		ReflectionSubsystem::Register<MainMenuScene>();
 		//ReflectionSubsystem::Register<BallActor>();
 		//ReflectionSubsystem::Register<TargetActor>();
 		//ReflectionSubsystem::Register<Character>();

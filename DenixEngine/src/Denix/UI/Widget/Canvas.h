@@ -1,12 +1,13 @@
 ﻿#pragma once
 #include "Button.h"
+#include "Denix/UI/UIWidget.h"
 
 using namespace Denix;
 
 namespace Denix
 {
     class AudioClip;
-    class Canvas: public BaseObject
+    class Canvas: public UIWidget
     {
     public:
         Canvas();

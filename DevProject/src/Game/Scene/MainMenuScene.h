@@ -1,12 +1,11 @@
 ﻿#pragma once
 #include "Denix/Scene/Scene.h"
-#include "Game/Button.h"
 
 class MainMenuCanvas;
 using namespace Denix;
 
 
-class MainMenu: public Scene
+class MainMenuScene: public Scene
 {
 public:
     void BeginScene() override;
