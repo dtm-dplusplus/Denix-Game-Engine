@@ -16,13 +16,24 @@ namespace Denix
      *  BaseObject defines an object that can be serialized, deserialized, and reflected via th Reflection Subsystem
      *  
      */
-    class BaseObject: public Object
+    class BaseObject: public Object, public std::enable_shared_from_this<BaseObject>
     {
     public:
         BaseObject() = default;
         BaseObject(const ObjectInit& _objInit): Object(_objInit){}
-        /*~BaseObject() override = default;*/
+        ~BaseObject() override = default;
 
+        template<typename T>
+        Ref<BaseObject> GetRef()
+        {
+            if (Ref<BaseObject> ref = shared_from_this())
+            {
+                return ref;
+            }
+
+            DE_LOG(LogCore, Error, "Failed to cast object to type: {}", ReflectionHelper::GetClassNameDE<T>());
+            return nullptr;
+        }
         
         // Called each frame if the game is playing
         virtual void BeginPlay() {}

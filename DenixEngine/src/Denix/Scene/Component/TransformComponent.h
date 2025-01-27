@@ -17,7 +17,7 @@ namespace Denix
   glm::vec3 Scale;
  };
 
- class TransformComponent : public Component, public std::enable_shared_from_this<TransformComponent>
+ class TransformComponent : public Component
  {
  public:
   // Constructors

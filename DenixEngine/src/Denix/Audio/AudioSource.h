@@ -16,7 +16,7 @@ namespace Denix
         Paused = 2
     };
     
-    class AudioSource: public BaseObject, public std::enable_shared_from_this<AudioSource>
+    class AudioSource: public BaseObject
     {
     public:
         AudioSource();

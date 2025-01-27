@@ -29,7 +29,7 @@ namespace physx
 
 namespace Denix
 {
-	class PhysicsComponent : public Component, public std::enable_shared_from_this<PhysicsComponent>
+	class PhysicsComponent : public Component
 	{
 	public:
 		PhysicsComponent();

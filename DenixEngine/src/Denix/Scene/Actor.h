@@ -15,7 +15,7 @@ namespace Denix
 	/*	Base class for all actors
 	*
 	*/
-	class Actor : public BaseObject, public std::enable_shared_from_this<Actor>
+	class Actor : public BaseObject
 	{
 	public:
 		// Constructors

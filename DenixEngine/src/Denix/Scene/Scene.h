@@ -16,7 +16,7 @@ namespace Denix
 	class CollisionCallback;
 
 	// Basic Scene class
-	class Scene: public BaseObject, public std::enable_shared_from_this<Scene>
+	class Scene: public BaseObject
 	{
 	public:
 		Scene();
@@ -122,7 +122,7 @@ namespace Denix
 		m_ActorNames.insert(actor->m_Name);
 
 		// Pass the scene reference to the actor
-		actor->m_SceneRef = shared_from_this();
+		actor->m_SceneRef = CastRef<Scene>(GetRef<Scene>());
 		
 		// Set Transform Component
 		actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);

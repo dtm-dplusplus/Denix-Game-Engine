@@ -6,8 +6,9 @@ namespace Denix
     class UIWidget: public BaseObject
     {
     public:
-    UIWidget(){}
-    ~UIWidget() override {}
-        
+        UIWidget(){}
+        ~UIWidget() override {}
+
+        inline static bool s_WidgetLogging = true;
     };
 }

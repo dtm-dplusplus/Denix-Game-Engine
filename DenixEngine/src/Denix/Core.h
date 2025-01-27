@@ -64,7 +64,8 @@ namespace Denix
 	template<typename T, typename Arg>
 	constexpr Ref<T> CastRef(Arg&& arg)
 	{
-		return std::dynamic_pointer_cast<T>(std::forward<Arg>(arg));
+		auto castRef = std::dynamic_pointer_cast<T>(std::forward<Arg>(arg));
+		return castRef ? castRef : nullptr;
 	}
 	
 	// Pointer validation

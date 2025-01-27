@@ -128,7 +128,7 @@ namespace Denix
 
         for (const auto& component : m_Components)
         {
-            component->m_Parent = shared_from_this();
+            component->m_Parent = CastRef<Actor>(GetRef<Actor>());
             component->BeginScene();
         }
     }

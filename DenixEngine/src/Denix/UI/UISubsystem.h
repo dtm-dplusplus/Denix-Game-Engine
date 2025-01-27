@@ -1,9 +1,16 @@
 #pragma once
 
 #include <ft2build.h>
+#include <glm/mat4x4.hpp>
+
+
 #include FT_FREETYPE_H
 
 #include "Denix/Core/Subsystem.h"
+
+#include "UIWidget.h"
+#include "Denix/UI/Widget/Canvas.h"
+#include "Widget/Button.h"
 
 namespace Denix
 {
@@ -20,12 +27,19 @@ namespace Denix
 
 		inline static FT_Library m_FtLibrary;
 		inline static FT_Face m_Face;
+
+		std::vector<Ref<Button>> m_UIWidgets;
+		glm::mat4 m_Projection;
+		glm::mat4 m_View;
+		
 	private:
 		void Initialize() override;
 
 		void Deinitialize() override;
 
 		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+
+		
 
 		
 		friend class Engine;

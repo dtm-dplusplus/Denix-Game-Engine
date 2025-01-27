@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Denix/Core/Subsystem.h"
-#include "Denix/Core.h"
-
 #include "Denix/Scene/Component/RenderComponent.h"
 
 namespace Denix
@@ -25,7 +23,6 @@ namespace Denix
 		RendererSubsystem& operator=(const RendererSubsystem& _other) = delete;
 		RendererSubsystem& operator=(RendererSubsystem&& _other) noexcept = delete;
 
-		Ref<Shader> m_UIShader;
 	private:
 		void Initialize() override;
 
