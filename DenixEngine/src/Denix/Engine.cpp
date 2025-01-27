@@ -169,9 +169,6 @@ namespace Denix
         ReflectionSubsystem::Register<ModelComponent>();
 
         ReflectionSubsystem::Register<PhysicsComponent>();
-        ReflectionSubsystem::Register<Collider>();
-        ReflectionSubsystem::Register<CubeCollider>();
-        ReflectionSubsystem::Register<SphereCollider>();
 
         ReflectionSubsystem::Register<AudioComponent>();
         ReflectionSubsystem::Register<AudioSource>();

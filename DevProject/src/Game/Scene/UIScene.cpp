@@ -110,7 +110,7 @@ void Denix::UIScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     }
     ImGui::End();
 
-    canvas->Update();
+    canvas->Update(_deltaTime, _waitCounter);
 }
 
 unsigned int Denix::UIScene::CreateTextBox(std::string _text, glm::vec2 _position, glm::vec2 _size, glm::vec3 _color)

@@ -10,8 +10,10 @@ Denix::Canvas::Canvas()
     m_NavigateAudioClip = AssetSubsystem::GetAudioClip("Content\\Engine\\audio\\UI_Navigate.wav");
 }
 
-void Denix::Canvas::Update()
+void Canvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
+    BaseObject::Update(_deltaTime, _waitCounter);
+
     if (!m_Buttons.empty() && !m_SelectedButton)
     {
         m_SelectedButton = m_Buttons[0];

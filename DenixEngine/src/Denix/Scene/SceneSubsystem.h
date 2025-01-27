@@ -44,7 +44,11 @@ namespace Denix
 		// Open Scene Methods. The string & asset overloads are wrappers for the pass by scene method.
 		static void OpenScene(const Ref<Asset>& _sceneAsset);
 		static void OpenScene(const Ref<Scene>& _scene);
+
+		static void RequestOpenScene(const std::string& _scenePath);
 		static void RequestOpenScene(const Ref<Asset>& _sceneAsset);
+
+		static void RequestStop();
 		static SceneState GetSceneState() { return m_SceneState; }
 
 		inline static bool m_BatchUpdateActors = true;
@@ -81,6 +85,8 @@ namespace Denix
 		Ref<Scene> m_ActiveScene;
 
 		Ref<Asset> m_RequestOpenSceneAsset;
+
+		bool m_RequestStopScene = false;
 		
 		inline static SceneState m_SceneState;
 		

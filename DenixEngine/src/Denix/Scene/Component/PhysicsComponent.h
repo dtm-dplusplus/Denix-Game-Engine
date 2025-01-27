@@ -7,11 +7,8 @@
 #include "Denix/Core/Math/Math.h"
 
 #include "Denix/Scene/Component.h"
-#include "Denix/Scene/Component/TransformComponent.h"
-#include "Denix/Physics/Collider.h"
 #include "Denix/Physics/CollisionPair.h"
 #include "Denix/Physics/PhysicPrimitive.h"
-#include "Denix/Scene/Actor.h"
 
 
 namespace physx
@@ -47,9 +44,25 @@ namespace Denix
 
 		void AddTorque(const glm::vec3& _torque) const;
 
-		bool m_RotationEnabled = true;
-		
+		bool SimulatePhysics() const { return m_SimulatePhysics; }
+		bool& SimulatePhysics() { return m_SimulatePhysics; }
+		void SetSimulatePhysics(const bool _simulatePhysics)
+		{
+			m_SimulatePhysics = _simulatePhysics;
+		}
 
+		bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
+		bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }
+
+		glm::vec3 GetVelocity() const { return m_Velocity; }
+		glm::vec3 GetAngularVelocity() const { return m_AngularVelocity; }
+		glm::vec3 GetAcceleration() const { return m_Acceleration; }
+		glm::vec3 GetForce() const { return m_Force; }
+		float GetMass() const { return m_Mass; }
+
+		bool GetImpulseEnabled() const { return m_ImpulseEnabled; }
+		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
+		void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
 		void SetInertia();
 
 		float m_PxSlopCoefficient = 0.1f;
@@ -81,19 +94,6 @@ namespace Denix
 		float m_Elasticity = 0.2f;
 		float m_StaticFriction = 0.1f;
 		float m_DynamicFriction = 0.1f;
-		
-	private:
-		/* Physics Component Settings */
-		/** Set to decide if the physics component should update simulation */
-		bool m_SimulatePhysics = false;
-
-		/** Set to decide if the physics component should perform collision detection */
-		bool m_CollisionDetectionEnabled = true;
-
-		bool m_ImpulseEnabled = true;
-
-		/** Collision used to compute collision responses. Belongs to the physics component */
-		Ref<Collider> m_Collider;
 
 		/////////////////////* Angular Properties *///////////////////////
 		/** Angular velocity of the object */
@@ -101,7 +101,6 @@ namespace Denix
 
 		/** Angular Momentum */
 		glm::vec3 m_AngularMomentum = glm::vec3(0.f);
-
 
 		/////////////////////* Read Only Properties *///////////////////////
 		/** Velocity of the object */
@@ -117,6 +116,15 @@ namespace Denix
 		glm::vec3 m_Torque = glm::vec3(0.f);
 		
 	private:
+		/* Physics Component Settings */
+		/** Set to decide if the physics component should update simulation */
+		bool m_SimulatePhysics = false;
+
+		/** Set to decide if the physics component should perform collision detection */
+		bool m_CollisionDetectionEnabled = true;
+
+		bool m_ImpulseEnabled = true;
+		
 		void RegisterComponent() override;
 		void UnregisterComponent() override;
 
@@ -129,44 +137,12 @@ namespace Denix
 		void BeginScene() override;
 		void EndScene() override;
 		
-		/* Stateful members below. These dictacte engine behaviour, e.g. IsCollidig determines collider render color */
-		bool m_IsColliding = false;
-
-		
 		friend class EditorSubsystem;
 		friend class SceneSubsystem;
 		friend class PhysicsSubsystem;
 		friend class CollisionDetection;
 		friend class Actor;
 		friend class Engine;
-
-	public:
-		// Getters
-		bool SimulatePhysics() const { return m_SimulatePhysics; }
-		bool& SimulatePhysics() { return m_SimulatePhysics; }
-		void SetSimulatePhysics(const bool _simulatePhysics)
-		{
-			m_SimulatePhysics = _simulatePhysics;
-		}
-
-		bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
-		bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }
-
-		bool IsColliding() const { return m_IsColliding; }
-
-		glm::vec3 GetVelocity() const { return m_Velocity; }
-		glm::vec3 GetAngularVelocity() const { return m_AngularVelocity; }
-		glm::vec3 GetAcceleration() const { return m_Acceleration; }
-		glm::vec3 GetForce() const { return m_Force; }
-		float GetMass() const { return m_Mass; }
-
-		bool GetImpulseEnabled() const { return m_ImpulseEnabled; }
-		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
-		void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
-
-		Ref<Collider> GetCollider() const;
-		Ref<Collider>& GetCollider();
-
-		void SetCollider(const Ref<Collider>& _collider);
+		
 	};
 }

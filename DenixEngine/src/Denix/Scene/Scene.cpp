@@ -8,23 +8,7 @@
 #include "Denix/Core/Reflection/YAMLHelper.h"
 namespace Denix
 {
-    static physx::PxFilterFlags PhysicsFilterShader(
- physx::PxFilterObjectAttributes attributes0,
- physx::PxFilterData filterData0,
- physx::PxFilterObjectAttributes attributes1,
- physx::PxFilterData filterData1,
- physx::PxPairFlags& pairFlags,
- const void* constantBlock,
- physx::PxU32 constantBlockSize)
-    {
-        pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
-
-        // Report when there is any contact between the two objects
-        pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_LOST;
-        return physx::PxFilterFlag::eNOTIFY;
-
-      //  return physx::PxFilterFlag::eDEFAULT;
-    }
+   
 
     Scene::Scene(): BaseObject({"Scene"}), m_PxScene(nullptr), m_PxSceneDesc(nullptr), m_PxControllerManager(nullptr),
                     m_CollisionCallback(nullptr),
@@ -35,9 +19,6 @@ namespace Denix
 
     Scene::~Scene()
     {
-        m_ViewportCamera.reset();
-        m_ActiveCamera.reset();
-        ClearActors();
     }
 
     void Scene::BeginScene()
@@ -91,7 +72,7 @@ namespace Denix
         m_ActorNames.clear();
         
         // Release the PhysX scene
-        PX_RELEASE(m_PxScene);
+        PX_RELEASE(m_PxScene)
 
         if (m_PxSceneDesc)
         {
@@ -139,28 +120,6 @@ namespace Denix
         {
            m_ActiveCamera->Update(_deltaTime, _waitCounter);
         }
-    }
-
-    void Scene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
-    {
-        ImGui::Begin("Serial Fix");
-        static glm::vec3 vec = {0.0f, 0.0f, 1.0f};
-        ImGui::DragFloat3("Vec", glm::value_ptr(vec), 0.1f);
-        if (ImGui::Button("Write"))
-        {
-           YAML::Emitter out;
-            out << YAML::BeginMap;
-            out << YAML::Key << "Position" << YAML::BeginMap;
-            Vec3ToYAML(out, vec);
-            out << YAML::EndMap;
-           FileSubsystem::WriteFile("Content/test.yaml", out.c_str());
-        }
-        if (ImGui::Button("DeWrite"))
-        {
-            YAML::Node n = YAML::LoadFile(FileSubsystem::FormatPath("Content/test.yaml"));
-            vec = YAMLtoVec3(n["Position"]);
-        }
-        ImGui::End();
     }
 
 

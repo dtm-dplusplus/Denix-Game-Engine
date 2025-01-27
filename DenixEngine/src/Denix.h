@@ -19,7 +19,7 @@
 #include "Denix/Video/RendererSubsystem.h"
 
 #include "Denix/Physics/PhysicsSubsystem.h"
-#include "Denix/Physics/Collider.h"
+
 
 #include "Denix/Core/Time/TimerSubsystem.h"
 #include "Denix/Profile/ProfileSubsystem.h"

@@ -9,6 +9,7 @@
 #include "Denix/Video/GL/Model.h"
 #include "Denix/Asset/Asset.h"
 #include "Denix/Audio/AudioClip.h"
+#include "Denix/Core/Reflection/ReflectionSubsystem.h"
 #include "yaml-cpp/yaml.h"
 
 namespace Denix
@@ -49,8 +50,12 @@ namespace Denix
 					// Scene Asset
 					if (assetData.find("DE_ASSET_SCENE") != std::string::npos)
 					{
-						// We don't need to load the scene asset here
-						m_SceneStore.push_back(asset);
+						// Check we have the client class type
+						if (ReflectionSubsystem::ClassExists(asset->GetAssetName()))
+						{
+							// We don't need to load the scene asset here
+							m_SceneStore.push_back(asset);
+						}
 					}
 				}
 

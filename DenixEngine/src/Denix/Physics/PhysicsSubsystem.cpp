@@ -1,6 +1,6 @@
 ﻿#include "PhysicsSubsystem.h"
 #include "Denix/Scene/Scene.h"
-#include "Denix/Physics/Collider.h"
+
 #include "Denix/Profile/ProfileSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Core/Thread/JobSubsystem.h"

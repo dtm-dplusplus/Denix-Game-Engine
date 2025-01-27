@@ -1,17 +1,16 @@
 ﻿#pragma once
 #include "Button.h"
 
-namespace Denix
-{
-    class AudioClip;
-}
+using namespace Denix;
 
 namespace Denix
 {
-    class Canvas
+    class AudioClip;
+    class Canvas: public BaseObject
     {
     public:
         Canvas();
+        
         std::vector<Ref<Button>> m_Buttons;
         Ref<Button> m_SelectedButton;
         
@@ -23,7 +22,7 @@ namespace Denix
                 b->GetTransformComponent()->GetTransform().Position.y; });
         }
 
-        void Update();
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         WRef<AudioClip> m_NavigateAudioClip;
     };

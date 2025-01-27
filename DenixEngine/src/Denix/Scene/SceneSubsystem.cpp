@@ -68,6 +68,13 @@ namespace Denix
 			OpenScene(m_RequestOpenSceneAsset);
 			m_RequestOpenSceneAsset.reset();
 		}
+
+		// Request Stop
+		if (m_RequestStopScene)
+		{
+			m_RequestStopScene = false;
+			StopScene();
+		}
 		
 		
 		// Scene update implementation
@@ -165,6 +172,12 @@ namespace Denix
 		DE_LOG(LogScene, Info, "Activated Scene: {}",s_Instance->m_ActiveScene->GetName())
 	}
 
+	void SceneSubsystem::RequestOpenScene(const std::string& _scenePath)
+	{
+		Ref<Asset> reuqestAsset = MakeRef<Asset>(_scenePath);
+		RequestOpenScene(reuqestAsset);
+	}
+
 	void SceneSubsystem::RequestOpenScene(const Ref<Asset>& _sceneAsset)
 	{
 		if (!AssetSubsystem::GetSceneAsset(_sceneAsset->GetRelativePath()))
@@ -176,13 +189,15 @@ namespace Denix
 		s_Instance->m_RequestOpenSceneAsset = _sceneAsset;
 	}
 
+	void SceneSubsystem::RequestStop()
+	{
+		if (s_Instance->m_SceneState != SceneState::Stopped) s_Instance->m_RequestStopScene = true;
+	}
+
 	void SceneSubsystem::PlayScene()
 	{
 		if (!s_Instance->m_ActiveScene) return;
 
-		// Save the Scene before playing
-		SerializeScene();
-		
 		s_Instance->m_ActiveScene->BeginPlay();
 		s_Instance->m_ActiveScene->m_IsPlaying = true;
 		m_SceneState = SceneState::Playing;

@@ -4,24 +4,13 @@
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Scene/Component/TransformComponent.h"
 #include "Denix/Core/Reflection/YAMLHelper.h"
+#include "Denix/Scene/Actor.h"
 
 namespace Denix
 {
-    PhysicsComponent::PhysicsComponent(): Component(ObjectInit("Physics Component")), m_Collider(nullptr)
+    PhysicsComponent::PhysicsComponent(): Component(ObjectInit("Physics Component"))
     {
         m_ClassName = "PhysicsComponent";
-    }
-
-
-    Ref<Collider> PhysicsComponent::GetCollider() const
-    { return m_Collider; }
-
-    Ref<Collider>& PhysicsComponent::GetCollider()
-    { return m_Collider; }
-
-    void PhysicsComponent::SetCollider(const Ref<Collider>& _collider)
-    {
-        m_Collider = _collider;
     }
 
     void PhysicsComponent::BeginScene()

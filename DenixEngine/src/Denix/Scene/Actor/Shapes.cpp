@@ -1,7 +1,6 @@
 #include "Shapes.h"
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Core/File/FileSubsystem.h"
-#include "Denix/Physics/Collider.h"
 
 namespace Denix
 {

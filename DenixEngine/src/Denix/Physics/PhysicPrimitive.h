@@ -2,6 +2,13 @@
 
 #include <cstdint>
 
+enum class ColliderType
+{
+    Plane,
+    Cube,
+    Sphere
+};
+
 // Define bit flags for physics attributes
 enum PhysicsAttributeFlags
 {
@@ -39,4 +46,20 @@ inline PhysicsAttributeFlags& operator&=(PhysicsAttributeFlags& lhs, PhysicsAttr
 
 inline PhysicsAttributeFlags operator~(PhysicsAttributeFlags flag) {
     return static_cast<PhysicsAttributeFlags>(~static_cast<uint32_t>(flag));
+}
+
+static physx::PxFilterFlags PhysicsFilterShader(
+physx::PxFilterObjectAttributes attributes0,
+physx::PxFilterData filterData0,
+physx::PxFilterObjectAttributes attributes1,
+physx::PxFilterData filterData1,
+physx::PxPairFlags& pairFlags,
+const void* constantBlock,
+physx::PxU32 constantBlockSize)
+{
+    pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
+
+    // Report when there is any contact between the two objects
+    pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_LOST;
+    return physx::PxFilterFlag::eNOTIFY;
 }
