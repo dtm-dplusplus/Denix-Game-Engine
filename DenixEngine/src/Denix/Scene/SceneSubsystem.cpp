@@ -389,7 +389,7 @@ namespace Denix
 		return true;
 	}
 
-	void SceneSubsystem::RenderSceneSubmission()
+	void SceneSubsystem::RenderSceneSubmission() const
 	{
 		if (const auto& cam = m_ActiveScene->m_ActiveCamera->GetComponent<CameraComponent>())
 			RendererSubsystem::SubmitCamera({cam->m_Projection,cam->m_View});

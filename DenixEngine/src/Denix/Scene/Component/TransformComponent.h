@@ -2,21 +2,12 @@
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+
+#include "TransformPrimitive.h"
 #include "Denix/Scene/Component.h"
 
 namespace Denix
 {
- struct Transform
- {
-  Transform(): Position(glm::vec3(0.0f)), Rotation(glm::vec3(0.0f)), Scale(glm::vec3(1.0f)) {}
-  Transform(const glm::vec3& _position, const glm::vec3& _rotation, const glm::vec3& _scale)
-   : Position(_position), Rotation(_rotation), Scale(_scale) {}
-  
-  glm::vec3 Position;
-  glm::vec3 Rotation;
-  glm::vec3 Scale;
- };
-
  class TransformComponent : public Component
  {
  public:
@@ -27,8 +18,6 @@ namespace Denix
   ~TransformComponent() override = default;
 
   void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-
-  void UpdateRotationVectorFromMatrix();
 
   Transform GetTransform() const { return m_Transform; }
   Transform& GetTransform() { return m_Transform; }
@@ -60,7 +49,6 @@ namespace Denix
 
   glm::mat4 GetModel() const { return m_Model; }
   glm::mat4& GetModel() { return m_Model; }
-
 
  private:
   void Serialize(YAML::Emitter& _out) override;

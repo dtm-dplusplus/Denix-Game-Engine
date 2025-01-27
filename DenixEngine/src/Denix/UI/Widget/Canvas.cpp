@@ -17,12 +17,12 @@ void Canvas::BeginScene()
 
     m_IsActive = true;
     m_IsDisplayed = true;
-    UISubsystem::GetInstance()->m_Canvases.push_back(GetRef<Canvas>());
+    UISubsystem::GetInstance()->m_Widgets.push_back(GetRef<Canvas>());
 }
 
 void Canvas::EndScene()
 {
-    std::erase(UISubsystem::GetInstance()->m_Canvases, GetRef<Canvas>());
+    std::erase(UISubsystem::GetInstance()->m_Widgets, GetRef<Canvas>());
     
     UIWidget::EndScene();
 }

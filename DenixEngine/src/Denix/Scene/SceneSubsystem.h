@@ -72,7 +72,7 @@ namespace Denix
 
 		static bool DeserializeActors(const Ref<Scene>& _scene, const YAML::Node& _sceneNode);
 
-		void RenderSceneSubmission();
+		void RenderSceneSubmission() const;
 		void CleanRubbish();
 
 		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;

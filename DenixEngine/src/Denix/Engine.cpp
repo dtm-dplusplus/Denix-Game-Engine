@@ -36,19 +36,16 @@ namespace Denix
         {
             // Setup timer system for the new frame.
             m_TimerSubsystem->BeginFrame();
-            //DE_LOG(LogEngine, Trace, "Frame Start")
 
             // Poll input & Events. Events will be dispatched to the appropriate subsystems
             Ref<Counter> eventCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, eventCounter, &EventSubsystem::Update,
                                          m_EventSubsystem, m_TimerSubsystem->m_DeltaTime, eventCounter);
-            //DE_LOG(LogEngine, Trace, "Input Poll")
 
             // Clear the offscreen frame buffer
             Ref<Counter> clearCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Clear Frame Buffer", Priority::NORMAL, clearCounter,
                                          &WindowSubsystem::NewFrame, m_WindowSubsystem);
-            //DE_LOG(LogEngine, Trace, "Clear Frame Buffer")
 
             // Update the physics system. Collision detection and resolution will be here
             Ref<Counter> physicsCounter = MakeRef<Counter>();
@@ -63,13 +60,16 @@ namespace Denix
             WaitForCounter(sceneCounter);
             DE_PROFILE_END(Scene Update)
             
-            //DE_LOG(LogEngine, Trace, "UI Update")
-
+            
+            // Update the UI & Editor for any changes
+                        Ref<Counter> uiCounter = MakeRef<Counter>();
+            m_JobSubsystem->AddJobInline("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem,
+                                   m_TimerSubsystem->m_DeltaTime, uiCounter);
+            
             // Run on main due to opengl context when initializing the scene
             Ref<Counter> editorCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, editorCounter, &EditorSubsystem::Update,
                                          m_EditorSubsystem, m_TimerSubsystem->m_DeltaTime, editorCounter);
-            //DE_LOG(LogEngine, Trace, "Update Editor")
 
             // Update PxActor from Actor Transform after scene update
             Ref<Counter> physicsPostCounter = MakeRef<Counter>();
@@ -78,24 +78,21 @@ namespace Denix
             WaitForCounter(physicsPostCounter);
                                    
             // Render the scene. This runs on the main thread as it requires the opengl context
-            Ref<Counter> renderCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter,
+            Ref<Counter> rendSceneCounter = MakeRef<Counter>();
+            m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, rendSceneCounter,
                                          &SceneSubsystem::RenderSceneSubmission, m_SceneSubsystem);
-            //DE_LOG(LogEngine, Trace, "Render Scene")
 
-            // Update the UI & Editor for any changes
-                        Ref<Counter> uiCounter = MakeRef<Counter>();
-                        m_JobSubsystem->AddJobInline("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem,
-                                               m_TimerSubsystem->m_DeltaTime, uiCounter);
+            // Render the UI
+            Ref<Counter> rendUICounter = MakeRef<Counter>();
+            m_JobSubsystem->AddJobInline("Render UI", Priority::NORMAL, rendUICounter,
+                                         &UISubsystem::RenderUISubmission, m_UISubsystem);
                                                
             // Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
             Ref<Counter> drawCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Draw Viewport", Priority::NORMAL, drawCounter, &WindowSubsystem::PresentFrame,
                                          m_WindowSubsystem);
-            //DE_LOG(LogEngine, Trace, "Draw Viewport")
 
             // Run the garbage collector
-            //DE_LOG(LogEngine, Trace, "Clean Rubbish")
             Ref<Counter> garbageCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, garbageCounter, &SceneSubsystem::CleanRubbish,
                                    m_SceneSubsystem);
@@ -103,7 +100,6 @@ namespace Denix
 
             m_TimerSubsystem->EndFrame();
             m_FrameCount++;
-            //DE_LOG(LogEngine, Trace, "Frame End")
         }
     }
 

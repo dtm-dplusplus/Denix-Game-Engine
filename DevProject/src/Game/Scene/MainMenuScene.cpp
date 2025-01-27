@@ -23,7 +23,7 @@ void MainMenuScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
     Scene::DebugUI(_deltaTime, _waitCounter);
 
     ImGui::Begin("Settings");
-    for (const auto& canvas : UISubsystem::GetInstance()->m_Canvases)
+    for (const auto& canvas : UISubsystem::GetInstance()->m_Widgets)
     {
         ImGui::Text("Canvas: %s", canvas->GetName().c_str());
         ImGui::Text("isactive: %d", canvas->m_IsActive);

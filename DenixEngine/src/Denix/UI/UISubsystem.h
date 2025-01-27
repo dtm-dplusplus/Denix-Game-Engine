@@ -28,11 +28,13 @@ namespace Denix
 		inline static FT_Library m_FtLibrary;
 		inline static FT_Face m_Face;
 
-		std::vector<Ref<Canvas>> m_Canvases;
+		std::vector<Ref<Canvas>> m_Widgets;
 		glm::mat4 m_Projection;
 		glm::mat4 m_View;
 		
 	private:
+		void RenderUISubmission();
+		
 		void Initialize() override;
 
 		void Deinitialize() override;
