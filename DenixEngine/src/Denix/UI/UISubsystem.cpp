@@ -68,9 +68,9 @@ namespace Denix
 				// is visible
 				RendererSubsystem::GetInstance()->RenderObject(
 					{
-						child->GetRenderComponent()->GetMaterial(),
-						child->GetModelComponent()->GetModel(),
-						child->GetTransformComponent()->GetModel()
+						child->m_Material,
+						child->m_Model,
+						child->m_ModelMatrix
 					});
 			}
 		}

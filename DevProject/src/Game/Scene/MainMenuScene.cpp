@@ -13,8 +13,8 @@ void MainMenuScene::BeginScene()
     m_Canvas->BeginScene();
     for (auto& button : m_Canvas->m_Buttons)
     {
-        Transform transform = button->GetTransformComponent()->GetTransform();
-        SpawnActor(button, transform.Position, transform.Rotation, transform.Scale);
+        Transform transform = button->m_Transform;
+        //SpawnActor(button, transform.Position, transform.Rotation, transform.Scale);
     }
 }
 
@@ -31,10 +31,10 @@ void MainMenuScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
         for (const auto& button : canvas->m_Buttons)
         {
             ImGui::Text("Button: %s", button->GetName().c_str());
-            ImGui::DragFloat3("Position", &button->GetTransformComponent()->GetPosition().x, 0.1f);
-            ImGui::DragFloat3("Scale", &button->GetTransformComponent()->GetScale().x, 0.1f);
-            ImGui::DragFloat3("Selected Color", &button->selectedColor.x, 0.1f);
-            ImGui::DragFloat3("Default Color", &button->defaultColor.x, 0.1f);
+            ImGui::DragFloat3("Position", &button->m_Transform.Position.x, 0.1f);
+            ImGui::DragFloat3("Scale", &button->m_Transform.Scale.x, 0.1f);
+            ImGui::DragFloat3("Selected Color", &button->m_SelectedColor.x, 0.1f);
+            ImGui::DragFloat3("Default Color", &button->m_DefaultColor.x, 0.1f);
         }
     }
     

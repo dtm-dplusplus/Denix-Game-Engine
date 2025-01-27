@@ -22,8 +22,8 @@ namespace Denix
         {
             // Sort the buttons by y position
             std::ranges::sort(m_Buttons, [](const Ref<Button>& a, const Ref<Button>& b)
-                { return a->GetTransformComponent()->GetTransform().Position.y >
-                b->GetTransformComponent()->GetTransform().Position.y; });
+                { return a->m_Transform.Position.y >
+                b->m_Transform.Position.y; });
         }
 
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;

@@ -62,51 +62,15 @@ draw_bitmap(FT_Bitmap* bitmap,
 void Denix::UIScene::BeginScene()
 {
     Scene::BeginScene();
-    canvas = MakeRef<Canvas>();
-    canvas->m_Buttons.push_back(SpawnActor<Button>());
-    canvas->m_Buttons.back()->GetTransformComponent()->GetPosition().y = -1.0f;
-    canvas->m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
-    canvas->m_Buttons.push_back(SpawnActor<Button>());
-    canvas->m_Buttons.back()->GetTransformComponent()->GetPosition().y = -2.0f;
-    canvas->m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
-    canvas->m_Buttons.push_back(SpawnActor<Button>());
-    canvas->m_Buttons.back()->GetTransformComponent()->GetPosition().y = -3.0f;
-    canvas->m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
+    
     
     m_ActiveCamera->GetTransformComponent()->GetTransform().Position = {0.0f, 0.0f, 5.0f};
-   // CreateTextBox("", Position, {WIDTH, HEIGHT}, {1.0f, 1.0f, 1.0f});
+   CreateTextBox("Experimental", Position, {WIDTH, HEIGHT}, {1.0f, 1.0f, 1.0f});
 }
 
 void Denix::UIScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     Scene::Update(_deltaTime, _waitCounter);
-
-    ImGui::Begin("Font Rendering");
-    /*for (int i = 0; i < 2; i++)
-    {
-        if (textureID[i]) ImGui::Image((void*)(intptr_t)textureID[i], ImVec2(WIDTH, HEIGHT));
-    }*/
-
-    ImGui::Text("Selected Button: %s", (canvas->m_SelectedButton? canvas->m_SelectedButton->GetName().c_str() : "None"));
-    if (ImGui::Button("Create Button"))
-    {
-        Ref<Button> btn = SpawnActor<Button>();
-        btn->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
-        canvas->m_Buttons.push_back(btn);
-    }
-    if (ImGui::Button("Sort Buttons"))
-    {
-        canvas->Sort();
-    }
-    if (ImGui::Button("Print Button"))
-    {
-       for (int i = 0; i < canvas->m_Buttons.size(); i++) 
-       {
-           DE_LOG(LogRender, Info, "{}: {}", canvas->m_Buttons[i]->GetName(),
-               canvas->m_Buttons[i]->GetTransformComponent()->GetTransform().Position.y);
-       }
-    }
-    ImGui::End();
 
     canvas->Update(_deltaTime, _waitCounter);
 }

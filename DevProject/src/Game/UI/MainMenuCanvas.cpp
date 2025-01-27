@@ -28,7 +28,7 @@ void MainMenuCanvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     if (!m_Buttons.empty() && !m_SelectedButton)
     {
         m_SelectedButton = m_Buttons[0];
-        m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = m_SelectedButton->selectedColor;
+        m_SelectedButton->m_Material->m_BaseColor = m_SelectedButton->m_SelectedColor;
     }
     
     if (InputSubsystem::IsKeyUp(KeyCode::DEK_SPACE))
@@ -41,9 +41,9 @@ void MainMenuCanvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
         {
             if (m_Buttons[i] == m_SelectedButton && (i + 1) < m_Buttons.size())
             {
-                m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = m_SelectedButton->defaultColor;
+                m_SelectedButton->m_Material->m_BaseColor = m_SelectedButton->m_DefaultColor;
                 m_SelectedButton = m_Buttons[i + 1];
-                m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = m_SelectedButton->selectedColor;
+                m_SelectedButton->m_Material->m_BaseColor = m_SelectedButton->m_SelectedColor;
                 AudioSubsystem::PlayAudioClipSingle(m_NavigateAudioClip.lock());
                 break;
             }
@@ -56,9 +56,9 @@ void MainMenuCanvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
         {
             if (m_Buttons[i] == m_SelectedButton && i > 0)
             {
-                m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = m_SelectedButton->defaultColor;
+                m_SelectedButton->m_Material->m_BaseColor = m_SelectedButton->m_DefaultColor;
                 m_SelectedButton = m_Buttons[i - 1];
-                m_SelectedButton->GetRenderComponent()->GetMaterial()->m_BaseColor = m_SelectedButton->selectedColor;
+                m_SelectedButton->m_Material->m_BaseColor = m_SelectedButton->m_SelectedColor;
                 AudioSubsystem::PlayAudioClipSingle(m_NavigateAudioClip.lock());
                 break;
             }
@@ -73,11 +73,12 @@ void MainMenuCanvas::BeginScene()
     m_NavigateAudioClip = AssetSubsystem::GetAudioClip("Content\\Engine\\audio\\UI_Navigate.wav");
 
     m_Buttons.push_back(MakeRef<PlayButton>());
-    m_Buttons.back()->GetTransformComponent()->GetPosition().y = -1.0f;
-    m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
+    m_Buttons.back()->m_Transform.Position.y = -1.0f;
+    m_Buttons.back()->m_Transform.Rotation.x = 90.0f;
+    
     m_Buttons.push_back(MakeRef<QuitButton>());
-    m_Buttons.back()->GetTransformComponent()->GetPosition().y = -2.0f;
-    m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
+    m_Buttons.back()->m_Transform.Position.y = -2.0f;
+    m_Buttons.back()->m_Transform.Rotation.x = 90.0f;
     
     Sort();
 }

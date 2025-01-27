@@ -5,30 +5,29 @@
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 
-Button::Button(): Actor({"Button"})
+Button::Button(): UIWidget({"Button"})
 {
     m_ClassName = "Button";
-    m_ModelComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Plane.obj"));
-    m_TransformComponent->GetScale().y = 0.01f;
+    m_Model = AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Plane.obj");
+   // m_TransformComponent->GetScale().y = 0.01f;
 
     m_SelectAudioClip = AssetSubsystem::GetAudioClip("Content\\Engine\\audio\\UI_Select.wav");
-    m_RenderComponent->m_IsUI = true;
-    m_RenderComponent->GetMaterial()->m_BaseColor = Button::defaultColor;
+  //  m_RenderComponent->m_IsUI = true;
+    m_Material->m_BaseColor = m_DefaultColor;
+   // m_RenderComponent->GetMaterial()->m_BaseColor = Button::m_DefaultColor;
 }
-
-Button::~Button() = default;
 
 
 void Button::BeginScene()
 {
-    Actor::BeginScene();
+    UIWidget::BeginScene();
 }
 
 void Button::EndScene()
 {
     m_SelectAudioClip.reset();
 
-    Actor::EndScene();
+    UIWidget::EndScene();
 }
 
 void Button::OnSelect()
