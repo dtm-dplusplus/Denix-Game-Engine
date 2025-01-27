@@ -2,6 +2,7 @@
 
 #include "backends/imgui_impl_sdl3.h"
 #include "Denix/Core/File/FileSubsystem.h"
+#include "Denix/Video/RendererSubsystem.h"
 
 #include "Denix/Video/Window/Window.h"
 #include "Denix/Video/WindowSubsystem.h"
@@ -49,50 +50,18 @@ namespace Denix
 		Subsystem::Update(_deltaTime, _waitCounter);
 
 		//////////
-		/*for (const Ref<Actor>& actor : activeScene->m_Actors)
+		for (const auto& canvas : m_Canvases)
         {
-            if (!actor->m_RenderComponent->m_IsVisible || !actor->m_RenderComponent->m_Material || !actor->
-                m_ModelComponent->m_Model) continue;
+			if (!canvas) continue;
+			//if (!canvas->m_IsActive) continue;
 
-            // Base color/texture specific settings
-            glUniform1i(actor->m_RenderComponent->m_Shader->GetUniform("u_Material.IsBaseTexture"),
-                        actor->m_RenderComponent->m_Material->m_IsBaseTexture);
-
-            if (actor->m_RenderComponent->m_Material->m_IsBaseTexture)
-            {
-                actor->m_RenderComponent->m_Material->m_BaseTexture->Bind();
-
-                GLenum target = actor->m_RenderComponent->m_Material->m_BaseTexture->m_Target;
-                glTexParameteri(target, GL_TEXTURE_WRAP_S, actor->m_RenderComponent->m_Material->m_TextureSettings.WrapMode);
-                glTexParameteri(target, GL_TEXTURE_WRAP_T, actor->m_RenderComponent->m_Material->m_TextureSettings.WrapMode);
-                glTexParameteri(target, GL_TEXTURE_MIN_FILTER, actor->m_RenderComponent->m_Material->m_TextureSettings.FilterMode);
-                glTexParameteri(target, GL_TEXTURE_MAG_FILTER,actor->m_RenderComponent->m_Material->m_TextureSettings.FilterMode);
-            }
-            else
-            {
-                glUniform3f(actor->m_RenderComponent->m_Shader->GetUniform("u_Material.BaseColor"),
-                            actor->m_RenderComponent->m_Material->m_BaseColor.r,
-                            actor->m_RenderComponent->m_Material->m_BaseColor.g,
-                            actor->m_RenderComponent->m_Material->m_BaseColor.b);
-            }
-
-
-            // Upload the model matrix
-            glUniformMatrix4fv(actor->m_RenderComponent->m_Shader->GetUniform("u_Model"), 1,
-                               GL_FALSE, glm::value_ptr(actor->m_TransformComponent->m_Model));
-
-            // Draw Call
-            for (unsigned int i = 0; i < actor->m_ModelComponent->m_Model->m_Meshes.size(); i++)
-            {
-                if (actor->m_ModelComponent->m_Model->m_Meshes[i]->m_VAO && actor->m_ModelComponent->m_Model->m_Meshes[i]
-                    ->m_IBO)
-                {
-                    actor->m_ModelComponent->m_Model->m_Meshes[i]->m_VAO->Bind();
-                    actor->m_ModelComponent->m_Model->m_Meshes[i]->m_IBO->Bind();
-                    glDrawElements(GL_TRIANGLES, actor->m_ModelComponent->m_Model->m_Meshes[i]->m_IBO->m_IndexCount,
-                                   GL_UNSIGNED_INT, 0);
-                }
-            }
-        }*/
+			canvas->Update(_deltaTime, _waitCounter);
+			
+           for (const auto& button : canvas->m_Buttons)
+           {
+	           // is visible
+           	RendererSubsystem::GetInstance()->RenderActor(button);
+           }
+        }
 	}
 }

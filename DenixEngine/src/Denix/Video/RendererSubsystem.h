@@ -23,6 +23,9 @@ namespace Denix
 		RendererSubsystem& operator=(const RendererSubsystem& _other) = delete;
 		RendererSubsystem& operator=(RendererSubsystem&& _other) noexcept = delete;
 
+		void RenderActor(const Ref<Actor>& actor) const;
+
+		
 	private:
 		void Initialize() override;
 

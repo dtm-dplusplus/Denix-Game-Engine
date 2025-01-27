@@ -20,12 +20,12 @@ void MainMenuCanvas::BeginScene()
 {
     Canvas::BeginScene();
 
-    Ref<Scene> scene = SceneSubsystem::GetActiveScene();
-    m_Buttons.push_back(scene->SpawnActor<PlayButton>());
+    m_Buttons.push_back(MakeRef<PlayButton>());
     m_Buttons.back()->GetTransformComponent()->GetPosition().y = -1.0f;
     m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
-    m_Buttons.push_back(scene->SpawnActor<QuitButton>());
+    m_Buttons.push_back(MakeRef<QuitButton>());
     m_Buttons.back()->GetTransformComponent()->GetPosition().y = -2.0f;
     m_Buttons.back()->GetTransformComponent()->SetRotation(90.0f, 0.0f, 0.0f);
+    
     Sort();
 }

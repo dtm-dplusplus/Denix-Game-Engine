@@ -14,7 +14,9 @@ namespace Denix
         
         std::vector<Ref<Button>> m_Buttons;
         Ref<Button> m_SelectedButton;
-        
+
+        void BeginScene() override;
+        void EndScene() override;
         void Sort()
         {
             // Sort the buttons by y position
@@ -25,6 +27,8 @@ namespace Denix
 
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
+        bool m_IsDisplayed = false;
+        bool m_IsActive = false;
         WRef<AudioClip> m_NavigateAudioClip;
     };
 }

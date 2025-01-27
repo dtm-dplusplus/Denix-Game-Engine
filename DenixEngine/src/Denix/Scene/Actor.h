@@ -81,11 +81,12 @@ namespace Denix
 		WRef<Scene> m_SceneRef;
 		
 		friend class Scene;
-		
 		friend class SceneSubsystem;
-		friend class PhysicsSubsystem;
-		friend class RendererSubsystem;
 
+		friend class PhysicsSubsystem;
+
+		friend class RendererSubsystem;
+		friend class UISubsystem;
 		friend class TransformComponent;
 		friend class ModelComponent;
 		friend class RenderComponent;

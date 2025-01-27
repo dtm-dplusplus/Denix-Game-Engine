@@ -40,6 +40,7 @@ namespace Denix
 		template <class T = Actor, typename... Args>
 		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 		
+		void SpawnActor(const Ref<Actor>& _actor,const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 
 		Ref<Camera> GetViewportCamera();
 
@@ -86,7 +87,6 @@ namespace Denix
 		Ref<Actor> m_ActiveCamera;
 
 	private:
-		void SpawnActor(const Ref<Actor>& _actor);
 
 		/** List of Objects in the scene */
 		std::vector<Ref<Actor>> m_Actors;
@@ -112,30 +112,11 @@ namespace Denix
 
 	if (Ref<Actor> actor = MakeRef<T>(std::forward<Args>(_args)...))
 	{
-		// Validate Name. We cannont have two objects with the same name
-		if (m_ActorNames.contains(actor->GetName()))
-		{
-			int copy = 1;
-			while (m_ActorNames.contains(actor->GetName() + std::to_string(copy))) copy++;
-			actor->m_Name += std::to_string(copy);
-		}
-		m_ActorNames.insert(actor->m_Name);
-
-		// Pass the scene reference to the actor
-		actor->m_SceneRef = GetRef<Scene>();
-		
-		// Set Transform Component
-		actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);
-		
-		// Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
-		actor->BeginScene();
-		if (m_IsPlaying) actor->BeginPlay();						
-
-		// Add the object to the scene
-		m_Actors.push_back(std::move(actor));
+		// Move the actor to the scene
+		SpawnActor(actor);					
 				
 		// Retrun the actor reference as it's derived type
-		return CastRef<T>(m_Actors.back());
+		return CastRef<T>(actor);
 	}
 			
 	DE_LOG(LogScene, Error, "Failed to create actor of type: {}", typeid(T).name());

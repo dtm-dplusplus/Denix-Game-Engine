@@ -36,5 +36,6 @@ namespace Denix
 		friend class Actor;
 		friend class SceneSubsystem;
 		friend class RendererSubsystem;
+		friend class UISubsystem;
 	};
 }

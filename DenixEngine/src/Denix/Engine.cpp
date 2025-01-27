@@ -62,14 +62,7 @@ namespace Denix
                                    m_SceneSubsystem, m_TimerSubsystem->m_DeltaTime, sceneCounter);
             WaitForCounter(sceneCounter);
             DE_PROFILE_END(Scene Update)
-
-
-
-            // Update the UI & Editor for any changes
-            Ref<Counter> uiCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJob("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem,
-                                   m_TimerSubsystem->m_DeltaTime, uiCounter);
-            WaitForCounter(uiCounter);
+            
             //DE_LOG(LogEngine, Trace, "UI Update")
 
             // Run on main due to opengl context when initializing the scene
@@ -83,13 +76,20 @@ namespace Denix
             m_JobSubsystem->AddJob("Physics Post Update", Priority::NORMAL, physicsPostCounter,
                                    &PhysicsSubsystem::PostUpdate, m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime, physicsPostCounter);
             WaitForCounter(physicsPostCounter);
+
             
+                                   
             // Render the scene. This runs on the main thread as it requires the opengl context
             Ref<Counter> renderCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter,
                                          &RendererSubsystem::RenderScene, m_RendererSubsystem);
             //DE_LOG(LogEngine, Trace, "Render Scene")
 
+            // Update the UI & Editor for any changes
+                        Ref<Counter> uiCounter = MakeRef<Counter>();
+                        m_JobSubsystem->AddJobInline("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem,
+                                               m_TimerSubsystem->m_DeltaTime, uiCounter);
+                                               
             // Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
             Ref<Counter> drawCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Draw Viewport", Priority::NORMAL, drawCounter, &WindowSubsystem::PresentFrame,

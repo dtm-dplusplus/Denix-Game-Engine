@@ -4,16 +4,35 @@
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Audio/AudioSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
+#include "Denix/UI/UISubsystem.h"
 
 Denix::Canvas::Canvas()
 {
     m_NavigateAudioClip = AssetSubsystem::GetAudioClip("Content\\Engine\\audio\\UI_Navigate.wav");
 }
 
+void Canvas::BeginScene()
+{
+    UIWidget::BeginScene();
+
+    m_IsActive = true;
+    m_IsDisplayed = true;
+    UISubsystem::GetInstance()->m_Canvases.push_back(GetRef<Canvas>());
+}
+
+void Canvas::EndScene()
+{
+    std::erase(UISubsystem::GetInstance()->m_Canvases, GetRef<Canvas>());
+    
+    UIWidget::EndScene();
+}
+
 void Canvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     BaseObject::Update(_deltaTime, _waitCounter);
 
+    if (!m_IsActive) return;
+    
     if (!m_Buttons.empty() && !m_SelectedButton)
     {
         m_SelectedButton = m_Buttons[0];
@@ -38,6 +57,7 @@ void Canvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
             }
         }
     }
+    
     if (InputSubsystem::IsKeyUp(KeyCode::DEK_UP))
     {
         for (size_t i = 0; i < m_Buttons.size(); ++i)

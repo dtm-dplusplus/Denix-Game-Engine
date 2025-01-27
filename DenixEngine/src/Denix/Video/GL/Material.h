@@ -48,6 +48,7 @@ namespace Denix
 
 		friend class RenderComponent;
 		friend class RendererSubsystem;
+		friend class UISubsystem;
 	};
 
 

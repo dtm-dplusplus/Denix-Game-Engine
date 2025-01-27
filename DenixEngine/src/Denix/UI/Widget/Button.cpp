@@ -5,8 +5,12 @@
 #include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 
-Button::Button()
+Button::Button(): Actor({"Button"})
 {
+    m_ClassName = "Button";
+    m_ModelComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Plane.obj"));
+    m_TransformComponent->GetScale().y = 0.01f;
+
     m_SelectAudioClip = AssetSubsystem::GetAudioClip("Content\\Engine\\audio\\UI_Select.wav");
     m_RenderComponent->m_IsUI = true;
     m_RenderComponent->GetMaterial()->m_BaseColor = Button::defaultColor;
@@ -17,17 +21,14 @@ Button::~Button() = default;
 
 void Button::BeginScene()
 {
-    Plane::BeginScene();
-
-    UISubsystem::GetInstance()->m_UIWidgets.push_back(GetRef<Button>());
+    Actor::BeginScene();
 }
 
 void Button::EndScene()
 {
-    std::erase(UISubsystem::GetInstance()->m_UIWidgets, GetRef<Button>());
     m_SelectAudioClip.reset();
 
-    Plane::EndScene();
+    Actor::EndScene();
 }
 
 void Button::OnSelect()

@@ -5,7 +5,7 @@ namespace Denix
 {
     class AudioClip;
 
-    class Button: public Plane
+    class Button: public Actor
     {
     public:
         Button();

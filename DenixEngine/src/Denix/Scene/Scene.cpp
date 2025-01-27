@@ -126,6 +126,8 @@ namespace Denix
     bool Scene::IsPlaying() const
     { return m_IsPlaying; }
 
+ 
+
     Ref<Camera> Scene::GetViewportCamera()
     { return m_ViewportCamera; }
 
@@ -153,20 +155,37 @@ namespace Denix
 
     
 
-    void Scene::SpawnActor(const Ref<Actor>& _actor)
+    void Scene::SpawnActor(const Ref<Actor>& _actor, const glm::vec3& _position, const glm::vec3& _rotation,
+     const glm::vec3& _scale)
     {
         if (!_actor)
         {
             DE_LOG(LogScene, Error, "SpawnActor: Invalid Actor")
             return;
         }
+
+        // Validate Name. We cannont have two objects with the same name
+        if (m_ActorNames.contains(_actor->GetName()))
+        {
+            int copy = 1;
+            while (m_ActorNames.contains(_actor->GetName() + std::to_string(copy))) copy++;
+            _actor->m_Name += std::to_string(copy);
+        }
+        m_ActorNames.insert(_actor->m_Name);
+
+        // Pass the scene reference to the actor
+        _actor->m_SceneRef = GetRef<Scene>();
+		
+        // Set Transform Component
+        _actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);
         
+        // Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
         _actor->BeginScene();
 
-        if (m_IsPlaying)
-            _actor->BeginPlay();
+        if (m_IsPlaying) _actor->BeginPlay();
 
-        m_Actors.push_back(_actor);
+        // Add the object to the scene
+        m_Actors.push_back(std::move(_actor));
     }
 
     Ref<Actor> Scene::FindGameCamera() const

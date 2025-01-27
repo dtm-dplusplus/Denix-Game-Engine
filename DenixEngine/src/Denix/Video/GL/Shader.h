@@ -74,9 +74,9 @@ namespace Denix
 
 		std::vector<ShaderSource>& GetShaderSources() { return m_ShaderSources; }
 
+		GLint GetUniform(const std::string& _uniform);
+
 		
-		
-	private:
 		GLuint CreateProgram();
 
 		void DeleteProgram() const;
@@ -89,8 +89,8 @@ namespace Denix
 
 		bool CompileProgram();
 		bool RecompileProgram();
-		GLint GetUniform(const std::string& _uniform);
 
+	private:
 		GLuint m_GL_ID;
 
 		/** If true, the shader will be deleted on destruction. Useful for Recompilation where we transfer GL ID */

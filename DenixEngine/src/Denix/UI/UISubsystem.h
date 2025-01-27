@@ -28,7 +28,7 @@ namespace Denix
 		inline static FT_Library m_FtLibrary;
 		inline static FT_Face m_Face;
 
-		std::vector<Ref<Button>> m_UIWidgets;
+		std::vector<Ref<Canvas>> m_Canvases;
 		glm::mat4 m_Projection;
 		glm::mat4 m_View;
 		
