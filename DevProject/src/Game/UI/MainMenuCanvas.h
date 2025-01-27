@@ -19,7 +19,10 @@ class QuitButton : public Button
 class MainMenuCanvas: public Canvas
 {
 public:
+    void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     void BeginScene() override;
+
+    WRef<AudioClip> m_NavigateAudioClip;
 };
 
 

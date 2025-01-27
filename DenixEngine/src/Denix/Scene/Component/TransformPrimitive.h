@@ -1,5 +1,8 @@
-﻿
+﻿#pragma once
+
+#include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
 namespace Denix
 {
@@ -19,11 +22,12 @@ namespace Denix
         // Position
         m_Model = glm::translate(glm::mat4(1.0f), m_Transform.Position);
 
+        // Rotation
         m_Model = glm::rotate(m_Model, glm::radians(m_Transform.Rotation.x), glm::vec3(1, 0, 0));
         m_Model = glm::rotate(m_Model, glm::radians(m_Transform.Rotation.y), glm::vec3(0, 1, 0));
         m_Model = glm::rotate(m_Model, glm::radians(m_Transform.Rotation.z), glm::vec3(0, 0, 1));
         
-        // Scale Model by half to account for axis sign
+        // Scale - half to account for +ve & -ve scale
         m_Model = glm::scale(m_Model, m_Transform.Scale / 2.0f);
     }
 }

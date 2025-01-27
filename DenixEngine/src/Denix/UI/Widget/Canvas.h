@@ -10,7 +10,8 @@ namespace Denix
     class Canvas: public UIWidget
     {
     public:
-        Canvas();
+        Canvas() = default;
+        ~Canvas() override = default;
         
         std::vector<Ref<Button>> m_Buttons;
         Ref<Button> m_SelectedButton;
@@ -29,6 +30,5 @@ namespace Denix
 
         bool m_IsDisplayed = false;
         bool m_IsActive = false;
-        WRef<AudioClip> m_NavigateAudioClip;
     };
 }

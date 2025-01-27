@@ -1,14 +1,11 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-
 #include "TransformPrimitive.h"
 #include "Denix/Scene/Component.h"
 
 namespace Denix
 {
- class TransformComponent : public Component
+ class TransformComponent final : public Component
  {
  public:
   // Constructors

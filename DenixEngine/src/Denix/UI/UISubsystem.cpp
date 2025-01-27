@@ -9,23 +9,6 @@
 
 namespace Denix
 {
-	void UISubsystem::RenderUISubmission()
-	{
-		for (const auto& widget : m_Widgets)
-		{
-			for (const auto& child : widget->m_Buttons)
-			{
-				// is visible
-				RendererSubsystem::GetInstance()->RenderObject(
-					{
-						child->GetRenderComponent()->GetMaterial(),
-						child->GetModelComponent()->GetModel(),
-						child->GetTransformComponent()->GetModel()
-					});
-			}
-		}
-	}
-
 	void UISubsystem::Initialize()
 	{
 		Subsystem::Initialize();
@@ -70,9 +53,26 @@ namespace Denix
 		for (const auto& canvas : m_Widgets)
         {
 			if (!canvas) continue;
-			//if (!canvas->m_IsActive) continue;
+			if (!canvas->m_IsActive) continue;
 
 			canvas->Update(_deltaTime, _waitCounter);
         }
+	}
+
+	void UISubsystem::RenderUISubmission()
+	{
+		for (const auto& widget : m_Widgets)
+		{
+			for (const auto& child : widget->m_Buttons)
+			{
+				// is visible
+				RendererSubsystem::GetInstance()->RenderObject(
+					{
+						child->GetRenderComponent()->GetMaterial(),
+						child->GetModelComponent()->GetModel(),
+						child->GetTransformComponent()->GetModel()
+					});
+			}
+		}
 	}
 }
