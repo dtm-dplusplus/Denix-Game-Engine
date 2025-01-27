@@ -7,7 +7,7 @@
 #include "Game/Actor/Character.h"
 #include "Game/Actor/BallActor.h"
 #include "Game/Actor/TargetActor.h"
-#include "Game/Scene/MainMenuScene.h"
+#include "Game/Scene/MenuScene.h"
 
  class DevProject final: public Engine
 {
@@ -26,7 +26,7 @@ public:
 		ReflectionSubsystem::Register<UIScene>();
 		ReflectionSubsystem::Register<GEPScene>();
 		ReflectionSubsystem::Register<AudioScene>();
-		ReflectionSubsystem::Register<MainMenuScene>();
+		ReflectionSubsystem::Register<MenuScene>();
 		//ReflectionSubsystem::Register<BallActor>();
 		//ReflectionSubsystem::Register<TargetActor>();
 		//ReflectionSubsystem::Register<Character>();

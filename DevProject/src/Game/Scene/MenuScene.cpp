@@ -1,4 +1,4 @@
-﻿#include "MainMenuScene.h"
+﻿#include "MenuScene.h"
 
 #include "imgui.h"
 #include "Denix/Scene/SceneSubsystem.h"
@@ -7,7 +7,7 @@
 
 using namespace Denix;
 
-void MainMenuScene::BeginScene()
+void MenuScene::BeginScene()
 {
     Scene::BeginScene();
 
@@ -15,7 +15,7 @@ void MainMenuScene::BeginScene()
     m_MainMenuCanvas->BeginScene();
 }
 
-void MainMenuScene::EndScene()
+void MenuScene::EndScene()
 {
     Scene::EndScene();
 
@@ -23,7 +23,7 @@ void MainMenuScene::EndScene()
     m_MainMenuCanvas.reset();
 }
 
-void MainMenuScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
+void MenuScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     Scene::DebugUI(_deltaTime, _waitCounter);
 
@@ -45,7 +45,7 @@ void MainMenuScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
     ImGui::End();
 }
 
-void MainMenuScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
+void MenuScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     Scene::Update(_deltaTime, _waitCounter);
     m_MainMenuCanvas->Update(_deltaTime, _waitCounter);

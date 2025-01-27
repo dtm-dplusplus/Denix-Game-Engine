@@ -1,6 +1,6 @@
 # Engine Configuration
 Project Name: DevProject
-Startup Scene: Content\Scene\GEPScene.asset
+Startup Scene: Content\Scene\MenuScene.asset
 # Input
 MouseMotionLogging: false
 MouseButtonLogging: false

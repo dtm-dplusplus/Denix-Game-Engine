@@ -3,7 +3,7 @@
 
 class MainMenuCanvas;
 
-class MainMenuScene: public Denix::Scene
+class MenuScene: public Denix::Scene
 {
 public:
     void BeginScene() override;
