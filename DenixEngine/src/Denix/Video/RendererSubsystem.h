@@ -1,15 +1,10 @@
 #pragma once
 
-#include "RenderSubmission.h"
 #include "Denix/Core/Subsystem.h"
+#include "RenderSubmission.h"
 
 namespace Denix
 {
-	class Scene;
-	class ModelComponent;
-	class TransformComponent;
-	class Camera;
-
 	/** Manages Rendering of objects. Will move to component based submission instead of passing game object soon */
 	class RendererSubsystem : public Subsystem<RendererSubsystem>
 	{
@@ -29,14 +24,7 @@ namespace Denix
 
 		void Deinitialize() override;
 
-		void RenderScene();
-		void RenderDefaultViewport() const;
-
 		CameraSubmission m_CameraSubmission;
-		static void SetActiveScene(const Ref<Scene>& _scene);
-
-		WRef<Shader> m_DefaultShader;
-		WRef<Scene> m_ActiveScene;
 
 		friend class SceneSubsystem;
 		friend class Engine;

@@ -34,7 +34,6 @@ namespace Denix
 		Ref<Material> m_Material;
 
 		friend class Actor;
-		friend class SceneSubsystem;
 		friend class RendererSubsystem;
 		friend class UISubsystem;
 	};

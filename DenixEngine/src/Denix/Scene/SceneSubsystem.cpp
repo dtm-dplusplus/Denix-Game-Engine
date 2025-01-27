@@ -159,7 +159,6 @@ namespace Denix
 		s_Instance->m_ActiveScene = std::move(_scene);
 		
 		// Set dependencies with new scene pointer
-		RendererSubsystem::SetActiveScene(s_Instance->m_ActiveScene);
 		PhysicsSubsystem::SetActiveScene(s_Instance->m_ActiveScene);
 		if(EditorSubsystem::GetInstance()) EditorSubsystem::GetInstance()->SetActiveScene(s_Instance->m_ActiveScene);
 
@@ -388,5 +387,24 @@ namespace Denix
 		}
 		
 		return true;
+	}
+
+	void SceneSubsystem::RenderSceneSubmission()
+	{
+		if (const auto& cam = m_ActiveScene->m_ActiveCamera->GetComponent<CameraComponent>())
+			RendererSubsystem::SubmitCamera({cam->m_Projection,cam->m_View});
+			
+		for (const auto& actor : m_ActiveScene->m_Actors)
+		{
+			if (actor->m_RenderComponent->m_IsVisible)
+			{
+				RendererSubsystem::RenderObject(
+					{
+						actor->m_RenderComponent->GetMaterial(),
+						actor->m_ModelComponent->GetModel(),
+						actor->GetTransformComponent()->GetModel()
+					});
+			}
+		}
 	}
 }

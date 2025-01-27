@@ -76,13 +76,11 @@ namespace Denix
             m_JobSubsystem->AddJob("Physics Post Update", Priority::NORMAL, physicsPostCounter,
                                    &PhysicsSubsystem::PostUpdate, m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime, physicsPostCounter);
             WaitForCounter(physicsPostCounter);
-
-            
                                    
             // Render the scene. This runs on the main thread as it requires the opengl context
             Ref<Counter> renderCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, renderCounter,
-                                         &RendererSubsystem::RenderScene, m_RendererSubsystem);
+                                         &SceneSubsystem::RenderSceneSubmission, m_SceneSubsystem);
             //DE_LOG(LogEngine, Trace, "Render Scene")
 
             // Update the UI & Editor for any changes
