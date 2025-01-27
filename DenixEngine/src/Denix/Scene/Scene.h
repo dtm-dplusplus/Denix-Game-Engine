@@ -61,7 +61,7 @@ namespace Denix
 		size_t GetActorCount() const { return m_Actors.size(); }
 
 		// Debug Utility - Use with caution
-		void ClearScene();
+		void ClearActors();
 
 		physx::PxScene*	m_PxScene;
 		physx::PxSceneDesc*		m_PxSceneDesc;

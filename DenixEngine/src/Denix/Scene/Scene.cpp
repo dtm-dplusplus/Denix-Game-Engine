@@ -37,7 +37,7 @@ namespace Denix
     {
         m_ViewportCamera.reset();
         m_ActiveCamera.reset();
-        ClearScene();
+        ClearActors();
     }
 
     void Scene::BeginScene()
@@ -72,7 +72,11 @@ namespace Denix
         }
 
         m_ViewportCamera->BeginScene();
-        for (const auto& actor : m_Actors) actor->BeginScene();
+        for (const auto& actor : m_Actors)
+        {
+            actor->m_SceneRef = shared_from_this();
+            actor->BeginScene();
+        }
     }
 
     void Scene::EndScene()
@@ -81,7 +85,22 @@ namespace Denix
         for (const auto& actor : m_Actors) actor->EndScene();
         m_ViewportCamera.reset();
         m_ActiveCamera.reset();
-        ClearScene();
+        ClearActors();
+
+        m_Actors.clear();
+        m_ActorNames.clear();
+        
+        // Release the PhysX scene
+        PX_RELEASE(m_PxScene);
+
+        if (m_PxSceneDesc)
+        {
+            delete m_PxSceneDesc;
+            m_PxSceneDesc = nullptr;
+        }
+
+        PhysicsSubsystem::m_PxPvd->disconnect();
+        
         BaseObject::EndScene();
     }
 
@@ -107,20 +126,6 @@ namespace Denix
     void Scene::EndPlay()
     {
         for (const auto& actor : m_Actors) actor->EndPlay();
-
-        m_Actors.clear();
-        m_ActorNames.clear();
-        
-        // Release the PhysX scene
-        PX_RELEASE(m_PxScene);
-
-        if (m_PxSceneDesc)
-        {
-            delete m_PxSceneDesc;
-            m_PxSceneDesc = nullptr;
-        }
-
-        PhysicsSubsystem::m_PxPvd->disconnect();
         
         BaseObject::EndPlay();
     }
@@ -213,7 +218,7 @@ namespace Denix
         return nullptr;
     }
 
-    void Scene::ClearScene()
+    void Scene::ClearActors()
     {
         for (const auto& actor : m_Actors)
         {

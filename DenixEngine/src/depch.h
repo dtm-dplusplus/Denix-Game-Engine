@@ -1,6 +1,7 @@
 #pragma once
 
 /* Containers */
+#include <array>
 #include <vector>
 #include <queue>
 #include <map>

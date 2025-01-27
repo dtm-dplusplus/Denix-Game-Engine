@@ -20,7 +20,6 @@ namespace Denix
 		m_ModelComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Cube.obj"));
 
     	m_PhysicsComponent->m_ColliderType = ColliderType::Cube;
-    	m_TransformComponent->SetMoveability(Moveability::Dynamic);
     }
 
 	Sphere::Sphere() : Actor({ "Sphere" })

@@ -56,8 +56,6 @@ namespace Denix
         _out << YAML::Key << "m_Scale" << YAML::BeginMap;
         Vec3ToYAML(_out, m_Transform.Scale);
         _out << YAML::EndMap;
-            
-        _out << YAML::Key << "m_Moveability" << YAML::Value << m_Moveability;
     }
 
     void TransformComponent::Deserialize(const YAML::Node& _in)
@@ -68,6 +66,5 @@ namespace Denix
         if (const YAML::Node& pos = _in["m_Position"]; pos.IsDefined()) m_Transform.Position = YAMLtoVec3(pos);
         if (const YAML::Node& rot = _in["m_Rotation"]; rot.IsDefined()) m_Transform.Rotation = YAMLtoVec3(rot);
         if (const YAML::Node& scale = _in["m_Scale"]; scale.IsDefined()) m_Transform.Scale = YAMLtoVec3(scale);
-        if (const YAML::Node& move = _in["m_Moveability"]; move.IsDefined()) m_Moveability = move.as<int>();
     }
 }

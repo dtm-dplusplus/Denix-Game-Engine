@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <SDL3/SDL_events.h>
-#include <unordered_set>
+#include <set>
 
 #include "InputKeyCodes.h"
 
@@ -45,9 +45,9 @@ namespace Denix
     private:
         void ProcessKeyEvent(const SDL_Event& event);
 
-        std::unordered_set<KeyCode> m_KeysDown;
-        std::unordered_set<KeyCode> m_KeysHold;
-        std::unordered_set<KeyCode> m_KeysUp;
+        std::set<KeyCode> m_KeysDown;
+        std::set<KeyCode> m_KeysHold;
+        std::set<KeyCode> m_KeysUp;
         const bool* m_SDL_KeyboardState;
 
         friend class InputSubsystem;

@@ -133,6 +133,45 @@ namespace Denix
                 m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
                 DE_LOG(LogPhysics, Trace, "Stopping Physics Simulation for {}", GetParent()->GetName())
             }
+
+            // Check Moveability
+            if (Ref<TransformComponent> transform = m_Parent.lock()->GetComponent<TransformComponent>())
+            {
+                if (!m_SimulatePhysics && m_PxActor->is<physx::PxRigidDynamic>())
+                {
+                    if (Ref<Actor> parent = GetParent())
+                    {
+                        if (Ref<Scene> scene = parent->m_SceneRef.lock())
+                        {
+                            scene->m_PxScene->removeActor(*m_PxActor);
+                            m_PxActor->release();
+                
+                            m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidStatic(physx::PxTransform(transform->GetPosition().x, transform->GetPosition().y, transform->GetPosition().z));
+                            m_PxActor->attachShape(*m_PxShape);
+                            scene->m_PxScene->addActor(*m_PxActor);
+                            DE_LOG(LogPhysics, Trace, "Actor type changed to Static for {}", GetParent()->GetName())
+                        }
+                    }
+                    
+                }
+                else if (m_SimulatePhysics && m_PxActor->is<physx::PxRigidStatic>())
+                {
+                    if (Ref<Actor> parent = GetParent())
+                    {
+                        if (Ref<Scene> scene = parent->m_SceneRef.lock())
+                        {
+                            scene->m_PxScene->removeActor(*m_PxActor);
+                            m_PxActor->release();
+                            m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(transform->GetPosition().x, transform->GetPosition().y, transform->GetPosition().z));
+                            m_PxActor->attachShape(*m_PxShape);
+                            scene->m_PxScene->addActor(*m_PxActor);
+                        }
+                    }
+                   
+
+                    DE_LOG(LogPhysics, Trace, "Actor type changed to Dynamic for {}", GetParent()->GetName())
+                }
+            }
             m_AttributeFlags &= ~PHYSICS_SIMULATE;
         }
 
@@ -145,7 +184,7 @@ namespace Denix
                 {
                     physx::PxShape* shape;
                     m_PxActor->getShapes(&shape, 1);
-                   m_PxActor->attachShape(*m_PxShape);
+                    m_PxActor->attachShape(*m_PxShape);
                 }
               
                     
@@ -186,6 +225,63 @@ namespace Denix
         m_AttributeFlags &= ~PHYSICS_MATERIAL;
 
         DE_LOG(LogPhysics, Trace, "Material updated for {}", GetParent()->GetName())
+    }
+
+    // Update physx transform & Shape
+    if (m_AttributeFlags & PHYSICS_SHAPE)
+    {
+        if (Ref<TransformComponent> transform = m_Parent.lock()->GetComponent<TransformComponent>())
+        {
+            physx::PxVec3 scale = {transform->GetScale().x, transform->GetScale().y, transform->GetScale().z};
+            physx::PxVec3 scaleHalf = scale * 0.5f;
+
+            // Check Transform
+            //physx::PxVec3 rot = {transform->GetRotation().x, transform->GetRotation().y, transform->GetRotation().z};
+            //Math::Degrees(glm::eulerAngles(glm::quat(tform.q.w, tform.q.x, tform.q.y, tform.q.z)));
+
+            
+            const physx::PxGeometryHolder geometry = m_PxShape->getGeometry();
+            
+            switch (m_ColliderType)
+            {
+            case ColliderType::Plane:
+                {
+                    physx::PxBoxGeometry box = geometry.box();
+                    box.halfExtents = scale;
+                    m_PxActor->detachShape(*m_PxShape);
+                    m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(box, *m_PxMaterial);
+                    m_PxActor->attachShape(*m_PxShape);
+                } break;
+            
+            case ColliderType::Cube:
+                {
+                    physx::PxBoxGeometry box = geometry.box();
+                    box.halfExtents = scaleHalf;
+                    m_PxActor->detachShape(*m_PxShape);
+                    m_PxShape->release();
+                    m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(box, *m_PxMaterial);
+                    m_PxActor->attachShape(*m_PxShape);
+                } break;
+
+            case ColliderType::Sphere:
+                {
+                    physx::PxSphereGeometry sphere = geometry.sphere();
+                    sphere.radius = scaleHalf.x;
+                    m_PxActor->detachShape(*m_PxShape);
+                    m_PxShape->release();
+                    m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(sphere, *m_PxMaterial);
+                    m_PxActor->attachShape(*m_PxShape);
+
+                } break;
+            }
+
+            m_PxActor->setGlobalPose(physx::PxTransform(transform->GetPosition().x, transform->GetPosition().y, transform->GetPosition().z));
+            m_AttributeFlags &= ~PHYSICS_SHAPE;
+            DE_LOG(LogPhysics, Trace, "Shape updated for {}", GetParent()->GetName())
+        }
+        
+        
+        
     }
         
     // Update physx transfrom from parent if transform is changed during scene & editor update
@@ -253,7 +349,7 @@ namespace Denix
     
     void PhysicsComponent::SetInertia()
     {
-        if (!m_PxShape || m_PxActor) return;
+        if (!m_PxShape || !m_PxActor) return;
         
         const physx::PxGeometryHolder geometry = m_PxShape->getGeometry();
         

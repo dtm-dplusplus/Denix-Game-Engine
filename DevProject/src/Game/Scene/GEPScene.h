@@ -16,5 +16,6 @@ public:
     void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     Ref<Character> m_Character;
     Ref<Camera> m_CharacterCamera;
+    float ShootForce = 100.0f;
 };
 

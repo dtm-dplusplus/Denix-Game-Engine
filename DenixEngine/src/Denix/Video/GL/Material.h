@@ -37,7 +37,7 @@ namespace Denix
 
 		void ClearBaseTexture() { m_BaseTexture = nullptr; m_IsBaseTexture = false; }
 
-		glm::vec3 m_BaseColor = glm::vec3(0.0f);
+		glm::vec3 m_BaseColor = glm::vec3(0.8f);
 		TextureSettings m_TextureSettings;
 	private:
 		// Base color or texture

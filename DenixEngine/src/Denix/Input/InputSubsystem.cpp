@@ -44,17 +44,9 @@ namespace Denix
         DE_LOG(LogInput, Trace, "Input Subsystem Deinitialized");
     }
 
-    void InputSubsystem::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
-    {
-        DE_PROFILE(Input Update)
-        Subsystem::Update(_deltaTime, _waitCounter);
-        DE_PROFILE_END(Input Update)
-    }
-
     bool InputSubsystem::IsKeyDown(const KeyCode _key)
     {
         return s_Instance->m_Keyboard->IsKeyDown(_key);	
-
     }
 
     bool InputSubsystem::IsKeyUp(const KeyCode _key)

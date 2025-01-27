@@ -17,14 +17,13 @@ namespace Denix
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         void PhysicsWidget(const Ref<Actor>& _selectedObject) const;
-        void CollisionWidget(const Ref<Actor>& _selectedObject) const;
 
         void RenderWidget(const Ref<Actor>& _selectedObject);
         void MaterialWidget(const Ref<Actor>& _selectedObject);
         void TextureSelectionWidget(const Ref<Material>& _material);
         void ShaderSelectionWidget(Ref<Material>& _material);
         void MeshWidget(const Ref<Actor>& _selectedObject);
-        void TransformWidget(const Ref<Actor>& _object) const;
+        void TransformWidget(const Ref<Actor>& _actor) const;
         static void CameraWidget(const Ref<Actor>& _camera);
 
         WRef<Actor> m_ActorRef;

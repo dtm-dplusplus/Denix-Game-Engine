@@ -11,6 +11,7 @@ enum PhysicsAttributeFlags
     PHYSICS_LINEAR_DRAG    = (1 << 3),     // Linear Drag modified
     PHYSICS_ANGULAR_DRAG = (1 << 4),     // Angular Drag modified
     PHYSICS_MATERIAL = (1 << 5),     // Elasticity modified
+    PHYSICS_SHAPE = (1 << 6),     // Transform (Moveability, Scale, rotation) modified
 };
 
 // Enable bitwise operations for PhysicsAttributeFlags

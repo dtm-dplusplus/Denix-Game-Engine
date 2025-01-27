@@ -42,7 +42,7 @@ namespace Denix
         input->m_Mouse->SDL_State = SDL_GetMouseState(&input->m_Mouse->m_MouseData.X, &input->m_Mouse->m_MouseData.Y);
 
        // Clear the keyboard input
-        input->m_Keyboard->m_KeysUp.clear();
+       input->m_Keyboard->m_KeysUp.clear();
 
         const auto window = m_WindowRef.lock();
 
@@ -92,7 +92,7 @@ namespace Denix
             else DE_LOG(LogEvent, Warn, "Unknown Event Type: {}", event.type)
         }
 
-        DE_PROFILE_END(Input Update)
+        DE_PROFILE_END(Event Update)
     }
 
     void EventSubsystem::ProcessApplicationEvent(const SDL_Event& _event)

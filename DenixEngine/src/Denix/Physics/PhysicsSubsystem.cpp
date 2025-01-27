@@ -91,28 +91,24 @@ namespace Denix
             } break;
         }
         
-        switch (parent->m_TransformComponent->m_Moveability)
+        if (!_comp->m_SimulatePhysics)
         {
-        case 0:
-            {
-                _comp->m_PxActor = m_PxPhysics->createRigidStatic(physx::PxTransform(transform.Position.x, transform.Position.y, transform.Position.z));
-            } break;
-
-        case 1:
-            {
-                if (physx::PxRigidDynamic* pxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(transform.Position.x, transform.Position.y, transform.Position.z)))
-                {
-                    pxActor->setLinearDamping(_comp->m_LinearDrag);
-                    pxActor->setAngularDamping(_comp->m_AngularDrag);
-                    pxActor->setLinearVelocity({_comp->m_Velocity.x, _comp->m_Velocity.y, _comp->m_Velocity.z});
-                    pxActor->setAngularVelocity({_comp->m_AngularVelocity.x, _comp->m_AngularVelocity.y, _comp->m_AngularVelocity.z});
-                    pxActor->setContactSlopCoefficient(_comp->m_PxSlopCoefficient);
-                    _comp->m_PxActor = pxActor;
-                    pxActor->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, false);
-                    _comp->SetInertia();
-                }
-            } break;
+            _comp->m_PxActor = m_PxPhysics->createRigidStatic(physx::PxTransform(transform.Position.x, transform.Position.y, transform.Position.z));
         }
+       else
+        {
+            if (physx::PxRigidDynamic* pxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(physx::PxTransform(transform.Position.x, transform.Position.y, transform.Position.z)))
+            {
+                pxActor->setLinearDamping(_comp->m_LinearDrag);
+                pxActor->setAngularDamping(_comp->m_AngularDrag);
+                pxActor->setLinearVelocity({_comp->m_Velocity.x, _comp->m_Velocity.y, _comp->m_Velocity.z});
+                pxActor->setAngularVelocity({_comp->m_AngularVelocity.x, _comp->m_AngularVelocity.y, _comp->m_AngularVelocity.z});
+                pxActor->setContactSlopCoefficient(_comp->m_PxSlopCoefficient);
+                _comp->m_PxActor = pxActor;
+                pxActor->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, false);
+                _comp->SetInertia();
+            }
+        } 
 
         // Set the actor's shape & user data
         _comp->m_PxActor->userData = _comp.get();

@@ -48,7 +48,6 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime, const Ref<Counter>& _wa
         TransformWidget(actorRef);
         CameraWidget(actorRef);
         PhysicsWidget(actorRef);
-        CollisionWidget(actorRef);
         RenderWidget(actorRef);
         MeshWidget(actorRef);
     }
@@ -56,14 +55,16 @@ void Denix::ActorDetailsWidget::Update(float _deltaTime, const Ref<Counter>& _wa
     ImGui::End();
 }
 
-void Denix::ActorDetailsWidget::TransformWidget(const Ref<Actor>& _object) const
+void Denix::ActorDetailsWidget::TransformWidget(const Ref<Actor>& _actor) const
 {
     ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
     if (ImGui::CollapsingHeader("Transform Component"))
     {
-        const Ref<TransformComponent> transform = _object->GetTransformComponent();
+        const Ref<TransformComponent> transform = _actor->GetTransformComponent();
 
-        ImGui::DragFloat3("Position", &transform->GetPosition()[0], m_DragSpeed);
+        if (ImGui::DragFloat3("Position", &transform->GetPosition()[0], m_DragSpeed))
+            _actor->GetPhysicsComponent()->m_AttributeFlags |= PHYSICS_SHAPE;
+
         ImGui::SameLine();
         if (ImGui::ArrowButton("##ResetPosition", ImGuiDir_Left)) transform->SetPosition(glm::vec3(0.f));
         ImGui::SetItemTooltip("Reset");
@@ -73,17 +74,12 @@ void Denix::ActorDetailsWidget::TransformWidget(const Ref<Actor>& _object) const
         if (ImGui::ArrowButton("##ResetRotation", ImGuiDir_Left)) transform->SetRotation(glm::vec3(0.f));
         ImGui::SetItemTooltip("Reset");
 
-        ImGui::DragFloat3("Scale", &transform->GetScale()[0], m_DragSpeed, FLT_MIN);
+        if (ImGui::DragFloat3("Scale", &transform->GetScale()[0], m_DragSpeed, 0.01f, FLT_MAX))
+            _actor->GetPhysicsComponent()->m_AttributeFlags |= PHYSICS_SHAPE;
+
         ImGui::SameLine();
         if (ImGui::ArrowButton("##ResetScale", ImGuiDir_Left)) transform->SetScale(glm::vec3(1.f));
         ImGui::SetItemTooltip("Reset");
-
-        ImGui::Spacing();
-        ImGui::SeparatorText("Moveability");
-        if (ImGui::Combo("Moveability", &transform->GetMoveabilityI(), "Static\0Dynamic\0\0"))
-        {
-            transform->SetMoveability(static_cast<Moveability>(transform->GetMoveabilityI()));
-        }
     }
 }
 
@@ -113,7 +109,6 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         // Static Friction
         if (ImGui::DragFloat("Static Friction", &comp->m_StaticFriction, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_MATERIAL;
 
-
         // Dynamic Friction
         if (ImGui::DragFloat("Dynamic Friction", &comp->m_DynamicFriction, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_MATERIAL;
         
@@ -129,106 +124,13 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         const glm::vec3& vel = comp->GetVelocity();
         const glm::vec3& avel = comp->GetAngularVelocity();
         const glm::vec3& acc = comp->GetAcceleration();
+        const glm::vec3& inertia = comp->m_InertiaTensor;
 
         ImGui::Text("Force				x: %.2f y: %.2f z: %.2f", force.x, force.y, force.z);
         ImGui::Text("Velocity			x: %.2f y: %.2f z: %.2f", vel.x, vel.y, vel.z);
         ImGui::Text("Acceleration		x: %.2f y: %.2f z: %.2f", acc.x, acc.y, acc.z);
         ImGui::Text("Angular Velocity	x: %.2f y: %.2f z: %.2f", avel.x, avel.y, avel.z);
-    }
-}
-
-void Denix::ActorDetailsWidget::CollisionWidget(const Ref<Actor>& _selectedObject) const
-{
-    if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
-    {
-        if (const Ref<PhysicsComponent> pComp = _selectedObject->GetPhysicsComponent())
-        {
-            // Collider Type
-            static const char* colliderTypes[] = {"None", "Cube", "Sphere"};
-            int itemCurrent = pComp->GetCollider() ? ((int)pComp->GetCollider()->GetColliderType() + 1) : 0;
-            const char* previewItem = colliderTypes[itemCurrent];
-            if (ImGui::BeginCombo("Collider Type", previewItem))
-            {
-                for (int n = 0; n < IM_ARRAYSIZE(colliderTypes); n++)
-                {
-                    const bool is_selected = (itemCurrent == n);
-                    if (ImGui::Selectable(colliderTypes[n], is_selected))
-                    {
-                        itemCurrent = n;
-                        switch (itemCurrent)
-                        {
-                        case 0:
-                            {
-                                pComp->SetCollider(nullptr);
-                                DE_LOG(LogEditor, Warn, "Set collider type to none on {}", _selectedObject->GetName())
-                            }
-                            break;
-
-                        case 1:
-                            {
-                                pComp->SetCollider(MakeRef<CubeCollider>());
-                                DE_LOG(LogEditor, Warn, "Set collider type to cube on {}", _selectedObject->GetName())
-                            }
-                            break;
-
-                        case 2:
-                            {
-                                pComp->SetCollider(MakeRef<SphereCollider>());
-                                DE_LOG(LogEditor, Warn, "Set collider type to sphere on {}", _selectedObject->GetName())
-                            }
-                            break;
-                        }
-                    }
-
-                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                    if (is_selected) ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
-
-            // Collider Visualiser
-            /*ImGui::Checkbox("Show Collider", &pComp->IsColliderVisible());*/
-
-            // Collider settings
-            /*if (pComp->GetCollider())
-            {
-                switch (pComp->GetCollider()->GetColliderType())
-                {
-                case ColliderType::Cube:
-                    {
-                        if (Ref<CubeCollider> sCol = CastRef<CubeCollider>(pComp->GetCollider()))
-                        {
-                            // Collider Offset
-                            ImGui::DragFloat3("Offset", &sCol->GetOffset()[0], m_DragSpeed, FLT_MIN, FLT_MAX);
-
-                            // Collider Dimensions
-                            if (!pComp->CollisionDimensionOverride()) ImGui::BeginDisabled();
-                            ImGui::DragFloat3("Dimensions", &sCol->GetDimensions()[0], m_DragSpeed, -FLT_MIN, FLT_MAX);
-                            if (!pComp->CollisionDimensionOverride()) ImGui::EndDisabled();
-                            ImGui::SameLine();
-                            ImGui::Checkbox("## Dimesnion Override", &pComp->CollisionDimensionOverride());
-
-                            // Min Max Debug Info
-                            const glm::vec3& min = sCol->GetMin();
-                            const glm::vec3& max = sCol->GetMax();
-                            ImGui::Text("AABB Min x: %.2f Max x: %.2f", min.x, max.x);
-                            ImGui::Text("AABB Min y: %.2f Max y: %.2f", min.y, max.y);
-                            ImGui::Text("AABB Min z: %.2f Max z: %.2f", min.z, max.z);
-                        }
-                    }
-                    break;
-
-                case ColliderType::Sphere:
-                    {
-                        if (Ref<SphereCollider> sCol = CastRef<SphereCollider>(pComp->GetCollider()))
-                        {
-                            ImGui::DragFloat("Radius", &sCol->GetRadius(), m_DragSpeed, FLT_MIN, FLT_MAX);
-                        }
-                    }
-                    break;
-                }
-            }*/
-        }
+        ImGui::Text("Inertia Tensor		x: %.2f y: %.2f z: %.2f", inertia.x, inertia.y, inertia.z);
     }
 }
 

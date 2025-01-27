@@ -40,7 +40,7 @@ namespace Denix
 		if (const YAML::Node& baseColor = _in["m_BaseColor"]; baseColor.IsDefined()) m_BaseColor =YAMLtoVec3(baseColor);
         	
         		
-		if (const YAML::Node& baseTex = _in["m_IsBaseTexture"]; baseTex.IsDefined())
+		if (const YAML::Node& baseTex = _in["m_BaseTexture"]; baseTex.IsDefined())
 			if (const Ref<Texture> tex = AssetSubsystem::GetTexture(baseTex.as<std::string>())) m_BaseTexture = tex;
 			
 		if (const YAML::Node& texSettings = _in["m_TextureSettings"]; texSettings.IsDefined())

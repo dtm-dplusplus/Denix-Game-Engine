@@ -21,13 +21,10 @@ namespace Denix
 		Subsystem::Initialize();
 		DE_LOG(LogScene, Warn, "Initializing Scene Subsystem")
 
-		// Ensure we always have a default scene
-		
-		
 		// Load Startup scene if it exists
 		if(Ref<Asset> startupScene = AssetSubsystem::GetStartupScene())
 		{
-			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create("DevScene")))//startupScene->GetAssetName())))
+			if(Ref<Scene> scene = CastRef<Scene>(ReflectionSubsystem::Create(startupScene->GetAssetName())))
 			{
 				scene->m_Name = startupScene->GetAssetName();
 				scene->m_SceneAsset = startupScene;
@@ -148,13 +145,6 @@ namespace Denix
 			return;
 		}
 
-		// Close the current scene
-		if (s_Instance->m_ActiveScene)
-		{
-			s_Instance->CloseScene();
-			s_Instance->m_ActiveScene.reset();
-		}
-		
 		// Load the scene
 		LoadScene(_scene);
 
@@ -172,8 +162,7 @@ namespace Denix
 
 		// Update scene state - For shipped games, playing is the default state
 		m_SceneState = SceneState::Stopped;
-		DE_LOG(LogScene, Info, "Activated Scene: {}",
-			s_Instance->m_ActiveScene->GetName())
+		DE_LOG(LogScene, Info, "Activated Scene: {}",s_Instance->m_ActiveScene->GetName())
 	}
 
 	void SceneSubsystem::RequestOpenScene(const Ref<Asset>& _sceneAsset)
@@ -191,6 +180,9 @@ namespace Denix
 	{
 		if (!s_Instance->m_ActiveScene) return;
 
+		// Save the Scene before playing
+		SerializeScene();
+		
 		s_Instance->m_ActiveScene->BeginPlay();
 		s_Instance->m_ActiveScene->m_IsPlaying = true;
 		m_SceneState = SceneState::Playing;
@@ -234,7 +226,6 @@ namespace Denix
 		{
 			if (m_ActiveScene->m_IsPlaying) m_ActiveScene->EndPlay();
 			m_ActiveScene->EndScene();
-			//m_ActiveScene.reset();
 		}
 	}
 
@@ -329,7 +320,7 @@ namespace Denix
 		}
 
 		// For whatever reason, Clear any data held by the scene
-		_scene->ClearScene();
+		_scene->ClearActors();
 		
 		// Load the scene data from the asset file
 		YAML::Node sceneNode = YAML::LoadFile(_scene->m_SceneAsset->GetAbsolutePath());

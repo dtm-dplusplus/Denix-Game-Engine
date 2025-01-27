@@ -82,6 +82,7 @@ namespace Denix
             Ref<Counter> physicsPostCounter = MakeRef<Counter>();
             m_JobSubsystem->AddJob("Physics Post Update", Priority::NORMAL, physicsPostCounter,
                                    &PhysicsSubsystem::PostUpdate, m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime, physicsPostCounter);
+            WaitForCounter(physicsPostCounter);
             
             // Render the scene. This runs on the main thread as it requires the opengl context
             Ref<Counter> renderCounter = MakeRef<Counter>();
