@@ -2,12 +2,8 @@
 
 #include "Game/Scene/DevScene.h"
 #include "Game/Scene/GEPScene.h"
-#include "Game/Scene/AudioScene.h"
-#include "Game/Scene/UIScene.h"
-#include "Game/Actor/Character.h"
 #include "Game/Actor/BallActor.h"
 #include "Game/Actor/TargetActor.h"
-#include "Game/Scene/MenuScene.h"
 
  class DevProject final: public Engine
 {
@@ -23,16 +19,11 @@ public:
 		// Register project specific classes - These are pre-registered for reflection
 		DE_LOG_CREATE(LogDevProject)
 		ReflectionSubsystem::Register<DevScene>();
-		ReflectionSubsystem::Register<UIScene>();
 		ReflectionSubsystem::Register<GEPScene>();
-		ReflectionSubsystem::Register<AudioScene>();
-		ReflectionSubsystem::Register<MenuScene>();
 		//ReflectionSubsystem::Register<BallActor>();
 		//ReflectionSubsystem::Register<TargetActor>();
 		//ReflectionSubsystem::Register<Character>();
 
-		//ReflectionSubsystem::Register<Canvas>();
-		//ReflectionSubsystem::Register<Button>();
 		DE_LOG(LogReflection, Info, "Registered DevProject Classes")
 	}
 	

@@ -13,14 +13,10 @@ void GameOverCanvas::BeginScene()
     Canvas::BeginScene();
 
     m_Buttons.push_back(MakeRef<RestartButton>());
-    m_Buttons.back()->m_Transform.Position.y = 0.5f;
+    m_Buttons.back()->m_Transform.Position.y = 0.3f;
 
-
-    m_Buttons.push_back(MakeRef<MainMenuButton>());
-    m_Buttons.back()->m_Transform.Position.y = 0.0f;
-    
     m_Buttons.push_back(MakeRef<QuitButton>());
-    m_Buttons.back()->m_Transform.Position.y = -0.5f;
+    m_Buttons.back()->m_Transform.Position.y = -0.3f;
     
     Sort();
 
@@ -30,6 +26,7 @@ void GameOverCanvas::BeginScene()
 
 void GameOverCanvas::Update(float _deltaTime, const Denix::Ref<Counter>& _waitCounter)
 {
+    if (!m_IsActive) return;
     Canvas::Update(_deltaTime, _waitCounter);
 
     // Navigation Logic

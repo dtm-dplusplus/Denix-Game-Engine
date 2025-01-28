@@ -2,6 +2,7 @@
 
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Scene/SceneSubsystem.h"
+#include "Game/Scene/GEPScene.h"
 
 using namespace Denix;
 
@@ -14,14 +15,21 @@ void PlayButton::OnSelect()
 {
     Button::OnSelect();
 
-    SceneSubsystem::RequestOpenScene("Content\\Scene\\GEPScene.asset");
+    if (Ref<GEPScene> scene = CastRef<GEPScene>(SceneSubsystem::GetActiveScene()))
+    {
+        scene->m_GameStart = true;
+    }
+    
+    if (auto canvas = m_CanvasParent.lock())
+    {
+        canvas->Disable();
+    }
 }
 
 RestartButton::RestartButton(): Button({"RestartButton"})
 {
     m_Material->SetBaseTexture(AssetSubsystem::GetTexture("Content\\Textures\\UI_Restart.png"));
 }
-
 
 
 QuitButton::QuitButton(): Button({"QuitButton"})
@@ -41,17 +49,5 @@ void RestartButton::OnSelect()
     Button::OnSelect();
 
     SceneSubsystem::RequestOpenScene("Content\\Scene\\GEPScene.asset");
-}
-
-MainMenuButton::MainMenuButton(): Button({"MainMenuButton"})
-{
-    m_Material->SetBaseTexture(AssetSubsystem::GetTexture("Content\\Textures\\UI_Menu.png"));
-}
-
-void MainMenuButton::OnSelect()
-{
-    Button::OnSelect();
-
-    SceneSubsystem::RequestOpenScene("Content\\Scene\\MainMenuScene.asset");
 }
 

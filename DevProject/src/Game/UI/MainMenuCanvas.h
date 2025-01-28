@@ -8,7 +8,7 @@
 class MainMenuCanvas: public Denix::Canvas
 {
 public:
-    MainMenuCanvas() = default;
+    MainMenuCanvas();
     ~MainMenuCanvas() override = default;
     
     void Update(float _deltaTime, const Denix::Ref<Counter>& _waitCounter) override;

@@ -15,13 +15,6 @@ public:
     void OnSelect() override;
 };
 
-class MainMenuButton : public Denix::Button
-{
-public:
-    MainMenuButton();
-    void OnSelect() override;
-};
-
 class QuitButton : public Denix::Button
 {
 public:

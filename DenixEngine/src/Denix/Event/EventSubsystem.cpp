@@ -53,7 +53,8 @@ namespace Denix
 
             // Handle SDL Input Events first (Keyboard, Mouse, Gamepad) - These are the most common
             // The following events are processed in the order of their occurence in SDL_events.h
-            if (event.type >= SDL_EVENT_KEY_DOWN && event.type <= SDL_EVENT_FINGER_MOTION)
+            if (event.type >= SDL_EVENT_KEY_DOWN && event.type <= SDL_EVENT_FINGER_MOTION &&
+                event.window.windowID == SDL_GetWindowID(window->GetSDLWindow()))
                 input->ProcessInputEvent(event);
 
             // Handle SDL Application Events

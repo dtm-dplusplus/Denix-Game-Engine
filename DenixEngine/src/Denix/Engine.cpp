@@ -49,7 +49,7 @@ namespace Denix
 
             // Update the physics system. Collision detection and resolution will be here
             Ref<Counter> physicsCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJob("Physics Update", Priority::NORMAL, physicsCounter, &PhysicsSubsystem::Update,
+            m_JobSubsystem->AddJobInline("Physics Update", Priority::NORMAL, physicsCounter, &PhysicsSubsystem::Update,
                                    m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime, physicsCounter);
             WaitForCounter(physicsCounter);
 
@@ -73,7 +73,7 @@ namespace Denix
 
             // Update PxActor from Actor Transform after scene update
             Ref<Counter> physicsPostCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJob("Physics Post Update", Priority::NORMAL, physicsPostCounter,
+            m_JobSubsystem->AddJobInline("Physics Post Update", Priority::NORMAL, physicsPostCounter,
                                    &PhysicsSubsystem::PostUpdate, m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime, physicsPostCounter);
             WaitForCounter(physicsPostCounter);
                                    

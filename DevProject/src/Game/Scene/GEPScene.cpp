@@ -1,26 +1,45 @@
 ﻿#include "GEPScene.h"
 
 #include "imgui.h"
-#include "Game/Actor/Character.h"
+#include "Denix/Asset/AssetSubsystem.h"
+#include "Denix/Audio/AudioSubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Game/Actor/BallActor.h"
 #include "Game/UI/GameOverCanvas.h"
+#include "Game/UI/MainMenuCanvas.h"
 
-void GEPScene::BeginScene()
+using namespace Denix;
+
+void GEPScene::BeginPlay()
 {
-    Scene::BeginScene();
+    Scene::BeginPlay();
 
+    m_GameStart = false;
     m_GameOver = false;
+    m_MenuCanvas = MakeRef<MainMenuCanvas>();
+    m_MenuCanvas->BeginScene();
+    
     m_GameOverCanvas = MakeRef<GameOverCanvas>();
     m_GameOverCanvas->BeginScene();
+
+    m_MusicAudioSource = AudioSubsystem::CreateNewAudioSource();
+    if (Ref<AudioClip> clip = AssetSubsystem::GetAudioClip("Content\\Audio\\music.wav"))
+    {
+        m_MusicClip = clip;
+        m_MusicAudioSource->SetAudioClip(clip);
+        m_MusicAudioSource->Play();
+    }
 }
 
 void GEPScene::EndScene()
 {
     Scene::EndScene();
 
-    m_GameOverCanvas->EndScene();
+    if (m_MenuCanvas) m_MenuCanvas->EndScene();
+    m_MenuCanvas.reset();
+    
+    if (m_GameOverCanvas) m_GameOverCanvas->EndScene();
     m_GameOverCanvas.reset();
 }
 
@@ -28,15 +47,23 @@ void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     Scene::Update(_deltaTime, _waitCounter);
 
+    if (!m_IsPlaying) return;
+    
     if (m_GameOver)
     {
         DE_LOG(LogDevProject, Info, "Game Over");
         m_GameOverCanvas->Enable();
+        m_GameOver = false;
+        return;
     }
-    if (InputSubsystem::IsKeyUp(KeyCode::DEK_SPACE))
+
+    if (!m_GameOverCanvas->m_IsActive && !m_MenuCanvas->m_IsActive)
     {
-        Ref<BallActor> ball = SpawnActor<BallActor>(m_ActiveCamera->GetTransform().Position);
-        ball->GetPhysicsComponent()->AddImpulse(m_ActiveCamera->GetTransformComponent()->GetForward() * ShootForce);
+        if (Denix::InputSubsystem::IsKeyUp(Denix::KeyCode::DEK_SPACE))
+        {
+            Ref<BallActor> ball = SpawnActor<BallActor>(m_ActiveCamera->GetTransform().Position);
+            ball->GetPhysicsComponent()->AddImpulse(m_ActiveCamera->GetTransformComponent()->GetForward() * ShootForce);
+        }
     }
 }
 
@@ -49,42 +76,5 @@ void GEPScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
     ImGui::Checkbox("Game Over", &m_GameOver);
     ImGui::DragFloat("Ball Mass", &BallActor::Mass, 0.1f, 0.1f, 30.0f);
     ImGui::DragFloat("Shoot Force", &ShootForce, 0.1f, 0.0f, 200.0f);
-    ImGui::SeparatorText("Camera");
-    auto camComp = m_ActiveCamera->GetComponent<CameraComponent>();
-    ImGui::Checkbox("External Camera Control", &camComp->m_ExternalControl);
-    ImGui::Checkbox("Rotation", &camComp->m_EnableRotation);
-
-    if (m_Character)
-    {
-        static bool MatchCharacter = false;
-        ImGui::Checkbox("Match Character", &MatchCharacter);
-        static glm::vec3 offset = glm::vec3(0.0f, 1.0f, 0.0f);
-        ImGui::DragFloat3("Offset", &offset[0], 0.1f);
-        if (MatchCharacter) m_ActiveCamera->GetTransformComponent()->SetPosition(m_Character->GetTransformComponent()->GetPosition() + offset);
-        
-        ImGui::DragFloat("Move Speed", &m_Character->m_MoveSpeed, 0.1f, 0.0f, 200.0f);
-        ImGui::DragFloat("Jump Force", &m_Character->m_JumpForce, 0.1f, 0.0f, 200.0f);
-    }
-    
-    if (ImGui::Button("Spawn Character"))
-    {
-        m_Character = SpawnActor<Character>(glm::vec3(2.0f, 2.5f, 0.0f));
-    }
-
-    ImGui::Text("Canvas: %s", m_GameOverCanvas->GetName().c_str());
-    for (const auto& button : m_GameOverCanvas->m_Buttons)
-    {
-        //ImGui::Text("isactive: %d", m_Canvas->m_IsActive);
-        // ImGui::Text("isdisplayed: %d", m_Canvas->m_IsDisplayed);
-        ImGui::PushID(button->GetGUID());
-        ImGui::Text("Button: %s", button->GetName().c_str());
-        ImGui::DragFloat3("Position", &button->m_Transform.Position.x, 0.1f);
-        ImGui::DragFloat3("Scale", &button->m_Transform.Scale.x, 0.1f);
-        ImGui::DragFloat3("Selected Color", &button->m_SelectedColor.x, 0.1f);
-        ImGui::DragFloat3("Default Color", &button->m_DefaultColor.x, 0.1f);
-        ImGui::PopID();
-    }
-    
-    
     ImGui::End();
 }

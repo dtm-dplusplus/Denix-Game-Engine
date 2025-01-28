@@ -20,6 +20,8 @@ namespace Denix
         
         glm::vec3 m_DefaultColor = glm::vec3(1.0f, 1.0f, 1.0f);
         glm::vec3 m_SelectedColor = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        WRef<UIWidget> m_CanvasParent;
         
         WRef<AudioClip> m_SelectAudioClip;
         WRef<AudioClip> m_HoverAudioClip;

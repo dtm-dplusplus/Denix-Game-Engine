@@ -35,8 +35,8 @@ void Canvas::BeginScene()
 {
     UIWidget::BeginScene();
 
-    m_IsActive = true;
-    m_IsDisplayed = true;
+    for (const auto& widget : m_Buttons) widget->m_CanvasParent = GetRef<Canvas>();
+    
     UISubsystem::GetInstance()->m_Widgets.push_back(GetRef<Canvas>());
 }
 

@@ -11,7 +11,11 @@ using namespace Denix;
 void MainMenuCanvas::BeginScene()
 {
     Canvas::BeginScene();
+}
 
+
+MainMenuCanvas::MainMenuCanvas()
+{
     m_Buttons.push_back(MakeRef<PlayButton>());
     m_Buttons.back()->m_Transform.Position.y = 0.3f;
     
@@ -20,9 +24,9 @@ void MainMenuCanvas::BeginScene()
     Sort();
 }
 
-
 void MainMenuCanvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
+    if (!m_IsActive) return;
     Canvas::Update(_deltaTime, _waitCounter);
 
     // Navigation Logic
