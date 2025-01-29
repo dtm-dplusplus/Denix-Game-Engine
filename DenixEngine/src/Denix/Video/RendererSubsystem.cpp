@@ -48,6 +48,8 @@ namespace Denix
 
         glUniform1i(_submission.Mat->m_Shader->GetUniform("u_Material.MultiplyBase"), _submission.Mat->m_MultiplyBase);
 
+        glUniform1f(_submission.Mat->m_Shader->GetUniform("u_Material.TextureTiling"), _submission.Mat->m_TextureTiling);
+
         if (_submission.Mat->m_IsBaseTexture && _submission.Mat->m_BaseTexture)
         {
             _submission.Mat->m_BaseTexture->Bind();

@@ -23,7 +23,6 @@ m_Actors:
           x: 100
           y: 0.00999999978
           z: 100
-        m_Moveability: 0
       ModelComponent:
         m_Object:
           m_GUID: 538411
@@ -42,7 +41,9 @@ m_Actors:
             x: 1
             y: 1
             z: 1
-          m_BaseTexture: ""
+          m_BaseTexture: Content\Textures\Prototype Textures\Grey.png
+          m_MultiplyBase: false
+          m_TextureTiling: 14.8439999
           m_TextureSettings:
             WrapMode: 10497
             WrapValue: 0

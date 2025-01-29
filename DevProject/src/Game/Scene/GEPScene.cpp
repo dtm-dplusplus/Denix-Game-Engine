@@ -15,14 +15,9 @@ void GEPScene::BeginPlay()
 {
     Scene::BeginPlay();
 
-    m_GameStart = false;
-    m_GameOver = false;
     m_MenuCanvas = MakeRef<MainMenuCanvas>();
     m_MenuCanvas->BeginScene();
     
-    m_GameOverCanvas = MakeRef<GameOverCanvas>();
-    m_GameOverCanvas->BeginScene();
-
     m_MusicAudioSource = AudioSubsystem::CreateNewAudioSource();
     if (Ref<AudioClip> clip = AssetSubsystem::GetAudioClip("Content\\Audio\\music.wav"))
     {
@@ -38,6 +33,9 @@ void GEPScene::BeginPlay()
 
     int CubeSize = 10; // Size of the big cube
 
+    const std::unordered_map < std::string, Ref<Texture>>& textures = AssetSubsystem::GetTextureStore();
+    size_t size = textures.size();
+    
     for (int x = 0; x < CubeSize; ++x)
     {
         for (int y = 0; y < CubeSize; ++y)
@@ -45,7 +43,20 @@ void GEPScene::BeginPlay()
             for (int z = 0; z < CubeSize; ++z)
             {
                 glm::vec3 CurrentLocation = SpawnLocation + glm::vec3(x * CubeScale, y * CubeScale, z * CubeScale);
-                SpawnActor<CubeActor>(CurrentLocation, SpawnRotation);
+                Ref<Actor> actor = SpawnActor<CubeActor>(CurrentLocation, SpawnRotation);
+                Ref<Texture> texture;
+                
+                int t = 0, match = Math::Rand(0, size - 1);
+                for(auto& [key, value] : textures)
+                {
+                    if(t == match)
+                    {
+                        texture = value;
+                        break;
+                    }
+                    t++;
+                }
+                actor->GetRenderComponent()->GetMaterial()->SetBaseTexture(texture);
             }
         }
     }
@@ -58,8 +69,6 @@ void GEPScene::EndScene()
     if (m_MenuCanvas) m_MenuCanvas->EndScene();
     m_MenuCanvas.reset();
     
-    if (m_GameOverCanvas) m_GameOverCanvas->EndScene();
-    m_GameOverCanvas.reset();
 
     m_MusicAudioSource.reset();
 }
@@ -70,15 +79,8 @@ void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 
     if (!m_IsPlaying) return;
     
-    if (m_GameOver)
-    {
-        DE_LOG(LogDevProject, Info, "Game Over");
-        m_GameOverCanvas->Enable();
-        m_GameOver = false;
-        return;
-    }
 
-    if (!m_GameOverCanvas->m_IsActive && !m_MenuCanvas->m_IsActive)
+    if (!m_MenuCanvas->m_IsActive)
     {
         if (Denix::InputSubsystem::IsKeyUp(Denix::KeyCode::DEK_SPACE))
         {
@@ -98,7 +100,6 @@ void GEPScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
 
     ImGui::Begin("GEP Scene");
     ImGui::SeparatorText("Game");
-    ImGui::Checkbox("Game Over", &m_GameOver);
     ImGui::DragFloat("Ball Mass", &BallActor::Mass, 0.1f, 0.1f, 30.0f);
     ImGui::DragFloat("Shoot Force", &ShootForce, 0.1f, 0.0f, 200.0f);
     ImGui::End();

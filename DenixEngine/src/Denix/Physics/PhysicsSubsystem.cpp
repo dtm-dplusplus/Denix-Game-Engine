@@ -193,8 +193,8 @@ namespace Denix
 
     void PhysicsSubsystem::PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
-        Subsystem::PostUpdate(_deltaTime, _waitCounter);
         DE_PROFILE(Physics PostUpdate)
+        Subsystem::PostUpdate(_deltaTime, _waitCounter);
         for (const auto& physcComp : m_PhysicsComponents) physcComp->PostUpdate(_deltaTime, _waitCounter);
         DE_PROFILE_END(Physics PostUpdate)
     }

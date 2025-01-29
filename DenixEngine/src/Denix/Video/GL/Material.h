@@ -46,7 +46,11 @@ namespace Denix
         }
 
         glm::vec3 m_BaseColor = glm::vec3(0.8f);
+        
+        
         bool m_MultiplyBase = false;
+
+        float m_TextureTiling = 1.0f;
         TextureSettings m_TextureSettings;
 
     private:

@@ -26,7 +26,8 @@ namespace Denix
         _out << YAML::EndMap;
 
         _out << YAML::Key << "m_BaseTexture" << YAML::Value << (m_BaseTexture ? m_BaseTexture->GetRelativePath() : "");
-
+        _out << YAML::Key << "m_MultiplyBase" << YAML::Value << m_MultiplyBase;
+        _out << YAML::Key << "m_TextureTiling" << YAML::Value << m_TextureTiling;
         _out << YAML::Key << "m_TextureSettings" << YAML::BeginMap;
         _out << YAML::Key << "WrapMode" << YAML::Value << m_TextureSettings.WrapMode;
         _out << YAML::Key << "WrapValue" << YAML::Value << m_TextureSettings.WrapValue;
@@ -43,6 +44,12 @@ namespace Denix
 
         if (const YAML::Node& baseTex = _in["m_BaseTexture"]; baseTex.IsDefined())
             if (const Ref<Texture> tex = AssetSubsystem::GetTexture(baseTex.as<std::string>())) m_BaseTexture = tex;
+
+        if(const YAML::Node& multiplyBase = _in["m_MultiplyBase"]; multiplyBase.IsDefined())
+            m_MultiplyBase = multiplyBase.as<bool>();
+
+        if (const YAML::Node& textureTiling = _in["m_TextureTiling"]; textureTiling.IsDefined())
+            m_TextureTiling = textureTiling.as<float>();
 
         if (const YAML::Node& texSettings = _in["m_TextureSettings"]; texSettings.IsDefined())
         {

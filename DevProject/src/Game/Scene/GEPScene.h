@@ -29,13 +29,7 @@ public:
     Denix::Ref<Denix::Camera> m_CharacterCamera;
     
     float ShootForce = 50.0f;
-    
-    int Health;
 
-    bool m_GameStart;
-    bool m_GameOver;
-
-    Denix::Ref<GameOverCanvas> m_GameOverCanvas;
     Denix::Ref<MainMenuCanvas> m_MenuCanvas;
     
     Denix::Ref<Denix::AudioSource> m_MusicAudioSource;

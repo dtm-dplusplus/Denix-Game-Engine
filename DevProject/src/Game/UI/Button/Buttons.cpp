@@ -14,11 +14,6 @@ PlayButton::PlayButton(): Button({"PlayButton"})
 void PlayButton::OnSelect()
 {
     Button::OnSelect();
-
-    if (Ref<GEPScene> scene = CastRef<GEPScene>(SceneSubsystem::GetActiveScene()))
-    {
-        scene->m_GameStart = true;
-    }
     
     if (auto canvas = m_CanvasParent.lock())
     {
