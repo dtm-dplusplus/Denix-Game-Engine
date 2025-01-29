@@ -25,14 +25,14 @@ namespace Denix
     {
         Component::RegisterComponent();
 
-        PhysicsSubsystem::RegisterComponent(GetRef<PhysicsComponent>());
+        if (IsEnabled()) PhysicsSubsystem::RegisterComponent(GetRef<PhysicsComponent>());
     }
 
     void PhysicsComponent::UnregisterComponent()
     {
         Component::UnregisterComponent();
 
-        PhysicsSubsystem::UnregisterComponent(GetRef<PhysicsComponent>());
+        if (IsEnabled()) PhysicsSubsystem::UnregisterComponent(GetRef<PhysicsComponent>());
     }
 
     void PhysicsComponent::Serialize(YAML::Emitter& _out)
@@ -55,7 +55,7 @@ namespace Denix
         Component::Deserialize(_in);
 
         if (const YAML::Node& simulate = _in["m_SimulatePhysics"]; simulate.IsDefined())
-            SetSimulatePhysics(simulate.as<bool>());
+            m_SimulatePhysics = simulate.as<bool>();
 
         if (const YAML::Node& collision = _in["m_CollisionDetectionEnabled"];
             collision.IsDefined())

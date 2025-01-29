@@ -10,6 +10,7 @@ namespace Denix
         GetTransformComponent()->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
         GetTransformComponent()->SetPosition({0.0f, 1.0f, 5.0f});
         GetRenderComponent()->m_IsVisible = false;
+        m_PhysicsComponent->IsEnabled() = false;
     }
 
     void Camera::Update(float _deltaTime, const Ref<Counter>& _waitCounter)

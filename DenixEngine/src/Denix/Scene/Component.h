@@ -19,6 +19,7 @@ namespace Denix
         Ref<Actor> GetParent() const { return m_Parent.lock(); }
 
         bool IsRemoveable() const { return m_IsRemovable; }
+        bool& IsEnabled() { return m_IsEnabled; }
 
     protected:
         virtual void RegisterComponent()
@@ -38,6 +39,7 @@ namespace Denix
         }
 
         bool m_IsRemovable = false;
+        bool m_IsEnabled = true;
 
         WRef<Actor> m_Parent;
 

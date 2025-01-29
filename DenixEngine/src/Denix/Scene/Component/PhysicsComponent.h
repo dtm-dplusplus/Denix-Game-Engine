@@ -47,10 +47,6 @@ namespace Denix
         bool SimulatePhysics() const { return m_SimulatePhysics; }
         bool& SimulatePhysics() { return m_SimulatePhysics; }
 
-        void SetSimulatePhysics(const bool _simulatePhysics)
-        {
-            m_SimulatePhysics = _simulatePhysics;
-        }
 
         bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
         bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }

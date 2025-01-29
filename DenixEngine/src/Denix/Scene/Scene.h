@@ -117,7 +117,7 @@ namespace Denix
         if (Ref<Actor> actor = MakeRef<T>(std::forward<Args>(_args)...))
         {
             // Move the actor to the scene
-            SpawnActor(actor);
+            SpawnActor(actor, _position, _rotation, _scale);
 
             // Retrun the actor reference as it's derived type
             return CastRef<T>(actor);

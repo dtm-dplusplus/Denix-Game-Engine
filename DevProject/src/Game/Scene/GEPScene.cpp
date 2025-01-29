@@ -30,6 +30,25 @@ void GEPScene::BeginPlay()
         m_MusicAudioSource->SetAudioClip(clip);
         m_MusicAudioSource->Play();
     }
+
+    glm::vec3 SpawnLocation(0.0f, 0.0f, 0.0f);
+    glm::vec3 SpawnRotation(0.0f, 0.0f, 0.0f);
+
+    float CubeScale = 1.0f; // Size of each cube
+
+    int CubeSize = 10; // Size of the big cube
+
+    for (int x = 0; x < CubeSize; ++x)
+    {
+        for (int y = 0; y < CubeSize; ++y)
+        {
+            for (int z = 0; z < CubeSize; ++z)
+            {
+                glm::vec3 CurrentLocation = SpawnLocation + glm::vec3(x * CubeScale, y * CubeScale, z * CubeScale);
+                SpawnActor<CubeActor>(CurrentLocation, SpawnRotation);
+            }
+        }
+    }
 }
 
 void GEPScene::EndScene()
@@ -41,6 +60,8 @@ void GEPScene::EndScene()
     
     if (m_GameOverCanvas) m_GameOverCanvas->EndScene();
     m_GameOverCanvas.reset();
+
+    m_MusicAudioSource.reset();
 }
 
 void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
@@ -61,8 +82,12 @@ void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     {
         if (Denix::InputSubsystem::IsKeyUp(Denix::KeyCode::DEK_SPACE))
         {
+            glm::vec3 pos = m_ActiveCamera->GetTransform().Position;
+            glm::vec3 fwd = m_ActiveCamera->GetTransformComponent()->GetForward();
+            glm::vec3 impulse = fwd * ShootForce;
+            DE_LOG(Log, Trace, "Impulse: {}, {}, {}", impulse.x, impulse.y, impulse.z);
             Ref<BallActor> ball = SpawnActor<BallActor>(m_ActiveCamera->GetTransform().Position);
-            ball->GetPhysicsComponent()->AddImpulse(m_ActiveCamera->GetTransformComponent()->GetForward() * ShootForce);
+            ball->GetPhysicsComponent()->AddImpulse(impulse);
         }
     }
 }
