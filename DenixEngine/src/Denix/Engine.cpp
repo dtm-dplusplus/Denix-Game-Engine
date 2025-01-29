@@ -37,66 +37,29 @@ namespace Denix
             // Setup timer system for the new frame.
             m_TimerSubsystem->BeginFrame();
 
-            // Poll input & Events. Events will be dispatched to the appropriate subsystems
-            Ref<Counter> eventCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Input Poll", Priority::NORMAL, eventCounter, &EventSubsystem::Update,
-                                         m_EventSubsystem, m_TimerSubsystem->m_DeltaTime, eventCounter);
+            m_EventSubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
-            // Clear the offscreen frame buffer
-            Ref<Counter> clearCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Clear Frame Buffer", Priority::NORMAL, clearCounter,
-                                         &WindowSubsystem::NewFrame, m_WindowSubsystem);
+            m_WindowSubsystem->NewFrame();
 
-            // Update the physics system. Collision detection and resolution will be here
-            Ref<Counter> physicsCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Physics Update", Priority::NORMAL, physicsCounter, &PhysicsSubsystem::Update,
-                                   m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime, physicsCounter);
-            WaitForCounter(physicsCounter);
+            m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
-            // Update the scene. The majority of the client game logic will be here. 
-            Ref<Counter> sceneCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Scene Update", Priority::NORMAL, sceneCounter, &SceneSubsystem::Update,
-                                   m_SceneSubsystem, m_TimerSubsystem->m_DeltaTime, sceneCounter);
-            WaitForCounter(sceneCounter);
-            DE_PROFILE_END(Scene Update)
-            
-            
-            // Update the UI & Editor for any changes
-                        Ref<Counter> uiCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("UI Update", Priority::NORMAL, uiCounter, &UISubsystem::Update, m_UISubsystem,
-                                   m_TimerSubsystem->m_DeltaTime, uiCounter);
-            
-            // Run on main due to opengl context when initializing the scene
-            Ref<Counter> editorCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Update Editor", Priority::NORMAL, editorCounter, &EditorSubsystem::Update,
-                                         m_EditorSubsystem, m_TimerSubsystem->m_DeltaTime, editorCounter);
+            m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
-            // Update PxActor from Actor Transform after scene update
-            Ref<Counter> physicsPostCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Physics Post Update", Priority::NORMAL, physicsPostCounter,
-                                   &PhysicsSubsystem::PostUpdate, m_PhysicsSubsystem, m_TimerSubsystem->m_DeltaTime, physicsPostCounter);
-            WaitForCounter(physicsPostCounter);
-                                   
-            // Render the scene. This runs on the main thread as it requires the opengl context
-            Ref<Counter> rendSceneCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Render Scene", Priority::NORMAL, rendSceneCounter,
-                                         &SceneSubsystem::RenderSceneSubmission, m_SceneSubsystem);
+            m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
-            // Render the UI
-            Ref<Counter> rendUICounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Render UI", Priority::NORMAL, rendUICounter,
-                                         &UISubsystem::RenderUISubmission, m_UISubsystem);
-                                               
-            // Unbind from the viewport framebuffer & Draw the framebuffer texture to the default screen buffer
-            Ref<Counter> drawCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJobInline("Draw Viewport", Priority::NORMAL, drawCounter, &WindowSubsystem::PresentFrame,
-                                         m_WindowSubsystem);
+            m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
-            // Run the garbage collector
-            Ref<Counter> garbageCounter = MakeRef<Counter>();
-            m_JobSubsystem->AddJob("Clean Rubbish", Priority::NORMAL, garbageCounter, &SceneSubsystem::CleanRubbish,
-                                   m_SceneSubsystem);
-            WaitForCounter(garbageCounter);
+            DE_LOG(LogEngine, Info, "PostUpdate")
+             m_PhysicsSubsystem->PostUpdate(m_TimerSubsystem->m_DeltaTime, nullptr);
+            DE_LOG(LogEngine, Info, "PostUpdate Finished")
+
+            m_SceneSubsystem->RenderSceneSubmission();
+
+            m_UISubsystem->RenderUISubmission();
+
+            m_WindowSubsystem->PresentFrame();
+
+            m_SceneSubsystem->CleanRubbish();
 
             m_TimerSubsystem->EndFrame();
             m_FrameCount++;
@@ -110,7 +73,7 @@ namespace Denix
         EngineLoop();
         Deinitialize();
     }
-    
+
     void Engine::PreInitialize()
     {
         // Set the engine instance
@@ -171,7 +134,8 @@ namespace Denix
 
         // Initialize SDL - This is the foundation of the engine
         constexpr auto sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO |
-            SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS | SDL_INIT_SENSOR | SDL_INIT_CAMERA;
+            SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS | SDL_INIT_SENSOR |
+            SDL_INIT_CAMERA;
         if (!SDL_Init(sdlInitFlags))
         {
             std::string err = SDL_GetError();
@@ -198,7 +162,7 @@ namespace Denix
         m_InputSubsystem = InitalizeSubsystem<InputSubsystem>();
 
         m_EventSubsystem = InitalizeSubsystem<EventSubsystem>();
-        
+
         m_AssetSubsystem = InitalizeSubsystem<AssetSubsystem>();
 
         m_UISubsystem = InitalizeSubsystem<UISubsystem>();
@@ -266,7 +230,7 @@ namespace Denix
                     m_Config.ProjectName = projectNameNode.as<std::string>();
                     DE_LOG(LogEngine, Info, "Loaded Engine Config: Project Name: {0}", m_Config.ProjectName)
                 }
-            
+
                 // Startup scene
                 if (const YAML::Node& startSceneNode = cfg["Startup Scene"])
                 {
@@ -284,6 +248,12 @@ namespace Denix
                     m_Config.KeyboardLogging = keyboardNode.as<bool>();
                 if (const YAML::Node& gamepadNode = cfg["GamepadLogging"])
                     m_Config.GamepadLogging = gamepadNode.as<bool>();
+            }
+
+            // Physics
+            {
+                if (const YAML::Node& physicsNode = cfg["PhysicsLogging"])
+                    m_Config.PhysicsLogging = physicsNode.as<bool>();
             }
         }
         catch (const std::exception& e)
@@ -306,13 +276,16 @@ namespace Denix
             cfgEmitter << YAML::Key << "Project Name" << YAML::Value << m_Config.ProjectName;
             if (auto scene = m_AssetSubsystem->GetStartupScene())
                 cfgEmitter << YAML::Key << "Startup Scene" << YAML::Value << scene->GetRelativePath();
-        
+
             cfgEmitter << YAML::Newline << YAML::Comment("Input") << YAML::Newline;
             cfgEmitter << YAML::Key << "MouseMotionLogging" << YAML::Value << m_Config.MouseMotionLogging;
             cfgEmitter << YAML::Key << "MouseButtonLogging" << YAML::Value << m_Config.MouseButtonLogging;
-            cfgEmitter  << YAML::Key << "KeyboardLogging" << YAML::Value << m_Config.KeyboardLogging;
+            cfgEmitter << YAML::Key << "KeyboardLogging" << YAML::Value << m_Config.KeyboardLogging;
+
+            cfgEmitter << YAML::Newline << YAML::Comment("Physics") << YAML::Newline;
+            cfgEmitter << YAML::Key << "PhysicsLogging" << YAML::Value << m_Config.PhysicsLogging;
             cfgEmitter << YAML::EndMap;
-            
+
             if (FileSubsystem::WriteFile(m_FileSubsystem->m_ProjectFile, cfgEmitter.c_str()))
                 DE_LOG(LogEngine, Info, "Saved Engine Config")
         }
