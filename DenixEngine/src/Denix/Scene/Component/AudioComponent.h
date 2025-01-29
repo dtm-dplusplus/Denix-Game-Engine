@@ -8,7 +8,7 @@ namespace Denix
 
 namespace Denix
 {
-    class AudioComponent: public Component
+    class AudioComponent : public Component
     {
     public:
         AudioComponent() : Component(ObjectInit("Audio Component"))

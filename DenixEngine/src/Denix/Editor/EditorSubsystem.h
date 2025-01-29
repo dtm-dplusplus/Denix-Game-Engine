@@ -9,97 +9,97 @@
 
 namespace Denix
 {
-	class SDL_GLWindow;
-	class Scene;
-	class SceneOrganizerWidget;
-	class ActorDetailsWidget;
-	class AssetBrowserWidget;
-	class InputDebuggerWidget;
-	class EngineProfilerWidget;
-	class PerformanceSettingsWidget;
-	
-	class EditorSubsystem : public Subsystem<EditorSubsystem>
-	{
-	public:
-		EditorSubsystem() = default;
+    class SDL_GLWindow;
+    class Scene;
+    class SceneOrganizerWidget;
+    class ActorDetailsWidget;
+    class AssetBrowserWidget;
+    class InputDebuggerWidget;
+    class EngineProfilerWidget;
+    class PerformanceSettingsWidget;
 
-		~EditorSubsystem() override = default;
+    class EditorSubsystem : public Subsystem<EditorSubsystem>
+    {
+    public:
+        EditorSubsystem() = default;
 
-		EditorSubsystem(const EditorSubsystem& _other) = delete;
-		EditorSubsystem(EditorSubsystem&& _other) noexcept = delete;
-		EditorSubsystem& operator=(const EditorSubsystem& _other) = delete;
-		EditorSubsystem& operator=(EditorSubsystem&& _other) noexcept = delete;
+        ~EditorSubsystem() override = default;
 
-		void SetActiveScene(const Ref<Scene>& _scene);
-		
-		static ImGuiID GetDockLeftID()  { return s_Instance->DockLeftID; }
-		static ImGuiID GetDockRightID()  { return s_Instance->DockRightID; }
-		static ImGuiID GetDockDownID()  { return s_Instance->DockDownID; }
+        EditorSubsystem(const EditorSubsystem& _other) = delete;
+        EditorSubsystem(EditorSubsystem&& _other) noexcept = delete;
+        EditorSubsystem& operator=(const EditorSubsystem& _other) = delete;
+        EditorSubsystem& operator=(EditorSubsystem&& _other) noexcept = delete;
 
-		template <typename T, typename ... Args>
-		static Ref<T> AddEditorWidget(Args&&... _args)
-		{
-			static_assert(IsBase<EditorWidget, T>(), "Class must be derived from EditorWidget");
-				
-			// Check if T is derived from Actor
-			if (Ref<T> widget = MakeRef<T>(std::forward<Args>(_args)...))
-			{
-				s_Instance->m_EditorWidgets.emplace_back(widget);
-				return CastRef<T>(s_Instance->m_EditorWidgets.back());
-			}
+        void SetActiveScene(const Ref<Scene>& _scene);
 
-			DE_LOG(LogEditor, Error, "Failed to add Editor Widget: {0}", typeid(T).name());
-			return nullptr;
-		}
-		
-		static void RemoveEditorWidget(const Ref<EditorWidget>& _widget)
-		{
-			if (!_widget) return;
+        static ImGuiID GetDockLeftID() { return s_Instance->DockLeftID; }
+        static ImGuiID GetDockRightID() { return s_Instance->DockRightID; }
+        static ImGuiID GetDockDownID() { return s_Instance->DockDownID; }
 
-			std::erase(s_Instance->m_EditorWidgets, _widget);
+        template <typename T, typename... Args>
+        static Ref<T> AddEditorWidget(Args&&... _args)
+        {
+            static_assert(IsBase<EditorWidget, T>(), "Class must be derived from EditorWidget");
 
-		}
-	private:
-		void MainMenuBar();
+            // Check if T is derived from Actor
+            if (Ref<T> widget = MakeRef<T>(std::forward<Args>(_args)...))
+            {
+                s_Instance->m_EditorWidgets.emplace_back(widget);
+                return CastRef<T>(s_Instance->m_EditorWidgets.back());
+            }
 
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-		void Initialize() override;
-		void Deinitialize() override;
+            DE_LOG(LogEditor, Error, "Failed to add Editor Widget: {0}", typeid(T).name());
+            return nullptr;
+        }
 
-		static void NewFrame();
-		static void RenderUI();
-		static void PresentFrame();
-		void ViewportUpdate();
-		
+        static void RemoveEditorWidget(const Ref<EditorWidget>& _widget)
+        {
+            if (!_widget) return;
 
-		ImGuiID DockLeftID;
-		ImGuiID DockRightID;
-		ImGuiID DockDownID;
+            std::erase(s_Instance->m_EditorWidgets, _widget);
+        }
 
-		WRef<SDL_GLWindow> m_WindowRef;
+    private:
+        void MainMenuBar();
 
-		std::vector<Ref<EditorWidget>> m_EditorWidgets;
-		bool ShowDemoWindow = false;
-		bool ShowPlotDemoWindow = false;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+        void Initialize() override;
+        void Deinitialize() override;
 
-		float m_DragSpeed;
-		
-		WRef<Scene> m_ActiveScene;
+        static void NewFrame();
+        static void RenderUI();
+        static void PresentFrame();
+        void ViewportUpdate();
 
-		Ref<SceneOrganizerWidget> m_SceneOrganizerWidget;
-		
-		Ref<ActorDetailsWidget> m_ActorDetailsWidget;
 
-		Ref<AssetBrowserWidget> m_AssetBrowserWidget;
+        ImGuiID DockLeftID;
+        ImGuiID DockRightID;
+        ImGuiID DockDownID;
 
-		Ref<PerformanceSettingsWidget> m_PerformanceSettingsWidget;
+        WRef<SDL_GLWindow> m_WindowRef;
 
-		Ref<EngineProfilerWidget> m_EngineProfilerWidget;
+        std::vector<Ref<EditorWidget>> m_EditorWidgets;
+        bool ShowDemoWindow = false;
+        bool ShowPlotDemoWindow = false;
 
-		Ref<InputDebuggerWidget> m_InputDebuggerWidget;
+        float m_DragSpeed;
 
-		friend class Engine;
-		friend class EditorSubsystem;
-		friend class WindowSubsystem;
-	};
+        WRef<Scene> m_ActiveScene;
+
+        Ref<SceneOrganizerWidget> m_SceneOrganizerWidget;
+
+        Ref<ActorDetailsWidget> m_ActorDetailsWidget;
+
+        Ref<AssetBrowserWidget> m_AssetBrowserWidget;
+
+        Ref<PerformanceSettingsWidget> m_PerformanceSettingsWidget;
+
+        Ref<EngineProfilerWidget> m_EngineProfilerWidget;
+
+        Ref<InputDebuggerWidget> m_InputDebuggerWidget;
+
+        friend class Engine;
+        friend class EditorSubsystem;
+        friend class WindowSubsystem;
+    };
 }

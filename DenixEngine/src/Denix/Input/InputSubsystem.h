@@ -7,41 +7,47 @@
 
 namespace Denix
 {
-	class SDL_GLWindow;
-	
-	class InputSubsystem: public Subsystem<InputSubsystem>
-	{
-	public:
-		InputSubsystem() = default;
-		~InputSubsystem() override = default;
+    class SDL_GLWindow;
 
-		InputSubsystem(const InputSubsystem& _other) = delete;
-		InputSubsystem(InputSubsystem&& _other) noexcept = delete;
-		InputSubsystem& operator=(const InputSubsystem& _other) = delete;
-		InputSubsystem& operator=(InputSubsystem&& _other) noexcept = delete;
+    class InputSubsystem : public Subsystem<InputSubsystem>
+    {
+    public:
+        InputSubsystem() = default;
+        ~InputSubsystem() override = default;
 
-		static bool IsKeyDown(KeyCode _key);
-		static bool IsKeyUp(KeyCode _key);
-		static bool IsMouseButtonDown(const int _button) { return s_Instance->m_Mouse->SDL_State & SDL_BUTTON(_button); }
-		static MouseData& GetMouseData() { return s_Instance->m_Mouse->m_MouseData; }
+        InputSubsystem(const InputSubsystem& _other) = delete;
+        InputSubsystem(InputSubsystem&& _other) noexcept = delete;
+        InputSubsystem& operator=(const InputSubsystem& _other) = delete;
+        InputSubsystem& operator=(InputSubsystem&& _other) noexcept = delete;
 
-		static void GetDevices();
-		
-		bool m_MouseLogging;
-	private:
-		void ProcessInputEvent(const SDL_Event& _event);
-		void ProcessPenEvent(const SDL_Event& _event);
-		void ProcessCameraEvent(const SDL_Event& _event);
-		
-		void Initialize() override;
-		void Deinitialize() override;
+        static bool IsKeyDown(KeyCode _key);
+        static bool IsKeyUp(KeyCode _key);
 
-		//SDL_Event m_Event;
-		WRef<SDL_GLWindow> m_WindowRef;
+        static bool IsMouseButtonDown(const int _button)
+        {
+            return s_Instance->m_Mouse->SDL_State & SDL_BUTTON(_button);
+        }
 
-		Ref<Keyboard> m_Keyboard;
-		Ref<Mouse> m_Mouse;
-		friend class Engine;
-		friend class EventSubsystem;
-	};
+        static MouseData& GetMouseData() { return s_Instance->m_Mouse->m_MouseData; }
+
+        static void GetDevices();
+
+        bool m_MouseLogging;
+
+    private:
+        void ProcessInputEvent(const SDL_Event& _event);
+        void ProcessPenEvent(const SDL_Event& _event);
+        void ProcessCameraEvent(const SDL_Event& _event);
+
+        void Initialize() override;
+        void Deinitialize() override;
+
+        //SDL_Event m_Event;
+        WRef<SDL_GLWindow> m_WindowRef;
+
+        Ref<Keyboard> m_Keyboard;
+        Ref<Mouse> m_Mouse;
+        friend class Engine;
+        friend class EventSubsystem;
+    };
 }

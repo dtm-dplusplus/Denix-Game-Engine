@@ -1,5 +1,4 @@
-﻿
-#include "JobTableWidget.h"
+﻿#include "JobTableWidget.h"
 
 #include <algorithm>
 
@@ -19,9 +18,11 @@ void JobTableWidget::JobTableSort(std::vector<Ref<JobProfile>>& jobProfiles)
         if (sort_specs->SpecsDirty)
         {
             //MyItem::SortWithSortSpecs(sort_specs, items.Data, items.Size);
-            std::ranges::sort(jobProfiles.begin(), jobProfiles.end(), [](const Ref<JobProfile>& _a, const Ref<JobProfile>& _b) {
-                return SortJobTable{}(_a, _b, ImGui::TableGetSortSpecs());
-            });
+            std::ranges::sort(jobProfiles.begin(), jobProfiles.end(),
+                              [](const Ref<JobProfile>& _a, const Ref<JobProfile>& _b)
+                              {
+                                  return SortJobTable{}(_a, _b, ImGui::TableGetSortSpecs());
+                              });
             sort_specs->SpecsDirty = false;
         }
 }
@@ -33,7 +34,7 @@ void JobTableWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     if (!m_ProfileSession) return;
 
     std::vector<Ref<JobProfile>>& jobProfiles = m_ProfileSession->GetJobProfiles();
-    
+
     static ImGuiTableFlags flags =
         ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable |
         ImGuiTableFlags_Sortable | ImGuiTableFlags_SortMulti
@@ -86,67 +87,67 @@ void JobTableWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     }
 
     // Declare columns
-        // We use the "user_id" parameter of TableSetupColumn() to specify a user id that will be stored in the sort specifications.
-        // This is so our sort function can identify a column given our own identifier. We could also identify them based on their index!
-        // Demonstrate using a mixture of flags among available sort-related flags:
-        // - ImGuiTableColumnFlags_DefaultSort
-        // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending / ImGuiTableColumnFlags_NoSortDescending
-        // - ImGuiTableColumnFlags_PreferSortAscending / ImGuiTableColumnFlags_PreferSortDescending
-        // ImGui::TableSetupColumn("Thread", ImGuiTableColumnFlags_WidthFixed, 0.0f, 0);
-        if (ImGui::BeginTable((m_ProfileSession->GetName() + " Table").c_str(), 5, flags,
-                              ImVec2(0.0f, /*TEXT_BASE_HEIGHT * */ 15), 0.0f))
+    // We use the "user_id" parameter of TableSetupColumn() to specify a user id that will be stored in the sort specifications.
+    // This is so our sort function can identify a column given our own identifier. We could also identify them based on their index!
+    // Demonstrate using a mixture of flags among available sort-related flags:
+    // - ImGuiTableColumnFlags_DefaultSort
+    // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending / ImGuiTableColumnFlags_NoSortDescending
+    // - ImGuiTableColumnFlags_PreferSortAscending / ImGuiTableColumnFlags_PreferSortDescending
+    // ImGui::TableSetupColumn("Thread", ImGuiTableColumnFlags_WidthFixed, 0.0f, 0);
+    if (ImGui::BeginTable((m_ProfileSession->GetName() + " Table").c_str(), 5, flags,
+                          ImVec2(0.0f, /*TEXT_BASE_HEIGHT * */ 15), 0.0f))
+    {
+        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
+        ImGui::TableSetupColumn("Count", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Count);
+        ImGui::TableSetupColumn("Avg (ms)", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Avg);
+        ImGui::TableSetupColumn("Min (ms)", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Min);
+        ImGui::TableSetupColumn("Max (ms)", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Max);
+        ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
+        ImGui::TableHeadersRow();
+
+        // Sort our data if sort specs have been changed!
+        JobTableSort(jobProfiles);
+
+        // Display data
+        for (const auto& profile : jobProfiles)
         {
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Name);
-            ImGui::TableSetupColumn("Count", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Count);
-            ImGui::TableSetupColumn("Avg (ms)", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Avg);
-            ImGui::TableSetupColumn("Min (ms)", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Min);
-            ImGui::TableSetupColumn("Max (ms)", ImGuiTableColumnFlags_WidthFixed, 0.0f, MyItemColumnID_Max);
-            ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
-            ImGui::TableHeadersRow();
-
-            // Sort our data if sort specs have been changed!
-            JobTableSort(jobProfiles);
-
-            // Display data
-            for (const auto& profile : jobProfiles)
+            ImGui::PushID(profile->GetName().c_str());
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted(profile->GetName().c_str());
+            ImGui::TableNextColumn();
+            if (!m_ProfileSession->IsProfiling())
             {
-                ImGui::PushID(profile->GetName().c_str());
-                ImGui::TableNextRow();
+                ImGui::Text("%d", profile->m_DurationBuffer.ProfileResults.size());
                 ImGui::TableNextColumn();
-                ImGui::TextUnformatted(profile->GetName().c_str());
+                ImGui::Text("%f", profile->GetAverageDurationMs());
                 ImGui::TableNextColumn();
-                if (!m_ProfileSession->IsProfiling())
+                ImGui::Text("%f", profile->GetMinDuration());
+                ImGui::TableNextColumn();
+                ImGui::Text("%f", profile->GetMaxDuration());
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
                 {
-                    ImGui::Text("%d", profile->m_DurationBuffer.ProfileResults.size());
                     ImGui::TableNextColumn();
-                    ImGui::Text("%f", profile->GetAverageDurationMs());
-                    ImGui::TableNextColumn();
-                    ImGui::Text("%f", profile->GetMinDuration());
-                    ImGui::TableNextColumn();
-                    ImGui::Text("%f", profile->GetMaxDuration());
+                    ImGui::Text("");
                 }
-                else
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        ImGui::TableNextColumn();
-                        ImGui::Text("");
-                    }
-                }
-                ImGui::PopID();
-                }
-
-            ImGui::EndTable();
+            }
+            ImGui::PopID();
         }
+
+        ImGui::EndTable();
+    }
 }
 
 void PushStyleCompact()
 {
     ImGuiStyle& style = ImGui::GetStyle();
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
-                        ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 0.60f)));
+                        ImVec2(style.FramePadding.x, static_cast<float>((int)(style.FramePadding.y * 0.60f))));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,
-                        ImVec2(style.ItemSpacing.x, (float)(int)(style.ItemSpacing.y * 0.60f)));
+                        ImVec2(style.ItemSpacing.x, static_cast<float>((int)(style.ItemSpacing.y * 0.60f))));
 }
 
 void PopStyleCompact()
@@ -155,7 +156,7 @@ void PopStyleCompact()
 }
 
 bool SortJobTable::operator()(const Ref<JobProfile>& a, const Ref<JobProfile>& b,
-    const ImGuiTableSortSpecs* sort_specs) const
+                              const ImGuiTableSortSpecs* sort_specs) const
 {
     for (int n = 0; n < sort_specs->SpecsCount; n++)
     {
@@ -167,10 +168,12 @@ bool SortJobTable::operator()(const Ref<JobProfile>& a, const Ref<JobProfile>& b
             delta = strcmp(a->GetName().c_str(), b->GetName().c_str());
             break;
         case MyItemColumnID_Count:
-            delta = static_cast<int>(a->m_DurationBuffer.ProfileResults.size() - b->m_DurationBuffer.ProfileResults.size());
+            delta = static_cast<int>(a->m_DurationBuffer.ProfileResults.size() - b->m_DurationBuffer.ProfileResults.
+                size());
             break;
         case MyItemColumnID_Avg:
-            delta = (a->GetAverageDurationMs() > b->GetAverageDurationMs()) - (a->GetAverageDurationMs() < b->GetAverageDurationMs());
+            delta = (a->GetAverageDurationMs() > b->GetAverageDurationMs()) - (a->GetAverageDurationMs() < b->
+                GetAverageDurationMs());
             break;
         case MyItemColumnID_Min:
             delta = (a->GetMinDuration() > b->GetMinDuration()) - (a->GetMinDuration() < b->GetMinDuration());

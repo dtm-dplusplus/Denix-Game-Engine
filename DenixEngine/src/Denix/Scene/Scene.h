@@ -5,143 +5,146 @@
 
 namespace physx
 {
-	class PxControllerManager;
-	class PxSceneDesc;
-	class PxScene;
+    class PxControllerManager;
+    class PxSceneDesc;
+    class PxScene;
 }
 
 namespace Denix
 {
-	class Asset;
-	class CollisionCallback;
+    class Asset;
+    class CollisionCallback;
 
-	// Basic Scene class
-	class Scene: public BaseObject
-	{
-	public:
-		Scene();
+    // Basic Scene class
+    class Scene : public BaseObject
+    {
+    public:
+        Scene();
 
-		~Scene() override;
+        ~Scene() override;
 
-		void BeginScene() override;
+        void BeginScene() override;
 
-		void EndScene() override;
+        void EndScene() override;
 
-		void BeginPlay() override;
+        void BeginPlay() override;
 
-		void EndPlay() override;
+        void EndPlay() override;
 
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
-		virtual void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter) {}
+        virtual void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
+        {
+        }
 
-		bool IsPlaying() const;
+        bool IsPlaying() const;
 
-		template <class T = Actor, typename... Args>
-		Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
-		
-		void SpawnActor(const Ref<Actor>& _actor,const glm::vec3& _position = glm::vec3(0.0f), const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
+        template <class T = Actor, typename... Args>
+        Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f),
+                          const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 
-		Ref<Camera> GetViewportCamera();
+        void SpawnActor(const Ref<Actor>& _actor, const glm::vec3& _position = glm::vec3(0.0f),
+                        const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 
-		Ref<Actor> GetActiveCamera();
+        Ref<Camera> GetViewportCamera();
 
-		Ref<Actor> FindGameCamera() const;
+        Ref<Actor> GetActiveCamera();
 
-		std::vector<Ref<Actor>> GetSceneActors() const;
-		std::vector<Ref<Actor>>& GetSceneActors();
+        Ref<Actor> FindGameCamera() const;
 
-		Ref<Actor> GetActorByName(const std::string& _name) const;
+        std::vector<Ref<Actor>> GetSceneActors() const;
+        std::vector<Ref<Actor>>& GetSceneActors();
 
-		template<class T>
-		Ref<Actor> GetActorByClass() const;
+        Ref<Actor> GetActorByName(const std::string& _name) const;
 
-		template<class T>
-		std::vector<Ref<Actor>> GetActorsOfClass() const;
+        template <class T>
+        Ref<Actor> GetActorByClass() const;
 
-		size_t GetActorCount() const { return m_Actors.size(); }
+        template <class T>
+        std::vector<Ref<Actor>> GetActorsOfClass() const;
 
-		// Debug Utility - Use with caution
-		void ClearActors();
+        size_t GetActorCount() const { return m_Actors.size(); }
 
-		physx::PxScene*	m_PxScene;
-		physx::PxSceneDesc*		m_PxSceneDesc;
-		physx::PxControllerManager*	m_PxControllerManager;
-		CollisionCallback* m_CollisionCallback;
-		/** Gravity of the scene */
-		float m_Gravity = 9.81f;
-		
-	protected:
-		/** Name of the scene. Must be uniqiue */
-		Ref<Asset> m_SceneAsset;
-		
-		/** determine if the engine is in editor or tool side mode.
-		 * True if the scene is being played. False if in editor mode.
-		 */
-		bool m_IsPlaying = false;
+        // Debug Utility - Use with caution
+        void ClearActors();
 
-		Ref<Actor> m_GameCamera;
-		
-		Ref<Camera> m_ViewportCamera;
+        physx::PxScene* m_PxScene;
+        physx::PxSceneDesc* m_PxSceneDesc;
+        physx::PxControllerManager* m_PxControllerManager;
+        CollisionCallback* m_CollisionCallback;
+        /** Gravity of the scene */
+        float m_Gravity = 9.81f;
 
-		Ref<Actor> m_ActiveCamera;
+    protected:
+        /** Name of the scene. Must be uniqiue */
+        Ref<Asset> m_SceneAsset;
 
-	private:
+        /** determine if the engine is in editor or tool side mode.
+         * True if the scene is being played. False if in editor mode.
+         */
+        bool m_IsPlaying = false;
 
-		/** List of Objects in the scene */
-		std::vector<Ref<Actor>> m_Actors;
+        Ref<Actor> m_GameCamera;
 
-		/**
-		 * Map of actors in the scene
-		 * Used to quickly find actors by name
-		 */
-		std::unordered_set<std::string> m_ActorNames;
+        Ref<Camera> m_ViewportCamera;
 
-		
-		friend class SceneSubsystem;
-		friend class RendererSubsystem;
-		friend class EditorSubsystem;
-		friend class Engine;
-	};
+        Ref<Actor> m_ActiveCamera;
 
-	template <class T, typename... Args>
-	Ref<T> Scene::SpawnActor(Args&&... _args, const glm::vec3& _position, const glm::vec3& _rotation, const glm::vec3& _scale)
-{
-	// Check if T is derived from Actor
-	DE_STATIC_ASSERT(IsBase<Actor, T>(), "Class must be derived from Actor")
+    private:
+        /** List of Objects in the scene */
+        std::vector<Ref<Actor>> m_Actors;
 
-	if (Ref<Actor> actor = MakeRef<T>(std::forward<Args>(_args)...))
-	{
-		// Move the actor to the scene
-		SpawnActor(actor);					
-				
-		// Retrun the actor reference as it's derived type
-		return CastRef<T>(actor);
-	}
-			
-	DE_LOG(LogScene, Error, "Failed to create actor of type: {}", typeid(T).name());
+        /**
+         * Map of actors in the scene
+         * Used to quickly find actors by name
+         */
+        std::unordered_set<std::string> m_ActorNames;
 
-	return nullptr;
-}
 
-	template <class T>
-	Ref<Actor> Scene::GetActorByClass() const
-	{
-		for (const auto& actor : m_Actors)
-			if (typeid(T) == typeid(*actor)) return actor;
+        friend class SceneSubsystem;
+        friend class RendererSubsystem;
+        friend class EditorSubsystem;
+        friend class Engine;
+    };
 
-		return nullptr;
-	}
+    template <class T, typename... Args>
+    Ref<T> Scene::SpawnActor(Args&&... _args, const glm::vec3& _position, const glm::vec3& _rotation,
+                             const glm::vec3& _scale)
+    {
+        // Check if T is derived from Actor
+        DE_STATIC_ASSERT(IsBase<Actor, T>(), "Class must be derived from Actor")
 
-	template <class T>
-	std::vector<Ref<Actor>> Scene::GetActorsOfClass() const
-	{
-		std::vector<Ref<Actor>> actors;
+        if (Ref<Actor> actor = MakeRef<T>(std::forward<Args>(_args)...))
+        {
+            // Move the actor to the scene
+            SpawnActor(actor);
 
-		for (const auto& actor : m_Actors)
-			if (typeid(T) == typeid(*actor)) actors.push_back(actor);
+            // Retrun the actor reference as it's derived type
+            return CastRef<T>(actor);
+        }
 
-		return actors;
-	}
-	
+        DE_LOG(LogScene, Error, "Failed to create actor of type: {}", typeid(T).name());
+
+        return nullptr;
+    }
+
+    template <class T>
+    Ref<Actor> Scene::GetActorByClass() const
+    {
+        for (const auto& actor : m_Actors)
+            if (typeid(T) == typeid(*actor)) return actor;
+
+        return nullptr;
+    }
+
+    template <class T>
+    std::vector<Ref<Actor>> Scene::GetActorsOfClass() const
+    {
+        std::vector<Ref<Actor>> actors;
+
+        for (const auto& actor : m_Actors)
+            if (typeid(T) == typeid(*actor)) actors.push_back(actor);
+
+        return actors;
+    }
 }

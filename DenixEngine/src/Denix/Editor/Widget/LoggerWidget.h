@@ -10,5 +10,4 @@ namespace Denix
 
         void Update();
     };
-
 }

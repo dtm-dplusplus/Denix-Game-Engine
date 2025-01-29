@@ -4,7 +4,7 @@
 
 namespace Denix
 {
-    class InputDebuggerWidget: public EditorWidget
+    class InputDebuggerWidget : public EditorWidget
     {
     public:
         InputDebuggerWidget();

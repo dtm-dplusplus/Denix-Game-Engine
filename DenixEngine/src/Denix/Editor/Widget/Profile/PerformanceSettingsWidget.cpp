@@ -1,5 +1,4 @@
-﻿
-#include "PerformanceSettingsWidget.h"
+﻿#include "PerformanceSettingsWidget.h"
 
 #include "imgui.h"
 #include "Denix/UI/UISubsystem.h"

@@ -5,7 +5,7 @@
 
 namespace Denix
 {
-    class EditorWidget: public Object
+    class EditorWidget : public Object
     {
     public:
         EditorWidget(const ObjectInit& _objInit);
@@ -18,6 +18,6 @@ namespace Denix
 
         bool m_IsOpen;
         bool m_IsFocus;
-       // bool m_RequestClose;
+        // bool m_RequestClose;
     };
 }

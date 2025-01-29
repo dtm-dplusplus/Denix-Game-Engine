@@ -11,4 +11,7 @@ struct EngineConfig
     bool MouseButtonLogging = false;
     bool KeyboardLogging = false;
     bool GamepadLogging = false;
+
+    // Physics Configuration
+    bool PhysicsLogging = false;
 };

@@ -112,7 +112,6 @@ namespace Denix
         if (!m_PxActor) return;
 
         // Update physx gravity - This only disables gravity, collisions are still detected
-        DE_LOG(LogPhysics, Trace, "PHYSICS_SIMULATE")
         if (m_AttributeFlags & PHYSICS_SIMULATE)
         {
             if (SimulatePhysics())
@@ -175,7 +174,6 @@ namespace Denix
         }
 
         // Update physx collision detection
-        DE_LOG(LogPhysics, Trace, "PHYSICS_SIMULATE")
         if (m_AttributeFlags & PHYSICS_COLLISION)
         {
             if (CollisionDetectionEnabled())
@@ -204,7 +202,6 @@ namespace Denix
         }
 
         // Update physx mass
-        DE_LOG(LogPhysics, Trace, "PHYSICS_MASS")
         if (m_AttributeFlags & PHYSICS_MASS)
         {
             SetInertia();
@@ -214,7 +211,6 @@ namespace Denix
         }
 
         // Update physx Material
-        DE_LOG(LogPhysics, Trace, "PHYSICS_MATERIAL")
         if (m_AttributeFlags & PHYSICS_MATERIAL)
         {
             if (m_PxMaterial)
@@ -234,7 +230,6 @@ namespace Denix
         }
 
         // Update physx transform & Shape
-        DE_LOG(LogPhysics, Trace, "PHYSICS_SHAPE")
         if (m_AttributeFlags & PHYSICS_SHAPE)
         {
             if (Ref<TransformComponent> transform = m_Parent.lock()->GetComponent<TransformComponent>())
@@ -293,7 +288,6 @@ namespace Denix
         }
 
         // Update physx transfrom from parent if transform is changed during scene & editor update
-        DE_LOG(LogPhysics, Trace, "SimulatePhysics")
         if (SimulatePhysics())
         {
             if (physx::PxRigidDynamic* pxActor = m_PxActor->is<physx::PxRigidDynamic>())

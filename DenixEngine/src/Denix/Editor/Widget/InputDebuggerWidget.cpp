@@ -1,5 +1,4 @@
-﻿
-#include "InputDebuggerWidget.h"
+﻿#include "InputDebuggerWidget.h"
 
 #include "imgui.h"
 #include "Denix/UI/UISubsystem.h"
@@ -7,15 +6,14 @@
 
 Denix::InputDebuggerWidget::InputDebuggerWidget(): EditorWidget({"Input Debugger"})
 {
-    
 }
 
 void Denix::InputDebuggerWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     MouseData mouseData = InputSubsystem::GetMouseData();
-    
+
     ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Appearing);
-    
+
     ImGui::Begin(GetName().c_str(), &m_IsOpen);
 
     ImGui::BeginDisabled();

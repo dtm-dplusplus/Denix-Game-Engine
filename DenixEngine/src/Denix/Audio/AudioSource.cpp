@@ -9,10 +9,10 @@
 Denix::AudioSource::AudioSource(): BaseObject({"AudioSource"})
 {
     // Check we have available sources
-    if (s_MonoSources == s_MaxMonoSources) 
+    if (s_MonoSources == s_MaxMonoSources)
     {
         DE_LOG(LogAudio, Error, "Failed to create audio source. No available sources")
-           return;
+        return;
     }
 
     // Create OpenAL source
@@ -65,7 +65,7 @@ void Denix::AudioSource::Play() const
         DE_LOG(LogAudio, Error, "Failed to play audio source. No audio clip attached. {}", GetName())
         return;
     }
-    
+
     alCall(alSourcePlay, m_Source);
     m_State = SourceState::Playing;
 }

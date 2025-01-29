@@ -4,7 +4,8 @@
 
 namespace Denix
 {
-    enum class KeyCode {
+    enum class KeyCode
+    {
         DEK_UNKNOWN = SDLK_UNKNOWN,
         DEK_RETURN = SDLK_RETURN,
         DEK_ESCAPE = SDLK_ESCAPE,
@@ -26,7 +27,7 @@ namespace Denix
         DEK_MINUS = SDLK_MINUS,
         DEK_PERIOD = SDLK_PERIOD,
         DEK_SLASH = SDLK_SLASH,
-    
+
         // Numbers
         DEK_0 = SDLK_0,
         DEK_1 = SDLK_1,

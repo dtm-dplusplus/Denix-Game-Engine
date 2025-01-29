@@ -13,7 +13,7 @@ namespace Denix
     {
         DE_LOG(LogInput, Warn, "Input Subsystem Initializing");
         Subsystem::Initialize();
-        
+
         m_WindowRef = WindowSubsystem::GetWindow();
         DE_ASSERT(m_WindowRef.lock(), "Input: Window reference is invalid");
 
@@ -28,7 +28,7 @@ namespace Denix
 
         m_Mouse = MakeRef<Mouse>();
         DE_ASSERT(m_Mouse, "Input: Mouse reference is invalid");
-        
+
         DE_LOG(LogInput, Trace, "Keyboard Logging: {}", Keyboard::m_KeyboardLogging);
         DE_LOG(LogInput, Trace, "Mouse Button Logging: {}", Mouse::m_MouseButtonLogging);
         DE_LOG(LogInput, Trace, "Mouse Motion Logging: {}", Mouse::m_MouseMotionLogging);
@@ -46,7 +46,7 @@ namespace Denix
 
     bool InputSubsystem::IsKeyDown(const KeyCode _key)
     {
-        return s_Instance->m_Keyboard->IsKeyDown(_key);	
+        return s_Instance->m_Keyboard->IsKeyDown(_key);
     }
 
     bool InputSubsystem::IsKeyUp(const KeyCode _key)
@@ -61,8 +61,8 @@ namespace Denix
         {
             for (int i = 0; i < keyboardCount; i++)
             {
-                
-                DE_LOG(LogInput, Info, "Keyboard ID: {} Name: {}", keyboardIDs[i], SDL_GetKeyboardNameForID(keyboardIDs[i]))
+                DE_LOG(LogInput, Info, "Keyboard ID: {} Name: {}", keyboardIDs[i],
+                       SDL_GetKeyboardNameForID(keyboardIDs[i]))
             }
         }
         else
@@ -119,7 +119,7 @@ namespace Denix
             }
         }
 
-       int cameraCount = 0;
+        int cameraCount = 0;
         if (SDL_CameraID* cameraIDs = SDL_GetCameras(&cameraCount))
         {
             for (int i = 0; i < cameraCount; i++)
@@ -210,53 +210,53 @@ namespace Denix
     {
         switch (_event.type)
         {
-            case SDL_EVENT_PEN_PROXIMITY_IN:
-                DE_LOG(LogInput, Trace, "Pen Proximity In Event");
-                break;
-            case SDL_EVENT_PEN_PROXIMITY_OUT:
-                DE_LOG(LogInput, Trace, "Pen Proximity Out Event");
-                break;
-            case SDL_EVENT_PEN_DOWN:
-                DE_LOG(LogInput, Trace, "Pen Down Event");
-                break;
-            case SDL_EVENT_PEN_UP:
-                DE_LOG(LogInput, Trace, "Pen Up Event");
-                break;
-            case SDL_EVENT_PEN_BUTTON_DOWN:
-                DE_LOG(LogInput, Trace, "Pen Button Down Event");
-                break;
-            case SDL_EVENT_PEN_BUTTON_UP:
-                DE_LOG(LogInput, Trace, "Pen Button Up Event");
-                break;
-            case SDL_EVENT_PEN_MOTION:
-                DE_LOG(LogInput, Trace, "Pen Motion Event");
-                break;
-            case SDL_EVENT_PEN_AXIS:
-                DE_LOG(LogInput, Trace, "Pen Axis Event");
-                break;
-            default:
-                DE_LOG(LogInput, Error, "Unknown Pen Event");
+        case SDL_EVENT_PEN_PROXIMITY_IN:
+            DE_LOG(LogInput, Trace, "Pen Proximity In Event");
+            break;
+        case SDL_EVENT_PEN_PROXIMITY_OUT:
+            DE_LOG(LogInput, Trace, "Pen Proximity Out Event");
+            break;
+        case SDL_EVENT_PEN_DOWN:
+            DE_LOG(LogInput, Trace, "Pen Down Event");
+            break;
+        case SDL_EVENT_PEN_UP:
+            DE_LOG(LogInput, Trace, "Pen Up Event");
+            break;
+        case SDL_EVENT_PEN_BUTTON_DOWN:
+            DE_LOG(LogInput, Trace, "Pen Button Down Event");
+            break;
+        case SDL_EVENT_PEN_BUTTON_UP:
+            DE_LOG(LogInput, Trace, "Pen Button Up Event");
+            break;
+        case SDL_EVENT_PEN_MOTION:
+            DE_LOG(LogInput, Trace, "Pen Motion Event");
+            break;
+        case SDL_EVENT_PEN_AXIS:
+            DE_LOG(LogInput, Trace, "Pen Axis Event");
+            break;
+        default:
+            DE_LOG(LogInput, Error, "Unknown Pen Event");
         }
     }
 
     void InputSubsystem::ProcessCameraEvent(const SDL_Event& _event)
     {
-      switch (_event.type)
-{
-    case SDL_EVENT_CAMERA_DEVICE_ADDED:
-        DE_LOG(LogInput, Trace, "Camera Device Added Event");
-        break;
-    case SDL_EVENT_CAMERA_DEVICE_REMOVED:
-        DE_LOG(LogInput, Trace, "Camera Device Removed Event");
-        break;
-    case SDL_EVENT_CAMERA_DEVICE_APPROVED:
-        DE_LOG(LogInput, Trace, "Camera Device Approved Event");
-        break;
-    case SDL_EVENT_CAMERA_DEVICE_DENIED:
-        DE_LOG(LogInput, Trace, "Camera Device Denied Event");
-        break;
-    default:
-        DE_LOG(LogInput, Error, "Unknown Camera Event");
-}
+        switch (_event.type)
+        {
+        case SDL_EVENT_CAMERA_DEVICE_ADDED:
+            DE_LOG(LogInput, Trace, "Camera Device Added Event");
+            break;
+        case SDL_EVENT_CAMERA_DEVICE_REMOVED:
+            DE_LOG(LogInput, Trace, "Camera Device Removed Event");
+            break;
+        case SDL_EVENT_CAMERA_DEVICE_APPROVED:
+            DE_LOG(LogInput, Trace, "Camera Device Approved Event");
+            break;
+        case SDL_EVENT_CAMERA_DEVICE_DENIED:
+            DE_LOG(LogInput, Trace, "Camera Device Denied Event");
+            break;
+        default:
+            DE_LOG(LogInput, Error, "Unknown Camera Event");
+        }
     }
 }

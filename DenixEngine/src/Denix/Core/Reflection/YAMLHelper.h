@@ -2,10 +2,13 @@
 #include <glm/vec3.hpp>
 #include "yaml-cpp/yaml.h"
 
-namespace YAML {
-    template<>
-    struct convert<glm::vec3> {
-        static Node encode(const glm::vec3& rhs) {
+namespace YAML
+{
+    template <>
+    struct convert<glm::vec3>
+    {
+        static Node encode(const glm::vec3& rhs)
+        {
             Node node;
             node.push_back(rhs.x);
             node.push_back(rhs.y);
@@ -13,8 +16,10 @@ namespace YAML {
             return node;
         }
 
-        static bool decode(const ::YAML::Node& node, glm::vec3& rhs) {
-            if(!node.IsSequence() || node.size() != 3) {
+        static bool decode(const Node& node, glm::vec3& rhs)
+        {
+            if (!node.IsSequence() || node.size() != 3)
+            {
                 return false;
             }
 
@@ -23,8 +28,6 @@ namespace YAML {
             rhs.z = node[2].as<float>();
             return true;
         }
-
-        
     };
 }
 
@@ -37,10 +40,11 @@ inline void Vec3ToYAML(YAML::Emitter& _out, const glm::vec3& rhs)
 
 inline glm::vec3 YAMLtoVec3(const YAML::Node& node)
 {
-   //if(!node.IsSequence() || node.size() != 3) {
-   //    return {0.0f, 0.0f, 0.0f};
-   //}
-    if (!node["x"].IsDefined() || !node["y"].IsDefined() || !node["z"].IsDefined()) {
+    //if(!node.IsSequence() || node.size() != 3) {
+    //    return {0.0f, 0.0f, 0.0f};
+    //}
+    if (!node["x"].IsDefined() || !node["y"].IsDefined() || !node["z"].IsDefined())
+    {
         return {0.0f, 0.0f, 0.0f};
     }
     glm::vec3 vec;
@@ -50,7 +54,8 @@ inline glm::vec3 YAMLtoVec3(const YAML::Node& node)
     return vec;
 }
 
-static YAML::Node EmitVec3(const glm::vec3& vec) {
+static YAML::Node EmitVec3(const glm::vec3& vec)
+{
     YAML::Node node;
     node["x"] = vec.x;
     node["y"] = vec.y;

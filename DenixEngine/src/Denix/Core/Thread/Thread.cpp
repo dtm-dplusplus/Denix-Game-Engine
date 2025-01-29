@@ -33,7 +33,7 @@ void Denix::Thread::Work()
 {
     while (m_Active)
     {
-       // DE_LOG(LogThread, Trace, "Thread {} Waiting for work", m_ThreadID)
+        // DE_LOG(LogThread, Trace, "Thread {} Waiting for work", m_ThreadID)
         // Request a job from the job queue
         if (m_ShouldWork) m_Job = JobSubsystem::RequestJob();
 
@@ -47,7 +47,8 @@ void Denix::Thread::Work()
                 DE_PROFILE_JOB(m_Job)
             }
             m_Job->m_EntryPoint();
-             if (s_ShouldProfile) DE_PROFILE_JOB_END(m_Job)
+            if (s_ShouldProfile)
+                DE_PROFILE_JOB_END(m_Job)
             m_Job->m_WaitCounter->Decrement();
 
             // Profile the thread
@@ -55,7 +56,8 @@ void Denix::Thread::Work()
             {
                 m_JobExecCount++;
                 m_ThreadExecTime += m_Job->m_JobTime.Duration;
-                m_ThreadSleepTime += static_cast<float>(s_WaitForJobSleepTime) * 0.000000001f; // Convert to seconds. We sleep right after this loop so we can add the sleep time here
+                m_ThreadSleepTime += static_cast<float>(s_WaitForJobSleepTime) * 0.000000001f;
+                // Convert to seconds. We sleep right after this loop so we can add the sleep time here
             }
 
             m_Job = nullptr;

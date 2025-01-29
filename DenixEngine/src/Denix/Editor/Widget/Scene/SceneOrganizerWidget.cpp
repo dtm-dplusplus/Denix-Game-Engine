@@ -1,5 +1,4 @@
-﻿
-#include "SceneOrganizerWidget.h"
+﻿#include "SceneOrganizerWidget.h"
 
 #include "ActorDetailsWidget.h"
 #include "imgui.h"
@@ -12,7 +11,8 @@
 
 namespace Denix
 {
-    SceneOrganizerWidget::SceneOrganizerWidget(const WRef<Scene>& _scene) : SceneEditorWidget({"SceneOrganizer"}, _scene)
+    SceneOrganizerWidget::SceneOrganizerWidget(const WRef<Scene>& _scene) : SceneEditorWidget(
+        {"SceneOrganizer"}, _scene)
     {
         m_SceneRef = _scene;
         m_SelectionIndex = _scene.lock()->GetSceneActors().size() - 1;
@@ -24,7 +24,7 @@ namespace Denix
     {
         EditorWidget::Update(_deltaTime, _waitCounter);
 
-        if(!m_SceneRef.lock()) return;
+        if (!m_SceneRef.lock()) return;
 
         std::vector<Ref<Actor>>& sceneObjects = m_SceneRef.lock()->GetSceneActors();
 
@@ -32,7 +32,7 @@ namespace Denix
         {
             ResetSelection();
         }
-        
+
         // Scene Objects
         ImGui::SetNextWindowDockID(EditorSubsystem::GetDockLeftID(), ImGuiCond_Appearing);
         ImGui::Begin(GetName().c_str());
@@ -49,7 +49,7 @@ namespace Denix
             m_AddActorWidget->m_CreatedActor = false;
             SetSelection(sceneObjects.size() - 1);
         }
-        
+
         for (int i = 0; i < sceneObjects.size(); i++)
         {
             // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
@@ -60,7 +60,7 @@ namespace Denix
                 DE_LOG(LogEditor, Trace, "Selected Object: {0}", sceneObjects[i]->GetName());
             }
             ImGui::PopID();
-            
+
             if (ImGui::BeginPopupContextItem()) //uses last item id as popup id
             {
                 m_SelectionIndex = i;
@@ -76,7 +76,7 @@ namespace Denix
                 ImGui::EndPopup();
             }
         }
-        
+
         ImGui::End();
 
         // Scene Settings
@@ -110,7 +110,7 @@ namespace Denix
     Ref<Actor> SceneOrganizerWidget::GetSelectedObject() const
     {
         if (!ValidateSelection()) return nullptr;
-        
+
         if (Ref<Actor> selectedObject = m_SceneRef.lock()->GetSceneActors().at(m_SelectionIndex))
         {
             return selectedObject;

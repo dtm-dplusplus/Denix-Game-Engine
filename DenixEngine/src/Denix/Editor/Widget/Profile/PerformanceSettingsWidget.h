@@ -7,7 +7,7 @@ namespace Denix
     /**
      * \brief PerformanceSettingsWidget class for managing performance settings in the editor.
      */
-    class PerformanceSettingsWidget: public EditorWidget
+    class PerformanceSettingsWidget : public EditorWidget
     {
     public:
         /**

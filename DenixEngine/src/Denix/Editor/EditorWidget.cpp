@@ -1,7 +1,7 @@
 ﻿#include "EditorWidget.h"
 
 
-Denix::EditorWidget::EditorWidget(const ObjectInit& _objInit): Object(_objInit), m_IsOpen(true), m_IsFocus(false) 
+Denix::EditorWidget::EditorWidget(const ObjectInit& _objInit): Object(_objInit), m_IsOpen(true), m_IsFocus(false)
 {
 }
 

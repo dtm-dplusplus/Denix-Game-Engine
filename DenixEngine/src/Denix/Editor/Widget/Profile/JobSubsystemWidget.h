@@ -6,7 +6,7 @@ namespace Denix
     /**
      * \brief JobSubsystemWidget class for displaying and managing the job subsystem in the editor.
      */
-    class JobSubsystemWidget: public EditorWidget
+    class JobSubsystemWidget : public EditorWidget
     {
     public:
         /**

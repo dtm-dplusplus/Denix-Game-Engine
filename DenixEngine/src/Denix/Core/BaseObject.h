@@ -6,8 +6,8 @@
 
 namespace YAML
 {
-     class Node;
-     class Emitter;
+    class Node;
+    class Emitter;
 }
 
 namespace Denix
@@ -16,14 +16,18 @@ namespace Denix
      *  BaseObject defines an object that can be serialized, deserialized, and reflected via th Reflection Subsystem
      *  
      */
-    class BaseObject: public Object, public std::enable_shared_from_this<BaseObject>
+    class BaseObject : public Object, public std::enable_shared_from_this<BaseObject>
     {
     public:
         BaseObject() = default;
-        BaseObject(const ObjectInit& _objInit): Object(_objInit){}
+
+        BaseObject(const ObjectInit& _objInit): Object(_objInit)
+        {
+        }
+
         ~BaseObject() override = default;
 
-        template<typename T>
+        template <typename T>
         Ref<T> GetRef()
         {
             if (Ref<BaseObject> ref = shared_from_this())
@@ -32,24 +36,42 @@ namespace Denix
             DE_LOG(LogCore, Error, "Failed to cast object to type: {}", ReflectionHelper::GetClassNameDE<T>());
             return nullptr;
         }
-        
-        // Called each frame if the game is playing
-        virtual void BeginPlay() {}
-        virtual void EndPlay() {}
 
-        virtual void PreUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) {}
-        virtual void Update(float _deltaTime, const Ref<Counter>& _waitCounter) {}
-        virtual void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) {}
-        
+        // Called each frame if the game is playing
+        virtual void BeginPlay()
+        {
+        }
+
+        virtual void EndPlay()
+        {
+        }
+
+        virtual void PreUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
+        {
+        }
+
+        virtual void Update(float _deltaTime, const Ref<Counter>& _waitCounter)
+        {
+        }
+
+        virtual void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
+        {
+        }
+
         // Called when the scene is set as active
-        virtual void BeginScene() {}
-        virtual void EndScene() {}
+        virtual void BeginScene()
+        {
+        }
+
+        virtual void EndScene()
+        {
+        }
 
         virtual void Destroy()
         {
             MarkRubbish();
         }
-        
+
         virtual void Serialize(YAML::Emitter& _out);
         virtual void Deserialize(const YAML::Node& _in);
     };

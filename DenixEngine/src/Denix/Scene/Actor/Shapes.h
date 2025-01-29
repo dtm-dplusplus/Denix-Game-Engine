@@ -4,21 +4,21 @@
 
 namespace Denix
 {
-	class Plane : public Actor
-	{
-	public:
-		Plane();
-	};
+    class Plane : public Actor
+    {
+    public:
+        Plane();
+    };
 
-	class Cube : public Actor
-	{
-	public:
-		Cube();
-	};
+    class Cube : public Actor
+    {
+    public:
+        Cube();
+    };
 
-	class Sphere : public Actor
-	{
-	public:
-		Sphere();
-	};
+    class Sphere : public Actor
+    {
+    public:
+        Sphere();
+    };
 }

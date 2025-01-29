@@ -8,30 +8,30 @@
 
 namespace Denix
 {
-	class WindowSubsystem: public Subsystem<WindowSubsystem>
-	{
-	public:
-		WindowSubsystem() = default;
+    class WindowSubsystem : public Subsystem<WindowSubsystem>
+    {
+    public:
+        WindowSubsystem() = default;
 
-		~WindowSubsystem() override = default;
+        ~WindowSubsystem() override = default;
 
-		static void ToggleFullscreen();
+        static void ToggleFullscreen();
 
-		static Ref<SDL_GLWindow> GetWindow() { return s_Instance->m_Window; }
-		
-		static glm::vec2 GetWindowSize() { return s_Instance->m_Window->GetWindowSize(); }
-		static int GetWindowWidth() { return s_Instance->m_Window->GetWidth(); }
-		static int GetWindowHeight() { return s_Instance->m_Window->GetHeight(); }
-		
-	private:
-		void NewFrame();
-		void PresentFrame();
-		void Initialize() override;
+        static Ref<SDL_GLWindow> GetWindow() { return s_Instance->m_Window; }
 
-		void Deinitialize() override;
+        static glm::vec2 GetWindowSize() { return s_Instance->m_Window->GetWindowSize(); }
+        static int GetWindowWidth() { return s_Instance->m_Window->GetWidth(); }
+        static int GetWindowHeight() { return s_Instance->m_Window->GetHeight(); }
 
-		Ref<SDL_GLWindow> m_Window;
+    private:
+        void NewFrame();
+        void PresentFrame();
+        void Initialize() override;
 
-		friend class Engine;
-	};
+        void Deinitialize() override;
+
+        Ref<SDL_GLWindow> m_Window;
+
+        friend class Engine;
+    };
 }

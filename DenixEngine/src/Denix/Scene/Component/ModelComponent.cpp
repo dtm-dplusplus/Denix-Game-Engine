@@ -6,7 +6,7 @@
 #include "Denix/Core/Reflection/YAMLHelper.h"
 
 Denix::ModelComponent::ModelComponent(): Component(ObjectInit("Model Component")),
-                                       m_Model{ nullptr }
+                                         m_Model{nullptr}
 {
     m_ClassName = "ModelComponent";
 }

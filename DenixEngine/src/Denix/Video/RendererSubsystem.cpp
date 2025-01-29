@@ -22,7 +22,7 @@ namespace Denix
     {
         s_Instance->m_CameraSubmission = _submission;
     }
-    
+
     void RendererSubsystem::RenderObject(const RenderSubmission& _submission)
     {
         if (!_submission.Mat || !_submission.Model) return;
@@ -31,23 +31,23 @@ namespace Denix
         _submission.Mat->m_Shader->Bind();
 
         // Camer matrices
-        glUniformMatrix4fv( _submission.Mat->m_Shader->GetUniform("u_Projection"), 1,
-                         GL_FALSE, glm::value_ptr(s_Instance->m_CameraSubmission.Projection));
+        glUniformMatrix4fv(_submission.Mat->m_Shader->GetUniform("u_Projection"), 1,
+                           GL_FALSE, value_ptr(s_Instance->m_CameraSubmission.Projection));
 
-        glUniformMatrix4fv( _submission.Mat->m_Shader->GetUniform("u_View"), 1,
-                           GL_FALSE, glm::value_ptr(s_Instance->m_CameraSubmission.View));
-        
+        glUniformMatrix4fv(_submission.Mat->m_Shader->GetUniform("u_View"), 1,
+                           GL_FALSE, value_ptr(s_Instance->m_CameraSubmission.View));
+
         // Base color/texture specific settings
         glUniform1i(_submission.Mat->m_Shader->GetUniform("u_Material.IsBaseTexture"),
                     _submission.Mat->m_IsBaseTexture);
 
         glUniform3f(_submission.Mat->m_Shader->GetUniform("u_Material.BaseColor"),
-                        _submission.Mat->m_BaseColor.r,
-                        _submission.Mat->m_BaseColor.g,
-                        _submission.Mat->m_BaseColor.b);
-        
+                    _submission.Mat->m_BaseColor.r,
+                    _submission.Mat->m_BaseColor.g,
+                    _submission.Mat->m_BaseColor.b);
+
         glUniform1i(_submission.Mat->m_Shader->GetUniform("u_Material.MultiplyBase"), _submission.Mat->m_MultiplyBase);
-        
+
         if (_submission.Mat->m_IsBaseTexture && _submission.Mat->m_BaseTexture)
         {
             _submission.Mat->m_BaseTexture->Bind();
@@ -56,7 +56,7 @@ namespace Denix
             glTexParameteri(target, GL_TEXTURE_WRAP_S, _submission.Mat->m_TextureSettings.WrapMode);
             glTexParameteri(target, GL_TEXTURE_WRAP_T, _submission.Mat->m_TextureSettings.WrapMode);
             glTexParameteri(target, GL_TEXTURE_MIN_FILTER, _submission.Mat->m_TextureSettings.FilterMode);
-            glTexParameteri(target, GL_TEXTURE_MAG_FILTER,_submission.Mat->m_TextureSettings.FilterMode);
+            glTexParameteri(target, GL_TEXTURE_MAG_FILTER, _submission.Mat->m_TextureSettings.FilterMode);
         }
         else
         {
@@ -65,7 +65,7 @@ namespace Denix
 
         // Upload the model matrix
         glUniformMatrix4fv(_submission.Mat->m_Shader->GetUniform("u_Model"), 1,
-                           GL_FALSE, glm::value_ptr(_submission.TransformModel));
+                           GL_FALSE, value_ptr(_submission.TransformModel));
 
         // Draw Call
         for (const auto& mesh : _submission.Model->m_Meshes)
@@ -74,7 +74,7 @@ namespace Denix
             {
                 mesh->m_VAO->Bind();
                 mesh->m_IBO->Bind();
-                glDrawElements(GL_TRIANGLES, mesh->m_IBO->m_IndexCount,GL_UNSIGNED_INT, 0);
+                glDrawElements(GL_TRIANGLES, mesh->m_IBO->m_IndexCount,GL_UNSIGNED_INT, nullptr);
             }
         }
     }

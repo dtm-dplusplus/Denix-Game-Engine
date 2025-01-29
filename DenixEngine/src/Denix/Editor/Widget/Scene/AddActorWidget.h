@@ -7,7 +7,7 @@ namespace Denix
     class Scene;
     class Actor;
 
-    class AddActorWidget: public EditorWidget
+    class AddActorWidget : public EditorWidget
     {
     public:
         AddActorWidget(const WRef<Scene>& _scene);
@@ -18,4 +18,3 @@ namespace Denix
         bool m_CreatedActor;
     };
 }
-

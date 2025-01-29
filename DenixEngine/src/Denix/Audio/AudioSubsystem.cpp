@@ -1,5 +1,4 @@
-﻿
-#include "AudioSubsystem.h"
+﻿#include "AudioSubsystem.h"
 
 #include <SDL3/SDL_events.h>
 
@@ -12,17 +11,19 @@ Denix::AudioSubsystem::AudioSubsystem(): m_Device(nullptr), m_Context(nullptr)
 void Denix::AudioSubsystem::Initialize()
 {
     Subsystem::Initialize();
-    
+
     DE_LOG(LogAudio, Warn, "Initializing Audio Subsystem")
 
     // Initialize OpenAL
     m_Device = alcOpenDevice(nullptr);
-    if (!m_Device) {
+    if (!m_Device)
+    {
         DE_LOG(LogAudio, Error, "Failed to open OpenAL m_Device")
     }
 
     m_Context = alcCreateContext(m_Device, nullptr);
-    if (!m_Context) {
+    if (!m_Context)
+    {
         DE_LOG(LogAudio, Error, "Failed to create OpenAL context")
     }
     alcMakeContextCurrent(m_Context);
@@ -33,13 +34,14 @@ void Denix::AudioSubsystem::Initialize()
     alcGetIntegerv(m_Device, ALC_STEREO_SOURCES, 1, &stereoSources);
 
     // Check we have audio sources. Resume without audio if we don't
-    if (monoSources <= 0 && stereoSources <= 0) {
+    if (monoSources <= 0 && stereoSources <= 0)
+    {
         DE_LOG(LogAudio, Critical, "No audio sources supported by audio hardware")
         DE_LOG(LogAudio, Error, "Audio Subsystem Disabled")
         m_Enabled = false;
         return;
     }
-    
+
     AudioSource::s_MaxMonoSources = monoSources;
     AudioSource::s_MaxStereoSources = stereoSources;
     DE_LOG(LogAudio, Info, "Mono Sources: {}, Stereo Sources: {}", monoSources, stereoSources)
@@ -76,7 +78,7 @@ Denix::Ref<Denix::AudioSource> Denix::AudioSubsystem::CreateNewAudioSource()
     }
 
     DE_LOG(LogAudio, Error, "Failed to create audio source")
-    
+
     return nullptr;
 }
 
@@ -108,4 +110,3 @@ void Denix::AudioSubsystem::ProcessAudioEvent(const SDL_Event& _event)
         DE_LOG(LogInput, Error, "Unknown Audio Event");
     }
 }
-

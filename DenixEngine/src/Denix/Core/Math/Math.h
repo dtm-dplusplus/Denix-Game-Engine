@@ -16,12 +16,12 @@ namespace Denix::Math
     {
         return {glm::degrees(_x), glm::degrees(_y), glm::degrees(_z)};
     }
-    
+
     inline float Degrees(const float _rad)
     {
         return glm::degrees(_rad);
     }
-    
+
     inline glm::vec3 Radians(const glm::vec3& _degrees)
     {
         return {glm::radians(_degrees.x), glm::radians(_degrees.y), glm::radians(_degrees.z)};
@@ -36,7 +36,7 @@ namespace Denix::Math
     {
         return glm::radians(_deg);
     }
-    
+
     inline int Rand(const int _min, const int _max)
     {
         static std::random_device rd;
@@ -47,9 +47,9 @@ namespace Denix::Math
 
     inline float RandF(const float _min, const float _max)
     {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_real_distribution dis(_min, _max);
-    return dis(gen);
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        std::uniform_real_distribution dis(_min, _max);
+        return dis(gen);
     }
 }

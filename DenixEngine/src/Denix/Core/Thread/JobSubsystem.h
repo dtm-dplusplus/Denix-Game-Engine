@@ -13,7 +13,7 @@ namespace Denix
     /**
          * \brief Comparator for job priority.
          */
-    struct JobComparator//: public moodycamel::ConcurrentQueueDefaultTraits
+    struct JobComparator //: public moodycamel::ConcurrentQueueDefaultTraits
     {
         /**
              * \brief Compares two jobs based on their priority.
@@ -34,7 +34,7 @@ namespace Denix
         * The JobSubsystem is responsible for managing and executing jobs across multiple threads.
         * It provides functionality to add jobs, start and stop thread profiling, and manage worker threads.
         */
-    class JobSubsystem final: public Subsystem<JobSubsystem>
+    class JobSubsystem final : public Subsystem<JobSubsystem>
     {
     public:
         /**
@@ -94,8 +94,8 @@ namespace Denix
 
             //LockGuard lockGuard(*s_Instance->m_JobMutex);
             std::lock_guard lock(s_Instance->m_STDMutex);
-            
-           //DE_LOG(LogJob, Trace, "Adding Job to Queue: {}", _name)
+
+            //DE_LOG(LogJob, Trace, "Adding Job to Queue: {}", _name)
             //s_Instance->m_Jobs.try_enqueue(job);
             s_Instance->m_Jobs.push(job);
             //DE_LOG(LogJob, Trace, "Job Added to Queue: {}", _name)
@@ -176,7 +176,8 @@ namespace Denix
             if (objectCount > s_Instance->m_BatchUpdateThreshold)
             {
                 // Setup batch size. All batches are equal with the exception of the last batch.
-                const size_t batchSize = (objectCount + s_Instance->m_ActiveWorkerThreads - 1) / s_Instance->m_ActiveWorkerThreads;
+                const size_t batchSize = (objectCount + s_Instance->m_ActiveWorkerThreads - 1) / s_Instance->
+                    m_ActiveWorkerThreads;
 
                 // Create a job for each batch
                 for (size_t batchIndex = 0; batchIndex < s_Instance->m_ActiveWorkerThreads; ++batchIndex)
@@ -187,8 +188,10 @@ namespace Denix
                     if (begin >= objectCount) break;
 
                     AddJob(_namePrefix + std::to_string(batchIndex), _priority, _waitCounter,
-                           [begin, end, &_objects, _func, _args...] {
-                               for (size_t j = begin; j < end; ++j) {
+                           [begin, end, &_objects, _func, _args...]
+                           {
+                               for (size_t j = begin; j < end; ++j)
+                               {
                                    std::invoke(_func, _objects[j], _args...);
                                }
                            });
@@ -242,7 +245,7 @@ namespace Denix
          * @return The number of available worker threads. 
          */
         static int GetAvailableThreads() { return s_Instance->m_AvailableWorkerThreads; }
-        
+
     private:
         /**
          * \brief Requests the next job from the job queue.
@@ -289,8 +292,8 @@ namespace Denix
         Ref<Mutex> m_JobMutex;
 
         std::mutex m_RequestJobMutex;
-        std::mutex  m_STDMutex;
-        
+        std::mutex m_STDMutex;
+
         std::vector<Ref<Thread>> m_WorkerThreads;
 
         /**

@@ -18,7 +18,7 @@ void ProfileSession::EndSession()
     m_SessionTimer->Stop();
 
     // Calculate thread data for visualization
-    for (auto thread: m_ThreadData)
+    for (auto thread : m_ThreadData)
     {
         m_ThreadJobCounts.push_back(thread.m_JobExecCount);
         m_ThreadJobExecTimes.push_back(thread.m_ThreadExecTime);
@@ -26,7 +26,7 @@ void ProfileSession::EndSession()
     }
 
     // Calculate session frame times
-    for (const auto& frameTime: m_FrameTimes)
+    for (const auto& frameTime : m_FrameTimes)
     {
         m_TotalFrameTime += frameTime;
         if (frameTime < m_MinFrameTime || m_MinFrameTime == 0.0f) m_MinFrameTime = frameTime;
@@ -36,11 +36,12 @@ void ProfileSession::EndSession()
     m_AverageFrameTime = m_TotalFrameTime / static_cast<float>(m_FrameTimes.size());
 
     // Calculate session frames per second
-    m_AverageFramesPerSecond = std::accumulate(m_FramesPerSeconds.begin(), m_FramesPerSeconds.end(), 0) / m_FramesPerSeconds.size();
+    m_AverageFramesPerSecond = std::accumulate(m_FramesPerSeconds.begin(), m_FramesPerSeconds.end(), 0) /
+        m_FramesPerSeconds.size();
 
     // Set history to duration to show full profile history on graph
     m_GraphHistory = m_SessionTimer->GetDuration();
-    
+
     // Flush the frame times
     m_FrameTimes.clear();
     m_FramesPerSeconds.clear();
@@ -61,7 +62,7 @@ void ProfileSession::EndInlineProfile(const std::string& _name)
 
 void ProfileSession::StartJobProfile(const Ref<JobDeclaration>& _job)
 {
-   if (const Ref<Profile> profile = GetJobProfile(_job->m_Name)) profile->Start();
+    if (const Ref<Profile> profile = GetJobProfile(_job->m_Name)) profile->Start();
 }
 
 void ProfileSession::EndJobProfile(const Ref<JobDeclaration>& _job)
@@ -81,7 +82,7 @@ Ref<Profile> ProfileSession::GetInlineProfile(const std::string& _name)
         m_InlineProfiles.emplace_back(MakeRef<Profile>(_name));
         m_InlineProfileMap[_name] = m_InlineProfiles.back();
     }
-    
+
     return m_InlineProfileMap[_name];
 }
 

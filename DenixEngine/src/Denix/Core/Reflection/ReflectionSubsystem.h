@@ -9,17 +9,16 @@
 
 namespace Denix
 {
-    
-    class ReflectionSubsystem: public Subsystem<ReflectionSubsystem>
+    class ReflectionSubsystem : public Subsystem<ReflectionSubsystem>
     {
     public:
         ReflectionSubsystem() = default;
-        
+
         ~ReflectionSubsystem() override = default;
 
         using CreateFunc = std::function<Ref<Object>()>;
-       
-        template<typename T>
+
+        template <typename T>
         static void Register()
         {
             const std::string className = ReflectionHelper::GetClassNameDE<T>();
@@ -35,18 +34,19 @@ namespace Denix
         {
             if (const auto it = s_Instance->m_CreateFuncs.find(_className); it != s_Instance->m_CreateFuncs.end())
             {
-               if(Ref<Object> obj = it->second())
-               {
-                   obj->m_ClassName = _className;
-                   return CastRef<T>(obj);
-               }
+                if (Ref<Object> obj = it->second())
+                {
+                    obj->m_ClassName = _className;
+                    return CastRef<T>(obj);
+                }
             }
             return nullptr;
         }
 
-       static Ref<Object> GetType(const std::string& _className)
+        static Ref<Object> GetType(const std::string& _className)
         {
-            if (const auto it = s_Instance->m_CreateFuncs.find(_className); it != s_Instance->m_CreateFuncs.end()) {
+            if (const auto it = s_Instance->m_CreateFuncs.find(_className); it != s_Instance->m_CreateFuncs.end())
+            {
                 return it->second();
             }
             return nullptr;
@@ -56,13 +56,13 @@ namespace Denix
         {
             return s_Instance->m_CreateFuncs.contains(_className);
         }
-        
+
         static std::map<std::string, CreateFunc>& GetCreateFuncs() { return s_Instance->m_CreateFuncs; }
 
     private:
         void Initialize() override;
         void Deinitialize() override;
-        
+
         std::map<std::string, CreateFunc> m_CreateFuncs;
 
         friend class Engine;

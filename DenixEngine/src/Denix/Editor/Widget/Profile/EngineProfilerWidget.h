@@ -11,7 +11,7 @@ namespace Denix
      * \brief Widget for displaying engine profiling data.
      * \details The EngineProfilerWidget displays engine profiling data such as job profiling, frame times, and thread data.
      */
-    class EngineProfilerWidget: public EditorWidget
+    class EngineProfilerWidget : public EditorWidget
     {
     public:
         EngineProfilerWidget();

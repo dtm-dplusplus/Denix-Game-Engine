@@ -9,7 +9,7 @@ namespace Denix
     class AddActorWidget;
     class SceneSettingsWidget;
 
-    class SceneOrganizerWidget: public SceneEditorWidget
+    class SceneOrganizerWidget : public SceneEditorWidget
     {
     public:
         SceneOrganizerWidget(const WRef<Scene>& _scene);

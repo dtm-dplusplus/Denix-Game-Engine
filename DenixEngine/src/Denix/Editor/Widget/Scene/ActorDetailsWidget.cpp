@@ -90,28 +90,34 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         const Ref<PhysicsComponent> comp = _selectedObject->GetPhysicsComponent();
 
         // Physics Simulation
-        if (ImGui::Checkbox("Simulate Physics", &comp->SimulatePhysics()))  comp->m_AttributeFlags |= PHYSICS_SIMULATE;
+        if (ImGui::Checkbox("Simulate Physics", &comp->SimulatePhysics())) comp->m_AttributeFlags |= PHYSICS_SIMULATE;
 
-        if (ImGui::Checkbox("Simulate Collision", &comp->CollisionDetectionEnabled())) comp->m_AttributeFlags |= PHYSICS_COLLISION;
-        
+        if (ImGui::Checkbox("Simulate Collision", &comp->CollisionDetectionEnabled())) comp->m_AttributeFlags |=
+            PHYSICS_COLLISION;
+
         // Mass
         if (ImGui::DragFloat("Mass", &comp->m_Mass, m_DragSpeed, 0.0f, FLT_MAX)) comp->m_AttributeFlags |= PHYSICS_MASS;
 
         // Linear Drag
-        if (ImGui::DragFloat("Linear Drag", &comp->m_LinearDrag, m_DragSpeed, 0.0f, FLT_MAX)) comp->m_AttributeFlags |= PHYSICS_LINEAR_DRAG;
+        if (ImGui::DragFloat("Linear Drag", &comp->m_LinearDrag, m_DragSpeed, 0.0f, FLT_MAX)) comp->m_AttributeFlags |=
+            PHYSICS_LINEAR_DRAG;
 
         // Angular Drag
-        if (ImGui::DragFloat("Angular Drag", &comp->m_AngularDrag, m_DragSpeed, 0.0f, FLT_MAX)) comp->m_AttributeFlags |= PHYSICS_ANGULAR_DRAG;
+        if (ImGui::DragFloat("Angular Drag", &comp->m_AngularDrag, m_DragSpeed, 0.0f, FLT_MAX)) comp->m_AttributeFlags
+            |= PHYSICS_ANGULAR_DRAG;
 
         // Elasticity
-        if (ImGui::DragFloat("Elasticity", &comp->m_Elasticity, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_MATERIAL;
+        if (ImGui::DragFloat("Elasticity", &comp->m_Elasticity, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |=
+            PHYSICS_MATERIAL;
 
         // Static Friction
-        if (ImGui::DragFloat("Static Friction", &comp->m_StaticFriction, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_MATERIAL;
+        if (ImGui::DragFloat("Static Friction", &comp->m_StaticFriction, m_DragSpeed, 0.0f, 1.0f)) comp->
+            m_AttributeFlags |= PHYSICS_MATERIAL;
 
         // Dynamic Friction
-        if (ImGui::DragFloat("Dynamic Friction", &comp->m_DynamicFriction, m_DragSpeed, 0.0f, 1.0f)) comp->m_AttributeFlags |= PHYSICS_MATERIAL;
-        
+        if (ImGui::DragFloat("Dynamic Friction", &comp->m_DynamicFriction, m_DragSpeed, 0.0f, 1.0f)) comp->
+            m_AttributeFlags |= PHYSICS_MATERIAL;
+
         if (ImGui::TreeNode("Advanced Settings"))
         {
             // Impulse Response
@@ -176,11 +182,11 @@ void Denix::ActorDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject
             ImGui::SetNextItemOpen(true, ImGuiCond_Appearing);
             if (ImGui::TreeNode("Shader Sources"))
             {
-               for (const auto& source : shader->GetShaderSources())
-               {
-                   ImGui::TextWrapped("File: %s", source.FileName.c_str());
-                   ImGui::TextWrapped("Type: %s", GetShaderTypeToString(source.Type).c_str());
-               }
+                for (const auto& source : shader->GetShaderSources())
+                {
+                    ImGui::TextWrapped("File: %s", source.FileName.c_str());
+                    ImGui::TextWrapped("Type: %s", GetShaderTypeToString(source.Type).c_str());
+                }
                 ImGui::TreePop();
             }
             if (ImGui::Button("Edit Shader"))
@@ -188,8 +194,6 @@ void Denix::ActorDetailsWidget::MaterialWidget(const Ref<Actor>& _selectedObject
                 EditorSubsystem::AddEditorWidget<ShaderEditor>(shader);
             }
         }
-
-       
     }
 }
 
@@ -204,7 +208,7 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
         preview = texture->GetAssetFileName();
         if (unsigned int id = texture->GetTextureID())
         {
-            ImGui::Image((void*)(intptr_t)id, ImVec2(100, 100));
+            ImGui::Image((void*)static_cast<intptr_t>(id), ImVec2(100, 100));
             ImGui::SameLine();
         }
 
@@ -217,7 +221,8 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
 
         //	// Texture Settings
         TextureSettings& texSettings = _material->m_TextureSettings;
-        if (ImGui::Combo("Wrap Mode", &texSettings.WrapValue, "GL_REPEAT\0GL_MIRRORED_REPEAT\0GL_CLAMP_TO_EDGE\0GL_CLAMP_TO_BORDER\0\0"))
+        if (ImGui::Combo("Wrap Mode", &texSettings.WrapValue,
+                         "GL_REPEAT\0GL_MIRRORED_REPEAT\0GL_CLAMP_TO_EDGE\0GL_CLAMP_TO_BORDER\0\0"))
         {
             if (texSettings.WrapValue == 0) texSettings.WrapMode = GL_REPEAT;
             else if (texSettings.WrapValue == 1) texSettings.WrapMode = GL_MIRRORED_REPEAT;
@@ -226,7 +231,8 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
         }
 
         // Texture Filter
-        if (ImGui::Combo("Filter", &texSettings.FilterValue, "GL_NEAREST\0GL_LINEAR\0GL_NEAREST_MIPMAP_NEAREST\0GL_LINEAR_MIPMAP_NEAREST\0GL_NEAREST_MIPMAP_LINEAR\0GL_LINEAR_MIPMAP_LINEAR\0\0"))
+        if (ImGui::Combo("Filter", &texSettings.FilterValue,
+                         "GL_NEAREST\0GL_LINEAR\0GL_NEAREST_MIPMAP_NEAREST\0GL_LINEAR_MIPMAP_NEAREST\0GL_NEAREST_MIPMAP_LINEAR\0GL_LINEAR_MIPMAP_LINEAR\0\0"))
         {
             if (texSettings.FilterValue == 0) texSettings.FilterMode = GL_NEAREST;
             else if (texSettings.FilterValue == 1) texSettings.FilterMode = GL_LINEAR;
@@ -235,7 +241,6 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
             else if (texSettings.FilterValue == 4) texSettings.FilterMode = GL_NEAREST_MIPMAP_LINEAR;
             else if (texSettings.FilterValue == 5) texSettings.FilterMode = GL_LINEAR_MIPMAP_LINEAR;
         }
-        
     }
 
     // Texture Selection
@@ -244,7 +249,7 @@ void Denix::ActorDetailsWidget::TextureSelectionWidget(const Ref<Material>& _mat
         for (auto& snd : AssetSubsystem::GetTextureStore() | std::views::values)
         {
             ImGui::PushID(snd->GetAssetFileName().c_str());
-            ImGui::Image((void*)(intptr_t)snd->GetTextureID(), ImVec2(100, 100));
+            ImGui::Image((void*)static_cast<intptr_t>(snd->GetTextureID()), ImVec2(100, 100));
             ImGui::SameLine();
             if (ImGui::Selectable(snd->GetAssetFileName().c_str(), false,
                                   ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap,
@@ -349,7 +354,7 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
                 if (ImGui::ArrowButton("##ResetFar Plane", ImGuiDir_Left)) camComp->m_FarPlane = 1000.f;
                 ImGui::SetItemTooltip("Reset");
             }
-           
+
 
             ImGui::DragFloat("Rotation Factor", &camComp->m_RotationFactor, m_DragSpeed);
             ImGui::SameLine();
@@ -365,7 +370,6 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
             if (ImGui::ArrowButton("##ResetYawRotationRate", ImGuiDir_Left)) camComp->m_YawRotationRate = 0.1f;
             ImGui::SetItemTooltip("Reset");
 
-           
 
             if (ImGui::TreeNode("Advance Camera Settings"))
             {
@@ -385,7 +389,7 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
                     ImGui::DragFloat("Ortho Left", &camComp->m_OrthoLeft, m_DragSpeed);
                     ImGui::DragFloat("Ortho Right", &camComp->m_OrthoRight, m_DragSpeed);
                 }
-                
+
                 ImGui::DragFloat3("Camera Position", &position[0], m_DragSpeed);
 
                 ImGui::SameLine();
@@ -402,7 +406,7 @@ void Denix::ActorDetailsWidget::CameraWidget(const Ref<Actor>& _camera)
                                  10.f);
                 ImGui::SameLine();
                 if (ImGui::ArrowButton("##ResetMoveSpeed", ImGuiDir_Left)) camComp->m_MoveSpeed;
-                         
+
                 ImGui::SetItemTooltip("Reset");
 
                 ImGui::DragFloat("Scoll Wheel Speed", &camComp->m_MouseScrollSpeed,

@@ -18,20 +18,19 @@ namespace Denix
         CameraComponent();
         ~CameraComponent() override = default;
 
-       
 
         void ProcessKeyboardInput(float _deltaTime, const Ref<Counter>& _waitCounter);
         void ProccessMouseMovement(float _deltaTime, const Ref<Counter>& _waitCounter);
 
         glm::mat4 GetProjectionMatrix() const { return m_Projection; }
 
-        glm::mat4& GetProjectionMatrix(){ return m_Projection;}
+        glm::mat4& GetProjectionMatrix() { return m_Projection; }
 
-        glm::mat4 GetViewMatrix() const {return m_View;}
+        glm::mat4 GetViewMatrix() const { return m_View; }
 
-        glm::mat4& GetViewMatrix() { return m_View;}
+        glm::mat4& GetViewMatrix() { return m_View; }
 
-        Ref<Viewport> GetViewport() const {return m_Viewport;}
+        Ref<Viewport> GetViewport() const { return m_Viewport; }
 
         bool m_ExternalControl = false;
 
@@ -47,7 +46,7 @@ namespace Denix
         float m_OrthoTop = 1.0f;
         float m_OrthoLeft = -1.0f;
         float m_OrthoRight = 1.0f;
-        
+
         // Factor used to represent the speed of the rotation within respectable limits
         bool m_EnableRotation = true;
         float m_RotationFactor = 100.0f;
@@ -60,7 +59,7 @@ namespace Denix
         void BeginScene() override;
 
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-        
+
         bool m_IsGameCamera = false;
         glm::vec2 m_Aspect;
         float m_AspectRatio;

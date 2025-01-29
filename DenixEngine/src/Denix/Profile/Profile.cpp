@@ -20,12 +20,12 @@ namespace Denix
     {
         m_Timer->Stop();
         const float duration = m_Timer->GetDuration();
-        
+
         // Record the duration
         m_DurationBuffer.SaveResult(m_Timer->m_TimeEvent);
-        
+
         // Update the minimum duration. Minimum duration equals 0.0f if it hasn't been set yet
-        if (duration < m_MinimumDuration || m_MinimumDuration == 0.0f)  m_MinimumDuration = duration;
+        if (duration < m_MinimumDuration || m_MinimumDuration == 0.0f) m_MinimumDuration = duration;
 
         // Update the maximum duration
         m_MaximumDuration = std::max(duration, m_MaximumDuration);

@@ -22,9 +22,8 @@ namespace Denix
 
         static int& GetWaitForCounterSleepTime() { return s_WaitForCounterSleepTime; }
         static int& GetWaitForJobSleepTime() { return s_WaitForJobSleepTime; }
-        
+
     private:
-        
         /**
          * @brief The main function of the thread
          * This function is called when the thread is created and will run until the thread is destroyed
@@ -36,18 +35,18 @@ namespace Denix
          */
         std::thread m_Thread;
 
-        
+
         /**
          * @brief The ID of the thread. Used for debugging
          * Matches the ID available in the debugger
          */
         size_t m_ThreadID;
-        
+
         /**
          * @brief Index of the thread in the thread pool
          */
         int m_ThreadIndex;
-        
+
         /**
          * @brief The job the thread is currently executing
          */
@@ -63,22 +62,22 @@ namespace Denix
          * @brief Determines the lifetime of the thread. If false, the thread will exit
          */
         bool m_Active;
-        
+
         inline static int s_WaitForCounterSleepTime = 1;
 
-        
+
         /**
          * @brief Value used between jobs to allow job queue to populate and prioritize
          * Also used to reduce CPU usage
          */
         inline static int s_WaitForJobSleepTime = 110;
 
-        
+
         /**
          * @brief Number of jobs executed by the thread
          */
         size_t m_JobExecCount;
-        
+
         /**
          * @brief Total time the thread spent executing jobs
          */
@@ -88,17 +87,17 @@ namespace Denix
          * @brief Total time the thread spent sleeping. Only accounts for time in the Work() function
          */
         float m_ThreadSleepTime;
-        
+
         /**
          * @brief Should the thread profile itself. Global setting managed by the JobSubsystem
          */
         inline static bool s_ShouldProfile = false;
-        
+
         friend class JobSubsystem;
         friend void WaitForCounter(const Ref<Counter>& _counter);
     };
 
-    
+
     /**
      * Utility to synchronize Job execution & Dependencies
      * @param _counter Wait Counter to synchronize with

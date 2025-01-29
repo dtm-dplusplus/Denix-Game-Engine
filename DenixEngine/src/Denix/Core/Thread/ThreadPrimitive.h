@@ -17,7 +17,6 @@ namespace Denix
         CRITICAL // Job must be executed immediately
     };
 
-   
 
     /**
      * @brief Mutex struct to manage thread locking
@@ -29,19 +28,19 @@ namespace Denix
         /**
          * @brief Lock the mutex
          */
-        void Lock() {m_Lock = true;}
+        void Lock() { m_Lock = true; }
 
         /**
          * @brief Unlock the mutex
          */
-        void Unlock() {m_Lock = false;}
+        void Unlock() { m_Lock = false; }
 
         /**
          * @brief Check if the mutex is locked
          * @return True if the mutex is locked, false otherwise
          */
-        bool IsLocked() const {return m_Lock;} 
-        
+        bool IsLocked() const { return m_Lock; }
+
         std::atomic_bool m_Lock{false};
     };
 
@@ -77,7 +76,7 @@ namespace Denix
 
         Mutex& m_Mutex;
     };
-    
+
     /**
      * @brief This struct is used to declare a job to the job subsystem
      * It contains all the information needed to execute a job
@@ -124,5 +123,4 @@ namespace Denix
          */
         int m_ThreadIndex;
     };
-    
 }

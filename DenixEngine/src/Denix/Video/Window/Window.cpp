@@ -7,7 +7,10 @@
 
 namespace Denix
 {
-    SDL_GLWindow::SDL_GLWindow(): m_SDL_GLWindow(nullptr), m_SDL_WindowFlags{SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY }, m_SDL_GLContext(nullptr)
+    SDL_GLWindow::SDL_GLWindow(): m_SDL_GLWindow(nullptr),
+                                  m_SDL_WindowFlags{
+                                      SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
+                                  }, m_SDL_GLContext(nullptr)
     {
         // Set SDL OpenGL Version
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, NULL);
@@ -21,11 +24,11 @@ namespace Denix
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, m_GLDoubleBuffer);
 
         // Create SDL window
-        m_SDL_GLWindow = SDL_CreateWindow(m_Title.c_str(), m_WinX, m_WinY,m_SDL_WindowFlags);
+        m_SDL_GLWindow = SDL_CreateWindow(m_Title.c_str(), m_WinX, m_WinY, m_SDL_WindowFlags);
 
         //assert(m_SDL_GLWindow, "SDL_CreateWindow failed! SDL_Error: {}", SDL_GetError());
-        
-        
+
+
         // Create SDL GL Context
         m_SDL_GLContext = SDL_GL_CreateContext(m_SDL_GLWindow);
         if (!m_SDL_GLContext)
@@ -45,10 +48,11 @@ namespace Denix
         SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
         if (!(major == m_GLMajorVersion && minor == m_GLMinorVersion))
         {
-            DE_LOG(LogWindow, Warn, "SDL Requested OpenGL version did not match: {}.{} Got: {}.{}", m_GLMajorVersion, m_GLMinorVersion, major, minor)
+            DE_LOG(LogWindow, Warn, "SDL Requested OpenGL version did not match: {}.{} Got: {}.{}", m_GLMajorVersion,
+                   m_GLMinorVersion, major, minor)
         }
 
-        
+
         // Enable Vsync
         if (!SDL_GL_SetSwapInterval(static_cast<int>(m_VsyncMode)))
         {

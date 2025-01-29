@@ -15,8 +15,8 @@ namespace Denix
         Playing = 1,
         Paused = 2
     };
-    
-    class AudioSource: public BaseObject
+
+    class AudioSource : public BaseObject
     {
     public:
         AudioSource();
@@ -26,7 +26,7 @@ namespace Denix
         void Pause() const;
 
         SourceState GetState() const { return m_State; }
-        
+
         static int GetMaxMonoSources() { return s_MaxMonoSources; }
         static int GetMaxStereoSources() { return s_MaxStereoSources; }
 
@@ -38,9 +38,10 @@ namespace Denix
         bool m_Looping = false;
 
         WRef<AudioClip> m_AudioClip;
+
     private:
         uint32_t m_Source;
-        
+
         mutable SourceState m_State = SourceState::Stopped;
 
 

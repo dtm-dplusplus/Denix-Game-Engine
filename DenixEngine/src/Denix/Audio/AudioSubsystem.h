@@ -14,7 +14,7 @@
 
 namespace Denix
 {
-    class AudioSubsystem: public Subsystem<AudioSubsystem>
+    class AudioSubsystem : public Subsystem<AudioSubsystem>
     {
     public:
         AudioSubsystem();
@@ -29,7 +29,7 @@ namespace Denix
         static void PlayAudioClipSingle(const Ref<AudioClip>& _audioClip);
 
         static Ref<AudioSource> CreateNewAudioSource();
-        
+
     private:
         void ProcessAudioEvent(const SDL_Event& _event);
 
@@ -40,7 +40,7 @@ namespace Denix
 
         //std::vector<Ref<AudioSource>> m_AudioSources;
         Ref<AudioSource> m_GlobalAudioSource;
-        
+
         friend class Engine;
         friend class AudioSource;
     };

@@ -9,49 +9,53 @@
 
 namespace Denix
 {
-	class Scene;
+    class Scene;
 
-	class PhysicsSubsystem : public Subsystem<PhysicsSubsystem>
-	{
-	public:
-		PhysicsSubsystem() = default;
-		~PhysicsSubsystem() override = default;
+    class PhysicsSubsystem : public Subsystem<PhysicsSubsystem>
+    {
+    public:
+        PhysicsSubsystem() = default;
+        ~PhysicsSubsystem() override = default;
 
-		PhysicsSubsystem(const PhysicsSubsystem& _other) = delete;
-		PhysicsSubsystem(PhysicsSubsystem&& _other) noexcept = delete;
-		PhysicsSubsystem& operator=(const PhysicsSubsystem& _other) = delete;
-		PhysicsSubsystem& operator=(PhysicsSubsystem&& _other) noexcept = delete;
-		
-		static void RegisterComponent(const Ref<PhysicsComponent>& _comp);
-		static void UnregisterComponent(const Ref<PhysicsComponent>& _comp);
+        PhysicsSubsystem(const PhysicsSubsystem& _other) = delete;
+        PhysicsSubsystem(PhysicsSubsystem&& _other) noexcept = delete;
+        PhysicsSubsystem& operator=(const PhysicsSubsystem& _other) = delete;
+        PhysicsSubsystem& operator=(PhysicsSubsystem&& _other) noexcept = delete;
 
-		static bool RayCast(const glm::vec3& _origin, const glm::vec3& _direction, float _distance, physx::PxRaycastBuffer& _hit);
+        static void RegisterComponent(const Ref<PhysicsComponent>& _comp);
+        static void UnregisterComponent(const Ref<PhysicsComponent>& _comp);
 
-		// @TODO This all needs to be private
-		inline static physx::PxDefaultAllocator		m_PxAllocator;
-		inline static physx::PxDefaultErrorCallback	m_PxErrorCallback;
-		inline static physx::PxFoundation*			m_PxFoundation = NULL;
-		inline static physx::PxPhysics*				m_PxPhysics	= NULL;
-		inline static physx::PxPvd*					m_PxPvd        = NULL;
-		inline static physx::PxDefaultCpuDispatcher*	m_PxDispatcher = NULL;
-		inline static physx::PxMaterial* m_PxMaterial = nullptr;
-		
-		static physx::PxScene* CreatePxScene(const physx::PxSceneDesc* _sceneDesc);
+        static bool RayCast(const glm::vec3& _origin, const glm::vec3& _direction, float _distance,
+                            physx::PxRaycastBuffer& _hit);
 
-	private:
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-		void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-		
-		void Initialize() override;
-		void Deinitialize() override;
+        // @TODO This all needs to be private
+        inline static physx::PxDefaultAllocator m_PxAllocator;
+        inline static physx::PxDefaultErrorCallback m_PxErrorCallback;
+        inline static physx::PxFoundation* m_PxFoundation = nullptr;
+        inline static physx::PxPhysics* m_PxPhysics = nullptr;
+        inline static physx::PxPvd* m_PxPvd = nullptr;
+        inline static physx::PxDefaultCpuDispatcher* m_PxDispatcher = nullptr;
+        inline static physx::PxMaterial* m_PxMaterial = nullptr;
 
-		static void SetActiveScene(const Ref<Scene>& _scene) { s_Instance->m_ActiveScene = _scene; }
+        static physx::PxScene* CreatePxScene(const physx::PxSceneDesc* _sceneDesc);
 
-		WRef<Scene> m_ActiveScene;
-		std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
+        static void PhysicsLoggingUpdate();
+        inline static bool m_PhysicsLogging = false;
 
-		friend class PhysicsComponent;
-		friend class SceneSubsystem;
-		friend class Engine;
-	};
+    private:
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+        void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+
+        void Initialize() override;
+        void Deinitialize() override;
+
+        static void SetActiveScene(const Ref<Scene>& _scene) { s_Instance->m_ActiveScene = _scene; }
+
+        WRef<Scene> m_ActiveScene;
+        std::vector<Ref<PhysicsComponent>> m_PhysicsComponents;
+
+        friend class PhysicsComponent;
+        friend class SceneSubsystem;
+        friend class Engine;
+    };
 }

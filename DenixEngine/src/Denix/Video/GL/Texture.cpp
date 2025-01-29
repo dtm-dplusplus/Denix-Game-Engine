@@ -5,54 +5,54 @@
 
 namespace Denix
 {
-	Texture::Texture(): Asset(), m_TextureID(0),  m_Width(0), m_Height(0), m_BitDepth(0)
-	{
-	}
+    Texture::Texture(): Asset(), m_TextureID(0), m_Width(0), m_Height(0), m_BitDepth(0)
+    {
+    }
 
-	Texture::Texture(const std::string& _path): Asset(_path), m_TextureID(0), m_Width(0), m_Height(0), m_BitDepth(0)
-	{
-	}
+    Texture::Texture(const std::string& _path): Asset(_path), m_TextureID(0), m_Width(0), m_Height(0), m_BitDepth(0)
+    {
+    }
 
     bool Texture::LoadTexture()
-	{
-		unsigned char* texData = stbi_load(GetAbsolutePath().c_str(), &m_Width, &m_Height, &m_BitDepth, 0);
-		if (!texData)
-		{
-			DE_LOG(LogRender, Error, "Failed to find: {}", GetAbsolutePath())
-			return false;
-		}
+    {
+        unsigned char* texData = stbi_load(GetAbsolutePath().c_str(), &m_Width, &m_Height, &m_BitDepth, 0);
+        if (!texData)
+        {
+            DE_LOG(LogRender, Error, "Failed to find: {}", GetAbsolutePath())
+            return false;
+        }
 
-		glGenTextures(1, &m_TextureID);
-		glBindTexture(GL_TEXTURE_2D, m_TextureID);
-		GLint internalFormat;
-		if (m_BitDepth == 4)
-		{
-			internalFormat = GL_RGBA;
-			m_Target = GL_TEXTURE_2D;
-		}
-		else if (m_BitDepth == 3)
-		{
-			internalFormat = GL_RGB;
-			m_Target = GL_TEXTURE_2D;
-		}
-		else
-		{
-			DE_LOG(LogRender, Error, "Unsupported Bit Depth: {}", m_BitDepth)
-			return false;
-		}
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, internalFormat, GL_UNSIGNED_BYTE, texData);
-		glGenerateMipmap(GL_TEXTURE_2D);
+        glGenTextures(1, &m_TextureID);
+        glBindTexture(GL_TEXTURE_2D, m_TextureID);
+        GLint internalFormat;
+        if (m_BitDepth == 4)
+        {
+            internalFormat = GL_RGBA;
+            m_Target = GL_TEXTURE_2D;
+        }
+        else if (m_BitDepth == 3)
+        {
+            internalFormat = GL_RGB;
+            m_Target = GL_TEXTURE_2D;
+        }
+        else
+        {
+            DE_LOG(LogRender, Error, "Unsupported Bit Depth: {}", m_BitDepth)
+            return false;
+        }
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, internalFormat, GL_UNSIGNED_BYTE, texData);
+        glGenerateMipmap(GL_TEXTURE_2D);
 
-		// Apply Defualt Settings
-		glTexParameteri(m_Target, GL_TEXTURE_WRAP_S, m_Settings.WrapMode);
-		glTexParameteri(m_Target, GL_TEXTURE_WRAP_T, m_Settings.WrapMode);
-		glTexParameteri(m_Target, GL_TEXTURE_MIN_FILTER, m_Settings.FilterMode);
-		glTexParameteri(m_Target, GL_TEXTURE_MAG_FILTER, m_Settings.FilterMode);
+        // Apply Defualt Settings
+        glTexParameteri(m_Target, GL_TEXTURE_WRAP_S, m_Settings.WrapMode);
+        glTexParameteri(m_Target, GL_TEXTURE_WRAP_T, m_Settings.WrapMode);
+        glTexParameteri(m_Target, GL_TEXTURE_MIN_FILTER, m_Settings.FilterMode);
+        glTexParameteri(m_Target, GL_TEXTURE_MAG_FILTER, m_Settings.FilterMode);
 
-		glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-		stbi_image_free(texData);
+        stbi_image_free(texData);
 
-		return true;
-	}
+        return true;
+    }
 }

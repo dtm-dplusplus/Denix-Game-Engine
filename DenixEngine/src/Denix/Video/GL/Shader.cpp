@@ -31,7 +31,7 @@ bool Denix::Shader::LinkProgram() const
     if (!result)
     {
         GLchar infoLog[1024];
-        glGetProgramInfoLog(m_GL_ID, 1024, NULL, infoLog);
+        glGetProgramInfoLog(m_GL_ID, 1024, nullptr, infoLog);
         DE_LOG(LogShader, Error, "GLShader Program Link Fail: {}", infoLog)
         return false;
     }
@@ -47,7 +47,7 @@ bool Denix::Shader::CompileShader(ShaderSource& _sourceObj) const
     if (const GLuint shader = glCreateShader(_sourceObj.Type))
     {
         const char* src = _sourceObj.Source.c_str();
-        glShaderSource(shader, 1, &src, NULL);
+        glShaderSource(shader, 1, &src, nullptr);
 
         glCompileShader(shader);
 
@@ -56,7 +56,7 @@ bool Denix::Shader::CompileShader(ShaderSource& _sourceObj) const
         if (!result)
         {
             GLchar infoLog[1024];
-            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
             DE_LOG(LogShader, Error, "GLShader Error: {}", infoLog)
             return false;
         }
@@ -84,7 +84,6 @@ GLenum Denix::Shader::GetShaderType(const std::string& _source) const
 
         // Return the type if we find it
         return GetShaderTypeFromString(type);
-
     }
 
     DE_LOG(LogShader, Error, "Shader Keyword DE_SHADER not found or invalid type")
@@ -99,18 +98,18 @@ bool Denix::Shader::CompileProgram()
         DE_LOG(LogShader, Error, "Invalid shader program ID: {}", GetDirectoryName())
         return false;
     }
-			
+
     if (m_ShaderSources.empty())
     {
         DE_LOG(LogShader, Error, "No shader sources to compile: {}", GetDirectoryName())
         return false;
     }
-			
+
     for (ShaderSource& source : m_ShaderSources)
     {
         // Get Shader Type
         if (!source.Type) return false;
-        
+
         if (!CompileShader(source)) return false;
     }
 
@@ -126,7 +125,7 @@ bool Denix::Shader::RecompileProgram()
 {
     // Create a new shader to check if it compiles
     const Ref<Shader> testShader = MakeRef<Shader>();
-		
+
     if (!testShader->GetGL_ID()) return false;
 
     testShader->m_ShaderSources = m_ShaderSources;
@@ -139,9 +138,9 @@ bool Denix::Shader::RecompileProgram()
     }
 
     // Save the shader sources to disk
-    for(const auto& shader : testShader->GetShaderSources())
+    for (const auto& shader : testShader->GetShaderSources())
     {
-        if(!FileSubsystem::WriteFile(shader.Path, shader.Source))
+        if (!FileSubsystem::WriteFile(shader.Path, shader.Source))
         {
             DE_LOG(LogAsset, Error, "Failed to write shader source to disk: {}", shader.Path)
             return false;
@@ -152,7 +151,7 @@ bool Denix::Shader::RecompileProgram()
     DeleteProgram();
     testShader->m_DeleteOnDestroy = false; // Don't delete the GL shader on destruction
     m_GL_ID = testShader->m_GL_ID;
-    
+
     return true;
 }
 
@@ -166,10 +165,10 @@ GLint Denix::Shader::GetUniform(const std::string& _uniform)
             m_ShaderUniforms[_uniform] = uniform;
             return uniform;
         }
-				
+
         DE_LOG(LogShader, Error, "Failed to get uniform: {}", _uniform)
         return -1;
     }
 
-    return  m_ShaderUniforms[_uniform];
+    return m_ShaderUniforms[_uniform];
 }

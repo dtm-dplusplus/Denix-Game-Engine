@@ -11,30 +11,29 @@
 
 namespace Denix
 {
-	class Mesh;
-	class Texture;
+    class Mesh;
+    class Texture;
 
-	class Model : public Asset
-	{
-	public:
-		Model(const AssetInit& _assetInit);
+    class Model : public Asset
+    {
+    public:
+        Model(const AssetInit& _assetInit);
 
-		~Model() override;
+        ~Model() override;
 
-		bool LoadModel();
-		void RenderModel();
-		
-	//private:
+        bool LoadModel();
+        void RenderModel();
 
-		void LoadNode(aiNode* _node, const aiScene* _scene);
-		void LoadMesh(aiMesh* _mesh, const aiScene* _scene);
+        //private:
 
-		void LoadMaterials(const aiScene* _scene);
+        void LoadNode(aiNode* _node, const aiScene* _scene);
+        void LoadMesh(aiMesh* _mesh, const aiScene* _scene);
 
-		bool m_IsLoaded = false;
-		std::vector<Ref<Mesh>> m_Meshes;
-		std::vector<Ref<Texture>> m_Textures;
-		std::vector<unsigned int> m_MeshToTex;
-	};
+        void LoadMaterials(const aiScene* _scene);
+
+        bool m_IsLoaded = false;
+        std::vector<Ref<Mesh>> m_Meshes;
+        std::vector<Ref<Texture>> m_Textures;
+        std::vector<unsigned int> m_MeshToTex;
+    };
 }
-

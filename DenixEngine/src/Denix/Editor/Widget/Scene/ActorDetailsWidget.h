@@ -8,8 +8,8 @@ namespace Denix
     class RenderComponent;
     class Actor;
     class Material;
-    
-    class ActorDetailsWidget: public EditorWidget
+
+    class ActorDetailsWidget : public EditorWidget
     {
     public:
         ActorDetailsWidget();
@@ -29,4 +29,3 @@ namespace Denix
         WRef<Actor> m_ActorRef;
     };
 }
-

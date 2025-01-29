@@ -33,4 +33,3 @@ namespace Denix
         Ref<Mesh> m_Mesh;
     };
 }
-

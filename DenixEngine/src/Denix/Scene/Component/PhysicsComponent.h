@@ -13,136 +13,136 @@
 
 namespace physx
 {
-	class PxController;
+    class PxController;
 }
 
 namespace physx
 {
-	class PxRigidDynamic;
-	class PxRigidActor;
+    class PxRigidDynamic;
+    class PxRigidActor;
 }
 
 namespace physx
 {
-	class PxShape;
+    class PxShape;
 }
 
 namespace Denix
 {
-	class PhysicsComponent : public Component
-	{
-	public:
-		PhysicsComponent();
+    class PhysicsComponent : public Component
+    {
+    public:
+        PhysicsComponent();
 
-		~PhysicsComponent() override = default;
+        ~PhysicsComponent() override = default;
 
-		void AddForce(const glm::vec3& _force) const;
+        void AddForce(const glm::vec3& _force) const;
 
-		void AddAcceleration(const glm::vec3& _acceleration) const;
+        void AddAcceleration(const glm::vec3& _acceleration) const;
 
-		void AddImpulse(const glm::vec3& _impulse) const;
+        void AddImpulse(const glm::vec3& _impulse) const;
 
-		void AddTorque(const glm::vec3& _torque) const;
+        void AddTorque(const glm::vec3& _torque) const;
 
-		bool SimulatePhysics() const { return m_SimulatePhysics; }
-		bool& SimulatePhysics() { return m_SimulatePhysics; }
-		void SetSimulatePhysics(const bool _simulatePhysics)
-		{
-			m_SimulatePhysics = _simulatePhysics;
-		}
+        bool SimulatePhysics() const { return m_SimulatePhysics; }
+        bool& SimulatePhysics() { return m_SimulatePhysics; }
 
-		bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
-		bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }
+        void SetSimulatePhysics(const bool _simulatePhysics)
+        {
+            m_SimulatePhysics = _simulatePhysics;
+        }
 
-		glm::vec3 GetVelocity() const { return m_Velocity; }
-		glm::vec3 GetAngularVelocity() const { return m_AngularVelocity; }
-		glm::vec3 GetAcceleration() const { return m_Acceleration; }
-		glm::vec3 GetForce() const { return m_Force; }
-		float GetMass() const { return m_Mass; }
+        bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
+        bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }
 
-		bool GetImpulseEnabled() const { return m_ImpulseEnabled; }
-		bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
-		void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
-		void SetInertia();
+        glm::vec3 GetVelocity() const { return m_Velocity; }
+        glm::vec3 GetAngularVelocity() const { return m_AngularVelocity; }
+        glm::vec3 GetAcceleration() const { return m_Acceleration; }
+        glm::vec3 GetForce() const { return m_Force; }
+        float GetMass() const { return m_Mass; }
 
-		float m_PxSlopCoefficient = 0.1f;
-		physx::PxRigidBodyFlags m_PxRigidBodyFlags;
-		physx::PxShape* m_PxShape = nullptr;
-		physx::PxRigidActor* m_PxActor = nullptr;
-		physx::PxMaterial* m_PxMaterial = nullptr;
-		PhysicsAttributeFlags m_AttributeFlags;
+        bool GetImpulseEnabled() const { return m_ImpulseEnabled; }
+        bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
+        void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
+        void SetInertia();
 
-		std::vector<CollisionPair> m_CollisionData;
-		
-		//physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
-		ColliderType m_ColliderType = ColliderType::Cube;
+        float m_PxSlopCoefficient = 0.1f;
+        physx::PxRigidBodyFlags m_PxRigidBodyFlags;
+        physx::PxShape* m_PxShape = nullptr;
+        physx::PxRigidActor* m_PxActor = nullptr;
+        physx::PxMaterial* m_PxMaterial = nullptr;
+        PhysicsAttributeFlags m_AttributeFlags;
 
-		/////////////////////* Linear Properties *///////////////////////
-		/** Mass of the object */
-		float m_Mass = 1.0f;
+        std::vector<CollisionPair> m_CollisionData;
 
-		/** Mass Moment of inertia of the object */
-		glm::vec3 m_InertiaTensor = glm::vec3(1.0f);
+        //physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
+        ColliderType m_ColliderType = ColliderType::Cube;
 
-		/** Linear Drag force acting on the object */
-		float m_LinearDrag = 0.5f;
+        /////////////////////* Linear Properties *///////////////////////
+        /** Mass of the object */
+        float m_Mass = 1.0f;
 
-		/** Angular Drag force acting on the object */
-		float m_AngularDrag = 0.5f;
-		
-		/** Elasticity used for impulse response (Bounciness) */
-		float m_Elasticity = 0.2f;
-		float m_StaticFriction = 0.1f;
-		float m_DynamicFriction = 0.1f;
+        /** Mass Moment of inertia of the object */
+        glm::vec3 m_InertiaTensor = glm::vec3(1.0f);
 
-		/////////////////////* Angular Properties *///////////////////////
-		/** Angular velocity of the object */
-		glm::vec3 m_AngularVelocity = glm::vec3(0.f);
+        /** Linear Drag force acting on the object */
+        float m_LinearDrag = 0.5f;
 
-		/** Angular Momentum */
-		glm::vec3 m_AngularMomentum = glm::vec3(0.f);
+        /** Angular Drag force acting on the object */
+        float m_AngularDrag = 0.5f;
 
-		/////////////////////* Read Only Properties *///////////////////////
-		/** Velocity of the object */
-		glm::vec3 m_Velocity = glm::vec3(0.f);
+        /** Elasticity used for impulse response (Bounciness) */
+        float m_Elasticity = 0.2f;
+        float m_StaticFriction = 0.1f;
+        float m_DynamicFriction = 0.1f;
 
-		/** Acceleration of the object */
-		glm::vec3 m_Acceleration = glm::vec3(0.f);
+        /////////////////////* Angular Properties *///////////////////////
+        /** Angular velocity of the object */
+        glm::vec3 m_AngularVelocity = glm::vec3(0.f);
 
-		/** Force acting on the object */
-		glm::vec3 m_Force = glm::vec3(0.f);
-		
-		// Net Torque
-		glm::vec3 m_Torque = glm::vec3(0.f);
-		
-	private:
-		/* Physics Component Settings */
-		/** Set to decide if the physics component should update simulation */
-		bool m_SimulatePhysics = false;
+        /** Angular Momentum */
+        glm::vec3 m_AngularMomentum = glm::vec3(0.f);
 
-		/** Set to decide if the physics component should perform collision detection */
-		bool m_CollisionDetectionEnabled = true;
+        /////////////////////* Read Only Properties *///////////////////////
+        /** Velocity of the object */
+        glm::vec3 m_Velocity = glm::vec3(0.f);
 
-		bool m_ImpulseEnabled = true;
-		
-		void RegisterComponent() override;
-		void UnregisterComponent() override;
+        /** Acceleration of the object */
+        glm::vec3 m_Acceleration = glm::vec3(0.f);
 
-		void Serialize(YAML::Emitter& _out) override;
-		void Deserialize(const YAML::Node& _in) override;
-		
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-		void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-		
-		void BeginScene() override;
-		void EndScene() override;
-		
-		friend class EditorSubsystem;
-		friend class SceneSubsystem;
-		friend class PhysicsSubsystem;
-		friend class CollisionDetection;
-		friend class Actor;
-		friend class Engine;
-		
-	};
+        /** Force acting on the object */
+        glm::vec3 m_Force = glm::vec3(0.f);
+
+        // Net Torque
+        glm::vec3 m_Torque = glm::vec3(0.f);
+
+    private:
+        /* Physics Component Settings */
+        /** Set to decide if the physics component should update simulation */
+        bool m_SimulatePhysics = false;
+
+        /** Set to decide if the physics component should perform collision detection */
+        bool m_CollisionDetectionEnabled = true;
+
+        bool m_ImpulseEnabled = true;
+
+        void RegisterComponent() override;
+        void UnregisterComponent() override;
+
+        void Serialize(YAML::Emitter& _out) override;
+        void Deserialize(const YAML::Node& _in) override;
+
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+        void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+
+        void BeginScene() override;
+        void EndScene() override;
+
+        friend class EditorSubsystem;
+        friend class SceneSubsystem;
+        friend class PhysicsSubsystem;
+        friend class CollisionDetection;
+        friend class Actor;
+        friend class Engine;
+    };
 }

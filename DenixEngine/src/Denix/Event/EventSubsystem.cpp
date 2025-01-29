@@ -18,7 +18,7 @@ namespace Denix
         DE_ASSERT(m_WindowSubsystemRef.lock(), "Event: Window Subsystem reference is invalid");
         DE_ASSERT(m_WindowRef.lock(), "Event: Window reference is invalid");
         DE_ASSERT(m_InputRef.lock(), "Event: Input reference is invalid");
-        
+
         DE_LOG(LogEvent, Info, "Event Subsystem Initialized");
     }
 
@@ -38,11 +38,12 @@ namespace Denix
 
         Ref<InputSubsystem> input = m_InputRef.lock();
         input->m_Mouse->m_MouseData.WheelY = 0;
-        input->m_Mouse->SDL_RelativeState = SDL_GetRelativeMouseState(&input->m_Mouse->m_MouseData.RelX, &input->m_Mouse->m_MouseData.RelY);
+        input->m_Mouse->SDL_RelativeState = SDL_GetRelativeMouseState(&input->m_Mouse->m_MouseData.RelX,
+                                                                      &input->m_Mouse->m_MouseData.RelY);
         input->m_Mouse->SDL_State = SDL_GetMouseState(&input->m_Mouse->m_MouseData.X, &input->m_Mouse->m_MouseData.Y);
 
-       // Clear the keyboard input
-       input->m_Keyboard->m_KeysUp.clear();
+        // Clear the keyboard input
+        input->m_Keyboard->m_KeysUp.clear();
 
         const auto window = m_WindowRef.lock();
 
@@ -57,40 +58,41 @@ namespace Denix
                 event.window.windowID == SDL_GetWindowID(window->GetSDLWindow()))
                 input->ProcessInputEvent(event);
 
-            // Handle SDL Application Events
+                // Handle SDL Application Events
             else if (event.type >= SDL_EVENT_QUIT && event.type <= SDL_EVENT_SYSTEM_THEME_CHANGED)
                 ProcessApplicationEvent(event);
 
-            // Handle SDL Display Events - Placholder for now
+                // Handle SDL Display Events - Placholder for now
             else if (event.type >= SDL_EVENT_DISPLAY_FIRST && event.type <= SDL_EVENT_DISPLAY_LAST)
                 ProcessDisplayEvent(event);
 
-            // Handle SDL Window Events
+                // Handle SDL Window Events
             else if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST)
                 ProcessWindowEvent(event);
 
-            // Handle SDL File Events - Placeholder for now
+                // Handle SDL File Events - Placeholder for now
             else if (event.type >= SDL_EVENT_DROP_FILE && event.type <= SDL_EVENT_DROP_TEXT)
                 ProcessFileEvent(event);
 
-            // Handle SDL Audio Events
+                // Handle SDL Audio Events
             else if (event.type >= SDL_EVENT_AUDIO_DEVICE_ADDED && event.type <= SDL_EVENT_AUDIO_DEVICE_REMOVED)
                 ProcessAudioEvent(event);
 
-            // Handle SDL Pen Events - Placeholder for now
+                // Handle SDL Pen Events - Placeholder for now
             else if (event.type >= SDL_EVENT_PEN_PROXIMITY_IN && event.type <= SDL_EVENT_PEN_AXIS)
                 input->ProcessPenEvent(event);
-            
-            // Handle SDL Camera Events - Placeholder for now
+
+                // Handle SDL Camera Events - Placeholder for now
             else if (event.type >= SDL_EVENT_CAMERA_DEVICE_ADDED && event.type <= SDL_EVENT_CAMERA_DEVICE_DENIED)
                 input->ProcessCameraEvent(event);
 
-            // Handle SDL Sensor Events - Placeholder for now
+                // Handle SDL Sensor Events - Placeholder for now
             else if (event.type == SDL_EVENT_SENSOR_UPDATE)
                 DE_LOG(LogEvent, Trace, "Sensor Update Event")
 
-            // Handle Unknown Events - This should never happen but here for debugging
-            else DE_LOG(LogEvent, Warn, "Unknown Event Type: {}", event.type)
+                // Handle Unknown Events - This should never happen but here for debugging
+            else
+                DE_LOG(LogEvent, Warn, "Unknown Event Type: {}", event.type)
         }
 
         DE_PROFILE_END(Event Update)
@@ -304,14 +306,14 @@ namespace Denix
     {
         switch (_event.type)
         {
-            case SDL_EVENT_RENDER_TARGETS_RESET:
-                DE_LOG(LogInput, Trace, "Render Targets Reset Event");
-                break;
-            case SDL_EVENT_RENDER_DEVICE_RESET:
-                DE_LOG(LogInput, Trace, "Render Device Reset Event");
-                break;
-            default:
-                DE_LOG(LogInput, Error, "Unknown Render Event");
+        case SDL_EVENT_RENDER_TARGETS_RESET:
+            DE_LOG(LogInput, Trace, "Render Targets Reset Event");
+            break;
+        case SDL_EVENT_RENDER_DEVICE_RESET:
+            DE_LOG(LogInput, Trace, "Render Device Reset Event");
+            break;
+        default:
+            DE_LOG(LogInput, Error, "Unknown Render Event");
         }
     }
 }

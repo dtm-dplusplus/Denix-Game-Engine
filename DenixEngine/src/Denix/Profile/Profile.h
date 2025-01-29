@@ -43,7 +43,7 @@ namespace Denix
      * Profile class for profiling code.
      * Provides millisecond precision.
      */
-    class Profile: public Object
+    class Profile : public Object
     {
     public:
         Profile()
@@ -53,6 +53,7 @@ namespace Denix
             m_MinimumDuration = 0.0f;
             m_MaximumDuration = 0.0f;
         }
+
         Profile(const ObjectInit& _objInit);
 
         Ref<Timer> m_Timer;

@@ -11,8 +11,8 @@ namespace Denix
     class Asset;
     class Model;
     struct ShaderSource;
-	class Shader;
-	class Texture;
+    class Shader;
+    class Texture;
     class Scene;
 
     class AssetSubsystem : public Subsystem<AssetSubsystem>
@@ -25,37 +25,37 @@ namespace Denix
         AssetSubsystem(AssetSubsystem&& _other) noexcept = delete;
         AssetSubsystem& operator=(const AssetSubsystem& _other) = delete;
         AssetSubsystem& operator=(AssetSubsystem&& _other) noexcept = delete;
-        
+
         // Scenes
-        static std::vector<Ref<Asset>>  GetSceneStore() { return s_Instance->m_SceneStore; }
+        static std::vector<Ref<Asset>> GetSceneStore() { return s_Instance->m_SceneStore; }
         static Ref<Asset> GetSceneAsset(const std::string& _path);
         static Ref<Asset> GetStartupScene() { return s_Instance->m_StartupScene; }
         static void SetStartupScene(const std::string& _scenePath);
 
         // Shaders
-        static std::unordered_map<std::string, Ref<Shader>> GetShaderStore() {return s_Instance->m_ShaderStore;}
+        static std::unordered_map<std::string, Ref<Shader>> GetShaderStore() { return s_Instance->m_ShaderStore; }
 
         static Ref<Shader> LoadShader(std::vector<ShaderSource>& _shaders, const std::string& _path);
 
         static bool ReloadShader(const Ref<Shader>& _shader);
 
-        
+
         static Ref<Shader> GetShader(const std::string& _name);
         static Ref<Shader> GetDefaultShader() { return s_Instance->m_DefaultShader; }
         static Ref<Shader> GetFrameBufferShader() { return s_Instance->m_FramebufferShader; }
-       
-        
+
+
         // Textures
         static Ref<Texture> LoadTexture(const std::string& _path);
         static Ref<Texture> GetTexture(const std::string& _path);
         static Ref<Texture> GetDefaultTexture() { return s_Instance->m_DefaultTexture; }
-        
+
         static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_Instance->m_TextureStore; }
 
         // Models
         static bool LoadModel(const std::string& _path);
         static Ref<Model> GetModel(const std::string& _path);
-		static std::unordered_map<std::string, Ref<Model>>& GetModelStore() { return s_Instance->m_ModelStore; }
+        static std::unordered_map<std::string, Ref<Model>>& GetModelStore() { return s_Instance->m_ModelStore; }
 
         static std::vector<Ref<Asset>>& GetAssetStore() { return s_Instance->m_AssetStore; }
         static Ref<Asset> GetAsset(const std::string& _path);
@@ -63,7 +63,7 @@ namespace Denix
         // Audio
         static Ref<AudioClip> LoadAudioClip(const Ref<Asset>& _audioClipAsset);
         static Ref<AudioClip> GetAudioClip(const std::string& _path);
-        
+
     private:
         void Initialize() override;
 
@@ -71,11 +71,11 @@ namespace Denix
 
         std::unordered_map<std::string, Ref<AudioClip>> m_AudioClipStore;
 
-		std::unordered_map<std::string, Ref<Shader>> m_ShaderStore;
+        std::unordered_map<std::string, Ref<Shader>> m_ShaderStore;
         Ref<Shader> m_DefaultShader;
         Ref<Shader> m_FramebufferShader;
-        
-		std::unordered_map<std::string, Ref<Model>> m_ModelStore;
+
+        std::unordered_map<std::string, Ref<Model>> m_ModelStore;
 
         std::unordered_map<std::string, Ref<Texture>> m_TextureStore;
         Ref<Texture> m_DefaultTexture;

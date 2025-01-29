@@ -7,9 +7,9 @@
 
 namespace Denix
 {
-    ShaderEditor::ShaderEditor(const Ref<Shader>& _shader): EditorWidget({"Shader Editor" + _shader->GetAssetName()}),  m_ShaderRef(_shader)
+    ShaderEditor::ShaderEditor(const Ref<Shader>& _shader): EditorWidget({"Shader Editor" + _shader->GetAssetName()}),
+                                                            m_ShaderRef(_shader)
     {
-        
     }
 
     void ShaderEditor::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
@@ -27,8 +27,8 @@ namespace Denix
                     if (ImGui::BeginTabItem(shaderSource.FileName.c_str()))
                     {
                         static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput |
-                            ImGuiInputTextFlags_CtrlEnterForNewLine ;
-                        if(ImGui::Button("Recompile Shader"))
+                            ImGuiInputTextFlags_CtrlEnterForNewLine;
+                        if (ImGui::Button("Recompile Shader"))
                         {
                             AssetSubsystem::ReloadShader(shader);
                         }

@@ -36,7 +36,7 @@ void Canvas::BeginScene()
     UIWidget::BeginScene();
 
     for (const auto& widget : m_Buttons) widget->m_CanvasParent = GetRef<Canvas>();
-    
+
     UISubsystem::GetInstance()->m_Widgets.push_back(GetRef<Canvas>());
 }
 
@@ -46,7 +46,7 @@ void Canvas::EndScene()
 
     m_Buttons.clear();
     m_SelectedButton.reset();
-    
+
     UIWidget::EndScene();
 }
 
@@ -54,8 +54,10 @@ void Canvas::Sort()
 {
     // Sort the buttons by y position
     std::ranges::sort(m_Buttons, [](const Ref<Button>& a, const Ref<Button>& b)
-    { return a->m_Transform.Position.y >
-        b->m_Transform.Position.y; });
+    {
+        return a->m_Transform.Position.y >
+            b->m_Transform.Position.y;
+    });
 }
 
 void Canvas::Update(float _deltaTime, const Ref<Counter>& _waitCounter)

@@ -7,125 +7,130 @@ namespace Denix
     struct AssetInit
     {
         // Constructors
-        AssetInit() : AssetPath{ "Asset" } {}
-        AssetInit(std::string _path) : AssetPath{ std::move(_path) }{}
-        
+        AssetInit() : AssetPath{"Asset"}
+        {
+        }
+
+        AssetInit(std::string _path) : AssetPath{std::move(_path)}
+        {
+        }
+
         std::string AssetPath;
     };
 
-    
-class Asset
-{
-public:
-    Asset() = default;
-    virtual ~Asset() = default;
-    
-   Asset(const AssetInit& _assetInit);
 
-    bool RenameAsset(const std::string& _newName)
+    class Asset
     {
-        // Add check for invalid characters
-        static std::string invalidChars = "\\/:*?\"<>|";
+    public:
+        Asset() = default;
+        virtual ~Asset() = default;
 
-        for (const auto& c : invalidChars)
+        Asset(const AssetInit& _assetInit);
+
+        bool RenameAsset(const std::string& _newName)
         {
-            if (_newName.find(c) != std::string::npos)
+            // Add check for invalid characters
+            static std::string invalidChars = "\\/:*?\"<>|";
+
+            for (const auto& c : invalidChars)
             {
-                DE_LOG(LogAsset, Error, "Invalid character in asset name: {0}", c)
+                if (_newName.find(c) != std::string::npos)
+                {
+                    DE_LOG(LogAsset, Error, "Invalid character in asset name: {0}", c)
+                    return false;
+                }
+            }
+
+            // Add check for empty string or same name
+            if (_newName.empty() || _newName == m_AssetName)
+            {
+                DE_LOG(LogAsset, Error, "Invalid asset name: {0}", _newName)
                 return false;
             }
+
+            // Set new name
+            m_AssetName = _newName;
+
+            return true;
         }
 
-        // Add check for empty string or same name
-        if( _newName.empty() || _newName == m_AssetName)
+
+        /**
+         * 
+         * @return Asset name without extension
+         */
+        std::string GetAssetName() const
         {
-            DE_LOG (LogAsset, Error, "Invalid asset name: {0}", _newName)
-            return  false;
+            return m_AssetName;
         }
-            
-        // Set new name
-        m_AssetName = _newName;
-        
-        return true;
-    }
 
-    
-    /**
-     * 
-     * @return Asset name without extension
-     */
-    std::string GetAssetName() const
-    {
-        return m_AssetName;
-    }
+        /**
+         * 
+         * @return Asset file name with extension
+         */
+        std::string GetAssetFileName() const
+        {
+            return m_AssetFileName;
+        }
 
-    /**
-     * 
-     * @return Asset file name with extension
-     */
-    std::string GetAssetFileName() const
-    {
-        return m_AssetFileName;
-    }
-    
-    /**
-     * 
-     * @return Asset file path 
-     */
-    std::string GetRelativePath() const
-    {
-        return m_AssetRelativePath;
-    }
+        /**
+         * 
+         * @return Asset file path 
+         */
+        std::string GetRelativePath() const
+        {
+            return m_AssetRelativePath;
+        }
 
 
-    std::string GetAbsolutePath() const
-    {
-        return m_AssetAbsolutePath;
-    }
-    
-    /**
-     * 
-     * @return Asset file extension
-     */
-    std::string GetAssetExtension() const
-    {
-        return m_AssetExtension;
-    }
+        std::string GetAbsolutePath() const
+        {
+            return m_AssetAbsolutePath;
+        }
 
-    /**
-     * 
-     * @return Asset directory
-     */
-    std::string GetAssetDirectory() const
-    {
-        return m_AssetDirectory;
-    }
+        /**
+         * 
+         * @return Asset file extension
+         */
+        std::string GetAssetExtension() const
+        {
+            return m_AssetExtension;
+        }
 
-    std::string GetDirectoryName() const
-    {
-        return m_DirectoryName;
-    }
-    
-private:
-    // Relative Path
-    std::string m_AssetRelativePath;
+        /**
+         * 
+         * @return Asset directory
+         */
+        std::string GetAssetDirectory() const
+        {
+            return m_AssetDirectory;
+        }
 
-    std::string m_AssetAbsolutePath;
-    
-    // Asset name without extension
-    std::string m_AssetName;
+        std::string GetDirectoryName() const
+        {
+            return m_DirectoryName;
+        }
 
-    // Asset file name with extension
-    std::string m_AssetFileName;
+    private:
+        // Relative Path
+        std::string m_AssetRelativePath;
 
-    // Asset file extension
-    std::string m_AssetExtension;
-    
-    // Asset directory
-    std::string m_AssetDirectory;
+        std::string m_AssetAbsolutePath;
 
-    std::string m_DirectoryName;
+        // Asset name without extension
+        std::string m_AssetName;
 
-    friend class AssetSubsystem;
-};
+        // Asset file name with extension
+        std::string m_AssetFileName;
+
+        // Asset file extension
+        std::string m_AssetExtension;
+
+        // Asset directory
+        std::string m_AssetDirectory;
+
+        std::string m_DirectoryName;
+
+        friend class AssetSubsystem;
+    };
 }

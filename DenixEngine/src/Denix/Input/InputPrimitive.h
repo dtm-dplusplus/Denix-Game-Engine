@@ -9,7 +9,7 @@ namespace Denix
 {
     struct MouseData
     {
-         // Movement
+        // Movement
         float X = 0;
         float Y = 0;
         float RelX = 0;
@@ -31,17 +31,18 @@ namespace Denix
         Keyboard(): m_SDL_KeyboardState(SDL_GetKeyboardState(nullptr))
         {
         }
+
         ~Keyboard()
         {
             m_SDL_KeyboardState = nullptr;
         }
-    
+
         bool IsKeyDown(KeyCode key) const;
         bool IsKeyUp(KeyCode key) const;
         bool IsKeyHold(KeyCode key) const;
 
         inline static bool m_KeyboardLogging = false;
-        
+
     private:
         void ProcessKeyEvent(const SDL_Event& event);
 
@@ -57,29 +58,29 @@ namespace Denix
     class Mouse
     {
     public:
-        Mouse() =default;
+        Mouse() = default;
         ~Mouse() = default;
 
         MouseData m_MouseData;
 
         inline static bool m_MouseButtonLogging = false;
         inline static bool m_MouseMotionLogging = false;
+
     private:
         void ProcessMouseEvent(const SDL_Event& _event);
 
         //std::unordered_set<KeyCode> m_KeysDown;
-       //std::unordered_set<KeyCode> m_KeysHold;
-       //std::unordered_set<KeyCode> m_KeysUp;
+        //std::unordered_set<KeyCode> m_KeysHold;
+        //std::unordered_set<KeyCode> m_KeysUp;
         //const bool* m_SDL_KeyStates;
         uint32_t SDL_State;
         uint32_t SDL_RelativeState;
 
-       
+
         friend class InputSubsystem;
         friend class EventSubsystem;
-        
     };
-    
+
     class Device
     {
     public:
@@ -89,6 +90,4 @@ namespace Denix
         std::string m_DeviceName;
         int m_DeviceID;
     };
-
-   
 }

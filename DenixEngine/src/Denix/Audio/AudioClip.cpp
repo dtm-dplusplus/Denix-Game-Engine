@@ -17,14 +17,15 @@ bool Denix::AudioClip::Load()
 {
     uint8_t* audioBuffer;
 
-    if (!SDL_LoadWAV( GetAbsolutePath().c_str(), &m_ClipSpec, &audioBuffer, &m_WavLength)) {
+    if (!SDL_LoadWAV(GetAbsolutePath().c_str(), &m_ClipSpec, &audioBuffer, &m_WavLength))
+    {
         SDL_free(audioBuffer);
         DE_LOG(LogAudio, Error, "Failed to load WAV File: {}", GetAbsolutePath())
         return false;
     }
 
     // Create OpenAL buffer
-    alCall(alGenBuffers,1, &m_Buffer);
+    alCall(alGenBuffers, 1, &m_Buffer);
 
     // Validate buffer creation
     if (m_Buffer == 0)
@@ -33,7 +34,7 @@ bool Denix::AudioClip::Load()
         DE_LOG(LogAudio, Error, "Failed to create OpenAL buffer: {}", GetAssetName())
         return false;
     }
-    
+
     // Copy audio data to OpenAL buffer & Free audio buffer
     alCall(alBufferData, m_Buffer, SDL_AL_Format(m_ClipSpec), audioBuffer, m_WavLength, m_ClipSpec.freq);
     SDL_free(audioBuffer);

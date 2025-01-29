@@ -1,5 +1,4 @@
-﻿
-#include "AssetBrowserWidget.h"
+﻿#include "AssetBrowserWidget.h"
 
 #include "imgui.h"
 #include "Denix/UI/UISubsystem.h"
@@ -19,8 +18,8 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime, const Ref<Counter>& _wa
 
     ImGui::SetNextWindowDockID(EditorSubsystem::GetDockDownID(), ImGuiCond_Appearing);
     ImGui::Begin("Asset Browser", &m_IsOpen);
-  
-			
+
+
     if (ImGui::TreeNode("Scenes"))
     {
         for (const auto& scene : AssetSubsystem::GetSceneStore())
@@ -32,4 +31,3 @@ void Denix::AssetBrowserWidget::Update(float _deltaTime, const Ref<Counter>& _wa
     }
     ImGui::End();
 }
-

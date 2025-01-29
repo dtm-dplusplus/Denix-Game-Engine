@@ -3,11 +3,11 @@
 #include "Denix/Core/Time/TimerSubsystem.h"
 
 Denix::JobSubsystem::JobSubsystem():
+    m_JobMutex(MakeRef<Mutex>()),
     m_BatchUpdateThreshold(225),
     m_SystemThreads(0),
     m_AvailableWorkerThreads(0),
-    m_ActiveWorkerThreads(0),
-    m_JobMutex(MakeRef<Mutex>())
+    m_ActiveWorkerThreads(0)
 {
 }
 
@@ -40,13 +40,13 @@ void Denix::JobSubsystem::Deinitialize()
 {
     DE_LOG(LogJob, Trace, "JobSubsystem Deinitializing")
 
-    for (const auto& thread: m_WorkerThreads) thread->m_Active = false;
-    
+    for (const auto& thread : m_WorkerThreads) thread->m_Active = false;
+
     //m_Jobs.clear();
     m_WorkerThreads.clear();
 
     DE_LOG(LogJob, Trace, "Cleared Job Queue & Threads")
-    
+
     Subsystem::Deinitialize();
 
     DE_LOG(LogJob, Trace, "JobSubsystem Deinitialized")
@@ -57,22 +57,22 @@ void Denix::JobSubsystem::UpdateActiveThreads()
     // Clamp the active threads to the system thread count
     s_Instance->m_ActiveWorkerThreads = std::clamp(s_Instance->m_ActiveWorkerThreads, 1,
                                                    s_Instance->m_AvailableWorkerThreads);
-    
+
     // Update the worker threads
     for (int i = 0; i < s_Instance->m_AvailableWorkerThreads; i++)
     {
         if (i < s_Instance->m_ActiveWorkerThreads) s_Instance->m_WorkerThreads[i]->m_ShouldWork = true;
         else s_Instance->m_WorkerThreads[i]->m_ShouldWork = false;
     }
-    
+
     DE_LOG(LogJob, Trace, "Set Active Worker Threads: {} of {}", s_Instance->m_ActiveWorkerThreads,
-         s_Instance->m_AvailableWorkerThreads)
+           s_Instance->m_AvailableWorkerThreads)
 }
 
 Denix::Ref<Denix::JobDeclaration> Denix::JobSubsystem::RequestJob()
 {
     //std::lock_guard lock(s_Instance->m_RequestJobMutex);
-    
+
     // Pop the next job from the queue
     //DE_LOG(LogJob, Trace, "Requesting Job")
     if (Ref<JobDeclaration> job; s_Instance->m_Jobs.try_pop(job) && job)
@@ -80,7 +80,7 @@ Denix::Ref<Denix::JobDeclaration> Denix::JobSubsystem::RequestJob()
         //DE_LOG(LogJob, Trace, "Job Found: {}", job->m_Name)
         return job;
     }
-    
+
     //DE_LOG(LogJob, Trace, "No Job Found")
     return nullptr;
 }
@@ -119,5 +119,3 @@ void Denix::JobSubsystem::StopThreadProfiling()
         }
     }
 }
-
-

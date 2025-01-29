@@ -36,7 +36,8 @@ namespace Denix
          * @param sort_specs Sorting specifications.
          * @return True if a should come before b, false otherwise.
          */
-        bool operator()(const Ref<JobProfile>& a, const Ref<JobProfile>& b, const ImGuiTableSortSpecs* sort_specs) const;
+        bool operator()(const Ref<JobProfile>& a, const Ref<JobProfile>& b,
+                        const ImGuiTableSortSpecs* sort_specs) const;
     };
 
     /**

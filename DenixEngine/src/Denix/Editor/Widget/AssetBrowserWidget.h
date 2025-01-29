@@ -5,7 +5,7 @@
 
 namespace Denix
 {
-    class AssetBrowserWidget: public EditorWidget
+    class AssetBrowserWidget : public EditorWidget
     {
     public:
         AssetBrowserWidget();
@@ -13,4 +13,3 @@ namespace Denix
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     };
 }
-

@@ -27,6 +27,6 @@ void Denix::UIWidget::Enable()
 void Denix::UIWidget::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     BaseObject::Update(_deltaTime, _waitCounter);
-    
+
     CalculateModel(m_Transform, m_ModelMatrix);
 }

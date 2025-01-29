@@ -6,10 +6,9 @@
 #include "Denix/Physics/CollisionCallback.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Core/Reflection/YAMLHelper.h"
+
 namespace Denix
 {
-   
-
     Scene::Scene(): BaseObject({"Scene"}), m_PxScene(nullptr), m_PxSceneDesc(nullptr), m_PxControllerManager(nullptr),
                     m_CollisionCallback(nullptr),
                     m_ViewportCamera{MakeRef<Camera>()},
@@ -23,33 +22,33 @@ namespace Denix
 
     void Scene::BeginScene()
     {
-       BaseObject::BeginScene();
+        BaseObject::BeginScene();
 
-        m_PxSceneDesc = new physx::PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
+        m_PxSceneDesc = new PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
         //m_PxSceneDesc->flags
-        m_PxSceneDesc->gravity =  physx::PxVec3(0.0f, -m_Gravity, 0.0f);
+        m_PxSceneDesc->gravity = PxVec3(0.0f, -m_Gravity, 0.0f);
         m_PxSceneDesc->cpuDispatcher = PhysicsSubsystem::m_PxDispatcher;
-        m_PxSceneDesc->filterShader =  PhysicsFilterShader; //physx::PxDefaultSimulationFilterShader;
+        m_PxSceneDesc->filterShader = PhysicsFilterShader; //physx::PxDefaultSimulationFilterShader;
         m_CollisionCallback = new CollisionCallback;
         m_PxSceneDesc->simulationEventCallback = m_CollisionCallback;
         //m_PxSceneDesc->filterCallback
-        
-                
+
+
         m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(*m_PxSceneDesc);
         DE_ASSERT(m_PxScene, "Failed to create PhysX Scene");
 
         // Not using PhysX Controller Manager for now
         /*m_PxControllerManager = PxCreateControllerManager(*m_PxScene);
         DE_ASSERT(m_PxControllerManager, "Failed to create PhysX Controller Manager");*/
-        
-        physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
-        PhysicsSubsystem::m_PxPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
-        
-        if(physx::PxPvdSceneClient* pvdClient = m_PxScene->getScenePvdClient())
+
+        PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
+        PhysicsSubsystem::m_PxPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
+
+        if (PxPvdSceneClient* pvdClient = m_PxScene->getScenePvdClient())
         {
-            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-            pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+            pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+            pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+            pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
         }
 
         m_ViewportCamera->BeginScene();
@@ -70,7 +69,7 @@ namespace Denix
 
         m_Actors.clear();
         m_ActorNames.clear();
-        
+
         // Release the PhysX scene
         PX_RELEASE(m_PxScene)
 
@@ -81,7 +80,7 @@ namespace Denix
         }
 
         PhysicsSubsystem::m_PxPvd->disconnect();
-        
+
         BaseObject::EndScene();
     }
 
@@ -89,7 +88,7 @@ namespace Denix
     {
         BaseObject::BeginPlay();
 
-        
+
         if (Ref<Actor> cam = FindGameCamera())
         {
             m_ActiveCamera = cam;
@@ -107,7 +106,7 @@ namespace Denix
     void Scene::EndPlay()
     {
         for (const auto& actor : m_Actors) actor->EndPlay();
-        
+
         BaseObject::EndPlay();
     }
 
@@ -118,27 +117,36 @@ namespace Denix
         // Update Camera - This works regardless of the camer type (viewport/GameCamera)
         if (m_ActiveCamera)
         {
-           m_ActiveCamera->Update(_deltaTime, _waitCounter);
+            m_ActiveCamera->Update(_deltaTime, _waitCounter);
         }
     }
 
 
     bool Scene::IsPlaying() const
-    { return m_IsPlaying; }
+    {
+        return m_IsPlaying;
+    }
 
- 
 
     Ref<Camera> Scene::GetViewportCamera()
-    { return m_ViewportCamera; }
+    {
+        return m_ViewportCamera;
+    }
 
     Ref<Actor> Scene::GetActiveCamera()
-    { return m_ActiveCamera; }
+    {
+        return m_ActiveCamera;
+    }
 
     std::vector<Ref<Actor>> Scene::GetSceneActors() const
-    { return m_Actors; }
+    {
+        return m_Actors;
+    }
 
     std::vector<Ref<Actor>>& Scene::GetSceneActors()
-    { return m_Actors; }
+    {
+        return m_Actors;
+    }
 
     Ref<Actor> Scene::GetActorByName(const std::string& _name) const
     {
@@ -153,10 +161,9 @@ namespace Denix
         return nullptr;
     }
 
-    
 
     void Scene::SpawnActor(const Ref<Actor>& _actor, const glm::vec3& _position, const glm::vec3& _rotation,
-     const glm::vec3& _scale)
+                           const glm::vec3& _scale)
     {
         if (!_actor)
         {
@@ -175,10 +182,10 @@ namespace Denix
 
         // Pass the scene reference to the actor
         _actor->m_SceneRef = GetRef<Scene>();
-		
+
         // Set Transform Component
         _actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);
-        
+
         // Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
         _actor->BeginScene();
 

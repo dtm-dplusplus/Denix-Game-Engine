@@ -6,7 +6,6 @@ namespace Denix
     class ReflectionHelper
     {
     public:
-
         template <typename T>
         static std::string GetClassNameDE()
         {
@@ -14,13 +13,12 @@ namespace Denix
             std::string className = static_cast<std::string>(typeid(T).name()).substr(6);
 
             // Remove any namespaces
-            while(className.find("::") != std::string::npos)
+            while (className.find("::") != std::string::npos)
             {
                 className = className.substr(className.find("::") + 2);
             }
-            
+
             return className;
         }
     };
-    
 }

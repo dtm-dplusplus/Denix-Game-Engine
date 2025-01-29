@@ -83,6 +83,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} ${ENGINE_NAME})
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:DE_BUILD_DEBUG>
+        $<$<CONFIG:Release>:DE_BUILD_RELEASE>
+)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/bin/debug
         RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/bin/release

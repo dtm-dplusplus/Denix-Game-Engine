@@ -23,12 +23,12 @@ namespace Denix
          */
         void SaveJobResult(const Ref<JobDeclaration>& _job) { JobResults.push_back(_job); }
     };
-    
-    class JobProfile: public Profile
+
+    class JobProfile : public Profile
     {
     public:
         JobProfile() = default;
-        
+
         JobProfile(const ObjectInit& _objInit)
             : Profile(_objInit)
         {

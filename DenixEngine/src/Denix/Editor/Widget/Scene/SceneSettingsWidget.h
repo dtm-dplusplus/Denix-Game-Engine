@@ -5,7 +5,7 @@
 
 namespace Denix
 {
-    class SceneSettingsWidget: public SceneEditorWidget
+    class SceneSettingsWidget : public SceneEditorWidget
     {
     public:
         SceneSettingsWidget(const WRef<Scene>& _scene);

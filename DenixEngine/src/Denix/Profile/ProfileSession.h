@@ -158,7 +158,7 @@ namespace Denix
          * Get the maximum frame time.
          * @return Maximum frame time.
          */
-        float GetMaxFrameTime() const  { return m_MaxFrameTime; }
+        float GetMaxFrameTime() const { return m_MaxFrameTime; }
 
         /**
          * Get the maximum frame time in milliseconds.

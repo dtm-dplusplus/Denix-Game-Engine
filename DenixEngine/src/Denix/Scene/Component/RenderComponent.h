@@ -11,30 +11,30 @@
 
 namespace Denix
 {
-	class RenderComponent : public Component
-	{
-	public:
-		RenderComponent();
-		~RenderComponent() override = default;
-		
-		Ref<Shader> GetShader() const { return m_Shader; }
-		void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
+    class RenderComponent : public Component
+    {
+    public:
+        RenderComponent();
+        ~RenderComponent() override = default;
 
-		Ref<Material> GetMaterial() const { return m_Material; }
-		void SetMaterial(const Ref<Material>& _material);
+        Ref<Shader> GetShader() const { return m_Shader; }
+        void SetShader(const Ref<Shader>& _shader) { m_Shader = _shader; }
 
-		bool m_IsUI = false;		
-		bool m_IsVisible = true;
+        Ref<Material> GetMaterial() const { return m_Material; }
+        void SetMaterial(const Ref<Material>& _material);
 
-	private:
-		void Serialize(YAML::Emitter& _out) override;
-		void Deserialize(const YAML::Node& _in) override;
+        bool m_IsUI = false;
+        bool m_IsVisible = true;
 
-		Ref<Shader> m_Shader;
-		Ref<Material> m_Material;
+    private:
+        void Serialize(YAML::Emitter& _out) override;
+        void Deserialize(const YAML::Node& _in) override;
 
-		friend class Actor;
-		friend class RendererSubsystem;
-		friend class UISubsystem;
-	};
+        Ref<Shader> m_Shader;
+        Ref<Material> m_Material;
+
+        friend class Actor;
+        friend class RendererSubsystem;
+        friend class UISubsystem;
+    };
 }

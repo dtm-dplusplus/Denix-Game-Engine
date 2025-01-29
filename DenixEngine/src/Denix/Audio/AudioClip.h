@@ -8,17 +8,16 @@ namespace Denix
     class Asset;
     struct AudioBuffer;
 
-    
-    
-    class AudioClip: public Asset
+
+    class AudioClip : public Asset
     {
     public:
         AudioClip(const AssetInit& _assetInit);
         ~AudioClip() override;
-        
+
         uint32_t GetBuffer() const { return m_Buffer; }
         uint32_t GetWavLength() const { return m_WavLength; }
-        
+
         SDL_AudioSpec m_ClipSpec;
 
     private:

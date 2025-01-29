@@ -7,7 +7,7 @@ namespace Denix
     TransformComponent::TransformComponent(): Component(ObjectInit("Transform Component")),
                                               m_Forward({0.0f, 0.0f, -1.0f}), m_Right({1.0f, 0.0f, 0.0f}),
                                               m_Up({0.0f, 1.0f, 0.0f})
-    
+
     {
         m_ClassName = "TransformComponent";
     }
@@ -17,11 +17,11 @@ namespace Denix
         m_Forward.x = cos(glm::radians(m_Transform.Rotation.y)) * cos(glm::radians(m_Transform.Rotation.x));
         m_Forward.y = sin(glm::radians(m_Transform.Rotation.x));
         m_Forward.z = sin(glm::radians(m_Transform.Rotation.y)) * cos(glm::radians(m_Transform.Rotation.x));
-        m_Forward = glm::normalize(m_Forward);
+        m_Forward = normalize(m_Forward);
 
-        m_Right = glm::normalize(glm::cross(m_Forward, {0.0f, 1.0f, 0.0f})); // World up
-        m_Up = glm::normalize(glm::cross(m_Right, m_Forward));
-        
+        m_Right = normalize(cross(m_Forward, {0.0f, 1.0f, 0.0f})); // World up
+        m_Up = normalize(cross(m_Right, m_Forward));
+
         CalculateModel(m_Transform, m_Model);
     }
 
@@ -32,7 +32,7 @@ namespace Denix
         _out << YAML::Key << "m_Position" << YAML::BeginMap;
         Vec3ToYAML(_out, m_Transform.Position);
         _out << YAML::EndMap;
-            
+
         _out << YAML::Key << "m_Rotation" << YAML::BeginMap;
         Vec3ToYAML(_out, m_Transform.Rotation);
         _out << YAML::EndMap;

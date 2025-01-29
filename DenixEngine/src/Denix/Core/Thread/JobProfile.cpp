@@ -3,7 +3,7 @@
 void Denix::JobProfile::End()
 {
     Profile::End();
-    
+
     /*m_Timer->Stop();
 
     // Record the duration

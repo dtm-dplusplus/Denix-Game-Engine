@@ -4,27 +4,27 @@
 
 namespace Denix
 {
-    Plane::Plane() : Actor({ "Plane" })
+    Plane::Plane() : Actor({"Plane"})
     {
-    	m_ClassName = "Plane";
+        m_ClassName = "Plane";
         m_ModelComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Plane.obj"));
         m_TransformComponent->GetScale().y = 0.01f;
 
-    	m_PhysicsComponent->m_ColliderType = ColliderType::Plane;
+        m_PhysicsComponent->m_ColliderType = ColliderType::Plane;
     }
 
-    Cube::Cube() : Actor({ "Cube" })
+    Cube::Cube() : Actor({"Cube"})
     {
-    	m_ClassName = "Cube";
-		m_ModelComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Cube.obj"));
+        m_ClassName = "Cube";
+        m_ModelComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Cube.obj"));
 
-    	m_PhysicsComponent->m_ColliderType = ColliderType::Cube;
+        m_PhysicsComponent->m_ColliderType = ColliderType::Cube;
     }
 
-	Sphere::Sphere() : Actor({ "Sphere" })
-	{
-    	m_ClassName = "Sphere";
-		m_ModelComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Sphere.obj"));
-    	m_PhysicsComponent->m_ColliderType = ColliderType::Sphere;
-	}
+    Sphere::Sphere() : Actor({"Sphere"})
+    {
+        m_ClassName = "Sphere";
+        m_ModelComponent->SetModel(AssetSubsystem::GetModel("Content\\Engine\\models\\SM_Sphere.obj"));
+        m_PhysicsComponent->m_ColliderType = ColliderType::Sphere;
+    }
 }

@@ -6,92 +6,91 @@
 
 namespace YAML
 {
-	class Node;
+    class Node;
 }
 
 namespace Denix
 {
-	class Assset;
+    class Assset;
 
-	enum class SceneState
-	{
-		Playing,
-		Stopped, // Not playing // Editor mode
-		Paused
-	};
-	
-	/* Subsystem that manages the scenes
-	* A scene must always be loaded in order to render anything
-	*/ 
-	class SceneSubsystem final : public Subsystem<SceneSubsystem>
-	{
-	public:
-		SceneSubsystem() = default;
+    enum class SceneState
+    {
+        Playing,
+        Stopped, // Not playing // Editor mode
+        Paused
+    };
 
-		~SceneSubsystem() override = default;
+    /* Subsystem that manages the scenes
+    * A scene must always be loaded in order to render anything
+    */
+    class SceneSubsystem final : public Subsystem<SceneSubsystem>
+    {
+    public:
+        SceneSubsystem() = default;
 
-		SceneSubsystem(const SceneSubsystem& _other) = delete;
-		SceneSubsystem(SceneSubsystem&& _other) noexcept = delete;
-		SceneSubsystem& operator=(const SceneSubsystem& _other) = delete;
-		SceneSubsystem& operator=(SceneSubsystem&& _other) noexcept = delete;
-		
-		static Ref<Scene> GetActiveScene() { return s_Instance->m_ActiveScene; }
+        ~SceneSubsystem() override = default;
 
-		static Ref<Camera> GetActiveCamera();
+        SceneSubsystem(const SceneSubsystem& _other) = delete;
+        SceneSubsystem(SceneSubsystem&& _other) noexcept = delete;
+        SceneSubsystem& operator=(const SceneSubsystem& _other) = delete;
+        SceneSubsystem& operator=(SceneSubsystem&& _other) noexcept = delete;
 
-		static bool LoadScene(const Ref<Scene>& _scene);
+        static Ref<Scene> GetActiveScene() { return s_Instance->m_ActiveScene; }
 
-		// Open Scene Methods. The string & asset overloads are wrappers for the pass by scene method.
-		static void OpenScene(const Ref<Asset>& _sceneAsset);
-		static void OpenScene(const Ref<Scene>& _scene);
+        static Ref<Camera> GetActiveCamera();
 
-		static void RequestOpenScene(const std::string& _scenePath);
-		static void RequestOpenScene(const Ref<Asset>& _sceneAsset);
+        static bool LoadScene(const Ref<Scene>& _scene);
 
-		static void RequestStop();
-		static SceneState GetSceneState() { return m_SceneState; }
+        // Open Scene Methods. The string & asset overloads are wrappers for the pass by scene method.
+        static void OpenScene(const Ref<Asset>& _sceneAsset);
+        static void OpenScene(const Ref<Scene>& _scene);
 
-		inline static bool m_BatchUpdateActors = true;
-	private:
-		/**
-		 * Start the scene. This is called by the editor when the play button is pressed.
-		 * If this is a shipped game, this function should be called when the game starts.
-		 */
-		static void PlayScene();
+        static void RequestOpenScene(const std::string& _scenePath);
+        static void RequestOpenScene(const Ref<Asset>& _sceneAsset);
 
-		static void StopScene();
+        static void RequestStop();
+        static SceneState GetSceneState() { return m_SceneState; }
 
-		static void PauseScene();
+    private:
+        /**
+         * Start the scene. This is called by the editor when the play button is pressed.
+         * If this is a shipped game, this function should be called when the game starts.
+         */
+        static void PlayScene();
 
-		void CloseScene();
-		
-		static void SerializeScene();
-		static bool SerializeScene(const Ref<Scene>& _scene);
+        static void StopScene();
 
-		static void DeserializeScene(const Ref<Scene>& _scene);
+        static void PauseScene();
 
-		static bool DeserializeActors(const Ref<Scene>& _scene, const YAML::Node& _sceneNode);
+        void CloseScene();
 
-		void RenderSceneSubmission() const;
-		void CleanRubbish();
+        static void SerializeScene();
+        static bool SerializeScene(const Ref<Scene>& _scene);
 
-		void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+        static void DeserializeScene(const Ref<Scene>& _scene);
 
-		void Initialize() override;
+        static bool DeserializeActors(const Ref<Scene>& _scene, const YAML::Node& _sceneNode);
 
-		void Deinitialize() override;
+        void RenderSceneSubmission() const;
+        void CleanRubbish();
 
-		Ref<Asset> m_StartupScene;
+        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
-		Ref<Scene> m_ActiveScene;
+        void Initialize() override;
 
-		Ref<Asset> m_RequestOpenSceneAsset;
+        void Deinitialize() override;
 
-		bool m_RequestStopScene = false;
-		
-		inline static SceneState m_SceneState = SceneState::Stopped;
-		
-		friend class Engine;
-		friend class EditorSubsystem;
-	};
+        Ref<Asset> m_StartupScene;
+
+        Ref<Scene> m_ActiveScene;
+
+        Ref<Asset> m_RequestOpenSceneAsset;
+
+        bool m_RequestStopScene = false;
+
+        inline static auto m_SceneState = SceneState::Stopped;
+
+        friend class Engine;
+        friend class EditorSubsystem;
+    };
 }

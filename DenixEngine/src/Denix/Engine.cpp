@@ -49,9 +49,7 @@ namespace Denix
 
             m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
-            DE_LOG(LogEngine, Info, "PostUpdate")
-             m_PhysicsSubsystem->PostUpdate(m_TimerSubsystem->m_DeltaTime, nullptr);
-            DE_LOG(LogEngine, Info, "PostUpdate Finished")
+            m_PhysicsSubsystem->PostUpdate(m_TimerSubsystem->m_DeltaTime, nullptr);
 
             m_SceneSubsystem->RenderSceneSubmission();
 

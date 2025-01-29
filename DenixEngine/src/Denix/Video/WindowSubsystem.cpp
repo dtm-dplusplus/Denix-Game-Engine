@@ -18,7 +18,8 @@ namespace Denix
         EditorSubsystem::NewFrame();
         m_Window->ClearBuffer();
         // @TODO: Move Viewport Ownership to window
-        if (Ref<CameraComponent> camera = SceneSubsystem::GetActiveScene()->GetActiveCamera()->GetComponent<CameraComponent>())
+        if (Ref<CameraComponent> camera = SceneSubsystem::GetActiveScene()->GetActiveCamera()->GetComponent<
+            CameraComponent>())
             camera->GetViewport()->m_FrameBuffer->Bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         DE_PROFILE_END(Clear Frame Buffer)
@@ -29,7 +30,8 @@ namespace Denix
         DE_PROFILE(Draw Viewport)
         FrameBuffer::Unbind();
         // @TODO: Move Viewport Ownership to window
-        if (Ref<CameraComponent> camera = SceneSubsystem::GetActiveScene()->GetActiveCamera()->GetComponent<CameraComponent>())
+        if (Ref<CameraComponent> camera = SceneSubsystem::GetActiveScene()->GetActiveCamera()->GetComponent<
+            CameraComponent>())
             camera->GetViewport()->DrawViewport();
         EditorSubsystem::RenderUI(); // Swap buffers and render UI
         m_Window->SwapBuffers();

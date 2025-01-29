@@ -42,6 +42,10 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 add_library(DenixEngine STATIC ${SOURCE_FILES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
 
+target_compile_definitions(DenixEngine PRIVATE
+        $<$<CONFIG:Debug>:DE_BUILD_DEBUG>
+        $<$<CONFIG:Release>:DE_BUILD_RELEASE>
+)
 # Add Precompiled Header - We Can add multiple precompiled headers
 target_precompile_headers(DenixEngine PRIVATE ${ENGINE_SOURCE_DIR}/depch.h)
 

@@ -29,7 +29,7 @@ namespace Denix
 
         _out << YAML::Key << "m_Components" << YAML::BeginMap;
         int i = 0;
-        for (const auto& comp: m_Components)
+        for (const auto& comp : m_Components)
         {
             _out << YAML::Key << comp->GetClassNameDE() << YAML::BeginMap;
             comp->Serialize(_out);
@@ -49,29 +49,33 @@ namespace Denix
         m_TransformComponent.reset();
         m_RenderComponent.reset();
         m_PhysicsComponent.reset();
-        
+
         // Desirialize the components
         if (const YAML::Node& compMap = _in["m_Components"]; compMap.IsDefined())
         {
-            for (const auto& compNode: compMap)
+            for (const auto& compNode : compMap)
             {
                 // Validate Node
                 if (!compNode.first.IsDefined()) continue;
                 if (!compNode.second.IsDefined()) continue;
-                
-               // Create the component
-               if (Ref<Component> comp = ReflectionSubsystem::Create<Component>(compNode.first.as<std::string>()))
-               {
-                   comp->Deserialize(compNode.second);
 
-                   // Cache for common components
-                   if (comp->GetClassNameDE() == "TransformComponent") m_TransformComponent = CastRef<TransformComponent>(comp);
-                   else if (comp->GetClassNameDE() == "ModelComponent") m_ModelComponent = CastRef<ModelComponent>(comp);
-                    else if (comp->GetClassNameDE() == "RenderComponent") m_RenderComponent = CastRef<RenderComponent>(comp);
-                   else if (comp->GetClassNameDE() == "PhysicsComponent") m_PhysicsComponent = CastRef<PhysicsComponent>(comp);
+                // Create the component
+                if (Ref<Component> comp = ReflectionSubsystem::Create<Component>(compNode.first.as<std::string>()))
+                {
+                    comp->Deserialize(compNode.second);
 
-                   AddComponent(comp);
-               }
+                    // Cache for common components
+                    if (comp->GetClassNameDE() == "TransformComponent") m_TransformComponent = CastRef<
+                        TransformComponent>(comp);
+                    else if (comp->GetClassNameDE() == "ModelComponent") m_ModelComponent = CastRef<
+                        ModelComponent>(comp);
+                    else if (comp->GetClassNameDE() == "RenderComponent") m_RenderComponent = CastRef<
+                        RenderComponent>(comp);
+                    else if (comp->GetClassNameDE() == "PhysicsComponent") m_PhysicsComponent = CastRef<
+                        PhysicsComponent>(comp);
+
+                    AddComponent(comp);
+                }
             }
         }
     }
@@ -100,7 +104,7 @@ namespace Denix
     {
         BaseObject::Update(_deltaTime, _waitCounter);
 
-        for(const auto& component : m_Components) component->Update(_deltaTime, _waitCounter);
+        for (const auto& component : m_Components) component->Update(_deltaTime, _waitCounter);
 
         // Physics Callback Events
         if (m_PhysicsComponent->CollisionDetectionEnabled())
@@ -110,10 +114,11 @@ namespace Denix
                 if (col.m_Actors[0] && col.m_Actors[1])
                 {
                     int otherIndex = 0;
-                    
+
                     if (col.m_Actors[0] == m_PhysicsComponent.get()) otherIndex = 1;
 
-                    if (col.CollisionEnter) OnCollisionEnter(col.m_Actors[otherIndex]->GetParent(), col.Normal, col.Point);
+                    if (col.CollisionEnter) OnCollisionEnter(col.m_Actors[otherIndex]->GetParent(), col.Normal,
+                                                             col.Point);
                     else OnCollisionExit(col.m_Actors[otherIndex]->GetParent(), col.Normal, col.Point);
                 }
             }

@@ -1,5 +1,4 @@
-﻿
-#include "EngineProfilerWidget.h"
+﻿#include "EngineProfilerWidget.h"
 
 #include "implot.h"
 #include "JobTableWidget.h"
@@ -35,7 +34,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime, const Ref<Counter>& _
     {
         if (ImGui::Button("End Profiling")) ProfileSubsystem::EndProfileSession();
     }
-        
+
     ImGui::SeparatorText("Engine Metrics");
     PerformanceSettingsWidget::Show();
 
@@ -61,16 +60,21 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime, const Ref<Counter>& _
                 ImGui::Text("Min Frame Time: %.2fms", session->GetMinFrameTimeMs());
                 ImGui::Text("Max Frame Time: %.2fms", session->GetMaxFrameTimeMs());
             }
-            
+
             ImGui::SeparatorText("Profiles");
             if (ImGui::TreeNode("Inline Profiles"))
             {
                 if (ImPlot::BeginPlot("Profile Visualizer", "Elapsed Time (s)", "Frame Time (s)", ImVec2(-1, 300),
-                    ImPlotFlags_None, ImPlotAxisFlags_None, ImPlotAxisFlags_None))
+                                      ImPlotFlags_None, ImPlotAxisFlags_None, ImPlotAxisFlags_None))
                 {
-                    const float sessionElapsedTime = session->IsProfiling()? elaspedTime : session->GetSessionTimer()->GetEndTime();
-                    const float yMax = session->IsProfiling()? TimerSubsystem::GetAverageFrameTime() : session->GetAverageFrameTime();
-                    ImPlot::SetupAxisLimits(ImAxis_X1, sessionElapsedTime - session->GetGraphHistory(), sessionElapsedTime, ImGuiCond_Always);
+                    const float sessionElapsedTime = session->IsProfiling()
+                                                         ? elaspedTime
+                                                         : session->GetSessionTimer()->GetEndTime();
+                    const float yMax = session->IsProfiling()
+                                           ? TimerSubsystem::GetAverageFrameTime()
+                                           : session->GetAverageFrameTime();
+                    ImPlot::SetupAxisLimits(ImAxis_X1, sessionElapsedTime - session->GetGraphHistory(),
+                                            sessionElapsedTime, ImGuiCond_Always);
                     ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0f, yMax, ImGuiCond_Always);
                     ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
 
@@ -92,7 +96,7 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime, const Ref<Counter>& _
                     }
                     ImPlot::EndPlot();
                 }
-                
+
                 ImGui::TreePop();
             }
 
@@ -109,27 +113,30 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime, const Ref<Counter>& _
                 {
                     std::vector<ThreadData>& threadData = session->GetThreadData();
 
-                    static const char*  ilabels[]   = {"Job Count","Exec Time","Sleep Time"};
+                    static const char* ilabels[] = {"Job Count", "Exec Time", "Sleep Time"};
 
                     // Our System Threads never change so we can use a static initializer
-                    static std::vector<std::string>  xLabelsStr   = [threadData] {
+                    static std::vector<std::string> xLabelsStr = [threadData]
+                    {
                         std::vector<std::string> labels;
                         for (const auto& thread : threadData)
                             labels.push_back("TID" + std::to_string(thread.m_ThreadID));
-                    
-                        return labels;
-                    }();
-                    
-                    // C Array for imgui
-                    static std::vector<const char*> xLabels = [] {
-                        std::vector<const char*> labels;
-                        for (const auto& label : xLabelsStr)
-                            labels.push_back(label.c_str());
-                    
+
                         return labels;
                     }();
 
-                    static std::vector<double> positions = [] {
+                    // C Array for imgui
+                    static std::vector<const char*> xLabels = []
+                    {
+                        std::vector<const char*> labels;
+                        for (const auto& label : xLabelsStr)
+                            labels.push_back(label.c_str());
+
+                        return labels;
+                    }();
+
+                    static std::vector<double> positions = []
+                    {
                         std::vector<double> pos;
                         for (int i = 0; i < xLabels.size(); i++)
                             pos.push_back(i);
@@ -137,11 +144,11 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime, const Ref<Counter>& _
                         return pos;
                     }();
 
-                    static int graphType =0;
+                    static int graphType = 0;
                     static int groups = xLabels.size();
                     static float size = 0.67f;
-                    ImGui::Text("graph type %d",graphType);
-                    
+                    ImGui::Text("graph type %d", graphType);
+
                     if (ImGui::BeginCombo("Graph Type", ilabels[graphType]))
                     {
                         for (int i = 0; i < IM_ARRAYSIZE(ilabels); i++)
@@ -156,57 +163,63 @@ void Denix::EngineProfilerWidget::Update(float _deltaTime, const Ref<Counter>& _
                     }
                     ImGui::SameLine();
 
-                    ImGui::SliderFloat("Bar Group Size",&size,0,1);
-                    
-                        static ImPlotBarGroupsFlags flags = 0;
-                        
-                        switch (graphType)
+                    ImGui::SliderFloat("Bar Group Size", &size, 0, 1);
+
+                    static ImPlotBarGroupsFlags flags = 0;
+
+                    switch (graphType)
+                    {
+                    case 0:
                         {
-                            case 0:
+                            if (ImPlot::BeginPlot("Thread Job Count"))
                             {
-                                if (ImPlot::BeginPlot("Thread Job Count")) {
-                                    ImPlot::SetupLegend(ImPlotLocation_East, ImPlotLegendFlags_Outside);
-                                    ImPlot::SetupAxes("Threads","Count",ImPlotAxisFlags_AutoFit,ImPlotAxisFlags_AutoFit);
-                                    ImPlot::SetupAxisTicks(ImAxis_X1,&positions[0], groups, &xLabels[0]);
-                                    ImPlot::PlotBars(ilabels[graphType],&session->GetThreadJobCounts()[0],groups,size,0,flags);
-                                    ImPlot::EndPlot();
-                                }
-                                break;
+                                ImPlot::SetupLegend(ImPlotLocation_East, ImPlotLegendFlags_Outside);
+                                ImPlot::SetupAxes("Threads", "Count", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                                ImPlot::SetupAxisTicks(ImAxis_X1, &positions[0], groups, &xLabels[0]);
+                                ImPlot::PlotBars(ilabels[graphType], &session->GetThreadJobCounts()[0], groups, size, 0,
+                                                 flags);
+                                ImPlot::EndPlot();
                             }
-
-                        case 1:
-                                {
-                                    if (ImPlot::BeginPlot("Thread Job Execution Time")) {
-                                        ImPlot::SetupLegend(ImPlotLocation_East, ImPlotLegendFlags_Outside);
-                                        ImPlot::SetupAxes("Threads","Time (s)",ImPlotAxisFlags_AutoFit,ImPlotAxisFlags_AutoFit);
-                                        ImPlot::SetupAxisTicks(ImAxis_X1,&positions[0], groups, &xLabels[0]);
-                                        ImPlot::PlotBars(ilabels[graphType],&session->GetThreadJobExecTimes()[0],groups,size,0,flags);
-                                        ImPlot::EndPlot();
-                                    }
-                                }
                             break;
-
-                        case 2:
-                            {
-                                if (ImPlot::BeginPlot("Thread Sleep Time")) {
-                                    ImPlot::SetupLegend(ImPlotLocation_East, ImPlotLegendFlags_Outside);
-                                    ImPlot::SetupAxes("Threads","Time (s)",ImPlotAxisFlags_AutoFit,ImPlotAxisFlags_AutoFit);
-                                    ImPlot::SetupAxisTicks(ImAxis_X1,&positions[0], groups, &xLabels[0]);
-                                    ImPlot::PlotBars(ilabels[graphType],&session->GetThreadSleepTimes()[0],groups,size,0,flags);
-                                    ImPlot::EndPlot();
-                                }
-                            }
-                        default: break;
                         }
-                       
 
+                    case 1:
+                        {
+                            if (ImPlot::BeginPlot("Thread Job Execution Time"))
+                            {
+                                ImPlot::SetupLegend(ImPlotLocation_East, ImPlotLegendFlags_Outside);
+                                ImPlot::SetupAxes("Threads", "Time (s)", ImPlotAxisFlags_AutoFit,
+                                                  ImPlotAxisFlags_AutoFit);
+                                ImPlot::SetupAxisTicks(ImAxis_X1, &positions[0], groups, &xLabels[0]);
+                                ImPlot::PlotBars(ilabels[graphType], &session->GetThreadJobExecTimes()[0], groups, size,
+                                                 0, flags);
+                                ImPlot::EndPlot();
+                            }
+                        }
+                        break;
+
+                    case 2:
+                        {
+                            if (ImPlot::BeginPlot("Thread Sleep Time"))
+                            {
+                                ImPlot::SetupLegend(ImPlotLocation_East, ImPlotLegendFlags_Outside);
+                                ImPlot::SetupAxes("Threads", "Time (s)", ImPlotAxisFlags_AutoFit,
+                                                  ImPlotAxisFlags_AutoFit);
+                                ImPlot::SetupAxisTicks(ImAxis_X1, &positions[0], groups, &xLabels[0]);
+                                ImPlot::PlotBars(ilabels[graphType], &session->GetThreadSleepTimes()[0], groups, size,
+                                                 0, flags);
+                                ImPlot::EndPlot();
+                            }
+                        }
+                    default: break;
+                    }
                 }
                 else
                 {
                     ImGui::NewLine();
-                    ImGui::Text("Finish Profiling to view results");                        
+                    ImGui::Text("Finish Profiling to view results");
                 }
-                
+
                 ImGui::TreePop();
             }
 

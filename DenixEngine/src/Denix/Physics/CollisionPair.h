@@ -9,15 +9,14 @@ namespace Denix
 
     struct CollisionPair
     {
-    public:
         glm::vec3 Point;
         glm::vec3 Normal;
         glm::vec3 Impulse;
 
     private:
-        std::array<PhysicsComponent*,2> m_Actors;
+        std::array<PhysicsComponent*, 2> m_Actors;
         bool CollisionEnter;
-        
+
         friend class CollisionCallback;
         friend class PhysicsComponent;
         friend class Actor;
