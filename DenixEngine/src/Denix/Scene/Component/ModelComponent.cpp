@@ -1,8 +1,5 @@
 #include "ModelComponent.h"
 
-#include <yaml-cpp/node/node.h>
-
-#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Core/Reflection/YAMLHelper.h"
 
 Denix::ModelComponent::ModelComponent(): Component(ObjectInit("Model Component")),
