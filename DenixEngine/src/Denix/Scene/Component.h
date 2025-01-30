@@ -4,7 +4,7 @@
 
 /**
  * @file Component.h
- * @brief 
+ * @brief Defines the Component class which is a base class for actor components in the engine.
  */
 
 namespace Denix
@@ -25,7 +25,7 @@ namespace Denix
         * @param _objectInitializer Initializer containing component properties.
         */
         Component(const ObjectInit& _objInit = { "Component" }) : BaseObject(_objInit),
-            m_IsRemovable(false), m_IsEnabled(true) 
+            m_IsRemovable(false), m_IsEnabled(true)
         {
         }
 
@@ -55,26 +55,38 @@ namespace Denix
         bool& IsEnabled() { return m_IsEnabled; }
 
     protected:
+        /**
+        * @brief Registers the component.
+        */
         virtual void RegisterComponent()
         {
         }
 
+        /**
+        * @brief Unregisters the component.
+        */
         virtual void UnregisterComponent()
         {
         }
 
+        /**
+        * @brief Called when the component is added.
+        */
         virtual void OnComponentAdded()
         {
         }
 
+        /**
+        * @brief Called when the component is removed.
+        */
         virtual void OnComponentRemoved()
         {
         }
 
-        bool m_IsRemovable;
-        bool m_IsEnabled;
+        bool m_IsRemovable; ///< Indicates if the component is removable.
+        bool m_IsEnabled; ///< Indicates if the component is enabled.
 
-        WRef<Actor> m_Parent;
+        WRef<Actor> m_Parent; ///< Weak reference to the parent actor.
 
         friend class Actor;
     };
