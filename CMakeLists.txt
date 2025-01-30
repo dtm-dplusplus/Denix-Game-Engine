@@ -79,6 +79,9 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Create filters for Solution that match the folder structure
+source_group(TREE ${PROJECT_DIR} FILES ${PROJECT_SOURCE_FILES})
+
 # Create Project Executable
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} ${ENGINE_NAME})

@@ -39,6 +39,9 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
         ${ENGINE_SOURCE_DIR}/*.h
 )
 
+# Create filters for Solution that match the folder structure
+source_group(TREE ${ENGINE_SOURCE_DIR} FILES ${SOURCE_FILES})
+
 add_library(DenixEngine STATIC ${SOURCE_FILES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER DenixEngine)
 
