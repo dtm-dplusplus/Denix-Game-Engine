@@ -107,7 +107,7 @@ namespace Denix
         for (const auto& component : m_Components) component->Update(_deltaTime, _waitCounter);
 
         // Physics Callback Events
-        if (m_PhysicsComponent->CollisionDetectionEnabled())
+        if (m_PhysicsComponent->m_CollisionDetectionEnabled)
         {
             for (const auto& col : m_PhysicsComponent->m_CollisionData)
             {

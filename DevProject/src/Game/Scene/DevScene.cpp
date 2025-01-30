@@ -13,12 +13,37 @@ void DevScene::BeginScene()
 {
 	Scene::BeginScene();
 
-	//SpawnActor<Plane>()->GetTransformComponent()->GetScale() = { 10.0f, 0.01f, 10.0f };
+	// Client Logic
+
+}
+
+void DevScene::EndScene()
+{
+	// Client Logic
+
+
+    Scene::EndScene();
+}
+
+void DevScene::BeginPlay()
+{
+    Scene::BeginPlay();
+
+	// Client Logic
+}
+
+void DevScene::EndPlay()
+{
+    // Client Logic
+
+    Scene::EndPlay();
 }
 
 void DevScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
 	Scene::Update(_deltaTime, _waitCounter);
+
+	// Client Logic
 
 }
 
@@ -26,16 +51,6 @@ void DevScene::ToolUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
 	Scene::ToolUpdate(_deltaTime, _waitCounter);
 
-	ImGui::Begin(GetName().c_str());
-	if(ImGui::Button("Spawn Cube"))
-	{
-		m_DyActor = SpawnActor<Cube>({0.0f, 2.5f, 0.0f});
-		m_DyActor->GetPhysicsComponent()->SimulatePhysics() = true;
-	}
-	if (ImGui::Button("Reset Cube"))
-	{
-		m_DyActor->Destroy();
-		m_DyActor = SpawnActor<Cube>();
-	}
-	ImGui::End();
+    // Client Logic
+
 }

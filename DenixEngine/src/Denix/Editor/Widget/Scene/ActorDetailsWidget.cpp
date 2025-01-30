@@ -90,9 +90,9 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         const Ref<PhysicsComponent> comp = _selectedObject->GetPhysicsComponent();
 
         // Physics Simulation
-        if (ImGui::Checkbox("Simulate Physics", &comp->SimulatePhysics())) comp->m_AttributeFlags |= PHYSICS_SIMULATE;
+        if (ImGui::Checkbox("Simulate Physics", &comp->m_SimulatePhysics)) comp->m_AttributeFlags |= PHYSICS_SIMULATE;
 
-        if (ImGui::Checkbox("Simulate Collision", &comp->CollisionDetectionEnabled())) comp->m_AttributeFlags |=
+        if (ImGui::Checkbox("Simulate Collision", &comp->m_CollisionDetectionEnabled)) comp->m_AttributeFlags |=
             PHYSICS_COLLISION;
 
         // Mass
@@ -121,22 +121,16 @@ void Denix::ActorDetailsWidget::PhysicsWidget(const Ref<Actor>& _selectedObject)
         if (ImGui::TreeNode("Advanced Settings"))
         {
             // Impulse Response
-            ImGui::Checkbox("Impulse Resonses", &comp->GetImpulseEnabled());
+            ImGui::Checkbox("Impulse Resonses", &comp->m_ImpulseEnabled);
             ImGui::TreePop();
         }
 
         // Viewable Properties
-        const glm::vec3 force = comp->GetForce();
-        const glm::vec3& vel = comp->GetVelocity();
-        const glm::vec3& avel = comp->GetAngularVelocity();
-        const glm::vec3& acc = comp->GetAcceleration();
-        const glm::vec3& inertia = comp->m_InertiaTensor;
-
-        ImGui::Text("Force				x: %.2f y: %.2f z: %.2f", force.x, force.y, force.z);
-        ImGui::Text("Velocity			x: %.2f y: %.2f z: %.2f", vel.x, vel.y, vel.z);
-        ImGui::Text("Acceleration		x: %.2f y: %.2f z: %.2f", acc.x, acc.y, acc.z);
-        ImGui::Text("Angular Velocity	x: %.2f y: %.2f z: %.2f", avel.x, avel.y, avel.z);
-        ImGui::Text("Inertia Tensor		x: %.2f y: %.2f z: %.2f", inertia.x, inertia.y, inertia.z);
+        ImGui::Text("Force				x: %.2f y: %.2f z: %.2f", comp->m_Force.x, comp->m_Force.y, comp->m_Force.z);
+        ImGui::Text("Velocity			x: %.2f y: %.2f z: %.2f", comp->m_Velocity.x, comp->m_Velocity.y, comp->m_Velocity.z);
+        ImGui::Text("Acceleration		x: %.2f y: %.2f z: %.2f", comp->m_Acceleration.x, comp->m_Acceleration.y, comp->m_Acceleration.z);
+        ImGui::Text("Angular Velocity	x: %.2f y: %.2f z: %.2f", comp->m_AngularVelocity.x, comp->m_AngularVelocity.y, comp->m_AngularVelocity.z);
+        ImGui::Text("Inertia Tensor		x: %.2f y: %.2f z: %.2f", comp->m_InertiaTensor.x, comp->m_InertiaTensor.y, comp->m_InertiaTensor.z);
     }
 }
 

@@ -8,7 +8,22 @@
 
 namespace Denix
 {
-    PhysicsComponent::PhysicsComponent(): Component(ObjectInit("Physics Component"))
+    PhysicsComponent::PhysicsComponent(): Component(ObjectInit("Physics Component")),
+        m_SimulatePhysics(false),
+        m_CollisionDetectionEnabled(true),
+        m_ImpulseEnabled(true),
+        m_Mass(1.0f),
+        m_InertiaTensor(glm::vec3(1.0f)),
+        m_LinearDrag(0.5f),
+        m_AngularDrag(0.5f),
+        m_Elasticity(0.2f),
+        m_StaticFriction(0.1f),
+        m_DynamicFriction(0.1f),
+        m_Acceleration(glm::vec3(0.0f)),
+        m_Velocity(glm::vec3(0.0f)),
+        m_AngularVelocity(glm::vec3(0.0f)),
+        m_SlopCoefficient(0.1f),
+        m_ColliderType(ColliderType::Cube)
     {
         m_ClassName = "PhysicsComponent";
     }
@@ -114,7 +129,7 @@ namespace Denix
         // Update physx gravity - This only disables gravity, collisions are still detected
         if (m_AttributeFlags & PHYSICS_SIMULATE)
         {
-            if (SimulatePhysics())
+            if (m_SimulatePhysics)
             {
                 m_PxActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, false);
                 if (PhysicsSubsystem::m_PhysicsLogging)
@@ -173,7 +188,7 @@ namespace Denix
         // Update physx collision detection
         if (m_AttributeFlags & PHYSICS_COLLISION)
         {
-            if (CollisionDetectionEnabled())
+            if (m_CollisionDetectionEnabled)
             {
                 if (m_PxShape)
                 {
@@ -203,7 +218,7 @@ namespace Denix
         {
             SetInertia();
             if (PhysicsSubsystem::m_PhysicsLogging)
-                DE_LOG(LogPhysics, Trace, "Mass set to {} for {}", GetMass(), GetParent()->GetName())
+                DE_LOG(LogPhysics, Trace, "Mass set to {} for {}", m_Mass, GetParent()->GetName())
             m_AttributeFlags &= ~PHYSICS_MASS;
         }
 
@@ -285,7 +300,7 @@ namespace Denix
         }
 
         // Update physx transfrom from parent if transform is changed during scene & editor update
-        if (SimulatePhysics())
+        if (m_SimulatePhysics || m_CollisionDetectionEnabled)
         {
             if (physx::PxRigidDynamic* pxActor = m_PxActor->is<physx::PxRigidDynamic>())
             {

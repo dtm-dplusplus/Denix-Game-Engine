@@ -10,20 +10,9 @@
 #include "Denix/Physics/CollisionPair.h"
 #include "Denix/Physics/PhysicPrimitive.h"
 
-
 namespace physx
 {
-    class PxController;
-}
-
-namespace physx
-{
-    class PxRigidDynamic;
     class PxRigidActor;
-}
-
-namespace physx
-{
     class PxShape;
 }
 
@@ -44,83 +33,60 @@ namespace Denix
 
         void AddTorque(const glm::vec3& _torque) const;
 
-        bool SimulatePhysics() const { return m_SimulatePhysics; }
-        bool& SimulatePhysics() { return m_SimulatePhysics; }
+        /** Set to decide if the physics component should update simulation */
+        bool m_SimulatePhysics;
 
+        /** Set to decide if the physics component should perform collision detection */
+        bool m_CollisionDetectionEnabled;
 
-        bool CollisionDetectionEnabled() const { return m_CollisionDetectionEnabled; }
-        bool& CollisionDetectionEnabled() { return m_CollisionDetectionEnabled; }
-
-        glm::vec3 GetVelocity() const { return m_Velocity; }
-        glm::vec3 GetAngularVelocity() const { return m_AngularVelocity; }
-        glm::vec3 GetAcceleration() const { return m_Acceleration; }
-        glm::vec3 GetForce() const { return m_Force; }
-        float GetMass() const { return m_Mass; }
-
-        bool GetImpulseEnabled() const { return m_ImpulseEnabled; }
-        bool& GetImpulseEnabled() { return m_ImpulseEnabled; }
-        void SetImpulseEnabled(const bool _impulseEnabled) { m_ImpulseEnabled = _impulseEnabled; }
-        void SetInertia();
-
-        float m_PxSlopCoefficient = 0.1f;
-        physx::PxRigidBodyFlags m_PxRigidBodyFlags;
-        physx::PxShape* m_PxShape = nullptr;
-        physx::PxRigidActor* m_PxActor = nullptr;
-        physx::PxMaterial* m_PxMaterial = nullptr;
+        bool m_ImpulseEnabled;
+        
         PhysicsAttributeFlags m_AttributeFlags;
 
-        std::vector<CollisionPair> m_CollisionData;
+        float m_SlopCoefficient;
 
-        //physx::PxTransform m_PxTransform = {0.0f, 0.0f, 0.0f};
-        ColliderType m_ColliderType = ColliderType::Cube;
+        ColliderType m_ColliderType;
 
         /////////////////////* Linear Properties *///////////////////////
         /** Mass of the object */
-        float m_Mass = 1.0f;
+        float m_Mass;
 
         /** Mass Moment of inertia of the object */
-        glm::vec3 m_InertiaTensor = glm::vec3(1.0f);
+        glm::vec3 m_InertiaTensor;
 
         /** Linear Drag force acting on the object */
-        float m_LinearDrag = 0.5f;
+        float m_LinearDrag;
 
         /** Angular Drag force acting on the object */
-        float m_AngularDrag = 0.5f;
+        float m_AngularDrag;
 
         /** Elasticity used for impulse response (Bounciness) */
-        float m_Elasticity = 0.2f;
-        float m_StaticFriction = 0.1f;
-        float m_DynamicFriction = 0.1f;
+        float m_Elasticity;
+        float m_StaticFriction;
+        float m_DynamicFriction;
 
         /////////////////////* Angular Properties *///////////////////////
         /** Angular velocity of the object */
-        glm::vec3 m_AngularVelocity = glm::vec3(0.f);
+        glm::vec3 m_AngularVelocity;
 
         /** Angular Momentum */
-        glm::vec3 m_AngularMomentum = glm::vec3(0.f);
+        glm::vec3 m_AngularMomentum;
 
         /////////////////////* Read Only Properties *///////////////////////
         /** Velocity of the object */
-        glm::vec3 m_Velocity = glm::vec3(0.f);
+        glm::vec3 m_Velocity;
 
         /** Acceleration of the object */
-        glm::vec3 m_Acceleration = glm::vec3(0.f);
+        glm::vec3 m_Acceleration;
 
         /** Force acting on the object */
-        glm::vec3 m_Force = glm::vec3(0.f);
+        glm::vec3 m_Force;
 
         // Net Torque
-        glm::vec3 m_Torque = glm::vec3(0.f);
+        glm::vec3 m_Torque;
 
     private:
-        /* Physics Component Settings */
-        /** Set to decide if the physics component should update simulation */
-        bool m_SimulatePhysics = false;
-
-        /** Set to decide if the physics component should perform collision detection */
-        bool m_CollisionDetectionEnabled = true;
-
-        bool m_ImpulseEnabled = true;
+        void SetInertia();
 
         void RegisterComponent() override;
         void UnregisterComponent() override;
@@ -134,11 +100,16 @@ namespace Denix
         void BeginScene() override;
         void EndScene() override;
 
+        std::vector<CollisionPair> m_CollisionData;
+
+        physx::PxShape* m_PxShape = nullptr;
+        physx::PxRigidActor* m_PxActor = nullptr;
+        physx::PxMaterial* m_PxMaterial = nullptr;
+
         friend class EditorSubsystem;
         friend class SceneSubsystem;
         friend class PhysicsSubsystem;
-        friend class CollisionDetection;
+        friend class CollisionCallback;
         friend class Actor;
-        friend class Engine;
     };
 }

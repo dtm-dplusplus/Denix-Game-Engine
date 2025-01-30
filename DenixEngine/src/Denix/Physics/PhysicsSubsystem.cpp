@@ -115,7 +115,7 @@ namespace Denix
                 pxActor->setAngularVelocity({
                     _comp->m_AngularVelocity.x, _comp->m_AngularVelocity.y, _comp->m_AngularVelocity.z
                 });
-                pxActor->setContactSlopCoefficient(_comp->m_PxSlopCoefficient);
+                pxActor->setContactSlopCoefficient(_comp->m_SlopCoefficient);
                 _comp->m_PxActor = pxActor;
                 pxActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, false);
                 _comp->SetInertia();

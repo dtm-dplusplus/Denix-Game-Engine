@@ -12,10 +12,12 @@ public:
     DevScene() = default;
     ~DevScene() override = default;
 
+private:
     void BeginScene() override;
+    void EndScene() override;
+
+    void BeginPlay() override;
+    void EndPlay() override;
     void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
     void ToolUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-
-    Ref<Actor> m_DyActor;
-    Ref<Actor> m_StaticActor;
 };

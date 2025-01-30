@@ -1,6 +1,5 @@
 #include "RenderComponent.h"
 
-#include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Core/Reflection/YAMLHelper.h"
 
 namespace Denix
