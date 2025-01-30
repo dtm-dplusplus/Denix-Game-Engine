@@ -37,7 +37,7 @@ namespace Denix
         ImGui::SetNextWindowDockID(EditorSubsystem::GetDockLeftID(), ImGuiCond_Appearing);
         ImGui::Begin(GetName().c_str());
         ImGui::SeparatorText(m_SceneRef.lock()->GetName().c_str());
-
+        ImGui::Checkbox("Debug Tools In Game", &m_SceneRef.lock()->DebugUIInPlay());
         // Viewport Camera
         ImGui::SeparatorText("Viewport Camera");
         ActorDetailsWidget::CameraWidget(m_SceneRef.lock()->GetViewportCamera());

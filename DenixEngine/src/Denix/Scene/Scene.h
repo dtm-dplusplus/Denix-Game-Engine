@@ -5,7 +5,6 @@
 
 namespace physx
 {
-    class PxSceneDesc;
     class PxScene;
 }
 
@@ -38,7 +37,7 @@ namespace Denix
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         /* A seperated update call to present debug tools. 
-        *
+        * 
         * 
         */
         virtual void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
@@ -83,7 +82,11 @@ namespace Denix
       
 
         /** Gravity of the scene */
-        float m_Gravity = 9.81f;
+        float m_Gravity;
+
+        // Flags to show debug tools
+        bool DebugUIInPlay() const { return m_DebugUIInPlay; }
+        bool& DebugUIInPlay() { return m_DebugUIInPlay; }
 
     protected:
         // Debug Utility - Use with caution
@@ -95,7 +98,7 @@ namespace Denix
         /**
         * Useful flag managed by scene system. Used to ensure game logic is only executed when the scene is playing.
          */
-        bool m_IsPlaying = false;
+        bool m_IsPlaying;
 
         /* Camera related members */
         /* If an actor containing a camera componet is found. It is stored here and activated on play. */
@@ -107,6 +110,8 @@ namespace Denix
 
         /* Active camera in the scene used for rendering. This can be viewport or game camera */
         Ref<Actor> m_ActiveCamera;
+
+        bool m_DebugUIInPlay;
 
     private:
         /* Actor Containers 

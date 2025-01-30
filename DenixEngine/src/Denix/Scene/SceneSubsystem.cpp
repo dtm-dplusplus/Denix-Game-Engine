@@ -91,7 +91,8 @@ namespace Denix
 
         // Client Scene Update
         m_ActiveScene->Update(_deltaTime, _waitCounter);
-        m_ActiveScene->DebugUI(_deltaTime, _waitCounter);
+        if(m_SceneState != SceneState::Playing || m_ActiveScene->m_DebugUIInPlay)
+            m_ActiveScene->DebugUI(_deltaTime, _waitCounter);
 
         DE_PROFILE_END(Scene Update)
     }

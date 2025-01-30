@@ -12,7 +12,10 @@ namespace Denix
     Scene::Scene(): BaseObject({"Scene"}), m_PxScene(nullptr),
                     m_CollisionCallback(nullptr),
                     m_ViewportCamera{MakeRef<Camera>()},
-                    m_ActiveCamera{m_ViewportCamera}
+                    m_ActiveCamera{m_ViewportCamera},
+        m_IsPlaying(false),
+        m_DebugUIInPlay(false),
+        m_Gravity(9.81f)
     {
     }
 
