@@ -26,7 +26,7 @@ namespace Denix
 
         if (!m_SceneRef.lock()) return;
 
-        std::vector<Ref<Actor>>& sceneObjects = m_SceneRef.lock()->GetSceneActors();
+        std::vector<Ref<Actor>> sceneObjects = m_SceneRef.lock()->GetSceneActors();
 
         if (sceneObjects.empty())
         {

@@ -9,7 +9,7 @@
 
 namespace Denix
 {
-    Scene::Scene(): BaseObject({"Scene"}), m_PxScene(nullptr), m_PxSceneDesc(nullptr), m_PxControllerManager(nullptr),
+    Scene::Scene(): BaseObject({"Scene"}), m_PxScene(nullptr),
                     m_CollisionCallback(nullptr),
                     m_ViewportCamera{MakeRef<Camera>()},
                     m_ActiveCamera{m_ViewportCamera}
@@ -24,22 +24,16 @@ namespace Denix
     {
         BaseObject::BeginScene();
 
-        m_PxSceneDesc = new PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
-        //m_PxSceneDesc->flags
-        m_PxSceneDesc->gravity = PxVec3(0.0f, -m_Gravity, 0.0f);
-        m_PxSceneDesc->cpuDispatcher = PhysicsSubsystem::m_PxDispatcher;
-        m_PxSceneDesc->filterShader = PhysicsFilterShader; //physx::PxDefaultSimulationFilterShader;
+        PxSceneDesc m_PxSceneDesc = PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
+        m_PxSceneDesc.gravity = PxVec3(0.0f, -m_Gravity, 0.0f);
+        m_PxSceneDesc.cpuDispatcher = PhysicsSubsystem::m_PxDispatcher;
+        m_PxSceneDesc.filterShader = PhysicsFilterShader;
         m_CollisionCallback = new CollisionCallback;
-        m_PxSceneDesc->simulationEventCallback = m_CollisionCallback;
-        //m_PxSceneDesc->filterCallback
+        m_PxSceneDesc.simulationEventCallback = m_CollisionCallback;
 
 
-        m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(*m_PxSceneDesc);
+        m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(m_PxSceneDesc);
         DE_ASSERT(m_PxScene, "Failed to create PhysX Scene");
-
-        // Not using PhysX Controller Manager for now
-        /*m_PxControllerManager = PxCreateControllerManager(*m_PxScene);
-        DE_ASSERT(m_PxControllerManager, "Failed to create PhysX Controller Manager");*/
 
         PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
         PhysicsSubsystem::m_PxPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
@@ -63,22 +57,13 @@ namespace Denix
     {
         // Call EndScene on all actors
         for (const auto& actor : m_Actors) actor->EndScene();
+        m_ViewportCamera->EndScene();
         m_ViewportCamera.reset();
         m_ActiveCamera.reset();
         ClearActors();
 
-        m_Actors.clear();
-        m_ActorNames.clear();
-
         // Release the PhysX scene
         PX_RELEASE(m_PxScene)
-
-        if (m_PxSceneDesc)
-        {
-            delete m_PxSceneDesc;
-            m_PxSceneDesc = nullptr;
-        }
-
         PhysicsSubsystem::m_PxPvd->disconnect();
 
         BaseObject::EndScene();
@@ -143,11 +128,6 @@ namespace Denix
         return m_Actors;
     }
 
-    std::vector<Ref<Actor>>& Scene::GetSceneActors()
-    {
-        return m_Actors;
-    }
-
     Ref<Actor> Scene::GetActorByName(const std::string& _name) const
     {
         for (const auto& actor : m_Actors)
@@ -162,8 +142,7 @@ namespace Denix
     }
 
 
-    void Scene::SpawnActor(const Ref<Actor>& _actor, const glm::vec3& _position, const glm::vec3& _rotation,
-                           const glm::vec3& _scale)
+    void Scene::SpawnActor(const Ref<Actor>& _actor)
     {
         if (!_actor)
         {
@@ -182,9 +161,6 @@ namespace Denix
 
         // Pass the scene reference to the actor
         _actor->m_SceneRef = GetRef<Scene>();
-
-        // Set Transform Component
-        _actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);
 
         // Run Begin Scene & Play. Implements any logic that needs to be run when the scene starts
         _actor->BeginScene();
@@ -205,11 +181,6 @@ namespace Denix
 
     void Scene::ClearActors()
     {
-        for (const auto& actor : m_Actors)
-        {
-            actor->EndScene();
-            if (m_IsPlaying) actor->EndPlay();
-        }
         m_Actors.clear();
         m_ActorNames.clear();
     }

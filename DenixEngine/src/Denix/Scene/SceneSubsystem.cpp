@@ -337,7 +337,7 @@ namespace Denix
             return;
         }
 
-        // For whatever reason, Clear any data held by the scene
+        // If for any reason data already exists in scene, Clear it
         _scene->ClearActors();
 
         // Load the scene data from the asset file

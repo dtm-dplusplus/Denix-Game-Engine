@@ -37,6 +37,9 @@ namespace Denix
         template <typename T>
         Ref<T> GetComponent() const;
 
+        // Returns the scene the actor is in
+        Ref<Scene> GetScene() { return m_SceneRef.lock(); }
+        
         // Use with caution
         std::vector<Ref<Component>>& GetComponents() { return m_Components; }
         std::unordered_map<std::string, Ref<Component>>& GetComponentMap() { return m_ComponentMap; }

@@ -56,14 +56,14 @@ namespace Denix
 
     protected:
         /**
-        * @brief Registers the component.
+        * @brief Registers the component if it utilises a system
         */
         virtual void RegisterComponent()
         {
         }
 
         /**
-        * @brief Unregisters the component.
+        * @brief Unregisters the component if it utilises a system
         */
         virtual void UnregisterComponent()
         {

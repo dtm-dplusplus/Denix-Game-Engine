@@ -5,7 +5,6 @@
 
 namespace physx
 {
-    class PxControllerManager;
     class PxSceneDesc;
     class PxScene;
 }
@@ -23,38 +22,54 @@ namespace Denix
 
         ~Scene() override;
 
+        // Callend when scene is opened
         void BeginScene() override;
 
+        // Called when scene is closed
         void EndScene() override;
 
+        // Called when scene is played
         void BeginPlay() override;
 
+        // Called when scene is stopped
         void EndPlay() override;
 
+        // Called every frame
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
+        /* A seperated update call to present debug tools. 
+        *
+        * 
+        */
         virtual void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
         {
         }
 
+        // Returns scene state
         bool IsPlaying() const;
 
-        template <class T = Actor, typename... Args>
-        Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f),
-                          const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
-
-        void SpawnActor(const Ref<Actor>& _actor, const glm::vec3& _position = glm::vec3(0.0f),
-                        const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
-
+        /* Camera Utilities */
         Ref<Camera> GetViewportCamera();
 
         Ref<Actor> GetActiveCamera();
 
+        // Search for a camera in the scene. Excludes the viewport camera
         Ref<Actor> FindGameCamera() const;
 
-        std::vector<Ref<Actor>> GetSceneActors() const;
-        std::vector<Ref<Actor>>& GetSceneActors();
+        /* Actor Utilities */
+        /* Utility function to spawn an actor with transform in the scene 
+        */
+        template <class T = Actor, typename... Args>
+        Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f),
+                          const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 
+        /* Adds Actor to Scene */
+        void SpawnActor(const Ref<Actor>& _actor);
+
+        // Copy of the actors in the scene
+        std::vector<Ref<Actor>> GetSceneActors() const;
+
+        // Get Actor by name
         Ref<Actor> GetActorByName(const std::string& _name) const;
 
         template <class T>
@@ -65,33 +80,39 @@ namespace Denix
 
         size_t GetActorCount() const { return m_Actors.size(); }
 
-        // Debug Utility - Use with caution
-        void ClearActors();
+      
 
-        physx::PxScene* m_PxScene;
-        physx::PxSceneDesc* m_PxSceneDesc;
-        physx::PxControllerManager* m_PxControllerManager;
-        CollisionCallback* m_CollisionCallback;
         /** Gravity of the scene */
         float m_Gravity = 9.81f;
 
     protected:
-        /** Name of the scene. Must be uniqiue */
+        // Debug Utility - Use with caution
+        void ClearActors();
+
+        /** Asset related to this scene. Contains offline data for this scene. */
         Ref<Asset> m_SceneAsset;
 
-        /** determine if the engine is in editor or tool side mode.
-         * True if the scene is being played. False if in editor mode.
+        /**
+        * Useful flag managed by scene system. Used to ensure game logic is only executed when the scene is playing.
          */
         bool m_IsPlaying = false;
 
+        /* Camera related members */
+        /* If an actor containing a camera componet is found. It is stored here and activated on play. */
         Ref<Actor> m_GameCamera;
 
+        /* Default camera for the scene */
         Ref<Camera> m_ViewportCamera;
 
+
+        /* Active camera in the scene used for rendering. This can be viewport or game camera */
         Ref<Actor> m_ActiveCamera;
 
     private:
-        /** List of Objects in the scene */
+        /* Actor Containers 
+        * We use two different containers. Vector is used for iteration and unordered_set is used for quick lookups.
+        */
+        /** List of Actors in the scene */
         std::vector<Ref<Actor>> m_Actors;
 
         /**
@@ -100,11 +121,19 @@ namespace Denix
          */
         std::unordered_set<std::string> m_ActorNames;
 
+        /* PhysX Members */
+        /* PhysX Scene representation */
+        physx::PxScene* m_PxScene;
+
+        /* Callback Derived from PhysX Collision Callback to handle collision events */
+        CollisionCallback* m_CollisionCallback;
+
+        /* abstracts physx api from scene public API */
+        friend class PhysicsSubsystem;
+        friend class PhysicsComponent;
 
         friend class SceneSubsystem;
-        friend class RendererSubsystem;
         friend class EditorSubsystem;
-        friend class Engine;
     };
 
     template <class T, typename... Args>
@@ -116,8 +145,11 @@ namespace Denix
 
         if (Ref<Actor> actor = MakeRef<T>(std::forward<Args>(_args)...))
         {
+            // Set Transfrom Data
+            actor->m_TransformComponent->m_Transform = Transform(_position, _rotation, _scale);
+
             // Move the actor to the scene
-            SpawnActor(actor, _position, _rotation, _scale);
+            SpawnActor(actor);
 
             // Retrun the actor reference as it's derived type
             return CastRef<T>(actor);

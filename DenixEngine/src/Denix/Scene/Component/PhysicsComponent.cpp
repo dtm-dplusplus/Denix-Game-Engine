@@ -85,7 +85,7 @@ namespace Denix
 
     void PhysicsComponent::EndScene()
     {
-        PhysicsSubsystem::UnregisterComponent(GetRef<PhysicsComponent>());
+        UnregisterComponent();
 
         Component::EndScene();
     }
@@ -132,21 +132,18 @@ namespace Denix
             {
                 if (!m_SimulatePhysics && m_PxActor->is<physx::PxRigidDynamic>())
                 {
-                    if (Ref<Actor> parent = GetParent())
+                    if (physx::PxScene* scene = GetParent()->GetScene()->m_PxScene)
                     {
-                        if (Ref<Scene> scene = parent->m_SceneRef.lock())
-                        {
-                            scene->m_PxScene->removeActor(*m_PxActor);
-                            m_PxActor->release();
+                        scene->removeActor(*m_PxActor);
+                        m_PxActor->release();
 
-                            m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidStatic(
-                                physx::PxTransform(transform->GetPosition().x, transform->GetPosition().y,
-                                                   transform->GetPosition().z));
-                            m_PxActor->attachShape(*m_PxShape);
-                            scene->m_PxScene->addActor(*m_PxActor);
-                            if (PhysicsSubsystem::m_PhysicsLogging)
-                                DE_LOG(LogPhysics, Trace, "Actor type changed to Static for {}", GetParent()->GetName())
-                        }
+                        m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidStatic(
+                            physx::PxTransform(transform->GetPosition().x, transform->GetPosition().y,
+                                transform->GetPosition().z));
+                        m_PxActor->attachShape(*m_PxShape);
+                        scene->addActor(*m_PxActor);
+                        if (PhysicsSubsystem::m_PhysicsLogging)
+                            DE_LOG(LogPhysics, Trace, "Actor type changed to Static for {}", GetParent()->GetName())
                     }
                 }
                 else if (m_SimulatePhysics && m_PxActor->is<physx::PxRigidStatic>())
