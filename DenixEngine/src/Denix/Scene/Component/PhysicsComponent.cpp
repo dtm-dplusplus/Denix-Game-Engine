@@ -23,7 +23,10 @@ namespace Denix
         m_Velocity(glm::vec3(0.0f)),
         m_AngularVelocity(glm::vec3(0.0f)),
         m_SlopCoefficient(0.1f),
-        m_ColliderType(ColliderType::Cube)
+        m_ColliderType(ColliderType::Cube),
+        m_PxShape(nullptr),
+        m_PxMaterial(nullptr),
+        m_PxActor(nullptr),
     {
         m_ClassName = "PhysicsComponent";
     }
