@@ -10,7 +10,7 @@
 #include "Denix/Asset/Asset.h"
 #include "Denix/Audio/AudioClip.h"
 #include "Denix/Core/Reflection/ReflectionSubsystem.h"
-#include "yaml-cpp/yaml.h"
+#include "Denix/Core/Reflection/YAMLHelper.h"
 
 namespace Denix
 {
@@ -96,6 +96,7 @@ namespace Denix
         {
             DE_LOG(LogEngine, Warn, "Load Engine Config: Startup Scene Not Found")
         }
+
         DE_LOG(LogAsset, Info, "Asset Subsystem Initialized")
     }
 

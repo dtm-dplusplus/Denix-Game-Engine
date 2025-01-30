@@ -48,7 +48,6 @@ namespace Denix
         // Textures
         static Ref<Texture> LoadTexture(const std::string& _path);
         static Ref<Texture> GetTexture(const std::string& _path);
-        static Ref<Texture> GetDefaultTexture() { return s_Instance->m_DefaultTexture; }
 
         static std::unordered_map<std::string, Ref<Texture>>& GetTextureStore() { return s_Instance->m_TextureStore; }
 
@@ -78,7 +77,6 @@ namespace Denix
         std::unordered_map<std::string, Ref<Model>> m_ModelStore;
 
         std::unordered_map<std::string, Ref<Texture>> m_TextureStore;
-        Ref<Texture> m_DefaultTexture;
 
         std::vector<Ref<Asset>> m_AssetStore;
 
