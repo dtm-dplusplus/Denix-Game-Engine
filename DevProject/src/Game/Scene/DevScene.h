@@ -14,7 +14,7 @@ public:
 
     void BeginScene() override;
     void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-    void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter) override;
+    void ToolUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
     Ref<Actor> m_DyActor;
     Ref<Actor> m_StaticActor;

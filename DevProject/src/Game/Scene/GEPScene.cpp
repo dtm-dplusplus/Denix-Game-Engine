@@ -98,9 +98,9 @@ void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     }
 }
 
-void GEPScene::DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
+void GEPScene::ToolUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
-    Scene::DebugUI(_deltaTime, _waitCounter);
+    Scene::ToolUpdate(_deltaTime, _waitCounter);
 
     ImGui::Begin("GEP Scene");
     ImGui::SeparatorText("Game");

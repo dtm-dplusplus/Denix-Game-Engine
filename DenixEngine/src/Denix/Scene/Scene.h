@@ -12,127 +12,177 @@ namespace Denix
     class Asset;
     class CollisionCallback;
 
-    // Basic Scene class
+    /**
+     * @class Scene
+     * @brief Basic Scene class managing actors, cameras, and physics.
+     */
     class Scene : public BaseObject
     {
     public:
+        /**
+         * @brief Constructor for Scene.
+         */
         Scene();
 
+        /**
+         * @brief Destructor for Scene.
+         */
         ~Scene() override;
 
-        // Callend when scene is opened
+        /**
+         * @brief Called when the scene is opened.
+         */
         void BeginScene() override;
 
-        // Called when scene is closed
+        /**
+         * @brief Called when the scene is closed.
+         */
         void EndScene() override;
 
-        // Called when scene is played
+        /**
+         * @brief Called when the scene starts playing.
+         */
         void BeginPlay() override;
 
-        // Called when scene is stopped
+        /**
+         * @brief Called when the scene stops playing.
+         */
         void EndPlay() override;
 
-        // Called every frame
+        /**
+         * @brief Called every frame to update the scene.
+         * @param _deltaTime Time elapsed since the last frame.
+         * @param _waitCounter Synchronization counter reference.
+         */
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
-        /* A seperated update call to present debug tools. 
-        * Enable ShowDebugUIInPlay to show debug tools in play mode
-        */
-        virtual void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
+        /**
+         * @brief Debug function for presenting debug tools. Enable ShowDebugToolsInPlay to show debug tools in play mode
+         * @param _deltaTime Time elapsed since the last frame.
+         * @param _waitCounter Synchronization counter reference.
+         */
+        virtual void ToolUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
         {
         }
 
-        // Returns scene state
+        /**
+         * @brief Checks if the scene is currently playing.
+         * @return True if the scene is playing, otherwise false.
+         */
         bool IsPlaying() const;
 
-        /* Camera Utilities */
+        /** @name Camera Utilities */
+        ///@{
+        /**
+         * @brief Gets the viewport camera.
+         * @return Reference to the viewport camera.
+         */
         Ref<Camera> GetViewportCamera();
 
+        /**
+         * @brief Gets the active camera in the scene.
+         * @return Reference to the active camera.
+         */
         Ref<Actor> GetActiveCamera();
 
-        // Search for a camera in the scene. Excludes the viewport camera
+        /**
+         * @brief Finds a game camera in the scene, excluding the viewport camera.
+         * @return Reference to the found camera.
+         */
         Ref<Actor> FindGameCamera() const;
+        ///@}
 
-        /* Actor Utilities */
-        /* Utility function to spawn an actor with transform in the scene 
-        */
+        /** @name Actor Utilities */
+        ///@{
+        /**
+         * @brief Spawns an actor with a specified transform in the scene.
+         * @tparam T The type of actor to spawn.
+         * @tparam Args Variadic template parameters for actor construction.
+         * @param _args Arguments for constructing the actor.
+         * @param _position Initial position of the actor.
+         * @param _rotation Initial rotation of the actor.
+         * @param _scale Initial scale of the actor.
+         * @return Reference to the spawned actor.
+         */
         template <class T = Actor, typename... Args>
         Ref<T> SpawnActor(Args&&... _args, const glm::vec3& _position = glm::vec3(0.0f),
-                          const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
+            const glm::vec3& _rotation = glm::vec3(0.0f), const glm::vec3& _scale = glm::vec3(1.0f));
 
-        /* Adds Actor to Scene */
+        /**
+         * @brief Adds an actor to the scene.
+         * @param _actor Reference to the actor to add.
+         */
         void SpawnActor(const Ref<Actor>& _actor);
 
-        // Copy of the actors in the scene
+        /**
+         * @brief Retrieves a copy of all actors in the scene.
+         * @return Vector containing references to all actors.
+         */
         std::vector<Ref<Actor>> GetSceneActors() const;
 
-        // Get Actor by name
+        /**
+         * @brief Retrieves an actor by name.
+         * @param _name Name of the actor to find.
+         * @return Reference to the found actor.
+         */
         Ref<Actor> GetActorByName(const std::string& _name) const;
 
+        /**
+         * @brief Retrieves an actor by class type.
+         * @tparam T The class type of the actor.
+         * @return Reference to the found actor.
+         */
         template <class T>
         Ref<Actor> GetActorByClass() const;
 
+        /**
+         * @brief Retrieves all actors of a specific class type.
+         * @tparam T The class type of actors to find.
+         * @return Vector containing references to found actors.
+         */
         template <class T>
         std::vector<Ref<Actor>> GetActorsOfClass() const;
 
+        /**
+         * @brief Retrieves the number of actors in the scene.
+         * @return Number of actors.
+         */
         size_t GetActorCount() const { return m_Actors.size(); }
 
-        // Flags to show debug tools
-        bool ShowDebugUIInPlay() const { return m_DebugUIInPlay; }
-        bool& ShowDebugUIInPlay() { return m_DebugUIInPlay; }
+        /** @brief Enables or disables debug UI in play mode. */
+        bool ShowDebugToolsInPlay() const { return m_DebugToolsInPlay; }
+        bool& ShowDebugToolsInPlay() { return m_DebugToolsInPlay; }
+        ///@}
 
-        /** Gravity of the scene */
-        float m_Gravity;
+        float m_Gravity; ///< Gravity of the scene.
 
     protected:
-        // Debug Utility - Use with caution
+        /**
+         * @brief Clears all actors from the scene. Use with caution.
+         */
         void ClearActors();
 
-        bool m_DebugUIInPlay;
+        bool m_DebugToolsInPlay; ///< Flag to show debug tools in play mode.
 
     private:
-        /** Asset related to this scene. Contains offline data for this scene. */
-        Ref<Asset> m_SceneAsset;
+        Ref<Asset> m_SceneAsset; /**< Asset related to this scene. */
+        bool m_IsPlaying; /**< Flag to track if the scene is playing. */
 
-        /**
-        * Useful flag managed by scene system. Used to ensure game logic is only executed when the scene is playing.
-         */
-        bool m_IsPlaying;
+        /** Camera-related members. */
+        Ref<Actor> m_GameCamera; /**< Stores the game camera when an actor with a camera component is found. */
+        Ref<Camera> m_ViewportCamera; /**< Default viewport camera for the scene. */
+        Ref<Actor> m_ActiveCamera; /**< The active camera used for rendering. */
 
-        /* Camera related members */
-        /* If an actor containing a camera componet is found. It is stored here and activated on play. */
-        Ref<Actor> m_GameCamera;
+        /** Actor storage. */
+        std::vector<Ref<Actor>> m_Actors; /**< List of actors in the scene. */
+        std::unordered_set<std::string> m_ActorNames; /**< Map for quick actor lookups by name. */
 
-        /* Default camera for the scene */
-        Ref<Camera> m_ViewportCamera;
+        /** PhysX physics engine members. */
+        physx::PxScene* m_PxScene; /**< Pointer to the PhysX scene representation. */
+        CollisionCallback* m_CollisionCallback; /**< Collision callback for handling physics events. */
 
-
-        /* Active camera in the scene used for rendering. This can be viewport or game camera */
-        Ref<Actor> m_ActiveCamera;
-
-        /* Actor Containers 
-        * We use two different containers. Vector is used for iteration and unordered_set is used for quick lookups.
-        */
-        /** List of Actors in the scene */
-        std::vector<Ref<Actor>> m_Actors;
-
-        /**
-         * Map of actors in the scene
-         * Used to quickly find actors by name
-         */
-        std::unordered_set<std::string> m_ActorNames;
-
-        /* PhysX Members */
-        /* PhysX Scene representation */
-        physx::PxScene* m_PxScene;
-
-        /* Callback Derived from PhysX Collision Callback to handle collision events */
-        CollisionCallback* m_CollisionCallback;
-
-        /* abstracts physx api from scene public API */
         friend class PhysicsSubsystem;
         friend class PhysicsComponent;
-
         friend class SceneSubsystem;
         friend class EditorSubsystem;
     };

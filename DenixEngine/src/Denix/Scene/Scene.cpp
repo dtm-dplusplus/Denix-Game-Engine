@@ -1,6 +1,5 @@
 ﻿#include "Denix/Scene/Scene.h"
 
-#include "imgui.h"
 #include "Denix/Asset/Asset.h"
 #include "Denix/Core/File/FileSubsystem.h"
 #include "Denix/Physics/CollisionCallback.h"
@@ -9,12 +8,13 @@
 
 namespace Denix
 {
-    Scene::Scene(): BaseObject({"Scene"}), m_PxScene(nullptr),
-                    m_CollisionCallback(nullptr),
-                    m_ViewportCamera{MakeRef<Camera>()},
-                    m_ActiveCamera{m_ViewportCamera},
+    Scene::Scene(): BaseObject({"Scene"}), 
+        m_PxScene(nullptr),
+        m_CollisionCallback(nullptr),
+        m_ViewportCamera{MakeRef<Camera>()},
+        m_ActiveCamera{m_ViewportCamera},
         m_IsPlaying(false),
-        m_DebugUIInPlay(false),
+        m_DebugToolsInPlay(false),
         m_Gravity(9.81f)
     {
     }

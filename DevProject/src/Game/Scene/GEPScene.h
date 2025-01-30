@@ -24,7 +24,7 @@ public:
     void EndScene() override;
     void Update(float _deltaTime, const Denix::Ref<Counter>& _waitCounter) override;
     
-    void DebugUI(float _deltaTime, const Denix::Ref<Counter>& _waitCounter) override;
+    void ToolUpdate(float _deltaTime, const Denix::Ref<Counter>& _waitCounter) override;
     
     Denix::Ref<Denix::Camera> m_CharacterCamera;
     

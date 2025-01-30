@@ -136,21 +136,21 @@ namespace Denix
         size_t m_FrameCount;
 
         // Engine subsystems
-        Ref<JobSubsystem> m_JobSubsystem;
-        Ref<TimerSubsystem> m_TimerSubsystem;
-        Ref<ReflectionSubsystem> m_ReflectionSubsystem;
-        Ref<FileSubsystem> m_FileSubsystem;
-        Ref<InputSubsystem> m_InputSubsystem;
-        Ref<EventSubsystem> m_EventSubsystem;
-        Ref<ProfileSubsystem> m_ProfileSubsystem;
-        Ref<WindowSubsystem> m_WindowSubsystem;
-        Ref<AssetSubsystem> m_AssetSubsystem;
-        Ref<AudioSubsystem> m_AudioSubsystem;
-        Ref<SceneSubsystem> m_SceneSubsystem;
-        Ref<PhysicsSubsystem> m_PhysicsSubsystem;
-        Ref<UISubsystem> m_UISubsystem;
-        Ref<RendererSubsystem> m_RendererSubsystem;
-        Ref<EditorSubsystem> m_EditorSubsystem;
+        Ref<JobSubsystem> m_JobSubsystem; ///< Job subsystem for multithreading.
+        Ref<TimerSubsystem> m_TimerSubsystem; ///< Timer subsystem for time management.
+        Ref<ReflectionSubsystem> m_ReflectionSubsystem; ///< Reflection subsystem for runtime type information.
+        Ref<FileSubsystem> m_FileSubsystem; ///< File subsystem for file I/O operations.
+        Ref<InputSubsystem> m_InputSubsystem; ///< Input subsystem for handling user input.
+        Ref<EventSubsystem> m_EventSubsystem; ///< Event subsystem for handling engine events.
+        Ref<ProfileSubsystem> m_ProfileSubsystem; ///< Profile subsystem for performance profiling.
+        Ref<WindowSubsystem> m_WindowSubsystem; ///< Window subsystem for creating and managing windows.
+        Ref<AssetSubsystem> m_AssetSubsystem; ///< Asset subsystem for managing game assets.
+        Ref<AudioSubsystem> m_AudioSubsystem; ///< Audio subsystem for managing audio playback.
+        Ref<SceneSubsystem> m_SceneSubsystem; ///< Scene subsystem for managing game scenes.
+        Ref<PhysicsSubsystem> m_PhysicsSubsystem; ///< Physics subsystem for handling physics simulation.
+        Ref<UISubsystem> m_UISubsystem; ///< UI subsystem for rendering user interfaces.
+        Ref<RendererSubsystem> m_RendererSubsystem; ///< Renderer subsystem for rendering graphics.
+        Ref<EditorSubsystem> m_EditorSubsystem; ///< Editor subsystem for editor-specific functionality.
 
         /**
          * @brief Grants main() function access to private members.
