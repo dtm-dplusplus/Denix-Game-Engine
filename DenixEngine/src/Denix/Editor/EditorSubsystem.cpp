@@ -1,11 +1,11 @@
 #include "EditorSubsystem.h"
 
-#include <backends/imgui_impl_opengl3.h>
 
 #include "Denix.h"
 #include "imgui_internal.h"
+#include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl3.h"
-#include "Denix/Core/File/FileSubsystem.h"
+
 #include "Denix/Editor/Widget/Scene/ActorDetailsWidget.h"
 #include "Denix/Editor/Widget/Scene/SceneOrganizerWidget.h"
 #include "Denix/Editor/Widget/AssetBrowserWidget.h"
@@ -13,8 +13,6 @@
 #include "Denix/Editor/Widget/InputDebuggerWidget.h"
 #include "Denix/Core/Thread/JobSubsystem.h"
 #include "Widget/Profile/PerformanceSettingsWidget.h"
-
-#include "yaml-cpp/yaml.h"
 
 namespace Denix
 {
