@@ -1,6 +1,11 @@
-#pragma once
+/**
+ * @file depch.h
+ * @brief Precompiled header file for the DenixEngine project.
+ *
+ * This file includes commonly used standard library headers to speed up compilation times.
+ */
 
-/* Containers */
+ /* Containers */
 #include <array>
 #include <vector>
 #include <queue>
@@ -18,7 +23,6 @@
 #include <string>
 #include <string_view>
 #include <cstdint>
-
 
 /* IO */
 #include <filesystem>
