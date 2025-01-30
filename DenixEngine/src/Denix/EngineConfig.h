@@ -1,17 +1,48 @@
 ﻿#pragma once
 
-struct EngineConfig
+namespace Denix
 {
-    //  Engine Configuration
-    std::string ProjectName;
-    std::string StartupScenePath;
+    /**
+     * @brief Configuration settings for the Denix Engine.
+     */
+    struct EngineConfig
+    {
+        //  Engine Configuration
+        /**
+         * @brief Name of the project.
+         */
+        std::string ProjectName;
 
-    // Input Configuration
-    bool MouseMotionLogging = false;
-    bool MouseButtonLogging = false;
-    bool KeyboardLogging = false;
-    bool GamepadLogging = false;
+        /**
+         * @brief Path to the startup scene.
+         */
+        std::string StartupScenePath;
 
-    // Physics Configuration
-    bool PhysicsLogging = false;
-};
+        // Input Configuration
+        /**
+         * @brief Enable or disable logging of mouse motion events.
+         */
+        bool MouseMotionLogging = false;
+
+        /**
+         * @brief Enable or disable logging of mouse button events.
+         */
+        bool MouseButtonLogging = false;
+
+        /**
+         * @brief Enable or disable logging of keyboard events.
+         */
+        bool KeyboardLogging = false;
+
+        /**
+         * @brief Enable or disable logging of gamepad events.
+         */
+        bool GamepadLogging = false;
+
+        // Physics Configuration
+        /**
+         * @brief Enable or disable logging of physics events.
+         */
+        bool PhysicsLogging = false;
+    };
+}
