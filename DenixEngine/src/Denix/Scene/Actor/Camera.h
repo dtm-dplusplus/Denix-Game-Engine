@@ -1,3 +1,8 @@
+/**
+ * @file Camera.h
+ * @brief Definition of the Camera class in the Denix engine.
+ */
+
 #pragma once
 
 #include "Denix/Scene/Actor.h"
@@ -5,26 +10,38 @@
 
 namespace Denix
 {
+    /**
+     * @class Camera
+     * @brief Actor container for CameraComponent.
+     *
+     * This class represents a Camera actor, which contains a CameraComponent.
+     * It is used to manage camera-related functionality within the scene.
+     */
     class Camera : public Actor
     {
     public:
         /**
-         *  @brief Constructor for the Camera class
+         * @brief Constructor for the Camera class.
          */
         Camera();
 
+        /**
+         * @brief Default destructor for Camera.
+         */
         ~Camera() override = default;
 
-        void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
-
+        /**
+         * @brief Gets the CameraComponent associated with this Camera.
+         * @return A reference to the CameraComponent.
+         */
         Ref<CameraComponent> GetCameraComponent() const { return m_CameraComponent; }
 
-    private:
-        Ref<CameraComponent> m_CameraComponent;
+    protected:
+        Ref<CameraComponent> m_CameraComponent; ///< Reference to the CameraComponent.
 
-        friend class Engine;
-        friend class RendererSubsystem;
-        friend class Scene;
-        friend class SceneSubsystem;
+    private:
+        friend class RendererSubsystem; ///< Allows RendererSubsystem to access private members.
+        friend class Scene; ///< Allows Scene to access private members.
+        friend class SceneSubsystem; ///< Allows SceneSubsystem to access private members.
     };
 }
