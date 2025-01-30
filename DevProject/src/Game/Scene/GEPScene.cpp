@@ -77,19 +77,23 @@ void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
 {
     Scene::Update(_deltaTime, _waitCounter);
 
-    if (!m_IsPlaying) return;
+    if (!IsPlaying()) return;
     
+    // Only play the game if the menu is not active
+    if (!m_MenuCanvas->m_IsActive) return;
 
-    if (!m_MenuCanvas->m_IsActive)
+    // Spawn ball on space key up
+    if (Denix::InputSubsystem::IsKeyUp(Denix::KeyCode::DEK_SPACE))
     {
-        if (Denix::InputSubsystem::IsKeyUp(Denix::KeyCode::DEK_SPACE))
+        if (Ref<Actor> camera = GetActiveCamera())
         {
-            glm::vec3 pos = m_ActiveCamera->GetTransform().Position;
-            glm::vec3 fwd = m_ActiveCamera->GetTransformComponent()->GetForward();
+            Ref<TransformComponent> transform = camera->GetTransformComponent();
+            glm::vec3 pos = transform->GetTransform().Position;
+            glm::vec3 fwd = transform->GetForward();
             glm::vec3 impulse = fwd * ShootForce;
-            DE_LOG(Log, Trace, "Impulse: {}, {}, {}", impulse.x, impulse.y, impulse.z);
-            Ref<BallActor> ball = SpawnActor<BallActor>(m_ActiveCamera->GetTransform().Position);
-            ball->GetPhysicsComponent()->AddImpulse(impulse);
+
+            if (Ref<BallActor> ball = SpawnActor<BallActor>(pos))
+                ball->GetPhysicsComponent()->AddImpulse(impulse);
         }
     }
 }

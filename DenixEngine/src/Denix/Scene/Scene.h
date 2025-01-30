@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Denix/Scene/Actor.h"
 #include "Denix/Scene/Actor/Camera.h"
 
 namespace physx
@@ -37,8 +36,7 @@ namespace Denix
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
         /* A seperated update call to present debug tools. 
-        * 
-        * 
+        * Enable ShowDebugUIInPlay to show debug tools in play mode
         */
         virtual void DebugUI(float _deltaTime, const Ref<Counter>& _waitCounter)
         {
@@ -79,19 +77,20 @@ namespace Denix
 
         size_t GetActorCount() const { return m_Actors.size(); }
 
-      
+        // Flags to show debug tools
+        bool ShowDebugUIInPlay() const { return m_DebugUIInPlay; }
+        bool& ShowDebugUIInPlay() { return m_DebugUIInPlay; }
 
         /** Gravity of the scene */
         float m_Gravity;
-
-        // Flags to show debug tools
-        bool DebugUIInPlay() const { return m_DebugUIInPlay; }
-        bool& DebugUIInPlay() { return m_DebugUIInPlay; }
 
     protected:
         // Debug Utility - Use with caution
         void ClearActors();
 
+        bool m_DebugUIInPlay;
+
+    private:
         /** Asset related to this scene. Contains offline data for this scene. */
         Ref<Asset> m_SceneAsset;
 
@@ -111,9 +110,6 @@ namespace Denix
         /* Active camera in the scene used for rendering. This can be viewport or game camera */
         Ref<Actor> m_ActiveCamera;
 
-        bool m_DebugUIInPlay;
-
-    private:
         /* Actor Containers 
         * We use two different containers. Vector is used for iteration and unordered_set is used for quick lookups.
         */
