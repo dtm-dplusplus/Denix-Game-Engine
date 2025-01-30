@@ -1,3 +1,8 @@
+/**
+ * @file Scene.h
+ * @brief Defines the Scene class and its actor utilities.
+ */
+
 #pragma once
 
 #include "Denix/Scene/Actor/Camera.h"

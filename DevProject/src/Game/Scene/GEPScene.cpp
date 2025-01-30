@@ -80,7 +80,7 @@ void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
     if (!IsPlaying()) return;
     
     // Only play the game if the menu is not active
-    if (!m_MenuCanvas->m_IsActive) return;
+    if (m_MenuCanvas->m_IsActive) return;
 
     // Spawn ball on space key up
     if (Denix::InputSubsystem::IsKeyUp(Denix::KeyCode::DEK_SPACE))
