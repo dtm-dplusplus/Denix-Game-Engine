@@ -158,9 +158,9 @@ namespace Denix
         {
             int copy = 1;
             while (m_ActorNames.contains(_actor->GetName() + std::to_string(copy))) copy++;
-            _actor->m_Name += std::to_string(copy);
+            _actor->GetName() += std::to_string(copy);
         }
-        m_ActorNames.insert(_actor->m_Name);
+        m_ActorNames.insert(_actor->GetName());
 
         // Pass the scene reference to the actor
         _actor->m_SceneRef = GetRef<Scene>();

@@ -1,6 +1,6 @@
 /**
  * @file Object.h
- * @brief Defines the base Object class and ObjectInit struct for game objects.
+ * @brief Defines the base Object class and ObjectInit struct for runtime objects.
  */
 
 #pragma once
@@ -12,7 +12,7 @@ namespace Denix
 {
     /**
      * @struct ObjectInit
-     * @brief Initializer for all objects in the game.
+     * @brief Initializer for all runtime objects.
      * 
      * Currently only implements the name but will be expanded in the future.
      */
@@ -37,7 +37,7 @@ namespace Denix
 
     /**
      * @class Object
-     * @brief Base class for all objects in the game.
+     * @brief Base class for all runtime objects.
      */
     class Object
     {
@@ -93,8 +93,6 @@ namespace Denix
 
         /**
          * @brief Marks the object as rubbish. It will be deleted at the end of the frame.
-         * 
-         * Use with caution; the object should be validated before marking.
          */
         void MarkRubbish() { m_IsRubbish = true; }
 
@@ -128,7 +126,6 @@ namespace Denix
         static unsigned int GenID();
 
         friend class Engine;
-        friend class Scene;
         friend class BaseObject;
         friend class SceneSubsystem;
         friend class ReflectionSubsystem;

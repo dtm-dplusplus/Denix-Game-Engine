@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿/**
+ * @file BaseObject.h
+ * @brief Defines an object that can be serialized, deserialized, and reflected via the Reflection Subsystem.
+ */
+#pragma once
 
 #include "Object.h"
 #include "Reflection/ReflectionHelper.h"
