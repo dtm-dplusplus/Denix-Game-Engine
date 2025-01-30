@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Actor.h"
-#include "Camera.h"
+#include "Denix/Scene/Actor.h"
+#include "Denix/Scene/Actor/Camera.h"
 
 namespace physx
 {

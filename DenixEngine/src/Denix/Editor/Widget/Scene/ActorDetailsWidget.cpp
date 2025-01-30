@@ -5,7 +5,7 @@
 
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Editor/EditorSubsystem.h"
-#include "Denix/Scene/Camera.h"
+#include "Denix/Scene/Actor/Camera.h"
 #include "Denix/Scene/Actor.h"
 #include "Denix/Editor/Widget/ShaderEditor.h"
 

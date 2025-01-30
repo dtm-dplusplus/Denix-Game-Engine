@@ -2,7 +2,7 @@
 #include "CameraComponent.h"
 
 #include "Denix/Scene/Actor.h"
-#include "Denix/Scene/Camera.h"
+#include "Denix/Scene/Actor/Camera.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Denix/Video/WindowSubsystem.h"
 

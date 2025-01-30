@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Actor.h"
-#include "Component/CameraComponent.h"
+#include "Denix/Scene/Actor.h"
+#include "Denix/Scene/Component/CameraComponent.h"
 
 namespace Denix
 {
