@@ -10,22 +10,15 @@ Denix::AudioSubsystem::AudioSubsystem(): m_Device(nullptr), m_Context(nullptr)
 
 void Denix::AudioSubsystem::Initialize()
 {
-    Subsystem::Initialize();
-
     DE_LOG(LogAudio, Warn, "Initializing Audio Subsystem")
+    Subsystem::Initialize();
 
     // Initialize OpenAL
     m_Device = alcOpenDevice(nullptr);
-    if (!m_Device)
-    {
-        DE_LOG(LogAudio, Error, "Failed to open OpenAL m_Device")
-    }
+    DE_ASSERT(m_Device, "Failed to open OpenAL m_Device")
 
     m_Context = alcCreateContext(m_Device, nullptr);
-    if (!m_Context)
-    {
-        DE_LOG(LogAudio, Error, "Failed to create OpenAL context")
-    }
+    DE_ASSERT(m_Context, "Failed to create OpenAL context")
     alcMakeContextCurrent(m_Context);
 
     // Determine the number of sources supported by the audio hardware
@@ -39,6 +32,7 @@ void Denix::AudioSubsystem::Initialize()
         DE_LOG(LogAudio, Critical, "No audio sources supported by audio hardware")
         DE_LOG(LogAudio, Error, "Audio Subsystem Disabled")
         m_Enabled = false;
+        DE_LOG(LogAudio, Info, "Audio Subsystem Initialized")
         return;
     }
 
@@ -47,6 +41,16 @@ void Denix::AudioSubsystem::Initialize()
     DE_LOG(LogAudio, Info, "Mono Sources: {}, Stereo Sources: {}", monoSources, stereoSources)
     DE_LOG(LogAudio, Info, "Max Sources: {}", monoSources + stereoSources)
     m_GlobalAudioSource = MakeRef<AudioSource>();
+
+    // Check we have global audio sources. Resume without if we don't
+    if (!m_GlobalAudioSource)
+    {
+        DE_LOG(LogAudio, Critical, "Failed to create global audio source")
+        DE_LOG(LogAudio, Error, "Audio Subsystem Disabled")
+        m_Enabled = false;
+        return;
+    }
+
     DE_LOG(LogAudio, Info, "Audio Subsystem Initialized")
 }
 

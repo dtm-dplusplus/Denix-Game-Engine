@@ -6,6 +6,8 @@
 #include <al/alc.h>
 #include <SDL3/SDL_audio.h>
 
+// https://indiegamedev.net/2020/02/15/the-complete-guide-to-openal-with-c-part-1-playing-a-sound/
+
 #define alCall(function, ...) alCallImpl(function, __VA_ARGS__)
 #define alcCall(function, device, ...) alcCallImpl(function, device, __VA_ARGS__)
 
