@@ -10,7 +10,6 @@
 #include "al/alext.h"
 #include "AudioClip.h"
 #include "AudioSource.h"
-#include "Denix/Scene/Component/AudioComponent.h"
 
 namespace Denix
 {

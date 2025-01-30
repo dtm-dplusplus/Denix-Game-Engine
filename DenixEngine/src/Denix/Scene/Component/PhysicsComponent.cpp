@@ -26,7 +26,7 @@ namespace Denix
         m_ColliderType(ColliderType::Cube),
         m_PxShape(nullptr),
         m_PxMaterial(nullptr),
-        m_PxActor(nullptr),
+        m_PxActor(nullptr)
     {
         m_ClassName = "PhysicsComponent";
     }

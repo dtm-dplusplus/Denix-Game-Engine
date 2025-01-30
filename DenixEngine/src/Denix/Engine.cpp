@@ -6,7 +6,6 @@
 
 #include "yaml-cpp/yaml.h"
 
-#include "Denix/Scene/Component/AudioComponent.h"
 #include "Denix/Core/Subsystem.h"
 #include "Denix/Core/Thread/JobSubsystem.h"
 #include "Denix/Core/Reflection/ReflectionSubsystem.h"
@@ -125,7 +124,6 @@ namespace Denix
 
         ReflectionSubsystem::Register<PhysicsComponent>();
 
-        ReflectionSubsystem::Register<AudioComponent>();
         ReflectionSubsystem::Register<AudioSource>();
 
         DE_LOG(LogReflection, Info, "Registered Engine Classes")

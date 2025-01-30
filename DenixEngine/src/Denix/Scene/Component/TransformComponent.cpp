@@ -21,7 +21,7 @@ namespace Denix
         m_Right = normalize(cross(m_Forward, {0.0f, 1.0f, 0.0f})); // World up
         m_Up = normalize(cross(m_Right, m_Forward));
 
-        CalculateModel(m_Transform, m_Model);
+        CalculateModel(m_Transform, m_ModelMatrix);
     }
 
     void TransformComponent::Serialize(YAML::Emitter& _out)

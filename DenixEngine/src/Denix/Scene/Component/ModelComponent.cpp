@@ -1,6 +1,7 @@
 #include "ModelComponent.h"
 
 #include "Denix/Core/Reflection/YAMLHelper.h"
+#include "Denix/Asset/AssetSubsystem.h"
 
 Denix::ModelComponent::ModelComponent(): Component(ObjectInit("Model Component")),
                                          m_Model{nullptr}

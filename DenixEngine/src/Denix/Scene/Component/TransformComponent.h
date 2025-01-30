@@ -83,9 +83,9 @@ namespace Denix
         glm::vec3& GetUp() { return m_Up; }
 
         /** @brief Gets the model matrix. */
-        glm::mat4 GetModel() const { return m_Model; }
+        glm::mat4 GetModel() const { return m_ModelMatrix; }
         /** @brief Gets a modifiable reference to the model matrix. */
-        glm::mat4& GetModel() { return m_Model; }
+        glm::mat4& GetModel() { return m_ModelMatrix; }
 
     private:
         /** @brief Serializes the component. */
@@ -99,7 +99,7 @@ namespace Denix
         glm::vec3 m_Right; ///< Stores the right vector.
         glm::vec3 m_Up; ///< Stores the up vector.
 
-        glm::mat4 m_Model; ///< Stores the model matrix.
+        glm::mat4 m_ModelMatrix; ///< Stores the model matrix.
 
         friend class Actor; ///< Grants Actor class access.
         friend class Scene; ///< Grants Scene class access.

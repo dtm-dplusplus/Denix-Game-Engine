@@ -397,7 +397,7 @@ namespace Denix
     void SceneSubsystem::RenderSceneSubmission() const
     {
         if (const auto& cam = m_ActiveScene->m_ActiveCamera->GetComponent<CameraComponent>())
-            RendererSubsystem::SubmitCamera({cam->m_Projection, cam->m_View});
+            RendererSubsystem::SubmitCamera({cam->GetProjectionMatrix(), cam->GetViewMatrix()});
 
         for (const auto& actor : m_ActiveScene->m_Actors)
         {
