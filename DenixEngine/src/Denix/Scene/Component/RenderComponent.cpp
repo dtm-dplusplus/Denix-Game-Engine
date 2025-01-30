@@ -5,11 +5,11 @@
 
 namespace Denix
 {
-    RenderComponent::RenderComponent(): Component(ObjectInit("Render Component"))
+    RenderComponent::RenderComponent(): Component(ObjectInit("Render Component")),
+        m_Material(MakeRef<Material>()),
+        m_IsVisible(true)
     {
         m_ClassName = "RenderComponent";
-        m_Shader = AssetSubsystem::GetShader("DefaultShader");
-        m_Material = MakeRef<Material>();
     }
 
     void RenderComponent::SetMaterial(const Ref<Material>& _material)
@@ -30,8 +30,6 @@ namespace Denix
         Component::Serialize(_out);
 
         _out << YAML::Key << "m_IsVisible" << YAML::Value << m_IsVisible;
-        _out << YAML::Key << "m_IsUI" << YAML::Value << m_IsVisible;
-
         _out << YAML::Key << "m_Material" << YAML::BeginMap;
         m_Material->Serialize(_out);
         _out << YAML::EndMap;
@@ -42,7 +40,6 @@ namespace Denix
         Component::Deserialize(_in);
 
         if (const YAML::Node& vis = _in["m_IsVisible"]; vis.IsDefined()) m_IsVisible = vis.as<bool>();
-        if (const YAML::Node& ui = _in["m_IsUI"]; ui.IsDefined()) m_IsUI = ui.as<bool>();
         if (const YAML::Node& mat = _in["m_Material"]; mat.IsDefined()) m_Material->Deserialize(mat);
     }
 }
