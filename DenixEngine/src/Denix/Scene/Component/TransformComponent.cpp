@@ -1,5 +1,4 @@
 #include "TransformComponent.h"
-#include "Denix/Scene/SceneSubsystem.h"
 #include "Denix/Core/Reflection/YAMLHelper.h"
 
 namespace Denix

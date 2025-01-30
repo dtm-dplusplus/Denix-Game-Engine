@@ -37,18 +37,6 @@ namespace Denix
         ~Actor() override = default;
 
         /**
-         * @brief Serializes the actor's data.
-         * @param _out YAML emitter to write data.
-         */
-        void Serialize(YAML::Emitter& _out) override;
-
-        /**
-         * @brief Deserializes the actor's data.
-         * @param _in YAML node containing actor data.
-         */
-        void Deserialize(const YAML::Node& _in) override;
-
-        /**
          * @brief Adds a component to the actor.
          * @param _comp Reference to the component.
          */
@@ -100,7 +88,7 @@ namespace Denix
         Ref<RenderComponent> GetRenderComponent() { return m_RenderComponent; }
 
         /**
-         * @brief Updates the actor.
+         * @brief Updates the actor and its components.
          * @param _deltaTime Time elapsed since last update.
          * @param _waitCounter Counter reference for synchronization.
          */
@@ -137,6 +125,18 @@ namespace Denix
          * @param _point The point of collision.
          */
         virtual void OnCollisionExit(const Ref<Actor>& _other, const glm::vec3& _normal, const glm::vec3& _point) {}
+
+        /**
+         * @brief Serializes the actor's data.
+         * @param _out YAML emitter to write data.
+         */
+        void Serialize(YAML::Emitter& _out) override;
+
+        /**
+         * @brief Deserializes the actor's data.
+         * @param _in YAML node containing actor data.
+         */
+        void Deserialize(const YAML::Node& _in) override;
 
         Ref<TransformComponent> m_TransformComponent; ///< Actor's transform component.
         Ref<PhysicsComponent> m_PhysicsComponent; ///< Actor's physics component.
