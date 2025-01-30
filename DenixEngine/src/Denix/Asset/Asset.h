@@ -1,136 +1,115 @@
-﻿#pragma once
+﻿/**
+ * @file Asset.h
+ * @brief Defines the Asset and AssetInit structures for asset management in the Denix engine.
+ */
+
+#pragma once
 #include <string>
 #include "Denix/Core/Log/Logger.h"
 
 namespace Denix
 {
+    /**
+     * @struct AssetInit
+     * @brief Structure for initializing an asset with a file path.
+     */
     struct AssetInit
     {
-        // Constructors
-        AssetInit() : AssetPath{"Asset"}
-        {
-        }
+        /**
+         * @brief Default constructor initializes the asset with a default path.
+         */
+        AssetInit() : AssetPath{ "Asset" } {}
 
-        AssetInit(std::string _path) : AssetPath{std::move(_path)}
-        {
-        }
+        /**
+         * @brief Constructor initializes the asset with a specified path.
+         * @param _path The asset file path.
+         */
+        AssetInit(std::string _path) : AssetPath{ std::move(_path) } {}
 
-        std::string AssetPath;
+        std::string AssetPath; ///< Path to the asset file.
     };
 
-
+    /**
+     * @class Asset
+     * @brief Represents an asset within the Denix engine.
+     */
     class Asset
     {
     public:
+        /**
+         * @brief Default constructor.
+         */
         Asset() = default;
+
+        /**
+         * @brief Virtual destructor.
+         */
         virtual ~Asset() = default;
 
+        /**
+         * @brief Constructs an asset using an AssetInit structure.
+         * @param _assetInit Initialization data for the asset.
+         */
         Asset(const AssetInit& _assetInit);
 
-        bool RenameAsset(const std::string& _newName)
-        {
-            // Add check for invalid characters
-            static std::string invalidChars = "\\/:*?\"<>|";
-
-            for (const auto& c : invalidChars)
-            {
-                if (_newName.find(c) != std::string::npos)
-                {
-                    DE_LOG(LogAsset, Error, "Invalid character in asset name: {0}", c)
-                    return false;
-                }
-            }
-
-            // Add check for empty string or same name
-            if (_newName.empty() || _newName == m_AssetName)
-            {
-                DE_LOG(LogAsset, Error, "Invalid asset name: {0}", _newName)
-                return false;
-            }
-
-            // Set new name
-            m_AssetName = _newName;
-
-            return true;
-        }
-
+        /**
+         * @brief Renames the asset if the new name is valid.
+         * @param _newName The new name for the asset.
+         * @return True if renaming was successful, false otherwise.
+         */
+        bool RenameAsset(const std::string& _newName);
 
         /**
-         * 
-         * @return Asset name without extension
+         * @brief Gets the asset name without extension.
+         * @return The asset name.
          */
-        std::string GetAssetName() const
-        {
-            return m_AssetName;
-        }
+        std::string GetAssetName() const { return m_AssetName; }
 
         /**
-         * 
-         * @return Asset file name with extension
+         * @brief Gets the asset file name with extension.
+         * @return The asset file name.
          */
-        std::string GetAssetFileName() const
-        {
-            return m_AssetFileName;
-        }
+        std::string GetAssetFileName() const { return m_AssetFileName; }
 
         /**
-         * 
-         * @return Asset file path 
+         * @brief Gets the asset file path relative to the project.
+         * @return The relative file path.
          */
-        std::string GetRelativePath() const
-        {
-            return m_AssetRelativePath;
-        }
-
-
-        std::string GetAbsolutePath() const
-        {
-            return m_AssetAbsolutePath;
-        }
+        std::string GetRelativePath() const { return m_AssetRelativePath; }
 
         /**
-         * 
-         * @return Asset file extension
+         * @brief Gets the absolute file path of the asset.
+         * @return The absolute file path.
          */
-        std::string GetAssetExtension() const
-        {
-            return m_AssetExtension;
-        }
+        std::string GetAbsolutePath() const { return m_AssetAbsolutePath; }
 
         /**
-         * 
-         * @return Asset directory
+         * @brief Gets the asset file extension.
+         * @return The file extension.
          */
-        std::string GetAssetDirectory() const
-        {
-            return m_AssetDirectory;
-        }
+        std::string GetAssetExtension() const { return m_AssetExtension; }
 
-        std::string GetDirectoryName() const
-        {
-            return m_DirectoryName;
-        }
+        /**
+         * @brief Gets the directory where the asset is stored.
+         * @return The asset directory.
+         */
+        std::string GetAssetDirectory() const { return m_AssetDirectory; }
+
+        /**
+         * @brief Gets the name of the directory containing the asset.
+         * @return The directory name.
+         */
+        std::string GetDirectoryName() const { return m_DirectoryName; }
 
     private:
-        // Relative Path
-        std::string m_AssetRelativePath;
+        std::string m_AssetRelativePath; ///< Relative file path.
+        std::string m_AssetAbsolutePath; ///< Absolute file path.
+        std::string m_AssetName; ///< Asset name without extension.
+        std::string m_AssetFileName; ///< File name with extension.
+        std::string m_AssetExtension; ///< File extension.
+        std::string m_AssetDirectory; ///< Directory of the asset.
+        std::string m_DirectoryName; ///< Name of the directory containing the asset.
 
-        std::string m_AssetAbsolutePath;
-
-        // Asset name without extension
-        std::string m_AssetName;
-
-        // Asset file name with extension
-        std::string m_AssetFileName;
-
-        // Asset file extension
-        std::string m_AssetExtension;
-
-        // Asset directory
-        std::string m_AssetDirectory;
-
-        std::string m_DirectoryName;
-
-        friend class AssetSubsystem;
+        friend class AssetSubsystem; ///< Grants AssetSubsystem access to private members.
     };
 }
