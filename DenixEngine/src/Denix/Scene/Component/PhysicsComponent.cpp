@@ -113,6 +113,11 @@ namespace Denix
         Component::PostUpdate(_deltaTime, _waitCounter);
 
         if (!m_PxActor) return;
+       
+        // TEMP: Disable Post update - physx setGlobalPose is not working as expected
+#ifdef DE_BUILD_RELEASE
+        return;
+#endif
 
         // Update physx gravity - This only disables gravity, collisions are still detected
         if (m_AttributeFlags & PHYSICS_SIMULATE)
