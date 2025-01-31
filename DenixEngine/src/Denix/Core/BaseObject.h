@@ -79,7 +79,9 @@ namespace Denix
         virtual void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) {}
 
         /** @brief Called when the scene is set as active. */
-        virtual void BeginScene() {}
+        virtual void BeginScene()
+        {
+        }
 
         /** @brief Called when the scene is no longer active. */
         virtual void EndScene() {}

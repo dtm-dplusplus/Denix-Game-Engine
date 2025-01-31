@@ -38,7 +38,13 @@ namespace Denix
         * @brief Gets the parent actor of this component.
         * @return Reference to the parent actor.
         */
-        Ref<Actor> GetParent() const { return m_Parent.lock(); }
+        Ref<Actor> GetParent() const
+        {
+            if (!m_Parent.expired()) {
+                return m_Parent.lock();
+            }
+        }
+
 
         /**
         * @brief Checks if the component is removable.
@@ -55,6 +61,22 @@ namespace Denix
         bool& IsEnabled() { return m_IsEnabled; }
 
     protected:
+        /**
+        * @brief Registers the component with the system.
+        */
+        void BeginScene() override
+        {
+            RegisterComponent();
+        }
+
+        /**
+        * @brief Unregisters the component from the system.
+        */
+        void EndScene() override
+        {
+            UnregisterComponent();
+        }
+
         /**
         * @brief Registers the component if it utilises a system
         */

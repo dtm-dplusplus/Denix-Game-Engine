@@ -110,9 +110,6 @@ namespace Denix
         void Update(float _deltaTime, const Ref<Counter>& _waitCounter) override;
         void PostUpdate(float _deltaTime, const Ref<Counter>& _waitCounter) override;
 
-        void BeginScene() override;
-        void EndScene() override;
-
         std::vector<CollisionPair> m_CollisionData; ///< Collision event container for actor collison events 
 
         physx::PxShape* m_PxShape; ///< PhysX shape pointer.

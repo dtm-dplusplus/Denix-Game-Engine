@@ -37,7 +37,7 @@ void Denix::CollisionCallback::onContact(const PxContactPairHeader& pairHeader, 
             collision.CollisionEnter = false;
 
             for (auto& comp : physComps)
-                if (comp) comp->m_CollisionData.push_back(collision);
+                if (comp && !comp->IsRubbish()) comp->m_CollisionData.push_back(collision);
         }
     }
 }

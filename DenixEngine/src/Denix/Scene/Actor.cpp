@@ -98,6 +98,8 @@ namespace Denix
     void Actor::Destroy()
     {
         BaseObject::Destroy();
+
+        for (auto comp : m_Components) comp->MarkRubbish();
     }
 
     void Actor::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
@@ -117,9 +119,12 @@ namespace Denix
 
                     if (col.m_Actors[0] == m_PhysicsComponent.get()) otherIndex = 1;
 
-                    if (col.CollisionEnter) OnCollisionEnter(col.m_Actors[otherIndex]->GetParent(), col.Normal,
-                                                             col.Point);
-                    else OnCollisionExit(col.m_Actors[otherIndex]->GetParent(), col.Normal, col.Point);
+                    if (Ref<Actor> otherActor = col.m_Actors[otherIndex]->GetParent()) 
+                    {
+                        if (col.CollisionEnter) OnCollisionEnter(otherActor, col.Normal,
+                            col.Point);
+                        else OnCollisionExit(otherActor, col.Normal, col.Point);
+                     }
                 }
             }
         }

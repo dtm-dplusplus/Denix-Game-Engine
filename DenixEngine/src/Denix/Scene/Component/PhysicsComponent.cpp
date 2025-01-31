@@ -31,14 +31,6 @@ namespace Denix
         m_ClassName = "PhysicsComponent";
     }
 
-    void PhysicsComponent::BeginScene()
-    {
-        Component::BeginScene();
-
-        // Register the physics component with the physics subsystem
-        RegisterComponent();
-    }
-
     void PhysicsComponent::RegisterComponent()
     {
         Component::RegisterComponent();
@@ -99,13 +91,6 @@ namespace Denix
 
         if (const YAML::Node& dynamicFriction = _in["m_DynamicFriction"]; dynamicFriction.IsDefined())
             m_DynamicFriction = dynamicFriction.as<float>();
-    }
-
-    void PhysicsComponent::EndScene()
-    {
-        UnregisterComponent();
-
-        Component::EndScene();
     }
 
     void PhysicsComponent::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
