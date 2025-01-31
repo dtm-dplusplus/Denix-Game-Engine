@@ -1,7 +1,7 @@
 #include "Engine.h"
 
 /**
- * @brief The main entry point for the Denix Engine application.
+ * @brief The main entry point for the Engine application.
  *
  * This function initializes the engine and starts its execution.
  *

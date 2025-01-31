@@ -1,5 +1,5 @@
 ﻿/// @file AudioClio.h
-/// @brief Defines the AudioClip class for handling audio playback in the Denix engine.
+/// @brief Defines the AudioClip class for handling audio playback
 #pragma once
 
 #include "AudioPrimitive.h"

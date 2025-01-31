@@ -1,14 +1,9 @@
 #include "Engine.h"
 
-#include <GL/glew.h>
-#include <SDL3/SDL.h>
-
-
-#include "yaml-cpp/yaml.h"
-
 #include "Denix/Core/Subsystem.h"
 #include "Denix/Core/Thread/JobSubsystem.h"
 #include "Denix/Core/Reflection/ReflectionSubsystem.h"
+#include "Denix/Core/Reflection/YAMLHelper.h"
 #include "Denix/Video/WindowSubsystem.h"
 #include "Denix/UI/UISubsystem.h"
 #include "Denix/Physics/PhysicsSubsystem.h"
@@ -24,44 +19,64 @@
 #include "Profile/ProfileSubsystem.h"
 #include "Scene/Actor/Shapes.h"
 
+#include <GL/glew.h>
+#include <SDL3/SDL.h>
 
 namespace Denix
 {
+    // Main engine loop
     void Engine::EngineLoop()
     {
         DE_LOG(LogEngine, Info, "Engine Loop Started")
 
+        // Loop until the window is closed
         while (m_WindowSubsystem->m_Window->IsOpen())
         {
-            // Setup timer system for the new frame.
+            // Setup timer system for the new frame. Manages frame rate and timing.
             m_TimerSubsystem->BeginFrame();
 
+            // Update the event subsystem. Processes all events in the event queue including input events.
             m_EventSubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
+            // Prepare the window subsystem for a new frame. Clears the window and prepares it for rendering.
             m_WindowSubsystem->NewFrame();
 
+            // Update the physics subsystem. The physics subsystem will simulate the physics world.
             m_PhysicsSubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
+            // Update the scene subsystem. The active scene and its actors will be updated. Also handles scene transitions.
             m_SceneSubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
+            // Update the UI subsystem. Updates UI Widget Logic.
             m_UISubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
+            // Update the editor subsystem. Updates the editor widgets and manages viewport docking etc.
             m_EditorSubsystem->Update(m_TimerSubsystem->m_DeltaTime, nullptr);
 
+            // Perform post-update operations for the physics subsystem. Synchronizes the physics world with the scene.
             m_PhysicsSubsystem->PostUpdate(m_TimerSubsystem->m_DeltaTime, nullptr);
 
+            // Submit the scene for rendering. Sends all actors to the renderer for rendering.
             m_SceneSubsystem->RenderSceneSubmission();
 
+            // Submit the UI for rendering. Sends all UI widgets to the renderer for rendering.
             m_UISubsystem->RenderUISubmission();
 
+            // Present the frame to the window. Updates the window with the newly rendered frame.
             m_WindowSubsystem->PresentFrame();
 
+            // Clean up any objects marked for deletion in the scene subsystem. 
+            // Actor destruction is handled here to prevent any dangling pointers during the frame.
             m_SceneSubsystem->CleanRubbish();
 
+            // End the frame in the timer subsystem. Delta time is calculated here.
             m_TimerSubsystem->EndFrame();
+
+            // Increment the frame count. Uused for profiling and debugging.
             m_FrameCount++;
         }
     }
+
 
     void Engine::Run()
     {
@@ -180,9 +195,6 @@ namespace Denix
         DE_LOG(LogEngine, Trace, "Engine Deinitializing")
 
         SaveConfig();
-
-        // Clear Core Dependencies
-        //SDL_Quit();
 
         // Clear Subsystem pointers
         m_EditorSubsystem->Deinitialize();

@@ -64,7 +64,7 @@ void Denix::AudioSubsystem::PlayAudioClipSingle(const Ref<AudioClip>& _audioClip
 
     s_Instance->m_GlobalAudioSource->SetAudioClip(_audioClip);
     s_Instance->m_GlobalAudioSource->Play();
-    DE_LOG(LogAudio, Info, "Playing Audio Clip: {}", _audioClip->GetAssetName())
+    if(s_AudioLogging) DE_LOG(LogAudio, Info, "Playing Audio Clip: {}", _audioClip->GetAssetName())
 }
 
 Denix::Ref<Denix::AudioSource> Denix::AudioSubsystem::CreateNewAudioSource()

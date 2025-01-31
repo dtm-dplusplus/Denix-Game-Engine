@@ -1,6 +1,5 @@
 ﻿/// @file AudioSubsystem.h
-/// @brief Defines the AudioSubsystem class for handling audio functionality within the Denix engine.
-
+/// @brief Defines the AudioSubsystem class for handling audio functionality
 #pragma once
 
 #include "Denix/Core/Subsystem.h"

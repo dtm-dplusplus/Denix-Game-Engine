@@ -1,6 +1,6 @@
 /**
  * @file Core.h
- * @brief Defines smart pointer utilities and assertion macros for the Denix engine.
+ * @brief Defines smart pointer utilities and assertion macros
  *
  * Provides typedefs and helper functions for shared, unique, and weak pointers.
  */

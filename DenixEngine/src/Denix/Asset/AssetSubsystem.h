@@ -1,6 +1,6 @@
 /**
  * @file AssetSubsystem.h
- * @brief Declaration of the AssetSubsystem class for managing assets in the Denix engine.
+ * @brief Declaration of the AssetSubsystem class for managing assets
  */
 
 #pragma once
@@ -23,7 +23,6 @@ namespace Denix
      * @brief Manages assets such as scenes, shaders, textures, models, and audio clips.
      *
      * This subsystem provides static methods to load, retrieve, and manage various assets
-     * within the Denix engine.
      */
     class AssetSubsystem : public Subsystem<AssetSubsystem>
     {

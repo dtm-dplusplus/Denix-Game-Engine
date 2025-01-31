@@ -1,6 +1,6 @@
 /**
  * @file Camera.h
- * @brief Definition of the Camera class in the Denix engine.
+ * @brief Definition of the Camera class
  */
 
 #pragma once

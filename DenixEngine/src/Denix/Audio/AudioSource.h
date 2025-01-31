@@ -1,5 +1,5 @@
 ﻿/// @file AudioSource.h
-/// @brief Defines the AudioSource class for managing audio playback in the Denix engine.
+/// @brief Defines the AudioSource class for managing audio playback
 
 #pragma once
 #include <cstdint>
@@ -25,7 +25,7 @@ namespace Denix
 
     /**
      * @class AudioSource
-     * @brief Handles audio playback, position, and properties in the Denix engine.
+     * @brief Handles audio playback, position, and properties
      */
     class AudioSource : public BaseObject
     {

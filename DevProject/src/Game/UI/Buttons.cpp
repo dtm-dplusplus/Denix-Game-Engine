@@ -17,15 +17,19 @@ void PlayButton::OnSelect()
     
     if (auto canvas = m_CanvasParent.lock())
     {
+        // Hide the canvas
         canvas->Disable();
+        
+        // Enable Camera input
+        if (auto scene = SceneSubsystem::GetActiveScene())
+        {
+            if (auto camera = scene->GetActiveCameraComponent())
+            {
+                camera->m_ExternalControl = false;
+            }
+        }
     }
 }
-
-RestartButton::RestartButton(): Button({"RestartButton"})
-{
-    m_Material->SetBaseTexture(AssetSubsystem::GetTexture("Content\\Textures\\UI_Restart.png"));
-}
-
 
 QuitButton::QuitButton(): Button({"QuitButton"})
 {
@@ -38,11 +42,3 @@ void QuitButton::OnSelect()
 
     SceneSubsystem::RequestStop();
 }
-
-void RestartButton::OnSelect()
-{
-    Button::OnSelect();
-
-    SceneSubsystem::RequestOpenScene("Content\\Scene\\GEPScene.asset");
-}
-

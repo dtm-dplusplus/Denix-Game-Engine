@@ -8,13 +8,6 @@ public:
     void OnSelect() override;
 };
 
-class RestartButton : public Denix::Button
-{
-public:
-    RestartButton();
-    void OnSelect() override;
-};
-
 class QuitButton : public Denix::Button
 {
 public:

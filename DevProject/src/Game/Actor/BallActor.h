@@ -14,6 +14,6 @@ public:
     void BeginScene() override;
     void OnCollisionEnter(const Denix::Ref<Actor>& _other, const glm::vec3& _normal, const glm::vec3& _point);
     
-    inline static float Mass = 100.0f;
+    inline static float Mass = 30.0f;
     bool m_IsDead = false;
 };

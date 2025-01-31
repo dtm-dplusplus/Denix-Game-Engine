@@ -1,6 +1,6 @@
 ﻿#include "MainMenuCanvas.h"
 
-#include "Button/Buttons.h"
+#include "Buttons.h"
 #include "Denix/Asset/AssetSubsystem.h"
 #include "Denix/Audio/AudioSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"

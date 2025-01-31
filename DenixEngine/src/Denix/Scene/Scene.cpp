@@ -126,6 +126,13 @@ namespace Denix
         return m_ActiveCamera;
     }
 
+    Ref<CameraComponent> Scene::GetActiveCameraComponent()
+    {
+        if (!m_ActiveCamera) return nullptr;
+
+        return m_ActiveCamera->GetComponent<CameraComponent>();
+    }
+
     std::vector<Ref<Actor>> Scene::GetSceneActors() const
     {
         return m_Actors;
@@ -154,13 +161,15 @@ namespace Denix
         }
 
         // Validate Name. We cannont have two objects with the same name
-        if (m_ActorNames.contains(_actor->GetName()))
+        std::string name = _actor->GetName();
+        if (m_ActorNames.contains(name))
         {
             int copy = 1;
-            while (m_ActorNames.contains(_actor->GetName() + std::to_string(copy))) copy++;
-            _actor->GetName() += std::to_string(copy);
+            while (m_ActorNames.contains(name + std::to_string(copy))) copy++;
+            name += std::to_string(copy);
         }
-        m_ActorNames.insert(_actor->GetName());
+        _actor->SetName(name);
+        m_ActorNames.insert(name);
 
         // Pass the scene reference to the actor
         _actor->m_SceneRef = GetRef<Scene>();

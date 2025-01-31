@@ -6,7 +6,6 @@
 #include "Denix/Physics/PhysicsSubsystem.h"
 #include "Denix/Input/InputSubsystem.h"
 #include "Game/Actor/BallActor.h"
-#include "Game/UI/GameOverCanvas.h"
 #include "Game/UI/MainMenuCanvas.h"
 
 using namespace Denix;
@@ -15,12 +14,16 @@ void GEPScene::BeginPlay()
 {
     Scene::BeginPlay();
 
+    // Disable Camera input until play button
+    if (Ref<CameraComponent> camera = GetActiveCameraComponent()) camera->m_ExternalControl = true;
+
     m_MenuCanvas = MakeRef<MainMenuCanvas>();
     m_MenuCanvas->BeginScene();
     
     m_MusicAudioSource = AudioSubsystem::CreateNewAudioSource();
-    if (Ref<AudioClip> clip = AssetSubsystem::GetAudioClip("Content\\Audio\\music.wav"))
+    if (Ref<AudioClip> clip = AssetSubsystem::GetAudioClip("Content\\Audio\\music.wav"); m_MusicAudioSource)
     {
+        m_MusicAudioSource->m_Looping = true;
         m_MusicClip = clip;
         m_MusicAudioSource->SetAudioClip(clip);
         m_MusicAudioSource->Play();

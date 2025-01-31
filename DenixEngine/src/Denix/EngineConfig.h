@@ -3,7 +3,7 @@
 namespace Denix
 {
     /**
-     * @brief Configuration settings for the Denix Engine.
+     * @brief Configuration settings for the Engine.
      */
     struct EngineConfig
     {

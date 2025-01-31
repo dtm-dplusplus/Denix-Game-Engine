@@ -66,6 +66,9 @@ void Denix::AudioSource::Play() const
         return;
     }
 
+    // Enable looping
+    if(m_Looping) alCall(alSourcei, m_Source, AL_LOOPING, AL_TRUE);
+
     alCall(alSourcePlay, m_Source);
     m_State = SourceState::Playing;
 }

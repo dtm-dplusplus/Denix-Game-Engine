@@ -13,6 +13,7 @@
 #include "Denix/Editor/Widget/InputDebuggerWidget.h"
 #include "Denix/Core/Thread/JobSubsystem.h"
 #include "Widget/Profile/PerformanceSettingsWidget.h"
+#include <Denix/Audio/AudioPrimitive.h>
 
 namespace Denix
 {
@@ -280,6 +281,8 @@ namespace Denix
                     Engine::GetConfig().PhysicsLogging = PhysicsSubsystem::GetInstance()->m_PhysicsLogging;
                     PhysicsSubsystem::PhysicsLoggingUpdate();
                 }
+                
+                ImGui::Checkbox("Audio Logging", &s_AudioLogging);
                 ImGui::Checkbox("Renderer Enabled", &RendererSubsystem::GetInstance()->IsEnabled());
                 if (ImGui::BeginMenu("Reflection"))
                 {

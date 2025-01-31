@@ -65,6 +65,14 @@ namespace Denix
         std::string GetName() const { return m_Name; }
 
         /**
+          * @brief Sets the name of the object.
+          *
+          * Use with caution; the name should be validated before setting.
+          * @param _name The new name of the object.
+          */
+        void SetName(const std::string& _name) { m_Name = _name; }
+
+        /**
          * @brief Gets the class name of the object.
          * @return The class name of the object.
          */
@@ -83,14 +91,6 @@ namespace Denix
         bool IsRubbish() const { return m_IsRubbish; }
 
     protected:
-        /**
-         * @brief Sets the name of the object.
-         * 
-         * Use with caution; the name should be validated before setting.
-         * @param _name The new name of the object.
-         */
-        void SetName(const std::string& _name) { m_Name = _name; }
-
         /**
          * @brief Marks the object as rubbish. It will be deleted at the end of the frame.
          */

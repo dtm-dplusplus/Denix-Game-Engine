@@ -1,6 +1,6 @@
 /**
  * @file TransformComponent.h
- * @brief Definition of the TransformComponent class in the Denix engine.
+ * @brief Definition of the TransformComponent class
  */
 #pragma once
 

@@ -91,6 +91,12 @@ namespace Denix
         Ref<Actor> GetActiveCamera();
 
         /**
+         * @brief Gets the active camera component in the scene.
+         * @return Reference to the active camera component.
+         */
+        Ref<CameraComponent> GetActiveCameraComponent();
+
+        /**
          * @brief Finds a game camera in the scene, excluding the viewport camera.
          * @return Reference to the found camera.
          */

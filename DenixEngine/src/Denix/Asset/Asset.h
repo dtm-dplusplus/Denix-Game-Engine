@@ -1,6 +1,6 @@
 ﻿/**
  * @file Asset.h
- * @brief Defines the Asset and AssetInit structures for asset management in the Denix engine.
+ * @brief Defines the Asset and AssetInit structures for asset management
  */
 
 #pragma once
@@ -31,7 +31,7 @@ namespace Denix
 
     /**
      * @class Asset
-     * @brief Represents an asset within the Denix engine.
+     * @brief Represents an asset like a texture, model, or sound file.
      */
     class Asset
     {

@@ -1,6 +1,6 @@
 /**
  * @file PhysicsComponent.h
- * @brief Definition of the PhysicsComponent class in the Denix engine.
+ * @brief Definition of the PhysicsComponent class
  */
 #pragma once
 

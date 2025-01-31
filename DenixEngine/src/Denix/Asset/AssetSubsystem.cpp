@@ -156,7 +156,6 @@ namespace Denix
     {
         std::string path = FileSubsystem::FormatRelativePath(_path);
 
-        DE_LOG(LogAsset, Trace, "Pathhh Audio Clip: {}", path)
         if (!s_Instance->m_AudioClipStore.contains(path))
         {
             DE_LOG(LogAsset, Error, "Audio Clip not found: {}", path)

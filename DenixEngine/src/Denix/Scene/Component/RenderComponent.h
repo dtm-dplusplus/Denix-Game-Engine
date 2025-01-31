@@ -1,6 +1,6 @@
 /**
  * @file RenderComponent.h
- * @brief Definition of the RenderComponent class in the Denix engine.
+ * @brief Definition of the RenderComponent class
  */
 #pragma once
 

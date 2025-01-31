@@ -13,10 +13,12 @@
 
 namespace Denix
 {
+    inline static bool s_AudioLogging = false;
+
     inline bool check_al_errors()
     {
         ALenum error = alGetError();
-        if (error != AL_NO_ERROR)
+        if (error != AL_NO_ERROR && s_AudioLogging)
         {
             switch (error)
             {

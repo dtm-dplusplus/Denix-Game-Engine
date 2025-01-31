@@ -1,6 +1,6 @@
 /**
  * @file Actor.h
- * @brief Definition of the Actor class in the Denix engine.
+ * @brief Definition of the Actor class
  */
 
 #pragma once

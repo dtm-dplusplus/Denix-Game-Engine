@@ -1,8 +1,5 @@
 ﻿#pragma once
-#include "Denix/UI/Widget/Button.h"
 #include "Denix/UI/Widget/Canvas.h"
-
-
 
 
 class MainMenuCanvas: public Denix::Canvas
