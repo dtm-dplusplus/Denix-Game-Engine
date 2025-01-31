@@ -31,7 +31,7 @@ void GEPScene::BeginPlay()
 
     float CubeScale = 1.0f; // Size of each cube
 
-    int CubeSize = 10; // Size of the big cube
+    int CubeSize = 5; // Size of the big cube
 
     const std::unordered_map < std::string, Ref<Texture>>& textures = AssetSubsystem::GetTextureStore();
     size_t size = textures.size();
