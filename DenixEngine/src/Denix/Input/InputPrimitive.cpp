@@ -1,5 +1,4 @@
-﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/Build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
-#include "InputPrimitive.h"
+﻿#include "InputPrimitive.h"
 
 #include "Denix/Core/Log/Logger.h"
 

@@ -1,5 +1,4 @@
-﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
-#include "UIWidget.h"
+﻿#include "UIWidget.h"
 #include "Denix/Video/GL/Material.h"
 
 Denix::UIWidget::UIWidget(): BaseObject({"UIWidget"}), m_ModelMatrix(1.0f)

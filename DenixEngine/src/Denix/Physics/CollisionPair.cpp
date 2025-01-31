@@ -1,2 +1,1 @@
-﻿#include "depch.h"
-#include "CollisionPair.h"
+﻿#include "CollisionPair.h"

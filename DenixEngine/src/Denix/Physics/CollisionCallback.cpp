@@ -1,5 +1,4 @@
-﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
-#include "CollisionCallback.h"
+﻿#include "CollisionCallback.h"
 #include "Denix/Scene/Actor.h"
 
 void Denix::CollisionCallback::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs,

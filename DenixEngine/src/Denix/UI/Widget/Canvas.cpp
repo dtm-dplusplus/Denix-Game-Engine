@@ -1,5 +1,4 @@
-﻿#include "C:/Users/Denis/Documents/Programming Projects/Denix-Game-Engine/build/DenixEngine/CMakeFiles/DenixEngine.dir/Debug/cmake_pch.hxx"
-#include "Canvas.h"
+﻿#include "Canvas.h"
 
 #include "Denix/UI/UISubsystem.h"
 
