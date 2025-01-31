@@ -27,19 +27,19 @@ namespace Denix
     {
         BaseObject::BeginScene();
 
-        PxSceneDesc m_PxSceneDesc = PxSceneDesc(PhysicsSubsystem::m_PxPhysics->getTolerancesScale());
+        PxSceneDesc m_PxSceneDesc = PxSceneDesc(PhysicsSubsystem::GetPxPhysics()->getTolerancesScale());
         m_PxSceneDesc.gravity = PxVec3(0.0f, -m_Gravity, 0.0f);
-        m_PxSceneDesc.cpuDispatcher = PhysicsSubsystem::m_PxDispatcher;
+        m_PxSceneDesc.cpuDispatcher = PhysicsSubsystem::GetPxDispatcher();
         m_PxSceneDesc.filterShader = PhysicsFilterShader;
         m_CollisionCallback = new CollisionCallback;
         m_PxSceneDesc.simulationEventCallback = m_CollisionCallback;
 
 
-        m_PxScene = PhysicsSubsystem::m_PxPhysics->createScene(m_PxSceneDesc);
+        m_PxScene = PhysicsSubsystem::PhysicsSubsystem::GetPxPhysics()->createScene(m_PxSceneDesc);
         DE_ASSERT(m_PxScene, "Failed to create PhysX Scene");
 
         PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
-        PhysicsSubsystem::m_PxPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
+        PhysicsSubsystem::GetPxPvd()->connect(*transport, PxPvdInstrumentationFlag::eALL);
 
         if (PxPvdSceneClient* pvdClient = m_PxScene->getScenePvdClient())
         {
@@ -67,7 +67,7 @@ namespace Denix
 
         // Release the PhysX scene
         PX_RELEASE(m_PxScene)
-        PhysicsSubsystem::m_PxPvd->disconnect();
+        PhysicsSubsystem::GetPxPvd()->disconnect();
 
         BaseObject::EndScene();
     }

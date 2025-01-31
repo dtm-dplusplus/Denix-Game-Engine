@@ -76,6 +76,14 @@ namespace Denix
         inline static bool m_PhysicsLogging = false; /**< Flag for enabling physics logging. */
 
     private:
+        static physx::PxPhysics* GetPxPhysics() { return s_Instance->m_PxPhysics; } /**< Getter for the PhysX physics object. */
+        static physx::PxScene* GetPxScene(); /**< Getter for the PhysX scene object. */
+        static physx::PxPvd* GetPxPvd() { return s_Instance->m_PxPvd; } /**< Getter for the PhysX PVD object. */
+        static physx::PxDefaultCpuDispatcher* GetPxDispatcher() { return s_Instance->m_PxDispatcher; } /**< Getter for the PhysX CPU dispatcher object. */
+        static physx::PxDefaultAllocator* GetPxAllocator() { return &s_Instance->m_PxAllocator; } /**< Getter for the PhysX allocator object. */
+        static physx::PxDefaultErrorCallback* GetPxErrorCallback() { return &s_Instance->m_PxErrorCallback; } /**< Getter for the PhysX error callback object. */
+        static physx::PxFoundation* GetPxFoundation() { return s_Instance->m_PxFoundation; } /**< Getter for the PhysX foundation object. */
+
         /**
          * @brief Updates the physics subsystem.
          * @param _deltaTime Time step for update.
@@ -112,13 +120,12 @@ namespace Denix
         /**
          * @brief PhysX objects for physics simulation.
          */
-        inline static physx::PxDefaultAllocator m_PxAllocator;
-        inline static physx::PxDefaultErrorCallback m_PxErrorCallback;
-        inline static physx::PxFoundation* m_PxFoundation = nullptr;
-        inline static physx::PxPhysics* m_PxPhysics = nullptr;
-        inline static physx::PxPvd* m_PxPvd = nullptr;
-        inline static physx::PxDefaultCpuDispatcher* m_PxDispatcher = nullptr;
-        inline static physx::PxMaterial* m_PxMaterial = nullptr;
+        physx::PxDefaultAllocator m_PxAllocator;
+        physx::PxDefaultErrorCallback m_PxErrorCallback;
+        physx::PxFoundation* m_PxFoundation = nullptr;
+        physx::PxPhysics* m_PxPhysics = nullptr;
+        physx::PxPvd* m_PxPvd = nullptr;
+        physx::PxDefaultCpuDispatcher* m_PxDispatcher = nullptr;
 
         friend class PhysicsComponent;
         friend class SceneSubsystem;

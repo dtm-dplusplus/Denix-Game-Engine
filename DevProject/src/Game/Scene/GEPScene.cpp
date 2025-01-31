@@ -26,6 +26,7 @@ void GEPScene::BeginPlay()
         m_MusicAudioSource->Play();
     }
 
+    // Spawn Cube Actors with random texture
     glm::vec3 SpawnLocation(0.0f, 0.0f, 0.0f);
     glm::vec3 SpawnRotation(0.0f, 0.0f, 0.0f);
 

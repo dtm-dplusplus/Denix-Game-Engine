@@ -30,9 +30,6 @@ namespace Denix
         m_PxDispatcher = PxDefaultCpuDispatcherCreate(static_cast<PxU32>(JobSubsystem::GetActiveThreads()));
         DE_ASSERT(m_PxDispatcher, "Failed to create PhysX Dispatcher")
 
-        m_PxMaterial = m_PxPhysics->createMaterial(0.5f, 0.5f, 0.5f);
-        DE_ASSERT(m_PxMaterial, "Failed to create PhysX Material")
-
         m_PhysicsLogging = Engine::GetConfig().PhysicsLogging;
         PhysicsLoggingUpdate();
 
@@ -43,7 +40,6 @@ namespace Denix
     {
         DE_LOG(LogPhysics, Trace, "PhysicsSubsystem Deinitializing")
 
-        PX_RELEASE(m_PxMaterial);
         PX_RELEASE(m_PxDispatcher);
         PX_RELEASE(m_PxPhysics);
         if (m_PxPvd)
@@ -72,7 +68,7 @@ namespace Denix
         const auto scaleHalf = transform.Scale * 0.5f;
 
         // Set Material
-        _comp->m_PxMaterial = m_PxPhysics->createMaterial(_comp->m_StaticFriction, _comp->m_DynamicFriction,
+        _comp->m_PxMaterial = s_Instance->m_PxPhysics->createMaterial(_comp->m_StaticFriction, _comp->m_DynamicFriction,
                                                           _comp->m_Elasticity);
         DE_ASSERT(_comp->m_PxMaterial, "Failed to create PhysX Material")
 
@@ -80,33 +76,33 @@ namespace Denix
         {
         case ColliderType::Plane:
             {
-                _comp->m_PxShape = m_PxPhysics->createShape(PxBoxGeometry(transform.Scale.x, 0.01f, transform.Scale.z),
+                _comp->m_PxShape = s_Instance->m_PxPhysics->createShape(PxBoxGeometry(transform.Scale.x, 0.01f, transform.Scale.z),
                                                             *_comp->m_PxMaterial);
             }
             break;
 
         case ColliderType::Cube:
             {
-                _comp->m_PxShape = m_PxPhysics->createShape(PxBoxGeometry(scaleHalf.x, scaleHalf.y, scaleHalf.z),
+                _comp->m_PxShape = s_Instance->m_PxPhysics->createShape(PxBoxGeometry(scaleHalf.x, scaleHalf.y, scaleHalf.z),
                                                             *_comp->m_PxMaterial);
             }
             break;
 
         case ColliderType::Sphere:
             {
-                _comp->m_PxShape = m_PxPhysics->createShape(PxSphereGeometry(scaleHalf.x), *_comp->m_PxMaterial);
+                _comp->m_PxShape = s_Instance->m_PxPhysics->createShape(PxSphereGeometry(scaleHalf.x), *_comp->m_PxMaterial);
             }
             break;
         }
 
         if (!_comp->m_SimulatePhysics)
         {
-            _comp->m_PxActor = m_PxPhysics->createRigidStatic(
+            _comp->m_PxActor = s_Instance->m_PxPhysics->createRigidStatic(
                 PxTransform(transform.Position.x, transform.Position.y, transform.Position.z));
         }
         else
         {
-            if (PxRigidDynamic* pxActor = m_PxPhysics->createRigidDynamic(
+            if (PxRigidDynamic* pxActor = s_Instance->m_PxPhysics->createRigidDynamic(
                 PxTransform(transform.Position.x, transform.Position.y, transform.Position.z)))
             {
                 pxActor->setLinearDamping(_comp->m_LinearDrag);
@@ -203,13 +199,16 @@ namespace Denix
     {
         if (m_PhysicsLogging)
         {
-            m_PxFoundation->setErrorLevel(PxErrorCode::eDEBUG_INFO);
+            s_Instance->m_PxFoundation->setErrorLevel(PxErrorCode::eDEBUG_INFO);
             DE_LOG(LogPhysics, Info, "Physics Logging Enabled")
         }
         else
         {
-            m_PxFoundation->setErrorLevel(PxErrorCode::eNO_ERROR);
+            s_Instance->m_PxFoundation->setErrorLevel(PxErrorCode::eNO_ERROR);
             DE_LOG(LogPhysics, Info, "Physics Logging Disabled")
         }
     }
+
+    /**< Getter for the PhysX physics object. */
+    inline physx::PxScene* PhysicsSubsystem::GetPxScene() { return s_Instance->m_ActiveScene.lock()->m_PxScene; }
 }

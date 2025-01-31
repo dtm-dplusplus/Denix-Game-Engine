@@ -155,7 +155,7 @@ namespace Denix
                         scene->removeActor(*m_PxActor);
                         m_PxActor->release();
 
-                        m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidStatic(
+                        m_PxActor = PhysicsSubsystem::GetPxPhysics()->createRigidStatic(
                             physx::PxTransform(transform->GetPosition().x, transform->GetPosition().y,
                                 transform->GetPosition().z));
                         m_PxActor->attachShape(*m_PxShape);
@@ -172,7 +172,7 @@ namespace Denix
                         {
                             scene->m_PxScene->removeActor(*m_PxActor);
                             m_PxActor->release();
-                            m_PxActor = PhysicsSubsystem::m_PxPhysics->createRigidDynamic(
+                            m_PxActor = PhysicsSubsystem::GetPxPhysics()->createRigidDynamic(
                                 physx::PxTransform(transform->GetPosition().x, transform->GetPosition().y,
                                                    transform->GetPosition().z));
                             m_PxActor->attachShape(*m_PxShape);
@@ -266,7 +266,7 @@ namespace Denix
                         physx::PxBoxGeometry box = geometry.box();
                         box.halfExtents = scale;
                         m_PxActor->detachShape(*m_PxShape);
-                        m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(box, *m_PxMaterial);
+                        m_PxShape = PhysicsSubsystem::GetPxPhysics()->createShape(box, *m_PxMaterial);
                         m_PxActor->attachShape(*m_PxShape);
                     }
                     break;
@@ -277,7 +277,7 @@ namespace Denix
                         box.halfExtents = scaleHalf;
                         m_PxActor->detachShape(*m_PxShape);
                         m_PxShape->release();
-                        m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(box, *m_PxMaterial);
+                        m_PxShape = PhysicsSubsystem::GetPxPhysics()->createShape(box, *m_PxMaterial);
                         m_PxActor->attachShape(*m_PxShape);
                     }
                     break;
@@ -288,7 +288,7 @@ namespace Denix
                         sphere.radius = scaleHalf.x;
                         m_PxActor->detachShape(*m_PxShape);
                         m_PxShape->release();
-                        m_PxShape = PhysicsSubsystem::m_PxPhysics->createShape(sphere, *m_PxMaterial);
+                        m_PxShape = PhysicsSubsystem::GetPxPhysics()->createShape(sphere, *m_PxMaterial);
                         m_PxActor->attachShape(*m_PxShape);
                     }
                     break;
