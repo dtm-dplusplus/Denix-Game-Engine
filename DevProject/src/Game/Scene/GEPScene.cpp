@@ -13,9 +13,22 @@ using namespace Denix;
 void GEPScene::BeginPlay()
 {
     Scene::BeginPlay();
+    
+    // Set clear color to emulate sky
+    WindowSubsystem::GetWindow()->SetClearColor(glm::vec4(31.0f / 255.f, 169.f /255.f, 175.f/ 255.0f, 1.0f));
 
     // Disable Camera input until play button
-    if (Ref<CameraComponent> camera = GetActiveCameraComponent()) camera->m_ExternalControl = true;
+    if (Ref<Actor> camera = GetActiveCamera())
+    {
+        if (Ref<CameraComponent> cameraComponent = camera->GetComponent<CameraComponent>())
+        {
+            cameraComponent->m_ExternalControl = true;
+        }
+        camera->GetTransformComponent()->SetPosition(2.0f, 3.0f, 30.0f);
+        glm::vec3 pos = camera->GetTransformComponent()->GetTransform().Position;
+        DE_LOG(Log, Info, "Camera Position: {} {} {}", pos.x, pos.y, pos.z);
+
+    }
 
     m_MenuCanvas = MakeRef<MainMenuCanvas>();
     m_MenuCanvas->BeginScene();
@@ -46,7 +59,7 @@ void GEPScene::BeginPlay()
         {
             for (int z = 0; z < CubeSize; ++z)
             {
-                glm::vec3 CurrentLocation = SpawnLocation + glm::vec3(x * CubeScale, y * CubeScale, z * CubeScale);
+                glm::vec3 CurrentLocation = SpawnLocation + glm::vec3(x * CubeScale + 0.05f, (y * CubeScale + 0.05f) + 0.1f, z * CubeScale + 0.05f);
                 Ref<Actor> actor = SpawnActor<CubeActor>(CurrentLocation, SpawnRotation);
                 Ref<Texture> texture;
                 
@@ -75,6 +88,8 @@ void GEPScene::EndScene()
     
 
     m_MusicAudioSource.reset();
+
+    WindowSubsystem::GetWindow()->SetClearColor(glm::vec4(0.f, 0.f, 0.f, 1.0f));
 }
 
 void GEPScene::Update(float _deltaTime, const Ref<Counter>& _waitCounter)
