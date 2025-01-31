@@ -16,8 +16,8 @@ namespace Denix
 
     void TimerSubsystem::Initialize()
     {
-        Subsystem::Initialize();
         DE_LOG(LogTimer, Warn, "Initializing TimerSubsystem")
+        Subsystem::Initialize();
         Timer::m_ProgramStartTimePoint = std::chrono::high_resolution_clock::now();
         m_EngineProfile = MakeRef<Profile>(ObjectInit("EngineProfile"));
         DE_LOG(LogTimer, Info, "TimerSubsystem Initialized")

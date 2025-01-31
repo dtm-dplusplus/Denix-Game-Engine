@@ -4,17 +4,9 @@
 
 namespace Denix
 {
-    class WindowSubsystem;
-}
-
-namespace Denix
-{
-    class InputSubsystem;
-}
-
-namespace Denix
-{
     class SDL_GLWindow;
+    class InputSubsystem;
+    class WindowSubsystem;
 
     class EventSubsystem : public Subsystem<EventSubsystem>
     {

@@ -18,3 +18,7 @@
 /cmake-build-release
 /cmake-build-debug
 /Doxygen
+/DenixEngine/src/html
+/DenixEngine/src/latex
+/DenixEngine/src/docbook
+/DenixEngine/src/rtf
