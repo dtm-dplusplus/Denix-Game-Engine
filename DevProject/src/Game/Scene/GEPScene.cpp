@@ -47,17 +47,16 @@ void GEPScene::BeginPlay()
     glm::vec3 SpawnRotation(0.0f, 0.0f, 0.0f);
 
     float CubeScale = 1.0f; // Size of each cube
-
-    int CubeSize = 5; // Size of the big cube
+    
 
     const std::unordered_map < std::string, Ref<Texture>>& textures = AssetSubsystem::GetTextureStore();
     size_t size = textures.size();
     
-    for (int x = 0; x < CubeSize; ++x)
+    for (int x = 0; x < CubeMultiplier; ++x)
     {
-        for (int y = 0; y < CubeSize; ++y)
+        for (int y = 0; y < CubeMultiplier; ++y)
         {
-            for (int z = 0; z < CubeSize; ++z)
+            for (int z = 0; z < CubeMultiplier; ++z)
             {
                 glm::vec3 CurrentLocation = SpawnLocation + glm::vec3(x * CubeScale + 0.05f, (y * CubeScale + 0.05f) + 0.1f, z * CubeScale + 0.05f);
                 Ref<Actor> actor = SpawnActor<CubeActor>(CurrentLocation, SpawnRotation);
@@ -123,6 +122,7 @@ void GEPScene::ToolUpdate(float _deltaTime, const Ref<Counter>& _waitCounter)
 
     ImGui::Begin("GEP Scene");
     ImGui::SeparatorText("Game");
+    ImGui::DragInt("Cube Multiplier", &CubeMultiplier, 1.0f, 1, 10);
     ImGui::DragFloat("Ball Mass", &BallActor::Mass, 0.1f, 0.1f, 30.0f);
     ImGui::DragFloat("Shoot Force", &ShootForce, 0.1f, 0.0f, 200.0f);
     ImGui::End();

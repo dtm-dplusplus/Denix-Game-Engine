@@ -28,7 +28,8 @@ public:
     void ToolUpdate(float _deltaTime, const Denix::Ref<Counter>& _waitCounter) override;
     
     float ShootForce = 50.0f;
-
+    int CubeMultiplier = 2;
+    
     Denix::Ref<MainMenuCanvas> m_MenuCanvas;
     
     Denix::Ref<Denix::AudioSource> m_MusicAudioSource;
